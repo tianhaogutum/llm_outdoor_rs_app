@@ -89,6 +89,33 @@ async def check_achievement_condition(
         total_distance_km = total_distance_m / 1000.0
         return total_distance_km >= required_distance_km
 
+    elif condition_type == "all_route_types":
+        # Check if user has completed all route types (hiking, running, cycling)
+        required_types = set(condition_value.get("types", ["hiking", "running", "cycling"]))
+        completed_types = set(
+            _map_category_to_type(route.category_name)
+            for route in completed_routes
+            if _map_category_to_type(route.category_name) is not None
+        )
+        return required_types.issubset(completed_types)
+
+    elif condition_type == "single_route_distance":
+        # Check if any single route exceeds the required distance
+        required_distance_km = condition_value.get("distance_km", 30)
+        return any(
+            (route.length_meters or 0) / 1000.0 >= required_distance_km
+            for route in completed_routes
+        )
+
+    elif condition_type == "route_difficulty":
+        # Check if user has completed a route of specified difficulty
+        # difficulty: 0=easy, 1=medium, 2=hard, 3+=expert
+        required_difficulty = condition_value.get("difficulty", 2)
+        return any(
+            (route.difficulty or 0) >= required_difficulty
+            for route in completed_routes
+        )
+
     return False
 
 
@@ -260,6 +287,47 @@ async def seed_achievements(db: AsyncSession) -> None:
             "icon": "💪",
             "condition_type": "level",
             "condition_value": json.dumps({"level": 3}),
+        },
+        # Top 5 New Achievements
+        {
+            "achievement_key": "all-rounder",
+            "name": "All-Rounder",
+            "description": "Complete at least one hiking, running, and cycling route",
+            "icon": "🌈",
+            "condition_type": "all_route_types",
+            "condition_value": json.dumps({"types": ["hiking", "running", "cycling"]}),
+        },
+        {
+            "achievement_key": "souvenir-collector",
+            "name": "Souvenir Collector",
+            "description": "Collect 10 digital souvenirs",
+            "icon": "🎁",
+            "condition_type": "route_count",
+            "condition_value": json.dumps({"count": 10}),
+        },
+        {
+            "achievement_key": "marathoner",
+            "name": "Marathoner",
+            "description": "Complete a route longer than 30km",
+            "icon": "🏅",
+            "condition_type": "single_route_distance",
+            "condition_value": json.dumps({"distance_km": 30}),
+        },
+        {
+            "achievement_key": "century-club",
+            "name": "Century Club",
+            "description": "Travel 100km total distance",
+            "icon": "💯",
+            "condition_type": "distance",
+            "condition_value": json.dumps({"distance_km": 100}),
+        },
+        {
+            "achievement_key": "mountain-goat",
+            "name": "Mountain Goat",
+            "description": "Complete a difficult route",
+            "icon": "🐐",
+            "condition_type": "route_difficulty",
+            "condition_value": json.dumps({"difficulty": 2}),
         },
     ]
 

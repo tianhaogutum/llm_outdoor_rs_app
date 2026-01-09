@@ -112,6 +112,26 @@ export function CompletionSummary({
         type: "xp",
         description: "Earn 1000 total XP",
       },
+      // New achievements
+      {
+        key: "souvenir-collector",
+        name: "Souvenir Collector",
+        icon: "🎁",
+        required: 10,
+        current: newCompletedCount,
+        type: "routes",
+        description: "Collect 10 digital souvenirs",
+      },
+      {
+        key: "mountain-goat",
+        name: "Mountain Goat",
+        icon: "🐐",
+        required: 1,
+        current:
+          route.difficulty === "hard" || route.difficulty === "expert" ? 1 : 0,
+        type: "routes",
+        description: "Complete a difficult route",
+      },
     ];
 
     // Filter for achievements that are:
