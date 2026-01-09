@@ -236,6 +236,31 @@ async def seed_achievements(db: AsyncSession) -> None:
             "condition_type": "distance",
             "condition_value": json.dumps({"distance_km": 50}),
         },
+        # New easier achievements for better progression
+        {
+            "achievement_key": "early-bird",
+            "name": "Early Bird",
+            "description": "Complete 2 different routes",
+            "icon": "🐦",
+            "condition_type": "route_count",
+            "condition_value": json.dumps({"count": 2}),
+        },
+        {
+            "achievement_key": "adventurer",
+            "name": "Adventurer",
+            "description": "Complete 5 different routes",
+            "icon": "🗺️",
+            "condition_type": "route_count",
+            "condition_value": json.dumps({"count": 5}),
+        },
+        {
+            "achievement_key": "weekend-warrior",
+            "name": "Weekend Warrior",
+            "description": "Reach Level 3",
+            "icon": "💪",
+            "condition_type": "level",
+            "condition_value": json.dumps({"level": 3}),
+        },
     ]
 
     for data in achievements_data:

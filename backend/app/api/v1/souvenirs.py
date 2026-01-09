@@ -165,6 +165,7 @@ async def create_souvenir(
         await db.refresh(new_souvenir)
         
         # 7.5. Check and unlock achievements
+        newly_unlocked = []
         try:
             newly_unlocked = await check_and_unlock_achievements(profile_id, db)
             if newly_unlocked:
@@ -219,12 +220,25 @@ async def create_souvenir(
         
         logger.info(f"✅ Souvenir created successfully: id={new_souvenir.id}, xp={xp_breakdown['total']}, new_level={new_level}")
         
+        # Format newly unlocked achievements for response
+        unlocked_achievements_list = [
+            {
+                "id": a.id,
+                "achievement_key": a.achievement_key,
+                "name": a.name,
+                "description": a.description,
+                "icon": a.icon,
+            }
+            for a in newly_unlocked
+        ]
+        
         return RouteCompleteResponse(
             souvenir=SouvenirResponse(**souvenir_dict),
             xp_breakdown=xp_breakdown,
             total_xp_gained=xp_breakdown['total'],
             new_total_xp=profile.total_xp,  # Return the new total XP after update
-            new_level=new_level
+            new_level=new_level,
+            newly_unlocked_achievements=unlocked_achievements_list
         )
     except HTTPException as e:
         # Re-raise HTTP exceptions (like 404) with logging

@@ -17,6 +17,15 @@ interface CompletionSummaryProps {
    * If provided, this will be shown instead of the deterministic summary.
    */
   aiSummary?: string | null;
+  /**
+   * Newly unlocked achievements (if any)
+   */
+  newlyUnlockedAchievements?: Array<{
+    achievement_key: string;
+    name: string;
+    description: string;
+    icon: string;
+  }>;
   onClose: () => void;
   onViewSouvenirs?: () => void;
 }
@@ -27,6 +36,7 @@ export function CompletionSummary({
   xpGained,
   questsCompleted,
   aiSummary,
+  newlyUnlockedAchievements = [],
   onClose,
   onViewSouvenirs,
 }: CompletionSummaryProps) {
@@ -161,6 +171,42 @@ export function CompletionSummary({
               </div>
             </Card>
           </div>
+
+          {/* New Achievements Section */}
+          {newlyUnlockedAchievements && newlyUnlockedAchievements.length > 0 && (
+            <Card className="p-6 bg-gradient-to-r from-accent/20 via-primary/20 to-accent/20 border-4 border-accent shadow-lg">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <Trophy className="w-6 h-6 text-accent animate-bounce" />
+                  <h3 className="text-xl font-bold text-foreground">
+                    🎉 New Achievement{newlyUnlockedAchievements.length > 1 ? 's' : ''} Unlocked!
+                  </h3>
+                  <Trophy className="w-6 h-6 text-accent animate-bounce" />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {newlyUnlockedAchievements.map((achievement) => (
+                    <div
+                      key={achievement.achievement_key}
+                      className="p-4 bg-card/80 backdrop-blur-sm rounded-lg border-2 border-accent/50 hover:border-accent transition-all hover:scale-105"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">{achievement.icon}</span>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-foreground">{achievement.name}</h4>
+                          <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-center text-sm text-muted-foreground italic">
+                  View all your achievements in your profile
+                </p>
+              </div>
+            </Card>
+          )}
 
           <Card className="p-6 bg-secondary/10 border-2 border-secondary">
             <div className="space-y-3">

@@ -131,6 +131,13 @@ export interface RouteCompleteResponse {
   total_xp_gained: number; // XP earned from this route completion
   new_total_xp: number; // New total XP after this completion
   new_level: number;
+  newly_unlocked_achievements?: Array<{
+    id: number;
+    achievement_key: string;
+    name: string;
+    description: string;
+    icon: string;
+  }>;
 }
 
 export interface SouvenirListResponse {

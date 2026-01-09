@@ -21,7 +21,15 @@ interface HikingSimulatorProps {
     route: Route,
     xpGained: number,
     completedQuestIds?: string[]
-  ) => void | Promise<{ aiSummary?: string | null } | void>;
+  ) => void | Promise<{ 
+    aiSummary?: string | null;
+    newlyUnlockedAchievements?: Array<{
+      achievement_key: string;
+      name: string;
+      description: string;
+      icon: string;
+    }>;
+  } | void>;
   onExit: () => void;
   onViewSouvenirs?: () => void;
 }
@@ -41,6 +49,12 @@ export function HikingSimulator({
   const [showCompletion, setShowCompletion] = useState(false);
   const [xpAnimations, setXpAnimations] = useState<Array<{ id: string; amount: number }>>([]);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [newlyUnlockedAchievements, setNewlyUnlockedAchievements] = useState<Array<{
+    achievement_key: string;
+    name: string;
+    description: string;
+    icon: string;
+  }>>([]);
   
   const [showPrologueModal, setShowPrologueModal] = useState(false);
   const [showChapterModal, setShowChapterModal] = useState(false);
@@ -237,10 +251,20 @@ export function HikingSimulator({
         // Wait for completion to finish (handle both sync and async)
         const result = onComplete(route, totalXpGained, completedQuests);
         const resolved = result instanceof Promise ? await result : result;
-        if (resolved && typeof resolved === 'object' && 'aiSummary' in resolved) {
-          const summary = (resolved as { aiSummary?: string | null }).aiSummary;
-          if (summary && summary.trim().length > 0) {
-            setAiSummary(summary);
+        if (resolved && typeof resolved === 'object') {
+          // Extract AI summary
+          if ('aiSummary' in resolved) {
+            const summary = (resolved as { aiSummary?: string | null }).aiSummary;
+            if (summary && summary.trim().length > 0) {
+              setAiSummary(summary);
+            }
+          }
+          // Extract newly unlocked achievements
+          if ('newlyUnlockedAchievements' in resolved) {
+            const achievements = (resolved as { newlyUnlockedAchievements?: Array<any> }).newlyUnlockedAchievements;
+            if (achievements && achievements.length > 0) {
+              setNewlyUnlockedAchievements(achievements);
+            }
           }
         }
         
@@ -289,6 +313,7 @@ export function HikingSimulator({
         xpGained={totalXpGained}
         questsCompleted={completedQuests.length}
         aiSummary={aiSummary}
+        newlyUnlockedAchievements={newlyUnlockedAchievements}
         onClose={handleCompletionClose}
         onViewSouvenirs={handleViewSouvenirs}
       />

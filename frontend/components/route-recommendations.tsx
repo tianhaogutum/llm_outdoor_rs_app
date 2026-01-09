@@ -564,7 +564,15 @@ export function RouteRecommendations({
     route: Route,
     xpGained: number,
     completedQuestIds: string[] = []
-  ): Promise<{ aiSummary?: string | null } | void> => {
+  ): Promise<{
+    aiSummary?: string | null;
+    newlyUnlockedAchievements?: Array<{
+      achievement_key: string;
+      name: string;
+      description: string;
+      icon: string;
+    }>;
+  } | void> => {
     // If user is not logged in, use localStorage fallback
     if (!isLoggedIn || !userProfile.id) {
       const newSouvenir = {
@@ -659,11 +667,12 @@ export function RouteRecommendations({
       onUpdateProfile(updatedProfile);
       localStorage.setItem("trailsaga-profile", JSON.stringify(updatedProfile));
 
-      // Return AI-generated summary so HikingSimulator can display it immediately.
+      // Return AI-generated summary and newly unlocked achievements so HikingSimulator can display them.
       // Do NOT close the simulator here; let the simulator decide when to exit
       // so the user can see the completion screen and AI summary.
       return {
         aiSummary: response.souvenir.genai_summary || null,
+        newlyUnlockedAchievements: response.newly_unlocked_achievements || [],
       };
     } catch (error) {
       console.error("Failed to create souvenir via API:", error);

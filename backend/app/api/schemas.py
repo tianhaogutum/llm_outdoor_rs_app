@@ -247,6 +247,7 @@ class RouteCompleteResponse(BaseModel):
     total_xp_gained: int  # XP earned from this route completion
     new_total_xp: int  # New total XP after this completion
     new_level: int
+    newly_unlocked_achievements: Optional[list[dict]] = []  # Newly unlocked achievements
 
 
 # ============================================================================
