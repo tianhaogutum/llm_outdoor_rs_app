@@ -122,6 +122,15 @@ export interface DigitalSouvenir {
   genaiSummary?: string | null;
   xpBreakdown?: string | null; // JSON string
   pixelImageSvg?: string | null; // LLM-generated pixel art SVG
+  routeType?: "hiking" | "running" | "cycling"; // Route activity type
+  duration?: number; // Duration in minutes
+  unlockedAchievements?: Array<{
+    id: number;
+    achievement_key: string;
+    name: string;
+    description: string;
+    icon: string;
+  }>;
 }
 
 export const mockRoutes: Route[] = [

@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DigitalSouvenir } from '@/lib/mock-data';
 import { apiClient } from '@/lib/api-client';
 import { transformApiSouvenirs } from '@/lib/api-transforms';
-import { Trophy, MapPin, Calendar, Sparkles, X, Mountain, Footprints, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
+import { formatRelativeTime, formatDate, getRouteTypeStyle, getDifficultyStyle } from '@/lib/utils';
+import { SouvenirDetailModal } from '@/components/souvenir-detail-modal';
+import { Trophy, MapPin, Calendar, Sparkles, X, Mountain, Footprints, TrendingUp, ChevronDown, ChevronUp, Clock, Star, Award } from 'lucide-react';
 
 interface SouvenirGalleryProps {
   souvenirs: DigitalSouvenir[];
@@ -30,6 +32,8 @@ export function SouvenirGallery({
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'xp_high' | 'xp_low'>('newest');
   const [expandedSummaries, setExpandedSummaries] = useState<Set<string>>(new Set());
   const [expandedBreakdowns, setExpandedBreakdowns] = useState<Set<string>>(new Set());
+  const [selectedSouvenir, setSelectedSouvenir] = useState<DigitalSouvenir | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Update souvenirs when initialSouvenirs prop changes
   useEffect(() => {
@@ -149,6 +153,17 @@ export function SouvenirGallery({
       newSet.add(souvenirId);
     }
     setExpandedBreakdowns(newSet);
+  };
+
+  const handleSouvenirClick = (souvenir: DigitalSouvenir) => {
+    setSelectedSouvenir(souvenir);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    // Delay clearing selected souvenir to allow modal close animation
+    setTimeout(() => setSelectedSouvenir(null), 300);
   };
 
   // Get AI summary and XP breakdown from souvenir data
@@ -300,10 +315,19 @@ export function SouvenirGallery({
                 }
               }
               
+              // Get route type styling
+              const routeTypeStyle = souvenir.routeType 
+                ? getRouteTypeStyle(souvenir.routeType)
+                : null;
+              
+              // Get difficulty styling
+              const difficultyStyle = getDifficultyStyle(souvenir.difficulty);
+              
               return (
               <Card 
                 key={souvenir.id}
-                className="overflow-hidden border-0 bg-transparent shadow-none"
+                onClick={() => handleSouvenirClick(souvenir)}
+                className="overflow-hidden border-0 bg-transparent shadow-none group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
               >
                 {/* Pixel Art SVG - Always use template-generated SVG */}
                 {souvenir.pixelImageSvg ? (
@@ -336,8 +360,90 @@ export function SouvenirGallery({
                   </div>
                 )}
 
-                {/* Content - Only show expandable sections (AI Summary, XP Breakdown) */}
+                {/* Content */}
                 <div className="pt-4 space-y-3">
+                  {/* Route Type Badge (Top) */}
+                  {routeTypeStyle && (
+                    <div className="flex items-center justify-between">
+                      <Badge className={`${routeTypeStyle.textColor} bg-transparent border-2 ${routeTypeStyle.borderColor} font-semibold`}>
+                        <span className="mr-1">{routeTypeStyle.icon}</span>
+                        {routeTypeStyle.label}
+                      </Badge>
+                      
+                      {/* Completion Date */}
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {formatRelativeTime(souvenir.completedAt)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Unlocked Achievements Banner */}
+                  {souvenir.unlockedAchievements && souvenir.unlockedAchievements.length > 0 && (
+                    <div className="p-3 bg-gradient-to-r from-accent/20 to-primary/20 border-2 border-accent/40 rounded-lg animate-in fade-in slide-in-from-bottom-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Award className="w-4 h-4 text-accent animate-pulse" />
+                        <span className="text-xs font-bold text-foreground">
+                          🎉 Achievement{souvenir.unlockedAchievements.length > 1 ? 's' : ''} Unlocked!
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {souvenir.unlockedAchievements.map((achievement) => (
+                          <Badge 
+                            key={achievement.id}
+                            variant="secondary"
+                            className="text-xs bg-accent/20 border border-accent/40"
+                          >
+                            <span className="mr-1">{achievement.icon}</span>
+                            {achievement.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Enhanced Stats Grid */}
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-muted/30 rounded-lg border-2 border-border">
+                    {/* XP Gained */}
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Star className="w-3 h-3 text-accent" />
+                      </div>
+                      <div className="text-lg font-bold text-accent">{souvenir.xpGained}</div>
+                      <div className="text-xs text-muted-foreground">XP</div>
+                    </div>
+                    
+                    {/* Distance */}
+                    <div className="text-center">
+                      <div className="flex items-center justify-center mb-1">
+                        <Footprints className="w-3 h-3 text-primary" />
+                      </div>
+                      <div className="text-lg font-bold text-foreground">{souvenir.distance.toFixed(1)}</div>
+                      <div className="text-xs text-muted-foreground">KM</div>
+                    </div>
+                    
+                    {/* Duration or Difficulty */}
+                    <div className="text-center">
+                      {souvenir.duration ? (
+                        <>
+                          <div className="flex items-center justify-center mb-1">
+                            <Clock className="w-3 h-3 text-secondary" />
+                          </div>
+                          <div className="text-lg font-bold text-foreground">{souvenir.duration}</div>
+                          <div className="text-xs text-muted-foreground">MIN</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-center mb-1">
+                            <span className="text-base">{difficultyStyle.emoji}</span>
+                          </div>
+                          <div className={`text-xs font-bold ${difficultyStyle.color}`}>
+                            {difficultyStyle.label}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
 
                   {/* AI Summary */}
                   {metadata.genaiSummary && (
@@ -425,6 +531,13 @@ export function SouvenirGallery({
           </div>
         )}
       </main>
+
+      {/* Souvenir Detail Modal */}
+      <SouvenirDetailModal
+        souvenir={selectedSouvenir}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+      />
     </div>
   );
 }

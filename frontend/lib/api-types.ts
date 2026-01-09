@@ -113,6 +113,7 @@ export interface ApiSouvenir {
   xp_breakdown_json: string | null; // JSON string containing XP breakdown details
   pixel_image_svg: string | null; // LLM-generated pixel art SVG
   route?: ApiRoute;
+  unlocked_achievements?: ApiAchievement[]; // Achievements unlocked when completing this route
 }
 
 export interface RouteCompleteRequest {

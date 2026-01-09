@@ -288,6 +288,9 @@ export function transformApiSouvenir(apiSouvenir: ApiSouvenir): DigitalSouvenir 
     genaiSummary: apiSouvenir.genai_summary,
     xpBreakdown: apiSouvenir.xp_breakdown_json,
     pixelImageSvg: apiSouvenir.pixel_image_svg,
+    routeType: route ? mapApiCategory(route.category_name) : undefined,
+    duration: route?.duration_min,
+    unlockedAchievements: apiSouvenir.unlocked_achievements,
   };
 }
 
