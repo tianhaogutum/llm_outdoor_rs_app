@@ -39,7 +39,12 @@ export function SouvenirGallery({
   useEffect(() => {
     if (!isLoggedIn || !profileId) {
       // For non-logged-in users, use prop directly
-      setSouvenirs(initialSouvenirs);
+      // Ensure completedAt is a Date object
+      const normalizedSouvenirs = initialSouvenirs.map(s => ({
+        ...s,
+        completedAt: s.completedAt instanceof Date ? s.completedAt : new Date(s.completedAt)
+      }));
+      setSouvenirs(normalizedSouvenirs);
     }
   }, [initialSouvenirs, isLoggedIn, profileId]);
 
