@@ -71,7 +71,9 @@ export function RouteRecommendations({
   const [scoreModalRoute, setScoreModalRoute] = useState<Route | null>(null);
   const [routeLimit, setRouteLimit] = useState<number>(20);
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
-  const [storyGenerationRouteId, setStoryGenerationRouteId] = useState<string | null>(null);
+  const [storyGenerationRouteId, setStoryGenerationRouteId] = useState<
+    string | null
+  >(null);
 
   const scrollToMainTop = () => {
     if (typeof window !== "undefined") {
@@ -81,11 +83,14 @@ export function RouteRecommendations({
 
   // Fetch routes from backend (for both logged-in and guest users)
   useEffect(() => {
-    logger.logComponentLifecycle('RouteRecommendations', 'mount', { isLoggedIn, userProfileId: userProfile.id });
+    logger.logComponentLifecycle("RouteRecommendations", "mount", {
+      isLoggedIn,
+      userProfileId: userProfile.id,
+    });
     fetchBackendRoutes();
-    
+
     return () => {
-      logger.logComponentLifecycle('RouteRecommendations', 'unmount');
+      logger.logComponentLifecycle("RouteRecommendations", "unmount");
     };
   }, [isLoggedIn, selectedType, userProfile.id, routeLimit]);
 
@@ -94,7 +99,12 @@ export function RouteRecommendations({
     setIsLoadingRoutes(true);
     setBackendError(null);
 
-    logger.info('Start fetching route recommendations', { isLoggedIn, selectedType, routeLimit, userProfileId: userProfile.id }, 'RouteRecommendations', 'FETCH_ROUTES');
+    logger.info(
+      "Start fetching route recommendations",
+      { isLoggedIn, selectedType, routeLimit, userProfileId: userProfile.id },
+      "RouteRecommendations",
+      "FETCH_ROUTES"
+    );
 
     try {
       // Build API URL with optional profile_id and category parameters
@@ -114,57 +124,105 @@ export function RouteRecommendations({
         url += `&category=${selectedType}`;
       }
 
-      logger.debug('Fetching route recommendations', { url }, 'RouteRecommendations', 'FETCH_ROUTES');
+      logger.debug(
+        "Fetching route recommendations",
+        { url },
+        "RouteRecommendations",
+        "FETCH_ROUTES"
+      );
       // Use longer timeout for route recommendations (30 seconds should be enough)
-      const response = await apiClient.get<ApiRecommendationResponse>(url, undefined, 30000);
-      
+      const response = await apiClient.get<ApiRecommendationResponse>(
+        url,
+        undefined,
+        30000
+      );
+
       const duration = performance.now() - startTime;
-      logger.info('Route recommendations fetched successfully', { 
-        routesCount: response.routes.length, 
-        isPersonalized: response.is_personalized,
-        duration: duration.toFixed(2) + 'ms'
-      }, 'RouteRecommendations', 'FETCH_ROUTES');
-      
+      logger.info(
+        "Route recommendations fetched successfully",
+        {
+          routesCount: response.routes.length,
+          isPersonalized: response.is_personalized,
+          duration: duration.toFixed(2) + "ms",
+        },
+        "RouteRecommendations",
+        "FETCH_ROUTES"
+      );
+
       const routes = transformApiRoutes(response.routes);
       setBackendRoutes(routes);
 
       // Log personalization status
       if (response.is_personalized) {
-        logger.logBusinessLogic('Show personalized recommendations', 'Route', undefined, { count: routes.length }, 'RouteRecommendations');
+        logger.logBusinessLogic(
+          "Show personalized recommendations",
+          "Route",
+          undefined,
+          { count: routes.length },
+          "RouteRecommendations"
+        );
       } else {
-        logger.logBusinessLogic('Show random recommendations', 'Route', undefined, { count: routes.length }, 'RouteRecommendations');
+        logger.logBusinessLogic(
+          "Show random recommendations",
+          "Route",
+          undefined,
+          { count: routes.length },
+          "RouteRecommendations"
+        );
       }
-      
-      logger.logPerformance('Fetch route recommendations', duration, 'RouteRecommendations', { routesCount: routes.length });
+
+      logger.logPerformance(
+        "Fetch route recommendations",
+        duration,
+        "RouteRecommendations",
+        { routesCount: routes.length }
+      );
     } catch (error: any) {
       const duration = performance.now() - startTime;
-      logger.error("Failed to fetch route recommendations", error, 'RouteRecommendations', 'FETCH_ROUTES');
-      logger.debug("Error details", {
-        message: error?.message,
-        status: error?.status,
-        name: error?.name,
-        duration: duration.toFixed(2) + 'ms'
-      }, 'RouteRecommendations', 'FETCH_ROUTES');
-      
+      logger.error(
+        "Failed to fetch route recommendations",
+        error,
+        "RouteRecommendations",
+        "FETCH_ROUTES"
+      );
+      logger.debug(
+        "Error details",
+        {
+          message: error?.message,
+          status: error?.status,
+          name: error?.name,
+          duration: duration.toFixed(2) + "ms",
+        },
+        "RouteRecommendations",
+        "FETCH_ROUTES"
+      );
+
       // Provide more specific error messages
-      let errorMessage = "Could not load routes from server. Showing sample routes instead.";
-      
+      let errorMessage =
+        "Could not load routes from server. Showing sample routes instead.";
+
       if (error instanceof Error) {
-        if (error.message.includes("Network error") || error.message.includes("Failed to fetch")) {
-          errorMessage = "Network error: Could not connect to the server. Please check if the backend is running on http://localhost:8000";
+        if (
+          error.message.includes("Network error") ||
+          error.message.includes("Failed to fetch")
+        ) {
+          errorMessage =
+            "Network error: Could not connect to the server. Please check if the backend is running on http://localhost:8000";
         } else if (error.message.includes("timeout")) {
-          errorMessage = "Request timeout: The server took too long to respond. Please try again.";
-        } else if (error.status === 404) {
-          errorMessage = `API endpoint not found (404). Tried: ${url}. Please check the backend configuration.`;
-        } else if (error.status >= 500) {
-          errorMessage = "Server error: The backend encountered an issue. Please try again later.";
+          errorMessage =
+            "Request timeout: The server took too long to respond. Please try again.";
+        } else if ((error as any).status === 404) {
+          errorMessage = `API endpoint not found (404). Please check the backend configuration.`;
+        } else if ((error as any).status >= 500) {
+          errorMessage =
+            "Server error: The backend encountered an issue. Please try again later.";
         } else {
           errorMessage = `Error loading routes: ${error.message}`;
         }
-      } else if (error?.status === 404) {
-        errorMessage = `API endpoint not found (404). Tried: ${url}. Please check the backend configuration.`;
+      } else if ((error as any)?.status === 404) {
+        errorMessage = `API endpoint not found (404). Please check the backend configuration.`;
       }
-      
+
       setBackendError(errorMessage);
       setBackendRoutes([]); // Fallback to mock
     } finally {
@@ -229,37 +287,45 @@ export function RouteRecommendations({
     if (route.isLocked && userProfile.xp < (route.xpRequired || 0)) {
       return;
     }
-    
+
     // Check if route has story content loaded
     // For Wiesn route, we want to always generate/load the full story
     // For other routes, check if we have prologue or any breakpoint with substantial content (>100 chars)
-    const isWiesnRoute = route.id === "1362610" || route.name.toLowerCase().includes("wiesn");
-    const hasStoryContent = route.prologue || route.breakpoints?.some(bp => bp.content && bp.content.length > 100);
-    
+    const isWiesnRoute =
+      route.id === "1362610" || route.name.toLowerCase().includes("wiesn");
+    const hasStoryContent =
+      route.prologue ||
+      route.breakpoints?.some((bp) => bp.content && bp.content.length > 100);
+
     // Always generate/load story for Wiesn route, or if we don't have substantial content
     const shouldLoadStory = isWiesnRoute || !hasStoryContent;
-    
+
     console.log(`🔍 Starting route ${route.id} (${route.name}):`, {
       isWiesnRoute,
       hasStoryContent,
       shouldLoadStory,
-      prologue: route.prologue ? `${route.prologue.length} chars` : 'none',
-      breakpointsWithContent: route.breakpoints?.filter(bp => bp.content && bp.content.length > 100).length || 0
+      prologue: route.prologue ? `${route.prologue.length} chars` : "none",
+      breakpointsWithContent:
+        route.breakpoints?.filter((bp) => bp.content && bp.content.length > 100)
+          .length || 0,
     });
-    
+
     // If no story content or it's Wiesn route, try to load or generate it
     if (shouldLoadStory) {
+      console.log("📖 Loading story content for route...");
       setIsGeneratingStory(true);
       setStoryGenerationRouteId(route.id);
       try {
         const routeIdNum = parseInt(route.id, 10);
         if (!isNaN(routeIdNum)) {
           let storyResponse;
-          
+
           // For Wiesn route, always try to generate (force regenerate to ensure we get the full story)
           // For other routes, first try to get existing story
           if (isWiesnRoute) {
-            console.log('📖 Wiesn route detected! Generating/loading full story...');
+            console.log(
+              "📖 Wiesn route detected! Generating/loading full story..."
+            );
             // First try to get existing story
             try {
               storyResponse = await apiClient.get<{
@@ -276,11 +342,13 @@ export function RouteRecommendations({
                   }>;
                 }>;
               }>(`api/routes/${routeIdNum}/story`, undefined, 10000);
-              console.log('✅ Found existing story for Wiesn route');
+              console.log("✅ Found existing story for Wiesn route");
             } catch (error: any) {
-              // If story doesn't exist or is incomplete, generate it
+              // If story doesn't exist or is incomplete, generate it (this is expected behavior)
               if (error?.status === 404 || error?.status === 0) {
-                console.log('📖 Story not found or incomplete, generating new story (this may take up to 60 seconds)...');
+                console.log(
+                  "📖 Story not found, generating new story (this may take up to 60 seconds)..."
+                );
                 storyResponse = await apiClient.post<{
                   title: string;
                   outline: string;
@@ -294,11 +362,16 @@ export function RouteRecommendations({
                       xp_reward: number;
                     }>;
                   }>;
-                }>(`api/routes/${routeIdNum}/generate-story`, {
-                  narrative_style: "adventure",
-                  force_regenerate: false
-                }, undefined, 60000); // 60 seconds for story generation
-                console.log('✅ Story generated successfully!');
+                }>(
+                  `api/routes/${routeIdNum}/generate-story`,
+                  {
+                    narrative_style: "adventure",
+                    force_regenerate: false,
+                  },
+                  undefined,
+                  60000
+                ); // 60 seconds for story generation
+                console.log("✅ Story generated successfully!");
               } else {
                 throw error;
               }
@@ -323,7 +396,9 @@ export function RouteRecommendations({
             } catch (error: any) {
               // If story doesn't exist (404), generate it (with longer timeout for generation)
               if (error?.status === 404) {
-                console.log('📖 Story not found, generating new story (this may take up to 60 seconds)...');
+                console.log(
+                  "📖 Story not found, generating new story (this may take up to 60 seconds)..."
+                );
                 storyResponse = await apiClient.post<{
                   title: string;
                   outline: string;
@@ -337,17 +412,22 @@ export function RouteRecommendations({
                       xp_reward: number;
                     }>;
                   }>;
-                }>(`api/routes/${routeIdNum}/generate-story`, {
-                  narrative_style: "adventure",
-                  force_regenerate: false
-                }, undefined, 60000); // 60 seconds for story generation
-                console.log('✅ Story generated successfully!');
+                }>(
+                  `api/routes/${routeIdNum}/generate-story`,
+                  {
+                    narrative_style: "adventure",
+                    force_regenerate: false,
+                  },
+                  undefined,
+                  60000
+                ); // 60 seconds for story generation
+                console.log("✅ Story generated successfully!");
               } else {
                 throw error;
               }
             }
           }
-          
+
           // Update route with story content
           const updatedRoute = {
             ...route,
@@ -355,18 +435,27 @@ export function RouteRecommendations({
             epilogue: storyResponse.epilogue,
             breakpoints: route.breakpoints.map((bp, idx) => {
               // Match by order_index (which should match the index in storyResponse.breakpoints)
-              const storyBp = storyResponse.breakpoints.find(sb => sb.index === (bp.orderIndex ?? idx));
+              const storyBp = storyResponse.breakpoints.find(
+                (sb) => sb.index === (bp.orderIndex ?? idx)
+              );
               if (storyBp) {
-                console.log(`✅ Found story for breakpoint ${idx} (orderIndex: ${bp.orderIndex}): ${storyBp.main_quest.substring(0, 100)}...`);
+                console.log(
+                  `✅ Found story for breakpoint ${idx} (orderIndex: ${
+                    bp.orderIndex
+                  }): ${storyBp.main_quest.substring(0, 100)}...`
+                );
                 // Parse mini quest description for quiz type
                 let questType: "photo" | "quiz" | "observation" = "observation";
-                let questDescription = storyBp.mini_quests[0]?.task_description || "";
+                let questDescription =
+                  storyBp.mini_quests[0]?.task_description || "";
                 let choices: string[] | undefined;
                 let correctAnswer: number | undefined;
-                
+
                 if (storyBp.mini_quests.length > 0) {
                   try {
-                    const parsed = JSON.parse(storyBp.mini_quests[0].task_description);
+                    const parsed = JSON.parse(
+                      storyBp.mini_quests[0].task_description
+                    );
                     if (parsed.type === "quiz") {
                       questType = "quiz";
                       questDescription = parsed.description || parsed.question;
@@ -384,66 +473,88 @@ export function RouteRecommendations({
                     }
                   } catch (e) {
                     // Not JSON, use as-is
-                    if (questDescription.toLowerCase().includes("camera") || 
-                        questDescription.toLowerCase().includes("photograph")) {
+                    if (
+                      questDescription.toLowerCase().includes("camera") ||
+                      questDescription.toLowerCase().includes("photograph")
+                    ) {
                       questType = "photo";
-                    } else if (questDescription.toLowerCase().includes("puzzle") ||
-                               questDescription.toLowerCase().includes("riddle")) {
+                    } else if (
+                      questDescription.toLowerCase().includes("puzzle") ||
+                      questDescription.toLowerCase().includes("riddle")
+                    ) {
                       questType = "quiz";
                     }
                   }
                 }
-                
+
                 return {
                   ...bp,
                   content: storyBp.main_quest || bp.content, // Use story content, fallback to existing
-                  quest: storyBp.mini_quests.length > 0 ? {
-                    id: `quest-${bp.id || idx}`,
-                    title: `Quest at ${bp.name || 'Checkpoint'}`,
-                    description: questDescription,
-                    type: questType,
-                    xpReward: storyBp.mini_quests[0].xp_reward,
-                    choices: choices,
-                    correctAnswer: correctAnswer
-                  } : bp.quest
+                  quest:
+                    storyBp.mini_quests.length > 0
+                      ? {
+                          id: `quest-${bp.id || idx}`,
+                          title: `Quest at ${bp.name || "Checkpoint"}`,
+                          description: questDescription,
+                          type: questType,
+                          xpReward: storyBp.mini_quests[0].xp_reward,
+                          choices: choices,
+                          correctAnswer: correctAnswer,
+                        }
+                      : bp.quest,
                 };
               } else {
-                console.warn(`⚠️ No story found for breakpoint ${idx} (orderIndex: ${bp.orderIndex ?? idx}), available indices:`, storyResponse.breakpoints.map(sb => sb.index));
+                console.warn(
+                  `⚠️ No story found for breakpoint ${idx} (orderIndex: ${
+                    bp.orderIndex ?? idx
+                  }), available indices:`,
+                  storyResponse.breakpoints.map((sb) => sb.index)
+                );
                 // Keep existing content if no story found
               }
               return bp;
-            })
+            }),
           };
-          
-          console.log('📖 Updated route with story:', {
+
+          console.log("📖 Updated route with story:", {
             prologueLength: updatedRoute.prologue?.length,
             epilogueLength: updatedRoute.epilogue?.length,
-            breakpointsWithContent: updatedRoute.breakpoints.filter(bp => bp.content && bp.content.length > 100).length,
-            totalBreakpoints: updatedRoute.breakpoints.length
+            breakpointsWithContent: updatedRoute.breakpoints.filter(
+              (bp) => bp.content && bp.content.length > 100
+            ).length,
+            totalBreakpoints: updatedRoute.breakpoints.length,
           });
-          
+
           // Log each breakpoint's content length
           updatedRoute.breakpoints.forEach((bp, idx) => {
             if (bp.content) {
-              console.log(`  Breakpoint ${idx} (${bp.name}): ${bp.content.length} chars - ${bp.content.substring(0, 80)}...`);
+              console.log(
+                `  Breakpoint ${idx} (${bp.name}): ${
+                  bp.content.length
+                } chars - ${bp.content.substring(0, 80)}...`
+              );
             } else {
               console.warn(`  Breakpoint ${idx} (${bp.name}): NO CONTENT`);
             }
           });
-          
+
           setIsGeneratingStory(false);
           setStoryGenerationRouteId(null);
           setActiveRoute(updatedRoute);
           return;
         }
       } catch (error) {
-        console.error("Failed to load/generate story:", error);
+        console.warn(
+          "⚠️ Could not load/generate story, starting route without enhanced story:",
+          error
+        );
         setIsGeneratingStory(false);
         setStoryGenerationRouteId(null);
         // Continue with original route even if story loading fails
       }
     }
-    
+
+    console.log("✅ Route ready to start!");
     setIsGeneratingStory(false);
     setStoryGenerationRouteId(null);
     setActiveRoute(route);
@@ -485,6 +596,40 @@ export function RouteRecommendations({
     // User is logged in - try to call backend API
     try {
       const profileIdNum = parseInt(userProfile.id, 10);
+
+      // Check if profile ID is valid
+      if (isNaN(profileIdNum)) {
+        console.error("Invalid profile ID:", userProfile.id);
+        // Fall back to localStorage if profile ID is invalid
+        const newSouvenir = {
+          id: `souvenir-${Date.now()}`,
+          routeId: route.id,
+          routeName: route.name,
+          location: route.location,
+          completedAt: new Date(),
+          xpGained: xpGained,
+          badgesEarned: ["Completed"],
+          imageUrl: route.imageUrl,
+          difficulty: route.difficulty,
+          distance: route.distance,
+        };
+
+        const updatedProfile = {
+          ...userProfile,
+          xp: userProfile.xp + xpGained,
+          completedRoutes: [...userProfile.completedRoutes, route.id],
+          level: Math.floor((userProfile.xp + xpGained) / 300) + 1,
+          souvenirs: [newSouvenir, ...userProfile.souvenirs],
+        };
+        onUpdateProfile(updatedProfile);
+        localStorage.setItem(
+          "trailsaga-profile",
+          JSON.stringify(updatedProfile)
+        );
+        setActiveRoute(null);
+        return;
+      }
+
       // Convert quest IDs to integers and filter out any invalid values
       const questIdsNum = completedQuestIds
         .map((id) => parseInt(id, 10))
@@ -505,7 +650,7 @@ export function RouteRecommendations({
       // Use new_total_xp from backend to ensure accuracy
       const updatedProfile = {
         ...userProfile,
-        xp: response.new_total_xp || (userProfile.xp + response.total_xp_gained), // Use backend's total XP
+        xp: response.new_total_xp || userProfile.xp + response.total_xp_gained, // Use backend's total XP
         level: response.new_level,
         completedRoutes: [...userProfile.completedRoutes, route.id],
         souvenirs: [newSouvenir, ...userProfile.souvenirs],
@@ -574,7 +719,10 @@ export function RouteRecommendations({
           userProfile.difficultyBias + 1
         );
       } else if (reason === "too-far") {
-        updatedProfile.distanceBias = Math.max(-5, userProfile.distanceBias - 1);
+        updatedProfile.distanceBias = Math.max(
+          -5,
+          userProfile.distanceBias - 1
+        );
       }
 
       onUpdateProfile(updatedProfile);
@@ -586,6 +734,35 @@ export function RouteRecommendations({
     // User is logged in - call backend API
     try {
       const profileIdNum = parseInt(userProfile.id, 10);
+
+      // Check if profile ID is valid
+      if (isNaN(profileIdNum)) {
+        console.error("Invalid profile ID:", userProfile.id);
+        // Fall back to local update only
+        const updatedProfile = { ...userProfile };
+
+        if (reason === "too-hard") {
+          updatedProfile.difficultyBias = Math.max(
+            -5,
+            userProfile.difficultyBias - 1
+          );
+        } else if (reason === "too-easy") {
+          updatedProfile.difficultyBias = Math.min(
+            5,
+            userProfile.difficultyBias + 1
+          );
+        } else if (reason === "too-far") {
+          updatedProfile.distanceBias = Math.max(
+            -5,
+            userProfile.distanceBias - 1
+          );
+        }
+
+        onUpdateProfile(updatedProfile);
+        setFeedbackRoute(null);
+        return;
+      }
+
       const routeIdNum = parseInt(feedbackRoute.id, 10);
 
       await apiClient.submitFeedback(profileIdNum, routeIdNum, reason);
@@ -604,16 +781,21 @@ export function RouteRecommendations({
           userProfile.difficultyBias + 1
         );
       } else if (reason === "too-far") {
-        updatedProfile.distanceBias = Math.max(-5, userProfile.distanceBias - 1);
+        updatedProfile.distanceBias = Math.max(
+          -5,
+          userProfile.distanceBias - 1
+        );
       }
 
       onUpdateProfile(updatedProfile);
       setFeedbackRoute(null);
-      
+
       // Refresh recommendations to show updated scores based on feedback
       // This will re-fetch routes with updated user preferences and feedback penalties
       if (isLoggedIn && userProfile.id) {
-        console.log('🔄 Refreshing recommendations after feedback submission...');
+        console.log(
+          "🔄 Refreshing recommendations after feedback submission..."
+        );
         await fetchBackendRoutes();
       }
     } catch (error) {
@@ -626,19 +808,19 @@ export function RouteRecommendations({
 
   const handleViewSouvenirsFromSimulator = async () => {
     console.log("[v0] handleViewSouvenirsFromSimulator called");
-    
+
     // Wait a moment for any pending state updates to complete
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // Close the route simulator first
     setActiveRoute(null);
-    
+
     // Wait a bit more to ensure state has updated
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     // Trigger refresh to ensure latest data is loaded
-    setGalleryRefreshTrigger(prev => prev + 1);
-    
+    setGalleryRefreshTrigger((prev) => prev + 1);
+
     // Open gallery after a short delay to ensure refresh trigger is set
     setTimeout(() => {
       setShowGallery(true);
@@ -654,9 +836,12 @@ export function RouteRecommendations({
             <Card className="p-8 border-4 border-primary max-w-md">
               <div className="text-center space-y-4">
                 <div className="animate-spin text-4xl">✨</div>
-                <h3 className="text-xl font-bold text-foreground">Generating Story...</h3>
+                <h3 className="text-xl font-bold text-foreground">
+                  Generating Story...
+                </h3>
                 <p className="text-muted-foreground">
-                  Creating your magical adventure! This may take up to 60 seconds.
+                  Creating your magical adventure! This may take up to 60
+                  seconds.
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Please wait while we craft your Harry Potter-themed story...
@@ -730,7 +915,7 @@ export function RouteRecommendations({
                     size="sm"
                     className="border-2 px-3 py-2 h-auto gap-2 hover:bg-accent/10"
                     onClick={() => {
-                      setGalleryRefreshTrigger(prev => prev + 1);
+                      setGalleryRefreshTrigger((prev) => prev + 1);
                       setShowGallery(true);
                     }}
                   >
@@ -796,7 +981,10 @@ export function RouteRecommendations({
           {!isLoadingRoutes && !backendError && backendRoutes.length > 0 && (
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <label htmlFor="route-limit" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="route-limit"
+                  className="text-sm font-medium text-foreground"
+                >
                   Show routes:
                 </label>
                 <select
@@ -814,7 +1002,8 @@ export function RouteRecommendations({
                 </select>
               </div>
               <p className="text-sm text-muted-foreground">
-                Showing {backendRoutes.length} {backendRoutes.length === 1 ? 'route' : 'routes'}
+                Showing {backendRoutes.length}{" "}
+                {backendRoutes.length === 1 ? "route" : "routes"}
               </p>
             </div>
           )}

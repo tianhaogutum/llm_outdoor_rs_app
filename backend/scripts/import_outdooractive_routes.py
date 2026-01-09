@@ -21,7 +21,7 @@ import sys
 
 sys.path.insert(0, ROOT_DIR)
 
-from app.database import get_db, init_db
+from app.database import get_db_session, init_db
 from app.models.entities import Route
 from app.settings import get_settings
 
@@ -146,7 +146,8 @@ async def upsert_routes(
     settings = get_settings()
     init_db(settings)
 
-    async with get_db() as session:
+    session = await get_db_session()
+    try:
         upserted = 0
         for tour in tours:
             route_fields = transform_tour_to_route_fields(tour)
@@ -160,6 +161,8 @@ async def upsert_routes(
             upserted += 1
         await session.commit()
         print(f"Upserted {upserted} routes.")
+    finally:
+        await session.close()
 
 
 async def async_main() -> None:
