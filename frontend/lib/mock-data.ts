@@ -488,7 +488,7 @@ export const defaultUserProfile: UserProfile = {
   name: "Explorer",
   level: 1,
   xp: 0,
-  xpToNextLevel: 300,
+  xpToNextLevel: 100, // Level 1 → 2 now requires 100 XP (progressive system)
   explorerType: "Unknown",
   fitnessLevel: "beginner",
   preferredTypes: [],

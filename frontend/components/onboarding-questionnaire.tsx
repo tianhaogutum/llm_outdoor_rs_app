@@ -107,8 +107,11 @@ export function OnboardingQuestionnaire({
     setIsCreatingProfile(true);
 
     try {
+      // Ensure we have a backend profile ID
+      let finalBackendProfileId = backendProfileId;
+
       // If profile wasn't created during generateExplorerType, create it now
-      if (!backendProfileId) {
+      if (!finalBackendProfileId) {
         const response = await apiClient.post<ApiProfileCreateResponse>(
           "api/profiles",
           {
@@ -118,33 +121,49 @@ export function OnboardingQuestionnaire({
           }
         );
 
+        finalBackendProfileId = response.id;
         setBackendProfileId(response.id);
         setWelcomeSummary(response.welcome_summary);
       }
 
       // Create frontend profile with backend ID
+      // IMPORTANT: Use finalBackendProfileId (from response or state) instead of relying on async state update
       const profile: UserProfile = {
         ...defaultUserProfile,
-        id: backendProfileId ? String(backendProfileId) : defaultUserProfile.id,
+        id: finalBackendProfileId
+          ? String(finalBackendProfileId)
+          : defaultUserProfile.id,
         explorerType,
         fitnessLevel: answers.fitness,
         preferredTypes: answers.type || [],
         narrativeStyle: answers.narrative,
       };
 
+      console.log(
+        "[Questionnaire] Profile created with ID:",
+        profile.id,
+        "Backend ID:",
+        finalBackendProfileId
+      );
       onComplete(profile);
     } catch (error) {
       console.error("Failed to complete profile creation:", error);
 
-      // Fallback: create local-only profile
+      // Fallback: create local-only profile with timestamp-based ID to avoid conflicts
+      const localId = `local-${Date.now()}`;
       const profile: UserProfile = {
         ...defaultUserProfile,
+        id: localId,
         explorerType,
         fitnessLevel: answers.fitness,
         preferredTypes: answers.type || [],
         narrativeStyle: answers.narrative,
       };
 
+      console.warn(
+        "[Questionnaire] Using fallback local profile with ID:",
+        localId
+      );
       onComplete(profile);
     } finally {
       setIsCreatingProfile(false);
@@ -237,11 +256,13 @@ export function OnboardingQuestionnaire({
 
             <button
               onClick={handleComplete}
-              disabled={isCreatingProfile}
+              disabled={isCreatingProfile || isLoadingSummary}
               className="w-full px-6 py-4 bg-accent text-accent-foreground font-pixel text-xs pixel-button hover:bg-accent/90 pixel-blink disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCreatingProfile
                 ? "⏳ CREATING PROFILE..."
+                : isLoadingSummary
+                ? "⏳ LOADING..."
                 : "▶ START EXPLORING"}
             </button>
           </div>

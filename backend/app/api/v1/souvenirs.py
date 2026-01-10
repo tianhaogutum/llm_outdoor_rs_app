@@ -27,18 +27,15 @@ from app.api.schemas import (
 from app.services.xp_calculator import calculate_route_completion_xp
 from app.services.genai_service import generate_post_run_summary, generate_pixel_art_svg
 from app.services.achievement_service import check_and_unlock_achievements
+from app.services.level_system import (
+    calculate_level_from_xp,
+    xp_to_next_level,
+    xp_progress_in_current_level,
+)
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/profiles", tags=["souvenirs"])
-
-# Level calculation: 300 XP per level
-XP_PER_LEVEL = 300
-
-
-def calculate_level_from_xp(total_xp: int) -> int:
-    """Calculate user level from total XP. Level = floor(total_xp / 300) + 1"""
-    return (total_xp // XP_PER_LEVEL) + 1
 
 
 @router.post("/{profile_id}/souvenirs", response_model=RouteCompleteResponse)

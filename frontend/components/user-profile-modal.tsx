@@ -25,6 +25,7 @@ import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
 import { transformApiRoute } from "@/lib/api-transforms";
 import type { ApiProfileStatistics } from "@/lib/api-types";
+import { xpProgressInCurrentLevel, xpToNextLevel } from "@/lib/level-system";
 
 interface UserProfileModalProps {
   userProfile: UserProfile;
@@ -69,7 +70,11 @@ export function UserProfileModal({
   } | null>(null);
   const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
 
-  const xpProgress = ((userProfile.xp % 300) / 300) * 100;
+  // Calculate XP progress using progressive level system
+  const xpProgressData = xpProgressInCurrentLevel(userProfile.xp);
+  const xpProgress = (xpProgressData.current / xpProgressData.required) * 100;
+  const xpRemaining = xpToNextLevel(userProfile.xp);
+
   const fallbackTotalDistance = completedRoutes.reduce(
     (sum, r) => sum + r.route.distance,
     0
@@ -540,10 +545,14 @@ export function UserProfileModal({
                 Progress to Level {userProfile.level + 1}
               </span>
               <span className="text-foreground font-semibold">
-                {userProfile.xp % 300} / 300 XP
+                {xpProgressData.current} / {xpProgressData.required} XP
               </span>
             </div>
             <Progress value={xpProgress} className="h-3" />
+            <div className="flex justify-between text-xs mt-1 text-muted-foreground">
+              <span>{Math.round(xpProgress)}% Complete</span>
+              <span>{xpRemaining} XP to next level</span>
+            </div>
           </div>
         </div>
 

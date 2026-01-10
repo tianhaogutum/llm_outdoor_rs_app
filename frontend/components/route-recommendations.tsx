@@ -10,6 +10,7 @@ import { apiClient } from "@/lib/api-client";
 import { ApiRecommendationResponse } from "@/lib/api-types";
 import { transformApiRoutes, transformApiSouvenir } from "@/lib/api-transforms";
 import { logger } from "@/lib/logger";
+import { calculateLevelFromXp } from "@/lib/level-system";
 import {
   Mountain,
   MapPin,
@@ -592,7 +593,7 @@ export function RouteRecommendations({
         ...userProfile,
         xp: userProfile.xp + xpGained,
         completedRoutes: [...userProfile.completedRoutes, route.id],
-        level: Math.floor((userProfile.xp + xpGained) / 300) + 1,
+        level: calculateLevelFromXp(userProfile.xp + xpGained),
         souvenirs: [newSouvenir, ...userProfile.souvenirs],
       };
       onUpdateProfile(updatedProfile);
@@ -626,7 +627,7 @@ export function RouteRecommendations({
           ...userProfile,
           xp: userProfile.xp + xpGained,
           completedRoutes: [...userProfile.completedRoutes, route.id],
-          level: Math.floor((userProfile.xp + xpGained) / 300) + 1,
+          level: calculateLevelFromXp(userProfile.xp + xpGained),
           souvenirs: [newSouvenir, ...userProfile.souvenirs],
         };
         onUpdateProfile(updatedProfile);
@@ -694,7 +695,7 @@ export function RouteRecommendations({
         ...userProfile,
         xp: userProfile.xp + xpGained,
         completedRoutes: [...userProfile.completedRoutes, route.id],
-        level: Math.floor((userProfile.xp + xpGained) / 300) + 1,
+        level: calculateLevelFromXp(userProfile.xp + xpGained),
         souvenirs: [newSouvenir, ...userProfile.souvenirs],
       };
       onUpdateProfile(updatedProfile);
