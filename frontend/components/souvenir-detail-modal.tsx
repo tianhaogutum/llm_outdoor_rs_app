@@ -117,11 +117,8 @@ export function SouvenirDetailModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="flex items-center justify-between">
-            <span className="text-2xl font-bold">{souvenir.routeName}</span>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-5 h-5" />
-            </Button>
+          <DialogTitle className="text-2xl font-bold">
+            {souvenir.routeName}
           </DialogTitle>
         </DialogHeader>
 
