@@ -26,9 +26,9 @@ dist/
 out/
 
 
-# SQLite databases
-*.db
+# SQLite databases (excluding app.db)
 *.db-journal
+!backend/data/app.db
 
 # IDE
 .idea/
