@@ -1,4 +1,4 @@
-# Rec Lab Project
+# TUM Lab: Recommender System 
 
 A full-stack application with FastAPI backend and Next.js frontend, featuring outdoor route recommendations with gamification and story generation.
 
