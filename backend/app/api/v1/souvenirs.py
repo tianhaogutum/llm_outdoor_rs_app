@@ -22,6 +22,7 @@ from app.api.schemas import (
     RouteResponse,
     SouvenirListResponse,
     SouvenirResponse,
+    route_catalog_fields,
 )
 from app.database import get_db
 from app.models.entities import DemoProfile, Route, Souvenir
@@ -199,6 +200,7 @@ async def create_souvenir(
             "gpx_data_raw": route.gpx_data_raw,
             "breakpoints": [],  # Intentionally empty to keep payload small
             "is_locked": False,
+            **route_catalog_fields(route),
         }
 
         souvenir_dict = {
@@ -254,7 +256,7 @@ async def get_souvenirs(
     db: Annotated[AsyncSession, Depends(get_db)],
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    sort: str = Query("newest", regex="^(newest|oldest|xp_high|xp_low)$"),
+    sort: str = Query("newest", pattern="^(newest|oldest|xp_high|xp_low)$"),
 ):
     """
     Get all souvenirs for a profile with optional sorting and pagination.
@@ -336,6 +338,7 @@ async def get_souvenirs(
                 "gpx_data_raw": route.gpx_data_raw,
                 "breakpoints": [],  # Intentionally empty
                 "is_locked": False,
+                **route_catalog_fields(route),
             }
 
         souvenir_response = SouvenirResponse(
@@ -423,6 +426,7 @@ async def get_souvenir(
             "gpx_data_raw": route.gpx_data_raw,
             "breakpoints": [],  # Intentionally empty
             "is_locked": False,
+            **route_catalog_fields(route),
         }
 
     return SouvenirResponse(

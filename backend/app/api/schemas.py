@@ -2,10 +2,15 @@
 Pydantic schemas for API request/response models.
 These schemas provide type validation and automatic API documentation.
 """
+import json
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
+
+# Attribution the ODbL requires wherever OSM-derived routes are shown.
+OSM_ATTRIBUTION = "© OpenStreetMap contributors, ODbL 1.0"
+OSM_COPYRIGHT_URL = "https://www.openstreetmap.org/copyright"
 
 # ============================================================================
 # Route Schemas
@@ -22,6 +27,7 @@ class BreakpointResponse(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     main_quest_snippet: Optional[str] = None
+    at_m: Optional[int] = None  # position along the route (derived OSM breakpoints)
     mini_quests: list["MiniQuestResponse"] = []
 
     model_config = ConfigDict(from_attributes=True)
@@ -35,8 +41,70 @@ class RecommendationScoreBreakdown(BaseModel):
     tags: dict
     total: float
 
+    # Keep the feedback keys the ranker adds (base_score, final_score, feedback_penalty, feedback_count);
+    # the frontend types already expect them.
+    model_config = ConfigDict(extra="allow")
 
-class RouteResponse(BaseModel):
+
+def _parse_json_object(value: Any) -> Optional[dict]:
+    if value is None or isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+    return None
+
+
+class RouteCatalogFields(BaseModel):
+    """
+    Facts from the OSM catalogue (all None for legacy routes).
+
+    ``ascent_m`` equals the legacy ``elevation`` column (total ascent); ``facts`` is the parsed
+    ``facts_json`` (highlights, access, surface, elevation range, ...); ``attribution`` is set for
+    OSM routes and must be shown with them.
+    """
+
+    source: Optional[str] = None
+    source_url: Optional[str] = None
+    activity: Optional[str] = None
+    start_lat: Optional[float] = None
+    start_lon: Optional[float] = None
+    is_loop: Optional[bool] = None
+    ascent_m: Optional[int] = None
+    descent_m: Optional[int] = None
+    locality: Optional[str] = None
+    admin_district: Optional[str] = None
+    admin_region: Optional[str] = None
+    facts: Optional[dict] = Field(default=None, validation_alias=AliasChoices("facts", "facts_json"))
+    attribution: Optional[str] = None
+
+    @field_validator("facts", mode="before")
+    @classmethod
+    def _facts_from_json(cls, value: Any) -> Optional[dict]:
+        return _parse_json_object(value)
+
+    @model_validator(mode="after")
+    def _osm_attribution(self):
+        if self.source == "osm" and not self.attribution:
+            self.attribution = OSM_ATTRIBUTION
+        return self
+
+
+CATALOG_FIELD_NAMES = ("source", "source_url", "activity", "start_lat", "start_lon", "is_loop", "descent_m",
+                       "locality", "admin_district", "admin_region", "facts_json")
+
+
+def route_catalog_fields(route: Any) -> dict:
+    """Catalogue fields of an ORM route as a dict for hand-built route payloads (no lazy loads)."""
+    data = {name: getattr(route, name, None) for name in CATALOG_FIELD_NAMES}
+    data["ascent_m"] = getattr(route, "elevation", None)
+    return RouteCatalogFields.model_validate(data).model_dump()
+
+
+class RouteResponse(RouteCatalogFields):
     """Single route response schema with full details."""
 
     id: int
@@ -63,11 +131,32 @@ class RouteResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class RouteListResponse(BaseModel):
-    """Route list response schema."""
+class RouteSummaryResponse(RouteCatalogFields):
+    """Light route payload for lists: no breakpoints, story texts or GPX."""
 
-    routes: list[RouteResponse]
-    total: int
+    id: int
+    title: str
+    category_name: Optional[str] = None
+    length_meters: Optional[float] = None
+    duration_min: Optional[int] = None
+    difficulty: Optional[int] = None
+    short_description: Optional[str] = None
+    location: Optional[str] = None
+    elevation: Optional[int] = None
+    tags_json: Optional[str] = None
+    xp_required: int
+    base_xp_reward: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RouteListResponse(BaseModel):
+    """Paged route list."""
+
+    routes: list[RouteSummaryResponse]
+    total: int  # all routes matching the filter, not just this page
+    limit: int
+    offset: int
 
 
 class RouteDetailResponse(RouteResponse):
@@ -75,11 +164,82 @@ class RouteDetailResponse(RouteResponse):
     pass
 
 
+class RouteGeometryResponse(BaseModel):
+    """Simplified route line for the map (``[[lon, lat], ...]``, WGS84) and elevation profile."""
+
+    route_id: int
+    coords: list[list[float]]
+    bbox: list[float]  # [min_lon, min_lat, max_lon, max_lat]
+    ele_profile_m: Optional[list[float]] = None
+    ele_step_m: Optional[float] = None
+    length_m: Optional[float] = None
+    source: Optional[str] = None
+    source_url: Optional[str] = None
+    attribution: Optional[str] = None
+
+
+class PlaceResponse(BaseModel):
+    """A catalogue locality that a typed name resolved to."""
+
+    id: int
+    name: str
+    admin_district: Optional[str] = None
+    admin_region: Optional[str] = None
+    lat: float
+    lon: float
+    accuracy_m: Optional[int] = None  # distance of the coordinates from the locality's OSM place node
+    route_count: int  # routes starting near this locality
+    match: str  # exact | prefix | word | fuzzy
+    score: float
+
+
+class PlaceSearchResponse(BaseModel):
+    places: list[PlaceResponse]
+    total: int
+
+
 # ============================================================================
 # Profile Schemas
 # ============================================================================
 
-class ProfileCreate(BaseModel):
+class HomeLocation(BaseModel):
+    """
+    The user's home. Give ``lat``/``lon`` (e.g. from ``GET /api/places``) or only ``name``, which the
+    API then resolves against the catalogue's localities (422 if nothing matches).
+    """
+
+    name: str = Field(min_length=1, max_length=255)
+    lat: Optional[float] = Field(default=None, ge=-90, le=90)
+    lon: Optional[float] = Field(default=None, ge=-180, le=180)
+
+    @model_validator(mode="after")
+    def _both_or_neither(self):
+        if (self.lat is None) != (self.lon is None):
+            raise ValueError("give both lat and lon, or neither")
+        return self
+
+
+class ProfileSlots(BaseModel):
+    """
+    Optional preference slots for hard filters and retrieval. Absent means "no constraint"; the
+    v0_rules ranking does not read them.
+    """
+
+    home: Optional[HomeLocation] = None
+    travel_radius_km: Optional[float] = Field(default=None, gt=0, le=1000)  # max distance home -> route start
+    distance_cap_km: Optional[float] = Field(default=None, gt=0, le=1000)  # absolute cap on route length
+    intent: Optional[str] = Field(default=None, max_length=1000)  # "what are you looking for?"
+
+    @field_validator("intent", mode="before")
+    @classmethod
+    def _blank_intent_is_none(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            value = " ".join(value.split())
+            return value or None
+        return value
+
+
+class ProfileCreate(ProfileSlots):
     """Create profile request schema (from questionnaire)."""
 
     fitness: str  # "beginner" | "intermediate" | "advanced"
@@ -87,14 +247,23 @@ class ProfileCreate(BaseModel):
     narrative: str  # "adventure" | "mystery" | "playful"
 
 
-class ProfileUpdate(BaseModel):
-    """Update profile request schema (partial fields)."""
+class ProfileUpdate(ProfileSlots):
+    """
+    Update profile request schema (partial fields). Only fields present in the request change; an
+    explicit null clears a slot (``"home": null`` clears name and coordinates).
+    """
 
     total_xp: Optional[int] = None
     level: Optional[int] = None
     user_vector_json: Optional[str] = None
     genai_welcome_summary: Optional[str] = None
     unlocked_routes_json: Optional[str] = None
+
+
+class HomeLocationResponse(BaseModel):
+    name: str
+    lat: float
+    lon: float
 
 
 class ProfileResponse(BaseModel):
@@ -106,8 +275,26 @@ class ProfileResponse(BaseModel):
     user_vector_json: Optional[str] = None
     genai_welcome_summary: Optional[str] = None
     unlocked_routes_json: Optional[str] = None
+    home: Optional[HomeLocationResponse] = None
+    travel_radius_km: Optional[float] = None
+    distance_cap_km: Optional[float] = None
+    intent: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _slots_from_orm(cls, data: Any) -> Any:
+        if isinstance(data, dict) or not hasattr(data, "home_name"):
+            return data
+        out = {name: getattr(data, name) for name in (
+            "id", "total_xp", "level", "user_vector_json", "genai_welcome_summary", "unlocked_routes_json",
+            "travel_radius_km", "distance_cap_km",
+        )}
+        out["intent"] = data.intent_text
+        if data.home_name is not None and data.home_lat is not None and data.home_lon is not None:
+            out["home"] = {"name": data.home_name, "lat": data.home_lat, "lon": data.home_lon}
+        return out
 
 
 class ProfileCreateResponse(BaseModel):
@@ -116,6 +303,7 @@ class ProfileCreateResponse(BaseModel):
     id: int
     welcome_summary: str
     user_vector: dict  # For debugging, shows translated user preferences
+    profile: Optional[ProfileResponse] = None  # stored profile incl. the optional slots
 
 
 class WelcomeSummaryRequest(BaseModel):

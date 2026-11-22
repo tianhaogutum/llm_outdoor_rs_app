@@ -28,7 +28,10 @@ from app.logger import get_logger, log_business_logic, log_database_operation, l
 from app.models.entities import DemoProfile, ProfileAchievement, ProfileFeedback, Route, Souvenir
 from app.services.genai_service import generate_welcome_summary
 from app.services.user_profile_service import (
+    SLOT_FIELDS,
+    UnknownPlaceError,
     generate_fallback_welcome,
+    profile_slot_columns,
     translate_questionnaire_to_vector,
 )
 
@@ -102,6 +105,14 @@ async def submit_questionnaire(
     user_vector = translate_questionnaire_to_vector(questionnaire)
     logger.debug(f"✅ User vector generated: {user_vector}")
 
+    # Optional slots (home, travel radius, distance cap, intent); resolved before any LLM call
+    try:
+        slot_columns = await profile_slot_columns(
+            db, questionnaire.model_dump(include=set(SLOT_FIELDS), exclude_unset=True)
+        )
+    except UnknownPlaceError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+
     # 2. Generate welcome summary with GenAI (with fallback)
     logger.debug("🤖 Generating welcome summary...")
     try:
@@ -131,6 +142,7 @@ async def submit_questionnaire(
         genai_welcome_summary=welcome_summary,
         total_xp=0,
         level=1,
+        **slot_columns,
     )
     db.add(new_profile)
     await db.commit()
@@ -171,6 +183,7 @@ async def submit_questionnaire(
         id=new_profile.id,
         welcome_summary=welcome_summary,
         user_vector=user_vector,
+        profile=ProfileResponse.model_validate(new_profile),
     )
 
 
@@ -264,6 +277,11 @@ async def update_profile(
 
     # Update only provided fields
     update_data = profile_update.model_dump(exclude_unset=True)
+    slots = {k: update_data.pop(k) for k in list(update_data) if k in SLOT_FIELDS}
+    try:
+        update_data.update(await profile_slot_columns(db, slots))
+    except UnknownPlaceError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
     for field, value in update_data.items():
         setattr(profile, field, value)
 

@@ -6,10 +6,49 @@ that can be used by the recommendation algorithm (CBF + Adaptive Re-ranking).
 """
 from typing import Any
 
-from app.api.schemas import ProfileCreate
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.schemas import ProfileCreate, ProfileSlots
 
 # Import narrative style prompts from genai_service for consistency
 from app.services.genai_service import NARRATIVE_STYLE_PROMPTS
+from app.services.place_service import resolve_place
+
+# ProfileSlots field -> DemoProfile column(s). The slots are stored next to the user vector, not in
+# it: v0_rules reads only the vector, so its ranking is unchanged whether or not slots are set.
+SLOT_FIELDS = tuple(ProfileSlots.model_fields)
+
+
+class UnknownPlaceError(ValueError):
+    """A home location was given by name only and no catalogue locality matches it."""
+
+
+async def profile_slot_columns(db: AsyncSession, slots: dict[str, Any]) -> dict[str, Any]:
+    """
+    ``DemoProfile`` column values for the slot fields present in ``slots``
+    (``ProfileSlots.model_dump(exclude_unset=True)``); absent fields are not touched, None clears.
+
+    A home given by name without coordinates is resolved against the catalogue's localities
+    (``places``); the stored name is then the matched locality's name.
+    """
+    out: dict[str, Any] = {}
+    if "home" in slots:
+        home = slots["home"]
+        if home is None:
+            out.update(home_name=None, home_lat=None, home_lon=None)
+        elif home.get("lat") is None or home.get("lon") is None:
+            place = await resolve_place(db, home["name"])
+            if place is None:
+                raise UnknownPlaceError(f"no catalogue locality matches {home['name']!r}")
+            out.update(home_name=place.name, home_lat=place.lat, home_lon=place.lon)
+        else:
+            out.update(home_name=home["name"].strip(), home_lat=float(home["lat"]), home_lon=float(home["lon"]))
+    for field in ("travel_radius_km", "distance_cap_km"):
+        if field in slots:
+            out[field] = slots[field]
+    if "intent" in slots:
+        out["intent_text"] = slots["intent"]
+    return out
 
 # Fitness level → Difficulty range and distance constraints.
 # Difficulty is on the 0-3 route scale (0 easy, 1 moderate, 2 difficult, 3 expert;

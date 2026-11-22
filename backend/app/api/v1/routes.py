@@ -1,40 +1,69 @@
 """
-Routes API endpoints for route story generation and retrieval.
+Routes API endpoints.
 
 This module provides endpoints for:
-- Generating complete stories for routes (US-06, US-07)
-- Retrieving existing story content
+- Route recommendations (US-01, US-02)
+- Route list (paged, light payload), route detail and route geometry for the map
+- Generating complete stories for routes (US-06, US-07) and retrieving existing story content
 """
+import json
 import time
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
+from sqlalchemy import inspect as sa_inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.api.schemas import (
+    OSM_ATTRIBUTION,
     RecommendationResponse,
+    RouteDetailResponse,
+    RouteGeometryResponse,
+    RouteListResponse,
     RouteResponse,
+    RouteSummaryResponse,
     StoryGenerateRequest,
     StoryGenerateResponse,
 )
 from app.database import get_db
 from app.logger import get_logger, log_business_logic, log_request
-from app.models.entities import Breakpoint, DemoProfile, Route
-from app.services.recommendation_service import get_recommended_routes
+from app.models.entities import Breakpoint, DemoProfile, Route, RouteGeometry
+from app.services.recommendation_service import CATEGORY_MAPPING, get_recommended_routes
 from app.services.story_generator import generate_story_for_route
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/routes", tags=["routes"])
 
+MAX_PAGE = 1000  # upper bound for `limit` on list endpoints (the catalogue has ~9k routes)
+
+
+async def _ensure_breakpoints_loaded(db: AsyncSession, routes: list[Route]) -> None:
+    """
+    Load breakpoints (and their quests) for routes that came back without them, in one query.
+
+    The recommender's fallback path (profile without a user vector) returns routes whose breakpoints
+    were never loaded; serialising them would trigger a lazy load, which fails under asyncio (it was
+    an HTTP 500, DECISIONS.md D7.2). The ranking itself is untouched.
+    """
+    missing = [r.id for r in routes if "breakpoints" in sa_inspect(r).unloaded]
+    if not missing:
+        return
+    await db.execute(
+        select(Route)
+        .where(Route.id.in_(missing))
+        .options(selectinload(Route.breakpoints).selectinload(Breakpoint.mini_quests))
+        .execution_options(populate_existing=True)
+    )
+
 
 @router.get("/recommendations", response_model=RecommendationResponse)
 async def get_route_recommendations(
     profile_id: Optional[int] = None,
     category: Optional[str] = None,
-    limit: int = 20,
+    limit: Annotated[int, Query(ge=1, le=MAX_PAGE)] = 20,
     db: Annotated[AsyncSession, Depends(get_db)] = ...,
 ):
     """
@@ -82,6 +111,7 @@ async def get_route_recommendations(
         limit=limit
     )
     logger.info(f"✅ Recommendation calculation completed: returned {len(routes)} routes")
+    await _ensure_breakpoints_loaded(db, routes)
 
     # Convert to response models
     route_responses = []
@@ -124,6 +154,80 @@ async def get_route_recommendations(
         routes=route_responses,
         total=len(route_responses),
         is_personalized=is_personalized
+    )
+
+
+@router.get("", response_model=RouteListResponse)
+async def list_routes(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    category: Optional[str] = None,
+    limit: Annotated[int, Query(ge=1, le=MAX_PAGE)] = 50,
+    offset: Annotated[int, Query(ge=0)] = 0,
+):
+    """
+    Paged list of routes ordered by id, with a light payload (no breakpoints, story texts or GPX).
+
+    ``category`` is one of the tabs (``running``, ``hiking``, ``cycling``); anything else lists all.
+    ``total`` counts every route matching the filter.
+    """
+    query = select(Route)
+    count_query = select(func.count(Route.id))
+    if category and category in CATEGORY_MAPPING:
+        query = query.where(Route.category_name.in_(CATEGORY_MAPPING[category]))
+        count_query = count_query.where(Route.category_name.in_(CATEGORY_MAPPING[category]))
+    total = (await db.execute(count_query)).scalar_one()
+    result = await db.execute(query.order_by(Route.id).limit(limit).offset(offset))
+    routes = [RouteSummaryResponse.model_validate(r) for r in result.scalars().all()]
+    return RouteListResponse(routes=routes, total=total, limit=limit, offset=offset)
+
+
+@router.get("/{route_id}", response_model=RouteDetailResponse)
+async def get_route(route_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+    """One route with breakpoints and mini quests. The line itself is at ``/routes/{id}/geometry``."""
+    result = await db.execute(
+        select(Route)
+        .where(Route.id == route_id)
+        .options(selectinload(Route.breakpoints).selectinload(Breakpoint.mini_quests))
+    )
+    route = result.scalar_one_or_none()
+    if route is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Route with id {route_id} not found")
+    return RouteDetailResponse.model_validate(route)
+
+
+@router.get("/{route_id}/geometry", response_model=RouteGeometryResponse)
+async def get_route_geometry(route_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+    """
+    The route's simplified line (``[[lon, lat], ...]``) and elevation profile, for the map.
+
+    404 when the route does not exist or has no stored geometry (legacy routes).
+    """
+    row = (
+        await db.execute(
+            select(RouteGeometry, Route.length_meters, Route.source, Route.source_url)
+            .join(Route, Route.id == RouteGeometry.route_id)
+            .where(RouteGeometry.route_id == route_id)
+        )
+    ).one_or_none()
+    if row is None:
+        exists = await db.get(Route, route_id)
+        detail = (f"Route {route_id} has no stored geometry" if exists
+                  else f"Route with id {route_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
+    geom, length_m, source, source_url = row
+    coords = json.loads(geom.coords_json)
+    lons = [c[0] for c in coords]
+    lats = [c[1] for c in coords]
+    return RouteGeometryResponse(
+        route_id=route_id,
+        coords=coords,
+        bbox=[min(lons), min(lats), max(lons), max(lats)],
+        ele_profile_m=json.loads(geom.ele_profile_json) if geom.ele_profile_json else None,
+        ele_step_m=geom.ele_step_m,
+        length_m=length_m,
+        source=source,
+        source_url=source_url,
+        attribution=OSM_ATTRIBUTION if source == "osm" else None,
     )
 
 

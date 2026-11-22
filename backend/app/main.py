@@ -1,16 +1,19 @@
 import asyncio
 import json
+import os
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.types import Scope
 
-from .api.v1 import achievements, logs, profiles, routes, souvenirs
+from .api.v1 import achievements, logs, places, profiles, routes, souvenirs
 from .database import close_db, get_db, init_db
 from .llm_logger import _llm_messages, get_recent_messages
 from .logger import get_logger, init_logging_from_settings
@@ -55,6 +58,28 @@ async def lifespan(app: FastAPI):
     logger.info("✅ Database connections closed")
 
 
+# The Next.js static export (`cd frontend && pnpm build` writes frontend/out). Override with
+# FRONTEND_DIST_DIR; when the directory has no index.html, `/` falls back to the API dashboard.
+DEFAULT_FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "out"
+
+# Paths that belong to the API even when nothing under them matches: answer them with a JSON 404
+# instead of the frontend's HTML 404 page.
+API_PREFIXES = ("api/", "docs", "redoc", "openapi.json", "healthz", "dashboard")
+
+
+def frontend_dist_dir() -> Path:
+    return Path(os.environ.get("FRONTEND_DIST_DIR") or DEFAULT_FRONTEND_DIST)
+
+
+class FrontendStaticFiles(StaticFiles):
+    """Serves the exported frontend at `/` without shadowing the API (routes are matched first)."""
+
+    async def get_response(self, path: str, scope: Scope):
+        if path == "api" or path.startswith(API_PREFIXES):
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
+        return await super().get_response(path, scope)
+
+
 def create_app() -> FastAPI:
     """
     Application factory that configures FastAPI along with shared dependencies.
@@ -81,9 +106,9 @@ def create_app() -> FastAPI:
         expose_headers=["*"],
     )
 
-    @app.get("/", tags=["info"], response_class=HTMLResponse)
-    async def root(db: AsyncSession = Depends(get_db)):
-        """Root endpoint with beautiful HTML dashboard."""
+    @app.get("/dashboard", tags=["info"], response_class=HTMLResponse)
+    async def dashboard(db: AsyncSession = Depends(get_db)):
+        """API dashboard (statistics, endpoint links, live LLM stream). Served at `/` when no frontend is built."""
         # Get statistics from database
         stats = {}
         try:
@@ -192,6 +217,14 @@ def create_app() -> FastAPI:
     app.include_router(souvenirs.router, prefix="/api")
     app.include_router(achievements.router, prefix="/api")
     app.include_router(logs.router, prefix="/api")
+    app.include_router(places.router, prefix="/api")
+
+    dist = frontend_dist_dir()
+    if (dist / "index.html").is_file():
+        # Mounted last: every API route above is matched before the static files.
+        app.mount("/", FrontendStaticFiles(directory=dist, html=True), name="frontend")
+    else:
+        app.add_api_route("/", dashboard, methods=["GET"], response_class=HTMLResponse, include_in_schema=False)
 
     return app
 
