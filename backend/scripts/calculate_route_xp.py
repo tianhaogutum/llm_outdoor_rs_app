@@ -21,9 +21,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db_session, init_db
-from app.models.entities import Route, MiniQuest, Breakpoint
+from app.models.entities import Breakpoint, Route
 from app.settings import get_settings
-
 
 # XP Calculation Constants
 DIFFICULTY_XP = {
@@ -75,14 +74,14 @@ def calculate_elevation_score(elevation: int | None) -> int:
 def calculate_base_xp_reward(route: Route) -> int:
     """
     Calculate total base XP reward for a route.
-    
+
     Base XP = Difficulty Score + Distance Score + Duration Score + Elevation Score
     """
     difficulty_score = calculate_difficulty_score(route.difficulty)
     distance_score = calculate_distance_score(route.length_meters)
     duration_score = calculate_duration_score(route.duration_min)
     elevation_score = calculate_elevation_score(route.elevation)
-    
+
     total = difficulty_score + distance_score + duration_score + elevation_score
     return total
 
@@ -90,7 +89,7 @@ def calculate_base_xp_reward(route: Route) -> int:
 def calculate_mini_quest_xp(difficulty: int | None) -> int:
     """
     Calculate XP reward for a mini quest based on route difficulty.
-    
+
     Mini Quest XP = Base Quest XP (25) × Difficulty Multiplier
     """
     if difficulty is None:
@@ -105,7 +104,7 @@ async def update_route_xp(dry_run: bool = False) -> None:
     """
     settings = get_settings()
     init_db(settings)
-    
+
     session = await get_db_session()
     try:
         # Fetch all routes with their mini quests
@@ -115,35 +114,35 @@ async def update_route_xp(dry_run: bool = False) -> None:
             )
         )
         routes = result.scalars().all()
-        
+
         print(f"\n{'=' * 80}")
         print(f"Found {len(routes)} routes to process")
         print(f"{'=' * 80}\n")
-        
+
         updated_routes = 0
         updated_quests = 0
-        
+
         for route in routes:
             # Calculate base XP reward
             old_xp = route.base_xp_reward
             new_xp = calculate_base_xp_reward(route)
-            
+
             difficulty_score = calculate_difficulty_score(route.difficulty)
             distance_score = calculate_distance_score(route.length_meters)
             duration_score = calculate_duration_score(route.duration_min)
             elevation_score = calculate_elevation_score(route.elevation)
-            
+
             print(f"Route {route.id}: {route.title}")
             print(f"  Difficulty: {route.difficulty} → {difficulty_score} XP")
             print(f"  Distance: {route.length_meters/1000 if route.length_meters else 0:.1f} km → {distance_score} XP")
             print(f"  Duration: {route.duration_min if route.duration_min else 0} min → {duration_score} XP")
             print(f"  Elevation: {route.elevation if route.elevation else 'N/A'} m → {elevation_score} XP")
             print(f"  Base XP: {old_xp} → {new_xp}")
-            
+
             if not dry_run:
                 route.base_xp_reward = new_xp
                 updated_routes += 1
-            
+
             # Update mini quests for this route
             quest_xp = calculate_mini_quest_xp(route.difficulty)
             for breakpoint in route.breakpoints:
@@ -153,9 +152,9 @@ async def update_route_xp(dry_run: bool = False) -> None:
                         quest.xp_reward = quest_xp
                         updated_quests += 1
                     print(f"    Quest {quest.id}: {old_quest_xp} → {quest_xp} XP")
-            
+
             print()
-        
+
         if not dry_run:
             await session.commit()
             print(f"\n{'=' * 80}")

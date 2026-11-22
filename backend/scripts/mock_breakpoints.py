@@ -4,19 +4,18 @@ Create mock breakpoints for a handful of routes so the simulator can unlock US-0
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
-
-from sqlalchemy import delete, select
 
 # Allow running the script directly via `python scripts/mock_breakpoints.py`
 import sys
+from pathlib import Path
+
+from sqlalchemy import delete, select
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.database import get_db_session, init_db
 from app.models.entities import Breakpoint, Route
 from app.settings import get_settings
-
 
 ROUTE_BREAKPOINTS: dict[int, list[dict[str, object]]] = {
     1362328: [

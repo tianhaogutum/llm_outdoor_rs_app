@@ -2,7 +2,7 @@
 Database configuration and session management using SQLAlchemy.
 """
 from __future__ import annotations
-from contextlib import asynccontextmanager
+
 from pathlib import Path
 from typing import Optional
 
@@ -66,19 +66,19 @@ def get_database_url(settings: Settings) -> str:
 def init_db(settings: Optional[Settings] = None) -> None:
     """
     Initialize the database engine and session factory.
-    
+
     Parameters
     ----------
     settings:
         Optional Settings instance; if omitted the global application settings are used.
     """
     global _engine, _async_session_maker
-    
+
     if settings is None:
         settings = get_settings()
-    
+
     database_url = get_database_url(settings)
-    
+
     engine_kwargs: dict[str, object] = {
         "echo": False,
         "future": True,
@@ -91,7 +91,7 @@ def init_db(settings: Optional[Settings] = None) -> None:
 
     # Create async engine
     _engine = create_async_engine(database_url, **engine_kwargs)
-    
+
     # Create session factory
     _async_session_maker = async_sessionmaker(
         _engine,
@@ -112,7 +112,7 @@ async def close_db() -> None:
 async def get_db():
     """
     Dependency for getting a database session.
-    
+
     Usage:
         @app.get("/items")
         async def get_items(db: AsyncSession = Depends(get_db)):
@@ -120,7 +120,7 @@ async def get_db():
     """
     if _async_session_maker is None:
         init_db()
-    
+
     async with _async_session_maker() as session:
         try:
             yield session
@@ -139,6 +139,6 @@ async def get_db_session() -> AsyncSession:
     """
     if _async_session_maker is None:
         init_db()
-    
+
     return _async_session_maker()
 

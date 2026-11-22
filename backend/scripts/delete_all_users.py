@@ -25,23 +25,23 @@ async def delete_all_users() -> None:
         # Query all users
         result = await session.execute(select(DemoProfile))
         users = result.scalars().all()
-        
+
         user_count = len(users)
-        
+
         if user_count == 0:
             print("✅ No users found in the database.")
             return
-        
+
         print(f"Found {user_count} user(s) to delete:")
         for user in users:
             print(f"  - User ID: {user.id}, Level: {user.level}, XP: {user.total_xp}")
-        
+
         # Delete all users (cascade will handle souvenirs and feedback)
         for user in users:
             await session.delete(user)
-        
+
         await session.commit()
-        
+
         print(f"\n✅ Successfully deleted {user_count} user(s) and all related data (souvenirs, feedback).")
 
 

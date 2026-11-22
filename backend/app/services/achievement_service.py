@@ -4,22 +4,22 @@ Achievement service for checking and unlocking user achievements.
 from __future__ import annotations
 
 import json
-from typing import List, Optional
+from typing import Optional
 
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.entities import (
     Achievement,
-    ProfileAchievement,
     DemoProfile,
-    Souvenir,
+    ProfileAchievement,
     Route,
+    Souvenir,
 )
 
 
-async def get_all_achievements(db: AsyncSession) -> List[Achievement]:
+async def get_all_achievements(db: AsyncSession) -> list[Achievement]:
     """
     Get all achievement definitions.
     """
@@ -29,7 +29,7 @@ async def get_all_achievements(db: AsyncSession) -> List[Achievement]:
 
 async def get_user_achievements(
     profile_id: int, db: AsyncSession
-) -> List[ProfileAchievement]:
+) -> list[ProfileAchievement]:
     """
     Get all achievements unlocked by a user.
     """
@@ -44,18 +44,18 @@ async def get_user_achievements(
 async def check_achievement_condition(
     achievement: Achievement,
     profile: DemoProfile,
-    completed_routes: List[Route],
+    completed_routes: list[Route],
     db: AsyncSession,
 ) -> bool:
     """
     Check if a user meets the condition for an achievement.
-    
+
     Args:
         achievement: The achievement to check
         profile: User profile
         completed_routes: List of completed routes (with route data)
         db: Database session
-    
+
     Returns:
         True if condition is met, False otherwise
     """
@@ -136,10 +136,10 @@ def _map_category_to_type(category_name: Optional[str]) -> Optional[str]:
 
 async def check_and_unlock_achievements(
     profile_id: int, db: AsyncSession
-) -> List[Achievement]:
+) -> list[Achievement]:
     """
     Check all achievements and unlock any that the user qualifies for.
-    
+
     Returns:
         List of newly unlocked achievements
     """
@@ -169,7 +169,7 @@ async def check_and_unlock_achievements(
     completed_routes = [souvenir.route for souvenir in souvenirs if souvenir.route]
 
     # Check each achievement
-    newly_unlocked: List[Achievement] = []
+    newly_unlocked: list[Achievement] = []
 
     for achievement in all_achievements:
         # Skip if already unlocked

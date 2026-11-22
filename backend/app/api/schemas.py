@@ -7,14 +7,13 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-
 # ============================================================================
 # Route Schemas
 # ============================================================================
 
 class BreakpointResponse(BaseModel):
     """Breakpoint response schema."""
-    
+
     id: int
     route_id: int
     order_index: int
@@ -30,7 +29,7 @@ class BreakpointResponse(BaseModel):
 
 class RecommendationScoreBreakdown(BaseModel):
     """Breakdown of recommendation score components."""
-    
+
     difficulty: dict
     distance: dict
     tags: dict
@@ -39,7 +38,7 @@ class RecommendationScoreBreakdown(BaseModel):
 
 class RouteResponse(BaseModel):
     """Single route response schema with full details."""
-    
+
     id: int
     title: str
     category_name: Optional[str] = None
@@ -66,7 +65,7 @@ class RouteResponse(BaseModel):
 
 class RouteListResponse(BaseModel):
     """Route list response schema."""
-    
+
     routes: list[RouteResponse]
     total: int
 
@@ -82,7 +81,7 @@ class RouteDetailResponse(RouteResponse):
 
 class ProfileCreate(BaseModel):
     """Create profile request schema (from questionnaire)."""
-    
+
     fitness: str  # "beginner" | "intermediate" | "advanced"
     type: list[str]  # ["history-culture", "natural-scenery", "family-fun"]
     narrative: str  # "adventure" | "mystery" | "playful"
@@ -90,7 +89,7 @@ class ProfileCreate(BaseModel):
 
 class ProfileUpdate(BaseModel):
     """Update profile request schema (partial fields)."""
-    
+
     total_xp: Optional[int] = None
     level: Optional[int] = None
     user_vector_json: Optional[str] = None
@@ -100,7 +99,7 @@ class ProfileUpdate(BaseModel):
 
 class ProfileResponse(BaseModel):
     """Profile response schema."""
-    
+
     id: int
     total_xp: int
     level: int
@@ -113,7 +112,7 @@ class ProfileResponse(BaseModel):
 
 class ProfileCreateResponse(BaseModel):
     """Profile creation response schema (after questionnaire submission)."""
-    
+
     id: int
     welcome_summary: str
     user_vector: dict  # For debugging, shows translated user preferences
@@ -121,13 +120,13 @@ class ProfileCreateResponse(BaseModel):
 
 class WelcomeSummaryRequest(BaseModel):
     """Request to generate welcome summary."""
-    
+
     profile_id: int
 
 
 class WelcomeSummaryResponse(BaseModel):
     """Welcome summary response."""
-    
+
     summary: str
 
 
@@ -137,7 +136,7 @@ class WelcomeSummaryResponse(BaseModel):
 
 class MiniQuestResponse(BaseModel):
     """MiniQuest response schema."""
-    
+
     id: int
     breakpoint_id: int
     task_description: str
@@ -148,13 +147,13 @@ class MiniQuestResponse(BaseModel):
 
 class QuestCompleteRequest(BaseModel):
     """Complete quest request schema."""
-    
+
     quest_id: int
 
 
 class QuestCompleteResponse(BaseModel):
     """Complete quest response schema."""
-    
+
     xp_gained: int
     new_total_xp: int
     new_level: int
@@ -166,7 +165,7 @@ class QuestCompleteResponse(BaseModel):
 
 class SouvenirResponse(BaseModel):
     """Souvenir response schema."""
-    
+
     id: int
     demo_profile_id: int
     route_id: int
@@ -182,7 +181,7 @@ class SouvenirResponse(BaseModel):
 
 class SouvenirListResponse(BaseModel):
     """Souvenir list response schema."""
-    
+
     souvenirs: list[SouvenirResponse]
     total: int
 
@@ -193,14 +192,14 @@ class SouvenirListResponse(BaseModel):
 
 class FeedbackCreate(BaseModel):
     """Create feedback request schema."""
-    
+
     route_id: int
     reason: str  # too_difficult, too_far, not_interested, too_easy, etc.
 
 
 class FeedbackResponse(BaseModel):
     """Feedback response schema."""
-    
+
     id: int
     demo_profile_id: int
     route_id: int
@@ -215,14 +214,14 @@ class FeedbackResponse(BaseModel):
 
 class RecommendationRequest(BaseModel):
     """Recommendation request schema (query parameters)."""
-    
+
     profile_id: Optional[int] = None  # User profile ID for personalized recommendations
     category: Optional[str] = None  # Activity category: running/hiking/cycling or None for all
 
 
 class RecommendationResponse(BaseModel):
     """Recommendation response schema."""
-    
+
     routes: list[RouteResponse]
     total: int
     is_personalized: bool = False  # True if based on user profile, False if random
@@ -234,14 +233,14 @@ class RecommendationResponse(BaseModel):
 
 class RouteCompleteRequest(BaseModel):
     """Complete route request schema."""
-    
+
     route_id: int  # Route ID to complete
     completed_quest_ids: list[int] = []  # List of completed quest IDs
 
 
 class RouteCompleteResponse(BaseModel):
     """Complete route response schema."""
-    
+
     souvenir: SouvenirResponse
     xp_breakdown: dict  # {"base": 100, "distance": 30, "quests": 20, "total": 150}
     total_xp_gained: int  # XP earned from this route completion
@@ -256,7 +255,7 @@ class RouteCompleteResponse(BaseModel):
 
 class XPBreakdownResponse(BaseModel):
     """XP breakdown response schema."""
-    
+
     base_xp: int
     distance_xp: int
     difficulty_xp: int
@@ -271,48 +270,30 @@ class XPBreakdownResponse(BaseModel):
 
 class RouteStartRequest(BaseModel):
     """Start route simulation request."""
-    
+
     route_id: int
 
 
 class RouteStartResponse(BaseModel):
     """Start route simulation response."""
-    
+
     route: RouteResponse
     current_breakpoint_index: int = 0
 
 
 class RouteProgressUpdate(BaseModel):
     """Update route progress request."""
-    
+
     current_breakpoint_index: int
 
 
 class RouteProgressResponse(BaseModel):
     """Route progress response."""
-    
+
     current_breakpoint: BreakpointResponse
     current_breakpoint_index: int
     total_breakpoints: int
     progress_percentage: float
-
-
-# ============================================================================
-# Story Generation Schemas
-# ============================================================================
-
-class StoryGenerateRequest(BaseModel):
-    """Generate story request schema."""
-    
-    profile_id: Optional[int] = None  # For personalization
-
-
-class StoryGenerateResponse(BaseModel):
-    """Generate story response schema."""
-    
-    prologue_title: Optional[str] = None
-    prologue_body: Optional[str] = None
-    epilogue_body: Optional[str] = None
 
 
 # ============================================================================
@@ -353,7 +334,7 @@ class StoryGenerateResponse(BaseModel):
 
 class ProfileStatisticsResponse(BaseModel):
     """Profile statistics response schema."""
-    
+
     total_distance_km: float  # Sum of all completed route distances
     total_elevation_m: int  # Sum of all completed route elevations
     routes_completed: int  # Total number of completed routes (souvenirs)

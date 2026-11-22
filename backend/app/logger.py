@@ -10,7 +10,7 @@ Provides a structured logging system for the entire application with:
 
 Usage:
     from app.logger import get_logger
-    
+
     logger = get_logger(__name__)
     logger.debug("Debug message")
     logger.info("Info message")
@@ -19,13 +19,11 @@ Usage:
 """
 import logging
 import sys
-from pathlib import Path
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 from typing import Optional
-from datetime import datetime
 
 from app.settings import get_settings
-
 
 # Log formats
 DETAILED_FORMAT = (
@@ -51,7 +49,7 @@ def setup_logging(
 ) -> None:
     """
     Configure application-wide logging.
-    
+
     Parameters
     ----------
     log_level : str
@@ -65,18 +63,18 @@ def setup_logging(
     """
     # Convert log level string to numeric level
     numeric_level = getattr(logging, log_level.upper(), logging.INFO)
-    
+
     # Choose format
     log_format = DETAILED_FORMAT if detailed_format else SIMPLE_FORMAT
     date_format = "%Y-%m-%d %H:%M:%S"
-    
+
     # Configure root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(numeric_level)
-    
+
     # Clear existing handlers
     root_logger.handlers.clear()
-    
+
     # Console handler
     if enable_console_logging:
         console_handler = logging.StreamHandler(sys.stdout)
@@ -84,7 +82,7 @@ def setup_logging(
         console_formatter = logging.Formatter(log_format, date_format)
         console_handler.setFormatter(console_formatter)
         root_logger.addHandler(console_handler)
-    
+
     # File handlers
     if enable_file_logging:
         # Application log (all levels)
@@ -98,7 +96,7 @@ def setup_logging(
         app_formatter = logging.Formatter(log_format, date_format)
         app_handler.setFormatter(app_formatter)
         root_logger.addHandler(app_handler)
-        
+
         # Error log (WARNING and above)
         error_handler = RotatingFileHandler(
             ERROR_LOG_FILE,
@@ -110,7 +108,7 @@ def setup_logging(
         error_formatter = logging.Formatter(log_format, date_format)
         error_handler.setFormatter(error_formatter)
         root_logger.addHandler(error_handler)
-        
+
         # Debug log (DEBUG only)
         debug_handler = RotatingFileHandler(
             DEBUG_LOG_FILE,
@@ -122,13 +120,13 @@ def setup_logging(
         debug_formatter = logging.Formatter(log_format, date_format)
         debug_handler.setFormatter(debug_formatter)
         root_logger.addHandler(debug_handler)
-    
+
     # Configure third-party logger levels
     logging.getLogger("uvicorn").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
-    
+
     # Log logging system initialization
     logger = logging.getLogger(__name__)
     logger.info("=" * 80)
@@ -143,12 +141,12 @@ def setup_logging(
 def get_logger(name: Optional[str] = None) -> logging.Logger:
     """
     Get a configured logger instance.
-    
+
     Parameters
     ----------
     name : Optional[str]
         Logger name, usually __name__
-    
+
     Returns
     -------
     logging.Logger
@@ -168,7 +166,7 @@ def log_request(
 ) -> None:
     """
     Log detailed information about an HTTP request.
-    
+
     Parameters
     ----------
     logger : logging.Logger
@@ -187,20 +185,20 @@ def log_request(
         Additional information to log
     """
     parts = [f"{method} {path}"]
-    
+
     if status_code:
         parts.append(f"status={status_code}")
-    
+
     if duration_ms is not None:
         parts.append(f"duration={duration_ms:.2f}ms")
-    
+
     if user_id:
         parts.append(f"user_id={user_id}")
-    
+
     if kwargs:
         extra_info = ", ".join(f"{k}={v}" for k, v in kwargs.items())
         parts.append(extra_info)
-    
+
     message = " | ".join(parts)
     logger.info(f"🌐 {message}")
 
@@ -215,7 +213,7 @@ def log_database_operation(
 ) -> None:
     """
     Log detailed information about a database operation.
-    
+
     Parameters
     ----------
     logger : logging.Logger
@@ -232,17 +230,17 @@ def log_database_operation(
         Additional information to log
     """
     parts = [f"{operation} {table}"]
-    
+
     if record_id:
         parts.append(f"id={record_id}")
-    
+
     if duration_ms is not None:
         parts.append(f"duration={duration_ms:.2f}ms")
-    
+
     if kwargs:
         extra_info = ", ".join(f"{k}={v}" for k, v in kwargs.items())
         parts.append(extra_info)
-    
+
     message = " | ".join(parts)
     logger.debug(f"💾 {message}")
 
@@ -258,7 +256,7 @@ def log_api_call(
 ) -> None:
     """
     Log detailed information about an external API call.
-    
+
     Parameters
     ----------
     logger : logging.Logger
@@ -278,14 +276,14 @@ def log_api_call(
     """
     status = "✅" if success else "❌"
     parts = [f"{status} {service} {method} {endpoint}"]
-    
+
     if duration_ms is not None:
         parts.append(f"duration={duration_ms:.2f}ms")
-    
+
     if kwargs:
         extra_info = ", ".join(f"{k}={v}" for k, v in kwargs.items())
         parts.append(extra_info)
-    
+
     message = " | ".join(parts)
     level = logging.INFO if success else logging.ERROR
     logger.log(level, f"🔌 {message}")
@@ -300,7 +298,7 @@ def log_business_logic(
 ) -> None:
     """
     Log detailed information about business logic operations.
-    
+
     Parameters
     ----------
     logger : logging.Logger
@@ -315,14 +313,14 @@ def log_business_logic(
         Additional information to log
     """
     parts = [f"{action} {entity_type}"]
-    
+
     if entity_id:
         parts.append(f"id={entity_id}")
-    
+
     if kwargs:
         extra_info = ", ".join(f"{k}={v}" for k, v in kwargs.items())
         parts.append(extra_info)
-    
+
     message = " | ".join(parts)
     logger.info(f"📋 {message}")
 
@@ -331,13 +329,13 @@ def log_business_logic(
 def init_logging_from_settings() -> None:
     """Initialize logging system from application settings."""
     settings = get_settings()
-    
+
     # Read logging configuration from environment variables or settings
     log_level = getattr(settings, "log_level", "INFO")
     enable_file = getattr(settings, "log_enable_file", True)
     enable_console = getattr(settings, "log_enable_console", True)
     detailed_format = getattr(settings, "log_detailed_format", True)
-    
+
     setup_logging(
         log_level=log_level,
         enable_file_logging=enable_file,

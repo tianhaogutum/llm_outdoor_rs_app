@@ -27,8 +27,9 @@ import os
 import sys
 import time
 from collections import defaultdict
-from datetime import datetime, timezone
-from typing import Any, Iterable, Sequence
+from collections.abc import Iterable, Sequence
+from datetime import UTC, datetime
+from typing import Any
 from xml.etree import ElementTree as ET
 
 import httpx
@@ -550,7 +551,7 @@ def main() -> None:
             client.close()
 
     output_payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "project": args.project,
         "route_count": len(route_records),
         "poi_count": len(poi_records),

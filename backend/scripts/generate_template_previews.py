@@ -4,7 +4,6 @@ Generate preview SVG files for all 10 templates.
 """
 import sys
 from pathlib import Path
-from datetime import datetime
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -43,7 +42,7 @@ for i, template in enumerate(SVG_TEMPLATES, 1):
             date=sample_data["date"],
             time=sample_data["time"]
         )
-        
+
         # Determine template name based on content
         template_names = [
             "01_wand_with_stars",
@@ -57,16 +56,16 @@ for i, template in enumerate(SVG_TEMPLATES, 1):
             "09_potion_bottle",
             "10_crystal_ball"
         ]
-        
+
         filename = f"{template_names[i-1]}.svg"
         filepath = output_dir / filename
-        
+
         # Write SVG file
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(svg_content)
-        
+
         print(f"✅ Template {i:2d}: {filename} ({len(svg_content)} chars)")
-        
+
     except Exception as e:
         print(f"❌ Template {i:2d}: Error - {e}")
 

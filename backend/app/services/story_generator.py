@@ -10,12 +10,10 @@ All generated content is in English as per project requirements.
 """
 import json
 import random
-import os
 from pathlib import Path
 from typing import Any, Optional
 
-from app.models.entities import Route, Breakpoint
-
+from app.models.entities import Breakpoint, Route
 
 # Path to historical context data
 HISTORICAL_CONTEXT_DIR = Path(__file__).parent.parent.parent / "data" / "historical_context"
@@ -34,9 +32,9 @@ def _load_historical_context(route_id: int) -> Optional[dict[int, dict[str, Any]
     context_file = HISTORICAL_CONTEXT_DIR / f"route_{route_id}.json"
     if not context_file.exists():
         return None
-    
+
     try:
-        with open(context_file, 'r', encoding='utf-8') as f:
+        with open(context_file, encoding='utf-8') as f:
             data = json.load(f)
             # Convert to dict indexed by order_index
             context_map = {}
@@ -60,13 +58,13 @@ def _generate_harry_potter_skeleton(route_context: dict) -> dict:
     """
     route_name = route_context.get('name', 'Unknown Location')
     location = route_context.get('location', 'a mysterious place')
-    
+
     # Generate title
     title = f"The Historical Mysteries of {route_name}"
-    
+
     # Generate outline
     outline = f"A young wizard embarks on an educational quest to discover how Muggle history and magical protection are intertwined at {route_name}, learning that understanding the past is key to preserving the future."
-    
+
     # Generate prologue
     prologue = f"""You sit in the Hogwarts library, studying for your History of Magic exam, when Professor McGonagall approaches your table. She's holding an ancient leather-bound journal and a sealed letter bearing the symbol of the Order of the Phoenix.
 
@@ -87,7 +85,7 @@ You accept the journal and letter, feeling the weight of responsibility. This is
 "Remember," Professor McGonagall adds as she turns to leave, "history is not just dates and facts. It's the accumulated emotions, experiences, and significance that humans attach to places. That emotional resonance creates magical energy. Understand the history, and you'll understand the magic."
 
 Your adventure begins not with a wand duel, but with an open mind and a willingness to learn."""
-    
+
     # Generate epilogue
     epilogue = f"""As you stand at the final location along {route_name}, the Historical Seeker's Journal glowing softly in your hands, you reflect on everything you've learned.
 
@@ -106,7 +104,7 @@ Professor McGonagall was right: this quest required not combat skills but someth
 Your Historical Seeker's Journal is now full of glowing entries, each one a testament to the places you've visited and the stories you've learned. The dark threat has been neutralized not by destruction, but by preservation—by ensuring that these histories continue to be known, remembered, and honored.
 
 Your quest is complete. You've proven that sometimes the most powerful magic is simply understanding and remembering the truth."""
-    
+
     return {
         "title": title,
         "outline": outline,
@@ -146,13 +144,13 @@ def _generate_harry_potter_chapter(
     chapter_intro = f"""Chapter {chapter_num + 1}: The Secrets of {poi_name}
 
 """
-    
+
     # For non-Wiesn routes, use simple mock data
     if not is_wiesn_route:
         return _generate_simple_mock_chapter(
             chapter_num, poi_name, poi_type, previous_chapter_summary, next_location_hint
         )
-    
+
     # For Wiesn route, generate detailed content with historical context as the centerpiece
     if historical_context:
         # Opening - Arrival and sensing the history
@@ -224,9 +222,9 @@ Your adventure continues, guided by history and magic alike..."""
 
         # Combine all parts with history at the center
         full_chapter = chapter_intro + opening + historical_discovery + encounter + historical_challenge + resolution
-        
+
         return full_chapter
-        
+
     else:
         # Fallback for breakpoints without historical context
         opening = f"""You arrive at {poi_name}, sensing magical energy in the air. Your quest continues, though without detailed historical records, you must rely on your magical intuition to uncover the secrets hidden here.
@@ -258,7 +256,7 @@ def _generate_simple_mock_chapter(
     chapter_intro = f"""Chapter {chapter_num + 1}: {poi_name}
 
 """
-    
+
     content = f"""{previous_chapter_summary if previous_chapter_summary else "Following your magical quest,"} you arrive at {poi_name}. 
 
 As a wizard exploring this {poi_type}, you immediately sense the magical energy that flows through this place. Your wand responds to the ancient magic that has been woven into the very fabric of this location over the centuries.
@@ -272,7 +270,7 @@ After a thorough investigation, you discover a small magical artifact—a token 
 You've made progress, but the journey continues. The real challenges and mysteries lie ahead, waiting to be uncovered by a worthy wizard.
 
 The adventure continues..."""
-    
+
     return chapter_intro + content
 
 
@@ -331,30 +329,30 @@ def _generate_mini_quests(
             "generate_quiz": True  # Flag to generate actual quiz
         }
     }
-    
+
     # Determine number of quests (1-2, with higher chance of 2 quests for later chapters)
     num_quests = 2 if random.random() < (0.3 + chapter_num * 0.1) else 1
     num_quests = min(num_quests, 2)  # Max 2 quests
-    
+
     # Select quest types (avoid duplicates)
     available_types = list(quest_templates.keys())
     selected_types = random.sample(available_types, num_quests)
-    
+
     # Generate quests
     quests = []
     for quest_type in selected_types:
         template = quest_templates[quest_type]
         description = random.choice(template["descriptions"])
-        
+
         # XP increases with chapter number (later chapters = harder quests = more XP)
         xp_multiplier = 1.0 + (chapter_num / total_chapters) * 0.5
         xp_reward = int(template["base_xp"] * xp_multiplier)
-        
+
         quest_data = {
             "task_description": description,
             "xp_reward": xp_reward
         }
-        
+
         # For puzzle quests, generate actual quiz question and answers
         if quest_type == "puzzle" and template.get("generate_quiz", False):
             quiz_data = _generate_quiz_question(poi_name, poi_type, chapter_num)
@@ -372,9 +370,9 @@ def _generate_mini_quests(
                 "type": "photo",
                 "description": description
             })
-        
+
         quests.append(quest_data)
-    
+
     return quests
 
 
@@ -457,10 +455,10 @@ def _generate_quiz_question(
             "correct_answer": 3
         }
     ]
-    
+
     # Select a random quiz template
     selected_quiz = random.choice(quiz_templates)
-    
+
     return {
         "question": selected_quiz["question"],
         "choices": selected_quiz["choices"],
@@ -500,31 +498,31 @@ async def generate_story_for_route(
     """
     # 1. Prepare context
     route_context = _format_route_info(route)
-    
+
     # 2. Load historical context if available (for Wiesn route)
     historical_context_map = None
     if route.id == 1362610:  # Wiesn route
         historical_context_map = _load_historical_context(route.id)
-    
+
     # 3. Generate skeleton
     skeleton = _generate_harry_potter_skeleton(route_context)
-    
+
     # 4. Generate story chapters for each breakpoint
     story_points = []
     previous_summary = ""
-    
+
     for i, bp in enumerate(sorted(breakpoints, key=lambda x: x.order_index)):
         # Get historical context for this breakpoint
         hist_context = None
         if historical_context_map:
             hist_context = historical_context_map.get(bp.order_index)
-        
+
         # Get hint about next location
         next_hint = ""
         if i + 1 < len(breakpoints):
             next_bp = sorted(breakpoints, key=lambda x: x.order_index)[i + 1]
-            next_hint = next_bp.poi_name or f"the next location"
-        
+            next_hint = next_bp.poi_name or "the next location"
+
         # Generate chapter (detailed for Wiesn route, simple mock for others)
         is_wiesn = route.id == 1362610
         chapter_text = _generate_harry_potter_chapter(
@@ -537,7 +535,7 @@ async def generate_story_for_route(
             next_location_hint=next_hint,
             is_wiesn_route=is_wiesn
         )
-        
+
         # Generate mini quests for this breakpoint
         mini_quests = _generate_mini_quests(
             chapter_num=i,
@@ -545,16 +543,16 @@ async def generate_story_for_route(
             poi_name=bp.poi_name or f"Location {i + 1}",
             poi_type=bp.poi_type or "location"
         )
-        
+
         # Create summary for next chapter
         previous_summary = f"After uncovering the secrets of {bp.poi_name or f'Location {i + 1}'},"
-        
+
         story_points.append({
             "index": i,
             "main_quest": chapter_text,
             "mini_quests": mini_quests
         })
-    
+
     # 5. Log generation
     print("\n" + "="*80)
     print("✨ HARRY POTTER STORY GENERATED")
@@ -563,7 +561,7 @@ async def generate_story_for_route(
     print(f"📖 Title: {skeleton.get('title', 'N/A')}")
     print(f"📊 Generated {len(story_points)} chapters")
     print("="*80 + "\n")
-    
+
     # Log to UI
     from app.llm_logger import log_llm_output
     log_llm_output(
@@ -576,7 +574,7 @@ async def generate_story_for_route(
             "title": skeleton.get('title', 'N/A')
         }
     )
-    
+
     # 6. Assemble and return
     return {
         **skeleton,

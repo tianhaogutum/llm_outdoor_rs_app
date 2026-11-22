@@ -13,7 +13,6 @@ import asyncio
 import csv
 import os
 import sys
-from typing import Any
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -43,28 +42,28 @@ def parse_args() -> argparse.Namespace:
 def load_locations_from_csv(csv_path: str) -> dict[int, str]:
     """
     Load route locations from CSV file.
-    
+
     Returns:
         Dictionary mapping route_id -> location string
     """
     locations: dict[int, str] = {}
-    
-    with open(csv_path, "r", encoding="utf-8") as fp:
+
+    with open(csv_path, encoding="utf-8") as fp:
         reader = csv.DictReader(fp)
         for row in reader:
             route_id_str = row.get("id", "").strip()
             location = row.get("location", "").strip()
-            
+
             if not route_id_str or not location:
                 continue
-                
+
             try:
                 route_id = int(route_id_str)
                 locations[route_id] = location
             except ValueError:
                 print(f"Warning: Invalid route ID '{route_id_str}', skipping.")
                 continue
-    
+
     return locations
 
 
@@ -77,7 +76,7 @@ async def update_route_locations(
     Update route locations in the database.
     """
     print(f"Loaded {len(locations)} route locations from CSV.")
-    
+
     if dry_run:
         sample_items = list(locations.items())[:5]
         print("Dry run enabled. Sample updates:")
@@ -92,17 +91,17 @@ async def update_route_locations(
     try:
         updated = 0
         not_found = 0
-        
+
         for route_id, location in locations.items():
             route = await session.get(Route, route_id)
             if route is None:
                 print(f"Warning: Route {route_id} not found in database, skipping.")
                 not_found += 1
                 continue
-            
+
             route.location = location
             updated += 1
-        
+
         await session.commit()
         print(f"Updated {updated} routes with location data.")
         if not_found > 0:

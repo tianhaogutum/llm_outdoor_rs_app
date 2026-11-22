@@ -7,12 +7,11 @@ This module implements:
 - PATCH /api/profiles/{id} - Update profile
 """
 import json
-import logging
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 
 from app.api.schemas import (
@@ -21,17 +20,17 @@ from app.api.schemas import (
     ProfileCreate,
     ProfileCreateResponse,
     ProfileResponse,
-    ProfileUpdate,
     ProfileStatisticsResponse,
+    ProfileUpdate,
 )
 from app.database import get_db
-from app.models.entities import DemoProfile, ProfileFeedback, Route, Souvenir, ProfileAchievement
+from app.logger import get_logger, log_business_logic, log_database_operation, log_request
+from app.models.entities import DemoProfile, ProfileAchievement, ProfileFeedback, Route, Souvenir
 from app.services.genai_service import generate_welcome_summary
 from app.services.user_profile_service import (
     generate_fallback_welcome,
     translate_questionnaire_to_vector,
 )
-from app.logger import get_logger, log_request, log_business_logic, log_database_operation
 
 logger = get_logger(__name__)
 
@@ -39,7 +38,7 @@ logger = get_logger(__name__)
 def map_category_to_activity_type(category_name: Optional[str]) -> str:
     """
     Map backend category_name to frontend activity type.
-    
+
     Maps backend category_name values to frontend categories:
     - Running: "Jogging", "Trail running"
     - Cycling: "Cycling", "Mountainbiking", "Long distance cycling"
@@ -47,17 +46,17 @@ def map_category_to_activity_type(category_name: Optional[str]) -> str:
     """
     if not category_name:
         return "hiking"
-    
+
     lower = category_name.lower()
-    
+
     # Running: "Jogging", "Trail running"
     if "run" in lower or "jogging" in lower:
         return "running"
-    
+
     # Cycling: "Cycling", "Mountainbiking", "Long distance cycling"
     if "cycling" in lower or "mountain" in lower or "bike" in lower:
         return "cycling"
-    
+
     # Hiking: "Theme trail", "Hiking trail", and everything else
     return "hiking"
 
@@ -72,20 +71,20 @@ async def submit_questionnaire(
 ) -> ProfileCreateResponse:
     """
     Submit cold-start questionnaire and create user profile (US-03 & US-04).
-    
+
     This endpoint:
     1. Translates questionnaire answers to a structured user_vector
     2. Generates a personalized welcome summary using GenAI
     3. Stores the profile in the database
     4. Returns the profile ID and welcome summary
-    
+
     Parameters
     ----------
     questionnaire : ProfileCreate
         User's answers to the onboarding questionnaire
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     ProfileCreateResponse
@@ -93,16 +92,16 @@ async def submit_questionnaire(
     """
     import time
     start_time = time.time()
-    
+
     logger.info("=" * 80)
     logger.info("📝 Received questionnaire submission")
-    logger.debug(f"Questionnaire data: fitness={questionnaire.fitness}, type={questionnaire.type}, narrative={questionnaire.narrative}")
-    
+    logger.debug(f"Questionnaire data: fitness={questionnaire.fitness}, type={questionnaire.type}, narrative={questionnaire.narrative}")  # noqa: E501
+
     # 1. Translate questionnaire to user_vector
     logger.debug("🔄 Translating questionnaire into user vector...")
     user_vector = translate_questionnaire_to_vector(questionnaire)
     logger.debug(f"✅ User vector generated: {user_vector}")
-    
+
     # 2. Generate welcome summary with GenAI (with fallback)
     logger.debug("🤖 Generating welcome summary...")
     try:
@@ -124,7 +123,7 @@ async def submit_questionnaire(
         )
         welcome_summary = generate_fallback_welcome(questionnaire)
         logger.info("✅ Fallback welcome summary used")
-    
+
     # 3. Create database record
     logger.debug("💾 Creating user profile record...")
     new_profile = DemoProfile(
@@ -136,7 +135,7 @@ async def submit_questionnaire(
     db.add(new_profile)
     await db.commit()
     await db.refresh(new_profile)
-    
+
     log_database_operation(
         logger,
         "INSERT",
@@ -144,7 +143,7 @@ async def submit_questionnaire(
         record_id=new_profile.id,
         duration_ms=(time.time() - start_time) * 1000
     )
-    
+
     log_business_logic(
         logger,
         "create",
@@ -153,7 +152,7 @@ async def submit_questionnaire(
         fitness=questionnaire.fitness,
         narrative=questionnaire.narrative
     )
-    
+
     duration_ms = (time.time() - start_time) * 1000
     log_request(
         logger,
@@ -163,10 +162,10 @@ async def submit_questionnaire(
         duration_ms=duration_ms,
         user_id=new_profile.id
     )
-    
+
     logger.info(f"✅ User profile created successfully: profile_id={new_profile.id}, duration={duration_ms:.2f}ms")
     logger.info("=" * 80)
-    
+
     # 4. Return response
     return ProfileCreateResponse(
         id=new_profile.id,
@@ -182,19 +181,19 @@ async def get_profile(
 ) -> ProfileResponse:
     """
     Retrieve profile details by ID.
-    
+
     Parameters
     ----------
     profile_id : int
         Profile ID
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     ProfileResponse
         Profile details
-    
+
     Raises
     ------
     HTTPException
@@ -202,17 +201,17 @@ async def get_profile(
     """
     import time
     start_time = time.time()
-    
+
     logger.debug(f"🔍 Fetching user profile: profile_id={profile_id}")
     profile = await db.get(DemoProfile, profile_id)
-    
+
     if profile is None:
         logger.warning(f"❌ User profile not found: profile_id={profile_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found",
         )
-    
+
     duration_ms = (time.time() - start_time) * 1000
     log_request(
         logger,
@@ -223,7 +222,7 @@ async def get_profile(
         user_id=profile_id
     )
     logger.debug(f"✅ User profile fetched successfully: profile_id={profile_id}, duration={duration_ms:.2f}ms")
-    
+
     return ProfileResponse.model_validate(profile)
 
 
@@ -235,7 +234,7 @@ async def update_profile(
 ) -> ProfileResponse:
     """
     Update profile details (partial update).
-    
+
     Parameters
     ----------
     profile_id : int
@@ -244,33 +243,33 @@ async def update_profile(
         Fields to update
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     ProfileResponse
         Updated profile
-    
+
     Raises
     ------
     HTTPException
         404 if profile not found
     """
     profile = await db.get(DemoProfile, profile_id)
-    
+
     if profile is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found",
         )
-    
+
     # Update only provided fields
     update_data = profile_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(profile, field, value)
-    
+
     await db.commit()
     await db.refresh(profile)
-    
+
     return ProfileResponse.model_validate(profile)
 
 
@@ -281,30 +280,30 @@ async def delete_profile(
 ):
     """
     Delete a user profile from the database.
-    
+
     Parameters
     ----------
     profile_id : int
         Profile ID to delete
     db : AsyncSession
         Database session
-    
+
     Raises
     ------
     HTTPException
         404 if profile not found
     """
     profile = await db.get(DemoProfile, profile_id)
-    
+
     if profile is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found",
         )
-    
+
     await db.delete(profile)
     await db.flush()  # Flush to ensure deletion is processed
-    
+
     return None
 
 
@@ -314,17 +313,17 @@ async def delete_all_profiles(
 ):
     """
     Delete all user profiles from the database (for testing/reset purposes).
-    
+
     This endpoint will delete all profiles and cascade delete:
     - All souvenirs
     - All feedback entries
     - All profile achievements
-    
+
     Parameters
     ----------
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     dict
@@ -332,39 +331,39 @@ async def delete_all_profiles(
     """
     import time
     start_time = time.time()
-    
+
     logger.info("=" * 80)
     logger.info("🗑️ Deleting all user profiles (RESET operation)")
-    
+
     # Query all profiles
     result = await db.execute(select(DemoProfile))
     profiles = result.scalars().all()
-    
+
     profile_count = len(profiles)
-    
+
     if profile_count == 0:
         logger.info("✅ No profiles found in database")
         logger.info("=" * 80)
         return {"deleted_count": 0, "message": "No profiles found to delete"}
-    
+
     logger.info(f"Found {profile_count} profile(s) to delete")
-    
+
     # Delete all profiles (cascade will handle related data)
     for profile in profiles:
         logger.debug(f"Deleting profile ID: {profile.id}")
         await db.delete(profile)
-    
+
     await db.commit()
-    
+
     duration_ms = (time.time() - start_time) * 1000
-    
+
     log_business_logic(
         logger,
         "delete_all",
         "user profiles",
         count=profile_count
     )
-    
+
     log_request(
         logger,
         "DELETE",
@@ -372,11 +371,11 @@ async def delete_all_profiles(
         status_code=200,
         duration_ms=duration_ms
     )
-    
+
     logger.info(f"✅ Successfully deleted {profile_count} profile(s) and all related data")
     logger.info(f"Duration: {duration_ms:.2f}ms")
     logger.info("=" * 80)
-    
+
     return {
         "deleted_count": profile_count,
         "message": f"Successfully deleted {profile_count} profile(s) and all related data"
@@ -391,10 +390,10 @@ async def submit_feedback(
 ) -> FeedbackResponse:
     """
     Submit negative feedback for a route recommendation (US-08).
-    
+
     This endpoint allows users to provide feedback on routes they don't like,
     which helps improve future recommendations through adaptive re-ranking.
-    
+
     Parameters
     ----------
     profile_id : int
@@ -403,12 +402,12 @@ async def submit_feedback(
         Feedback data containing route_id and reason
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     FeedbackResponse
         Created feedback entry
-    
+
     Raises
     ------
     HTTPException
@@ -421,7 +420,7 @@ async def submit_feedback(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found",
         )
-    
+
     # Verify route exists
     route = await db.get(Route, feedback.route_id)
     if route is None:
@@ -429,7 +428,7 @@ async def submit_feedback(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Route with id {feedback.route_id} not found",
         )
-    
+
     # Create feedback entry
     new_feedback = ProfileFeedback(
         demo_profile_id=profile_id,
@@ -439,53 +438,50 @@ async def submit_feedback(
     db.add(new_feedback)
     await db.commit()
     await db.refresh(new_feedback)
-    
+
     # Update user_vector_json to reflect feedback adjustments
     # This ensures the frontend "Your Preferences" display is up-to-date
     try:
-        from app.services.recommendation_service import (
-            adjust_user_vector_with_feedback,
-            extract_route_vector
-        )
-        
+        from app.services.recommendation_service import adjust_user_vector_with_feedback, extract_route_vector
+
         # Get all feedback for this profile
         feedback_query = select(ProfileFeedback).where(
             ProfileFeedback.demo_profile_id == profile_id
         )
         feedback_result = await db.execute(feedback_query)
         all_feedback = list(feedback_result.scalars().all())
-        
+
         # Parse current user_vector
         if profile.user_vector_json:
             original_vector = json.loads(profile.user_vector_json)
-            
+
             # Build route_vectors dict (only need the current route)
             route_vector = extract_route_vector(route)
             route_vectors = {route.id: route_vector}
-            
+
             # Also get other routes that have feedback
             for fb in all_feedback:
                 if fb.route_id != route.id and fb.route_id not in route_vectors:
                     other_route = await db.get(Route, fb.route_id)
                     if other_route:
                         route_vectors[fb.route_id] = extract_route_vector(other_route)
-            
+
             # Apply feedback adjustments
             adjusted_vector = adjust_user_vector_with_feedback(
                 original_vector,
                 all_feedback,
                 route_vectors
             )
-            
+
             # Update profile with adjusted vector
             profile.user_vector_json = json.dumps(adjusted_vector, ensure_ascii=False)
             await db.commit()
-            
+
             logger.debug(f"✅ Updated user_vector after feedback: {adjusted_vector}")
     except Exception as e:
         logger.warning(f"⚠️ Failed to update user_vector after feedback: {e}")
         # Don't fail the feedback submission if vector update fails
-    
+
     return FeedbackResponse.model_validate(new_feedback)
 
 
@@ -496,26 +492,26 @@ async def get_profile_statistics(
 ) -> ProfileStatisticsResponse:
     """
     Get aggregated statistics for a user profile.
-    
+
     This endpoint provides efficient server-side aggregation of:
     - Total distance traveled (sum of all completed route distances)
     - Total elevation gained (sum of all completed route elevations)
     - Routes completed count
     - Achievements unlocked count
     - Activity breakdown (running/hiking/cycling counts)
-    
+
     Parameters
     ----------
     profile_id : int
         Profile ID
     db : AsyncSession
         Database session
-    
+
     Returns
     -------
     ProfileStatisticsResponse
         Aggregated statistics for the profile
-    
+
     Raises
     ------
     HTTPException
@@ -528,7 +524,7 @@ async def get_profile_statistics(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found",
         )
-    
+
     # Get all souvenirs with routes (no limit for accurate statistics)
     souvenirs_result = await db.execute(
         select(Souvenir)
@@ -536,34 +532,34 @@ async def get_profile_statistics(
         .options(selectinload(Souvenir.route))
     )
     souvenirs = souvenirs_result.scalars().all()
-    
+
     # Aggregate statistics from souvenirs
     total_distance_km = 0.0
     total_elevation_m = 0
     activity_breakdown = {"running": 0, "hiking": 0, "cycling": 0}
-    
+
     for souvenir in souvenirs:
         if souvenir.route:
             # Sum distance (convert meters to km)
             if souvenir.route.length_meters:
                 total_distance_km += souvenir.route.length_meters / 1000.0
-            
+
             # Sum elevation
             if souvenir.route.elevation:
                 total_elevation_m += souvenir.route.elevation
-            
+
             # Count by activity type
             if souvenir.route.category_name:
                 activity_type = map_category_to_activity_type(souvenir.route.category_name)
                 activity_breakdown[activity_type] = activity_breakdown.get(activity_type, 0) + 1
-    
+
     # Count unlocked achievements
     achievements_result = await db.execute(
         select(func.count(ProfileAchievement.id))
         .where(ProfileAchievement.demo_profile_id == profile_id)
     )
     achievements_unlocked = achievements_result.scalar() or 0
-    
+
     return ProfileStatisticsResponse(
         total_distance_km=round(total_distance_km, 1),
         total_elevation_m=total_elevation_m,

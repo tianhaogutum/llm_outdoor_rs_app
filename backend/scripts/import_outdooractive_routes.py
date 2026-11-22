@@ -66,7 +66,7 @@ def html_to_text(raw: str | None) -> str | None:
 
 
 def load_tours(json_path: str) -> list[dict[str, Any]]:
-    with open(json_path, "r", encoding="utf-8") as fp:
+    with open(json_path, encoding="utf-8") as fp:
         payload = json.load(fp)
 
     seen_ids: set[int] = set()

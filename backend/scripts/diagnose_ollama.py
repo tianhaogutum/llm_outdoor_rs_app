@@ -3,47 +3,49 @@
 Ollama Diagnosis Script - Check if Ollama service is working properly
 Usage: python backend/scripts/diagnose_ollama.py
 """
-import httpx
 import sys
 from pathlib import Path
+
+import httpx
 
 # Add project root directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from app.settings import get_settings
 
+
 def check_ollama_service():
     """Check Ollama service status"""
     print("=" * 60)
     print("🔍 Ollama Diagnosis Tool")
     print("=" * 60)
-    
+
     settings = get_settings()
     # Normalize to use 127.0.0.1 instead of localhost to avoid IPv6 issues
     base_url = settings.ollama_api_url.replace("/api/generate", "").replace("localhost", "127.0.0.1")
     api_url = settings.ollama_api_url.replace("localhost", "127.0.0.1")
-    
-    print(f"\n📋 Configuration Info:")
+
+    print("\n📋 Configuration Info:")
     print(f"   API URL: {settings.ollama_api_url}")
     print(f"   Model: {settings.ollama_model}")
     print(f"   Timeout: {settings.ollama_timeout}s")
     print(f"   Base URL: {base_url}")
-    
+
     issues = []
-    
+
     # Step 1: Check if service is running
-    print(f"\n[1/4] Checking if Ollama service is running...")
+    print("\n[1/4] Checking if Ollama service is running...")
     try:
         with httpx.Client(timeout=5.0) as client:
             response = client.get(f"{base_url}/api/tags")
             response.raise_for_status()
             print("   ✅ Ollama service is running")
-            
+
             # Display installed models
             models = response.json().get("models", [])
             model_names = [m.get("name", "") for m in models]
             print(f"   📦 Installed models: {', '.join(model_names) if model_names else 'None'}")
-            
+
     except httpx.ConnectError:
         print("   ❌ Ollama service is not running")
         print("   💡 Try running: brew services start ollama")
@@ -53,7 +55,7 @@ def check_ollama_service():
         print(f"   ❌ Connection failed: {e}")
         issues.append(f"Connection failed: {e}")
         return False, issues
-    
+
     # Step 2: Check if model exists
     print(f"\n[2/4] Checking if model '{settings.ollama_model}' is available...")
     try:
@@ -61,7 +63,7 @@ def check_ollama_service():
             response = client.get(f"{base_url}/api/tags")
             models = response.json().get("models", [])
             model_names = [m.get("name", "") for m in models]
-            
+
             if settings.ollama_model in model_names:
                 print(f"   ✅ Model '{settings.ollama_model}' is installed")
             else:
@@ -73,9 +75,9 @@ def check_ollama_service():
         print(f"   ❌ Check failed: {e}")
         issues.append(f"Model check failed: {e}")
         return False, issues
-    
+
     # Step 3: Test simple generation
-    print(f"\n[3/4] Testing model generation...")
+    print("\n[3/4] Testing model generation...")
     try:
         with httpx.Client(timeout=30.0) as client:
             response = client.post(
@@ -88,13 +90,13 @@ def check_ollama_service():
             )
             response.raise_for_status()
             result = response.json()
-            
+
             if "response" in result:
                 generated_text = result["response"].strip()
-                print(f"   ✅ Generation successful")
+                print("   ✅ Generation successful")
                 print(f"   📝 Response: {generated_text[:50]}...")
             else:
-                print(f"   ⚠️  Abnormal response format")
+                print("   ⚠️  Abnormal response format")
                 issues.append("Abnormal response format")
                 return False, issues
     except httpx.HTTPStatusError as e:
@@ -107,9 +109,9 @@ def check_ollama_service():
         print(f"   ❌ Generation failed: {e}")
         issues.append(f"Generation failed: {e}")
         return False, issues
-    
+
     # Step 4: Test complete flow (simulate backend call)
-    print(f"\n[4/4] Testing complete API call...")
+    print("\n[4/4] Testing complete API call...")
     try:
         with httpx.Client(timeout=settings.ollama_timeout) as client:
             response = client.post(
@@ -126,7 +128,7 @@ def check_ollama_service():
             )
             response.raise_for_status()
             result = response.json()
-            
+
             if "response" in result and result.get("done", False):
                 print("   ✅ Complete flow test successful")
             else:
@@ -137,7 +139,7 @@ def check_ollama_service():
         print(f"   ❌ Test failed: {e}")
         issues.append(f"Complete test failed: {e}")
         return False, issues
-    
+
     print("\n" + "=" * 60)
     print("✅ All checks passed! Ollama configuration is normal.")
     print("=" * 60)

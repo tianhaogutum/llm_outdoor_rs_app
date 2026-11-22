@@ -17,7 +17,7 @@ from app.settings import get_settings
 async def main() -> None:
     """Seed achievements in the database."""
     print("🏆 Seeding achievements...")
-    
+
     settings = get_settings()
     init_db(settings)
 

@@ -4,8 +4,6 @@ These templates are Harry Potter / magical themed pixel art designs.
 """
 
 import random
-from datetime import datetime
-from typing import Dict
 
 # 10 different magical SVG templates with placeholders
 SVG_TEMPLATES = [
@@ -541,10 +539,10 @@ def generate_souvenir_svg(
     # Format date and time
     date_str = completed_at.strftime("%Y-%m-%d")
     time_str = completed_at.strftime("%H:%M")
-    
+
     # Select random template
     template = get_random_template()
-    
+
     # Fill template
     svg = fill_template(
         template=template,
@@ -556,13 +554,13 @@ def generate_souvenir_svg(
         date=date_str,
         time=time_str
     )
-    
+
     # Ensure preserveAspectRatio is set for proper scaling
     if 'preserveAspectRatio' not in svg:
         svg = svg.replace(
             '<svg viewBox',
             '<svg preserveAspectRatio="xMidYMid meet" viewBox'
         )
-    
+
     return svg
 

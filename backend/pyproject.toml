@@ -17,6 +17,14 @@ ignore = [
     "B008",   # FastAPI `Depends(...)` in argument defaults is the framework's idiom
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# Legacy modules made of long literal story / SVG / prompt text: reflowing would change the content.
+"app/services/story_generator.py" = ["E501", "W291", "W293"]
+"app/services/svg_templates.py" = ["E501", "W293"]
+"scripts/mock_breakpoints.py" = ["E501"]
+# Stand-alone scripts put the backend on sys.path before importing `app`.
+"scripts/*.py" = ["E402"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["app", "scripts", "pipeline"]
 

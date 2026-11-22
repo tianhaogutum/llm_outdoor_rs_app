@@ -6,12 +6,11 @@ This service calculates XP breakdown for completing routes, including:
 - Quest XP (from completed mini quests)
 - Difficulty multiplier
 """
-from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.entities import Route, MiniQuest, Breakpoint
-
+from app.models.entities import Breakpoint, MiniQuest, Route
 
 # Difficulty multipliers for total XP calculation
 DIFFICULTY_MULTIPLIER = {
@@ -24,17 +23,17 @@ DIFFICULTY_MULTIPLIER = {
 
 async def calculate_route_completion_xp(
     route: Route,
-    completed_quest_ids: List[int],
+    completed_quest_ids: list[int],
     db: AsyncSession
 ) -> dict:
     """
     Calculate XP breakdown for completing a route.
-    
+
     Args:
         route: The completed route
         completed_quest_ids: List of completed mini quest IDs
         db: Database session
-    
+
     Returns:
         dict with structure:
         {
@@ -46,7 +45,7 @@ async def calculate_route_completion_xp(
     """
     # 1. Get base XP from route
     base_xp = route.base_xp_reward or 0
-    
+
     # 2. Calculate quest XP
     quest_xp = 0
     if completed_quest_ids:
@@ -59,15 +58,15 @@ async def calculate_route_completion_xp(
         )
         completed_quests = result.scalars().all()
         quest_xp = sum(quest.xp_reward for quest in completed_quests)
-    
+
     # 3. Get difficulty multiplier
     difficulty = route.difficulty if route.difficulty is not None else 0
     multiplier = DIFFICULTY_MULTIPLIER.get(difficulty, 1.0)
-    
+
     # 4. Calculate total XP
     # Total = (base_xp + quest_xp) * difficulty_multiplier
     total_xp = int((base_xp + quest_xp) * multiplier)
-    
+
     return {
         "base": base_xp,
         "quests": quest_xp,

@@ -2,10 +2,10 @@
 LLM Logger for real-time UI updates.
 Stores LLM generation outputs in a queue for SSE streaming.
 """
-from collections import deque
-from typing import Optional
-from datetime import datetime
 import json
+from collections import deque
+from datetime import datetime
+from typing import Optional
 
 # Global message queue (stores last 50 messages)
 _llm_messages: deque = deque(maxlen=50)
@@ -13,14 +13,14 @@ _llm_messages: deque = deque(maxlen=50)
 
 class LLMMessage:
     """Represents a single LLM generation event."""
-    
+
     def __init__(self, message_type: str, title: str, content: str, metadata: Optional[dict] = None):
         self.timestamp = datetime.now().isoformat()
         self.type = message_type  # "welcome", "skeleton", "story_points", "post_run"
         self.title = title
         self.content = content
         self.metadata = metadata or {}
-    
+
     def to_dict(self) -> dict:
         return {
             "timestamp": self.timestamp,
@@ -29,7 +29,7 @@ class LLMMessage:
             "content": self.content,
             "metadata": self.metadata
         }
-    
+
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
 
@@ -37,7 +37,7 @@ class LLMMessage:
 def log_llm_output(message_type: str, title: str, content: str, metadata: Optional[dict] = None):
     """
     Log LLM output to the message queue.
-    
+
     Args:
         message_type: Type of message ("welcome", "skeleton", "story_points", "post_run")
         title: Title/header of the message

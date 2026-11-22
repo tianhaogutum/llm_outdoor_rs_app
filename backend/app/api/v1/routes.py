@@ -9,21 +9,21 @@ import time
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.database import get_db
-from app.models.entities import Route, Breakpoint, DemoProfile
-from app.services.story_generator import generate_story_for_route
-from app.services.recommendation_service import get_recommended_routes
 from app.api.schemas import (
-    StoryGenerateRequest,
-    StoryGenerateResponse,
     RecommendationResponse,
     RouteResponse,
+    StoryGenerateRequest,
+    StoryGenerateResponse,
 )
-from app.logger import get_logger, log_request, log_business_logic
+from app.database import get_db
+from app.logger import get_logger, log_business_logic, log_request
+from app.models.entities import Breakpoint, DemoProfile, Route
+from app.services.recommendation_service import get_recommended_routes
+from app.services.story_generator import generate_story_for_route
 
 logger = get_logger(__name__)
 
@@ -39,27 +39,27 @@ async def get_route_recommendations(
 ):
     """
     Get route recommendations using Content-Based Filtering (CBF).
-    
+
     This endpoint implements US-02 (personalized recommendations) and US-01 (random recommendations).
-    
+
     Query Parameters:
     - profile_id: Optional user profile ID for personalized recommendations
     - category: Optional activity category filter (running/hiking/cycling)
     - limit: Maximum number of routes to return (default: 20)
-    
+
     Behavior:
     - If profile_id provided: Returns routes ranked by CBF similarity score
     - If no profile_id: Returns random routes
     - If category provided: Filters results by mapped category_name values
-    
+
     Returns:
         RecommendationResponse with routes list and metadata
     """
     start_time = time.time()
-    
+
     logger.info("=" * 80)
     logger.info(f"🗺️ Fetching route recommendations: profile_id={profile_id}, category={category}, limit={limit}")
-    
+
     # Validate profile_id if provided and fetch profile once
     profile = None
     if profile_id is not None:
@@ -72,7 +72,7 @@ async def get_route_recommendations(
                 detail=f"Profile with id {profile_id} not found"
             )
         logger.debug(f"✅ User profile validated successfully: profile_id={profile_id}")
-    
+
     # Get recommended routes
     logger.debug("🔄 Starting recommendation calculation...")
     routes = await get_recommended_routes(
@@ -82,7 +82,7 @@ async def get_route_recommendations(
         limit=limit
     )
     logger.info(f"✅ Recommendation calculation completed: returned {len(routes)} routes")
-    
+
     # Convert to response models
     route_responses = []
     for route in routes:
@@ -92,19 +92,19 @@ async def get_route_recommendations(
             route_dict["is_locked"] = profile.total_xp < route.xp_required
         else:
             route_dict["is_locked"] = False
-        
+
         # Add recommendation score if available (set by recommendation_service)
         if hasattr(route, 'recommendation_score'):
             route_dict["recommendation_score"] = route.recommendation_score
             logger.debug(f"📊 Route {route.id} recommendation score: {route.recommendation_score:.4f}")
         if hasattr(route, 'recommendation_score_breakdown'):
             route_dict["recommendation_score_breakdown"] = route.recommendation_score_breakdown
-        
+
         route_responses.append(RouteResponse(**route_dict))
-    
+
     duration_ms = (time.time() - start_time) * 1000
     is_personalized = profile_id is not None
-    
+
     log_request(
         logger,
         "GET",
@@ -116,10 +116,10 @@ async def get_route_recommendations(
         routes_count=len(route_responses),
         is_personalized=is_personalized
     )
-    
-    logger.info(f"✅ Route recommendations returned successfully: {len(route_responses)} routes, personalized={is_personalized}, duration={duration_ms:.2f}ms")
+
+    logger.info(f"✅ Route recommendations returned successfully: {len(route_responses)} routes, personalized={is_personalized}, duration={duration_ms:.2f}ms")  # noqa: E501
     logger.info("=" * 80)
-    
+
     return RecommendationResponse(
         routes=route_responses,
         total=len(route_responses),
@@ -135,28 +135,28 @@ async def generate_route_story(
 ):
     """
     Generate complete story for specified route and save to database.
-    
+
     This endpoint implements the Two-Step Global Generation approach:
     1. If story exists and force_regenerate=False, return existing (0 delay)
     2. Otherwise, generate new story using Llama3.1:8b via Ollama (10-15s)
     3. Save to database for future use
-    
+
     Args:
         route_id: ID of the route to generate story for
         request: Story generation parameters
         db: Database session
-    
+
     Returns:
         Complete story with title, outline, prologue, epilogue, and breakpoint content
-        
+
     Raises:
         HTTPException: 404 if route not found, 400 if no breakpoints
     """
     start_time = time.time()
-    
+
     logger.info("=" * 80)
-    logger.info(f"📖 Generating route story: route_id={route_id}, narrative_style={request.narrative_style}, force_regenerate={request.force_regenerate}")
-    
+    logger.info(f"📖 Generating route story: route_id={route_id}, narrative_style={request.narrative_style}, force_regenerate={request.force_regenerate}")  # noqa: E501
+
     # 1. Fetch route with breakpoints and mini_quests
     logger.debug(f"🔍 Fetching route information: route_id={route_id}")
     result = await db.execute(
@@ -167,23 +167,23 @@ async def generate_route_story(
         )
     )
     route = result.scalar_one_or_none()
-    
+
     if not route:
         logger.error(f"❌ Route not found: route_id={route_id}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Route with id {route_id} not found"
         )
-    
-    logger.debug(f"✅ Route fetched successfully: route_id={route_id}, breakpoints_count={len(route.breakpoints) if route.breakpoints else 0}")
-    
+
+    logger.debug(f"✅ Route fetched successfully: route_id={route_id}, breakpoints_count={len(route.breakpoints) if route.breakpoints else 0}")  # noqa: E501
+
     if not route.breakpoints:
         logger.error(f"❌ Route has no breakpoints: route_id={route_id}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Route has no breakpoints. Cannot generate story."
         )
-    
+
     # 2. Check if story already exists
     if route.story_prologue_body and not request.force_regenerate:
         logger.info("📚 Using existing story (skipping generation)")
@@ -199,7 +199,7 @@ async def generate_route_story(
         logger.info(f"✅ Story returned from cache: duration={duration_ms:.2f}ms")
         logger.info("=" * 80)
         return _assemble_existing_story(route)
-    
+
     # 3. Generate new story
     logger.info("🤖 Starting new story generation...")
     story_data = await generate_story_for_route(
@@ -208,12 +208,12 @@ async def generate_route_story(
         narrative_style=request.narrative_style
     )
     logger.info("✅ Story generation completed")
-    
+
     # 4. Save to database
     logger.debug("💾 Saving story to database...")
     await _save_story_to_db(route, story_data, db)
     logger.info("✅ Story saved to database")
-    
+
     duration_ms = (time.time() - start_time) * 1000
     log_business_logic(
         logger,
@@ -223,7 +223,7 @@ async def generate_route_story(
         narrative_style=request.narrative_style,
         breakpoints_count=len(route.breakpoints)
     )
-    
+
     log_request(
         logger,
         "POST",
@@ -232,10 +232,10 @@ async def generate_route_story(
         duration_ms=duration_ms,
         cached=False
     )
-    
+
     logger.info(f"✅ Story generated and returned successfully: duration={duration_ms:.2f}ms")
     logger.info("=" * 80)
-    
+
     # 5. Return result
     return StoryGenerateResponse(**story_data)
 
@@ -247,14 +247,14 @@ async def get_route_story(
 ):
     """
     Retrieve existing story for a route.
-    
+
     Args:
         route_id: ID of the route
         db: Database session
-    
+
     Returns:
         Existing story content
-        
+
     Raises:
         HTTPException: 404 if route not found or no story exists
     """
@@ -266,19 +266,19 @@ async def get_route_story(
         )
     )
     route = result.scalar_one_or_none()
-    
+
     if not route:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Route with id {route_id} not found"
         )
-    
+
     if not route.story_prologue_body:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No story generated for this route yet"
         )
-    
+
     return _assemble_existing_story(route)
 
 
@@ -289,34 +289,34 @@ async def _save_story_to_db(
 ):
     """
     Save generated story to database.
-    
+
     Updates Route table with prologue and epilogue,
     Breakpoint table with main_quest for each breakpoint,
     and MiniQuest table with generated mini quests.
-    
+
     Args:
         route: Route entity to update
         story_data: Generated story data
         db: Database session
     """
     from app.models.entities import MiniQuest
-    
+
     # Update Route table
     route.story_prologue_title = story_data["title"]
     route.story_prologue_body = story_data["prologue"]
     route.story_epilogue_body = story_data["epilogue"]
-    
+
     # Update Breakpoint table and create MiniQuests
     for bp_data in story_data["breakpoints"]:
         idx = bp_data["index"]
         if idx < len(route.breakpoints):
             bp = route.breakpoints[idx]
             bp.main_quest_snippet = bp_data["main_quest"]
-            
+
             # Clear existing mini quests for this breakpoint
             for existing_quest in bp.mini_quests:
                 await db.delete(existing_quest)
-            
+
             # Create new mini quests
             mini_quests_data = bp_data.get("mini_quests", [])
             for quest_data in mini_quests_data:
@@ -326,7 +326,7 @@ async def _save_story_to_db(
                     xp_reward=quest_data["xp_reward"]
                 )
                 db.add(mini_quest)
-    
+
     await db.commit()
     await db.refresh(route)
 
@@ -334,10 +334,10 @@ async def _save_story_to_db(
 def _assemble_existing_story(route: Route) -> dict:
     """
     Assemble existing story data from database.
-    
+
     Args:
         route: Route entity with story data
-    
+
     Returns:
         dict matching StoryGenerateResponse format
     """

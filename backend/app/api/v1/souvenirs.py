@@ -8,30 +8,29 @@ This module provides endpoints for:
 """
 import json
 import logging
-from typing import Annotated, Optional
+from datetime import UTC
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc, asc
 from sqlalchemy.orm import selectinload
 
-from app.database import get_db
-from app.models.entities import DemoProfile, Route, Souvenir, MiniQuest, Breakpoint
 from app.api.schemas import (
     RouteCompleteRequest,
     RouteCompleteResponse,
-    SouvenirResponse,
-    SouvenirListResponse,
     RouteResponse,
+    SouvenirListResponse,
+    SouvenirResponse,
 )
-from app.services.xp_calculator import calculate_route_completion_xp
-from app.services.genai_service import generate_post_run_summary, generate_pixel_art_svg
+from app.database import get_db
+from app.models.entities import DemoProfile, Route, Souvenir
 from app.services.achievement_service import check_and_unlock_achievements
+from app.services.genai_service import generate_pixel_art_svg, generate_post_run_summary
 from app.services.level_system import (
     calculate_level_from_xp,
-    xp_to_next_level,
-    xp_progress_in_current_level,
 )
+from app.services.xp_calculator import calculate_route_completion_xp
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,7 @@ async def create_souvenir(
 ):
     """
     Complete a route and create a souvenir record.
-    
+
     This endpoint:
     1. Validates route and profile exist
     2. Calculates XP breakdown (base + quests + difficulty multiplier)
@@ -54,22 +53,22 @@ async def create_souvenir(
     4. Creates Souvenir record
     5. Updates user profile (total_xp and level)
     6. Returns complete souvenir information
-    
+
     Args:
         profile_id: User profile ID
         request: Route completion request with route_id and completed_quest_ids
         db: Database session
-    
+
     Returns:
         RouteCompleteResponse with souvenir, XP breakdown, and new level
-    
+
     Raises:
         HTTPException: 404 if profile or route not found
     """
     try:
-        logger.info(f"🎁 Creating souvenir: profile_id={profile_id}, route_id={request.route_id}, quests={len(request.completed_quest_ids)}")
+        logger.info(f"🎁 Creating souvenir: profile_id={profile_id}, route_id={request.route_id}, quests={len(request.completed_quest_ids)}")  # noqa: E501
         logger.info(f"📋 Request data: route_id={request.route_id}, completed_quest_ids={request.completed_quest_ids}")
-        
+
         # 1. Validate profile
         profile = await db.get(DemoProfile, profile_id)
         if not profile:
@@ -78,7 +77,7 @@ async def create_souvenir(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Profile with id {profile_id} not found"
             )
-        
+
         # 2. Validate and load route (without breakpoints for performance)
         route_result = await db.execute(
             select(Route)
@@ -90,17 +89,17 @@ async def create_souvenir(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Route with id {request.route_id} not found"
             )
-        
+
         # 3. Calculate XP breakdown
         xp_breakdown = await calculate_route_completion_xp(
             route, request.completed_quest_ids, db
         )
-        
+
         # 4. Count total quests for AI summary (estimate if breakpoints not loaded)
         # Since we're not loading breakpoints, use a reasonable estimate
         # or load breakpoints separately if needed
         total_quests = len(request.completed_quest_ids)  # Use completed count as estimate
-        
+
         # 5. Generate AI summary
         try:
             route_length_km = (route.length_meters / 1000) if route.length_meters else 0
@@ -119,16 +118,16 @@ async def create_souvenir(
                 f"You earned {xp_breakdown['total']} XP. "
                 f"Keep exploring to discover more adventures!"
             )
-        
+
         # 5.5. Generate pixel art SVG image
         pixel_image_svg = None
         try:
-            from datetime import datetime, timezone
+            from datetime import datetime
             route_length_km = (route.length_meters / 1000) if route.length_meters else 0
             pixel_image_svg = await generate_pixel_art_svg(
                 route_title=route.title,
                 route_location=route.location,
-                completed_at=datetime.now(timezone.utc),
+                completed_at=datetime.now(UTC),
                 xp_gained=xp_breakdown['total'],
                 distance_km=route_length_km,
                 difficulty=route.difficulty
@@ -139,8 +138,8 @@ async def create_souvenir(
             # SVG generation should not fail with template system, but if it does, we'll retry
             # For now, continue without pixel image - user can run batch script later
             pixel_image_svg = None
-            logger.warning(f"⚠️ Souvenir will be created without SVG. Run generate_missing_svgs.py to fix.")
-        
+            logger.warning("⚠️ Souvenir will be created without SVG. Run generate_missing_svgs.py to fix.")
+
         # 6. Create Souvenir
         new_souvenir = Souvenir(
             demo_profile_id=profile_id,
@@ -151,16 +150,15 @@ async def create_souvenir(
             pixel_image_svg=pixel_image_svg
         )
         db.add(new_souvenir)
-        
+
         # 7. Update profile
-        old_level = profile.level
         profile.total_xp += xp_breakdown['total']
         profile.level = calculate_level_from_xp(profile.total_xp)
         new_level = profile.level
-        
+
         await db.commit()
         await db.refresh(new_souvenir)
-        
+
         # 7.5. Check and unlock achievements
         newly_unlocked = []
         try:
@@ -173,12 +171,12 @@ async def create_souvenir(
         except Exception as e:
             logger.warning(f"Achievement check failed: {e}", exc_info=True)
             # Don't fail the route completion if achievement check fails
-        
+
         # 8. Load route relationship for response
         # We already have the route object from earlier; just ensure the simple
         # foreign-key relationship on Souvenir is refreshed (no lazy breakpoint loading).
         await db.refresh(new_souvenir, ['route'])
-        
+
         # 9. Build response without triggering lazy loading of Route.breakpoints.
         #    We construct a plain dict instead of letting Pydantic introspect the
         #    SQLAlchemy model (which caused MissingGreenlet when accessing breakpoints).
@@ -214,9 +212,9 @@ async def create_souvenir(
             "pixel_image_svg": new_souvenir.pixel_image_svg,
             "route": route_dict,
         }
-        
-        logger.info(f"✅ Souvenir created successfully: id={new_souvenir.id}, xp={xp_breakdown['total']}, new_level={new_level}")
-        
+
+        logger.info(f"✅ Souvenir created successfully: id={new_souvenir.id}, xp={xp_breakdown['total']}, new_level={new_level}")  # noqa: E501
+
         # Format newly unlocked achievements for response
         unlocked_achievements_list = [
             {
@@ -228,7 +226,7 @@ async def create_souvenir(
             }
             for a in newly_unlocked
         ]
-        
+
         return RouteCompleteResponse(
             souvenir=SouvenirResponse(**souvenir_dict),
             xp_breakdown=xp_breakdown,
@@ -243,11 +241,11 @@ async def create_souvenir(
         raise
     except Exception as e:
         logger.error(f"❌ Error creating souvenir: {type(e).__name__}: {str(e)}", exc_info=True)
-        logger.error(f"❌ Full traceback:", exc_info=True)
+        logger.error("❌ Full traceback:", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create souvenir: {str(e)}"
-        )
+        ) from e
 
 
 @router.get("/{profile_id}/souvenirs", response_model=SouvenirListResponse)
@@ -260,17 +258,17 @@ async def get_souvenirs(
 ):
     """
     Get all souvenirs for a profile with optional sorting and pagination.
-    
+
     Args:
         profile_id: User profile ID
         db: Database session
         limit: Maximum number of souvenirs to return (default: 20, max: 100)
         offset: Pagination offset (default: 0)
         sort: Sort order - newest, oldest, xp_high, xp_low (default: newest)
-    
+
     Returns:
         SouvenirListResponse with souvenirs list and total count
-    
+
     Raises:
         HTTPException: 404 if profile not found
     """
@@ -281,7 +279,7 @@ async def get_souvenirs(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found"
         )
-    
+
     # Build query with route relationship
     # Only load route basic info, not all breakpoints/mini_quests to avoid performance issues
     query = (
@@ -289,7 +287,7 @@ async def get_souvenirs(
         .where(Souvenir.demo_profile_id == profile_id)
         .options(selectinload(Souvenir.route))  # Only load route, not nested breakpoints
     )
-    
+
     # Apply sorting
     if sort == "newest":
         query = query.order_by(desc(Souvenir.completed_at))
@@ -299,20 +297,20 @@ async def get_souvenirs(
         query = query.order_by(desc(Souvenir.total_xp_gained))
     elif sort == "xp_low":
         query = query.order_by(asc(Souvenir.total_xp_gained))
-    
+
     # Get total count
     count_result = await db.execute(
         select(Souvenir).where(Souvenir.demo_profile_id == profile_id)
     )
     total = len(count_result.scalars().all())
-    
+
     # Apply pagination
     query = query.limit(limit).offset(offset)
-    
+
     # Execute query
     result = await db.execute(query)
     souvenirs = result.scalars().all()
-    
+
     # Convert to response models without triggering lazy loading of breakpoints
     souvenir_responses = []
     for souvenir in souvenirs:
@@ -352,7 +350,7 @@ async def get_souvenirs(
             route=RouteResponse(**route_dict) if route_dict else None,
         )
         souvenir_responses.append(souvenir_response)
-    
+
     return SouvenirListResponse(
         souvenirs=souvenir_responses,
         total=total
@@ -367,15 +365,15 @@ async def get_souvenir(
 ):
     """
     Get a single souvenir by ID.
-    
+
     Args:
         profile_id: User profile ID
         souvenir_id: Souvenir ID
         db: Database session
-    
+
     Returns:
         SouvenirResponse with full souvenir details including route
-    
+
     Raises:
         HTTPException: 404 if profile or souvenir not found
     """
@@ -386,7 +384,7 @@ async def get_souvenir(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Profile with id {profile_id} not found"
         )
-    
+
     # Get souvenir with route (without nested breakpoints for performance)
     result = await db.execute(
         select(Souvenir)
@@ -395,13 +393,13 @@ async def get_souvenir(
         .options(selectinload(Souvenir.route))  # Only load route, not nested breakpoints
     )
     souvenir = result.scalar_one_or_none()
-    
+
     if not souvenir:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Souvenir with id {souvenir_id} not found for profile {profile_id}"
         )
-    
+
     # Convert to response (without breakpoints to reduce payload and without lazy loads)
     route_dict = None
     if souvenir.route:

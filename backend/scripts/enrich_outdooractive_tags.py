@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -59,7 +58,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_tours(json_path: str) -> dict[str, Any]:
-    with open(json_path, "r", encoding="utf-8") as fp:
+    with open(json_path, encoding="utf-8") as fp:
         return json.load(fp)
 
 
