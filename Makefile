@@ -4,6 +4,7 @@
 #   make test    run the backend test suite (LLM_PROVIDER=mock, no network)
 #   make lint    ruff check on backend/
 #   make dev     run the API with autoreload on http://localhost:8000
+#   make llm-smoke  one live generate/embed/rank call per configured provider (costs a fraction of a cent)
 #
 # Uses backend/.venv/bin/python when it exists, otherwise `python` from PATH (CI).
 # Override with `make test PYTHON=...`.
@@ -21,7 +22,7 @@ DB        ?= $(abspath $(BACKEND)/data/app.db)
 SEED_FILE ?= $(abspath $(BACKEND)/data/seed/routes.jsonl)
 PORT      ?= 8000
 
-.PHONY: setup seed test lint dev
+.PHONY: setup seed test lint dev llm-smoke
 
 setup:
 	@if [ ! -x $(VENV)/bin/python ]; then \
@@ -44,3 +45,6 @@ lint:
 
 dev:
 	cd $(BACKEND) && $(PYTHON) -m uvicorn app.main:app --reload --port $(PORT)
+
+llm-smoke:
+	cd $(BACKEND) && $(PYTHON) scripts/llm_smoke.py
