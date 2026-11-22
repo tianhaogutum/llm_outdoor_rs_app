@@ -59,12 +59,45 @@ export interface Route {
   recommendationScore?: number | null; // CBF recommendation score (0.0-1.0)
   recommendationScoreBreakdown?: RecommendationScoreBreakdown | null; // Score breakdown
   gpxData?: string | null; // GPX track data for map visualization
+  // Real catalogue facts (OSM routes; undefined for mock/legacy routes)
+  facts?: RouteFacts;
+}
+
+/** Catalogue facts shown on cards and in the detail view (from the API's catalogue fields) */
+export interface RouteFacts {
+  source?: string; // "osm"
+  sourceUrl?: string; // OSM relation page (ODbL attribution link)
+  attribution?: string; // "© OpenStreetMap contributors, ODbL 1.0"
+  activity?: string;
+  isLoop?: boolean;
+  ascent?: number; // m
+  descent?: number; // m
+  locality?: string;
+  district?: string;
+  region?: string;
+  endLocality?: string;
+  startLat?: number;
+  startLon?: number;
+  minEle?: number;
+  maxEle?: number;
+  maxGrade?: string;
+  estDays?: number;
+  highlights: Array<{ type: string; name: string; atKm: number }>;
+  access: Array<{ kind: "train" | "tram" | "bus" | "parking"; label: string }>;
+  endAccess: Array<{ kind: "train" | "tram" | "bus" | "parking"; label: string }>;
+  surface?: { paved?: number; unpaved?: number; path?: number; track?: number; road?: number };
+  protectedAreas: string[];
+  allTags: string[];
+  descriptionGenerated?: boolean; // description text generated from OSM facts
+  website?: string;
+  ref?: string;
 }
 
 export interface Breakpoint {
   id: string;
   name: string;
-  distance: number; // km from start
+  distance: number; // km from start (legacy breakpoints: their order index)
+  poiType?: string; // OSM feature type (lake, castle, ...), "start" or "finish"
   type: "story" | "quest" | "checkpoint";
   content?: string;
   quest?: MiniQuest;
@@ -98,6 +131,11 @@ export interface UserProfile {
   difficultyBias: number;
   distanceBias: number;
   souvenirs: DigitalSouvenir[]; // Added souvenirs array
+  // Optional slots collected by the onboarding (stored on the backend profile)
+  home?: { name: string; lat: number; lon: number } | null;
+  travelRadiusKm?: number | null;
+  distanceCapKm?: number | null;
+  intent?: string | null;
 }
 
 export interface Achievement {

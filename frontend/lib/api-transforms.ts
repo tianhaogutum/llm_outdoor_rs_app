@@ -6,11 +6,126 @@ import {
   ApiRoute,
   ApiBreakpoint,
   ApiSouvenir,
+  ApiAccessPoint,
   mapApiDifficulty,
   mapApiCategory,
   RecommendationScoreBreakdown,
 } from "./api-types";
-import { Route, Breakpoint, MiniQuest, DigitalSouvenir } from "./mock-data";
+import { Route, Breakpoint, MiniQuest, DigitalSouvenir, RouteFacts } from "./mock-data";
+
+/** Readable labels for the OSM feature types used in highlights and breakpoints */
+export const FEATURE_LABELS: Record<string, string> = {
+  peak: "Summit",
+  alpine_hut: "Alpine hut",
+  wilderness_hut: "Hut",
+  waterfall: "Waterfall",
+  gorge: "Gorge",
+  glacier: "Glacier",
+  lake: "Lake",
+  viewpoint: "Viewpoint",
+  castle: "Castle",
+  ruins: "Ruins",
+  monastery: "Monastery",
+  cave: "Cave",
+  saddle: "Pass",
+  geological: "Rock feature",
+  river: "River",
+  museum: "Museum",
+  archaeological_site: "Archaeological site",
+  natural_monument_tree: "Natural monument",
+  beer_garden: "Beer garden",
+  swimming: "Swimming spot",
+  aerialway_station: "Cable car",
+  zoo: "Zoo / wildlife park",
+  bird_hide: "Bird hide",
+  monument: "Monument",
+  attraction: "Attraction",
+  spring: "Spring",
+  picnic_site: "Picnic site",
+  shelter: "Shelter",
+  playground: "Playground",
+  church: "Church",
+  restaurant: "Restaurant",
+  campsite: "Campsite",
+  drinking_water: "Drinking water",
+  start: "Start",
+  finish: "Finish",
+};
+
+export function featureLabel(type: string | null | undefined): string {
+  if (!type) return "";
+  return FEATURE_LABELS[type] || type.replace(/_/g, " ");
+}
+
+function formatMeters(m: number): string {
+  return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
+}
+
+function accessLabel(point: ApiAccessPoint, fallback: string): string {
+  const name = point.name ? `${point.name}` : fallback;
+  let label = `${name} (${formatMeters(point.dist_m)})`;
+  if (point.capacity) label += `, ${point.capacity} spaces`;
+  if (point.fee === "yes") label += ", fee";
+  if (point.fee === "no") label += ", free";
+  return label;
+}
+
+/** Map the API's catalogue fields onto RouteFacts; undefined for routes without catalogue data */
+export function transformRouteFacts(apiRoute: ApiRoute, allTags: string[]): RouteFacts | undefined {
+  if (!apiRoute.source && !apiRoute.facts) return undefined;
+  const f = apiRoute.facts || {};
+  const access: RouteFacts["access"] = [];
+  if (f.access?.train_station) access.push({ kind: "train", label: accessLabel(f.access.train_station, "Station") });
+  if (f.access?.tram_stop) access.push({ kind: "tram", label: accessLabel(f.access.tram_stop, "Tram stop") });
+  if (f.access?.bus_stop) access.push({ kind: "bus", label: accessLabel(f.access.bus_stop, "Bus stop") });
+  if (f.access?.parking) access.push({ kind: "parking", label: accessLabel(f.access.parking, "Parking") });
+  const endAccess: RouteFacts["endAccess"] = [];
+  if (f.end_access?.train_station) endAccess.push({ kind: "train", label: accessLabel(f.end_access.train_station, "Station") });
+  if (f.end_access?.tram_stop) endAccess.push({ kind: "tram", label: accessLabel(f.end_access.tram_stop, "Tram stop") });
+  if (f.end_access?.bus_stop) endAccess.push({ kind: "bus", label: accessLabel(f.end_access.bus_stop, "Bus stop") });
+  return {
+    source: apiRoute.source ?? undefined,
+    sourceUrl: apiRoute.source_url ?? undefined,
+    attribution: apiRoute.attribution ?? undefined,
+    activity: apiRoute.activity ?? undefined,
+    isLoop: apiRoute.is_loop ?? undefined,
+    ascent: apiRoute.ascent_m ?? apiRoute.elevation ?? undefined,
+    descent: apiRoute.descent_m ?? undefined,
+    locality: apiRoute.locality ?? undefined,
+    district: apiRoute.admin_district ?? undefined,
+    region: apiRoute.admin_region ?? undefined,
+    endLocality: f.end_locality,
+    startLat: apiRoute.start_lat ?? undefined,
+    startLon: apiRoute.start_lon ?? undefined,
+    minEle: f.min_ele_m,
+    maxEle: f.max_ele_m,
+    maxGrade: f.max_grade,
+    estDays: f.est_days,
+    highlights: (f.highlights || []).map((h) => ({
+      type: h.type,
+      name: h.name,
+      atKm: Number((h.at_m / 1000).toFixed(1)),
+    })),
+    access,
+    endAccess,
+    surface: f.surface
+      ? {
+          paved: f.surface.paved_share,
+          unpaved: f.surface.unpaved_share,
+          path: f.surface.path_share,
+          track: f.surface.track_share,
+          road: f.surface.road_share,
+        }
+      : undefined,
+    protectedAreas: f.protected_areas || [],
+    allTags,
+    descriptionGenerated: f.description_source
+      ? f.description_source.includes("generated")
+      : undefined,
+    website: f.website,
+    ref: f.ref,
+  };
+}
 
 /**
  * Pool of available route images for random assignment
@@ -176,7 +291,12 @@ function transformBreakpoint(
     id: String(apiBreakpoint.id),
     name:
       apiBreakpoint.poi_name || `Checkpoint ${apiBreakpoint.order_index + 1}`,
-    distance: apiBreakpoint.order_index, // Could be enhanced with actual distance from route start
+    // Real position along the route when known (OSM breakpoints); legacy ones only have an order
+    distance:
+      apiBreakpoint.at_m !== null && apiBreakpoint.at_m !== undefined
+        ? Number((apiBreakpoint.at_m / 1000).toFixed(1))
+        : apiBreakpoint.order_index,
+    poiType: apiBreakpoint.poi_type || undefined,
     type,
     content: apiBreakpoint.main_quest_snippet || undefined,
     quest,
@@ -193,13 +313,15 @@ function transformBreakpoint(
  * mapping the base_xp_reward to xpReward and handling all other field transformations.
  */
 export function transformApiRoute(apiRoute: ApiRoute): Route {
-  // Parse tags_json and take maximum 3 tags
+  // Parse tags_json; cards show at most 3 tags, the detail view all of them (facts.allTags)
   let tags: string[] = [];
+  let allTags: string[] = [];
   if (apiRoute.tags_json) {
     try {
       const parsedTags = JSON.parse(apiRoute.tags_json);
       if (Array.isArray(parsedTags)) {
-        tags = parsedTags.slice(0, 3); // Take only first 3 tags
+        allTags = parsedTags.filter((t): t is string => typeof t === "string");
+        tags = allTags.slice(0, 3); // Take only first 3 tags
       }
     } catch (e) {
       console.warn(`Failed to parse tags_json for route ${apiRoute.id}:`, e);
@@ -238,6 +360,7 @@ export function transformApiRoute(apiRoute: ApiRoute): Route {
     recommendationScore: apiRoute.recommendation_score ?? undefined,
     recommendationScoreBreakdown: apiRoute.recommendation_score_breakdown ?? undefined,
     gpxData: apiRoute.gpx_data_raw || undefined,
+    facts: transformRouteFacts(apiRoute, allTags),
   };
 }
 
@@ -289,7 +412,7 @@ export function transformApiSouvenir(apiSouvenir: ApiSouvenir): DigitalSouvenir 
     xpBreakdown: apiSouvenir.xp_breakdown_json,
     pixelImageSvg: apiSouvenir.pixel_image_svg,
     routeType: route ? mapApiCategory(route.category_name) : undefined,
-    duration: route?.duration_min,
+    duration: route?.duration_min ?? undefined,
     unlockedAchievements: apiSouvenir.unlocked_achievements,
   };
 }

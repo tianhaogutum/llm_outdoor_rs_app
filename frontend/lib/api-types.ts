@@ -12,6 +12,7 @@ export interface ApiBreakpoint {
   latitude: number | null;
   longitude: number | null;
   main_quest_snippet: string | null;
+  at_m?: number | null; // position along the route in metres (OSM breakpoints)
   mini_quests: ApiMiniQuest[];
 }
 
@@ -53,6 +54,54 @@ export interface RecommendationScoreBreakdown {
   feedback_count?: number;
 }
 
+/** A named OSM feature on the route (lake, hut, castle, ...) */
+export interface ApiHighlight {
+  type: string;
+  name: string;
+  at_m: number;
+}
+
+export interface ApiAccessPoint {
+  name?: string | null;
+  dist_m: number;
+  fee?: string;
+  capacity?: number;
+}
+
+/** Compact display facts of an OSM route (routes.facts_json); every key is optional */
+export interface ApiRouteFacts {
+  highlights?: ApiHighlight[];
+  access?: {
+    train_station?: ApiAccessPoint;
+    tram_stop?: ApiAccessPoint;
+    bus_stop?: ApiAccessPoint;
+    parking?: ApiAccessPoint;
+  };
+  end_access?: {
+    train_station?: ApiAccessPoint;
+    tram_stop?: ApiAccessPoint;
+    bus_stop?: ApiAccessPoint;
+  };
+  surface?: {
+    paved_share?: number;
+    unpaved_share?: number;
+    path_share?: number;
+    track_share?: number;
+    road_share?: number;
+  };
+  min_ele_m?: number;
+  max_ele_m?: number;
+  max_grade?: string;
+  est_days?: number;
+  end_locality?: string;
+  protected_areas?: string[];
+  description_source?: "generated" | "osm+generated" | string;
+  ref?: string;
+  network?: string;
+  operator?: string;
+  website?: string;
+}
+
 export interface ApiRoute {
   id: number;
   title: string;
@@ -74,6 +123,56 @@ export interface ApiRoute {
   is_locked: boolean; // Computed field based on user XP
   recommendation_score?: number | null; // CBF score (0.0-1.0)
   recommendation_score_breakdown?: RecommendationScoreBreakdown | null; // Score components
+  // Catalogue facts (OSM routes; null for the legacy catalogue)
+  source?: string | null; // "osm"
+  source_url?: string | null; // OSM relation page
+  activity?: string | null; // hiking | cycling | mtb | running
+  start_lat?: number | null;
+  start_lon?: number | null;
+  is_loop?: boolean | null;
+  ascent_m?: number | null; // == elevation (total ascent)
+  descent_m?: number | null;
+  locality?: string | null;
+  admin_district?: string | null;
+  admin_region?: string | null;
+  facts?: ApiRouteFacts | null;
+  attribution?: string | null; // must be shown with OSM data (ODbL)
+}
+
+export interface ApiRouteGeometry {
+  route_id: number;
+  coords: [number, number][]; // [lon, lat]
+  bbox: [number, number, number, number];
+  ele_profile_m?: number[] | null;
+  ele_step_m?: number | null;
+  length_m?: number | null;
+  source?: string | null;
+  source_url?: string | null;
+  attribution?: string | null;
+}
+
+export interface ApiPlace {
+  id: number;
+  name: string;
+  admin_district: string | null;
+  admin_region: string | null;
+  lat: number;
+  lon: number;
+  accuracy_m: number | null;
+  route_count: number;
+  match: "exact" | "prefix" | "word" | "fuzzy";
+  score: number;
+}
+
+export interface ApiPlaceSearchResponse {
+  places: ApiPlace[];
+  total: number;
+}
+
+export interface ApiHomeLocation {
+  name: string;
+  lat?: number | null;
+  lon?: number | null;
 }
 
 export interface ApiRecommendationResponse {
@@ -89,18 +188,28 @@ export interface ApiProfile {
   user_vector_json: string | null;
   genai_welcome_summary: string | null;
   unlocked_routes_json: string | null;
+  home?: { name: string; lat: number; lon: number } | null;
+  travel_radius_km?: number | null;
+  distance_cap_km?: number | null;
+  intent?: string | null;
 }
 
 export interface ApiProfileCreate {
   fitness: string; // "beginner" | "intermediate" | "advanced"
   type: string[]; // ["history-culture", "natural-scenery", "family-fun"]
   narrative: string; // "adventure" | "mystery" | "playful"
+  // Optional slots (hard filters / retrieval); omit for "no constraint"
+  home?: ApiHomeLocation | null;
+  travel_radius_km?: number | null;
+  distance_cap_km?: number | null;
+  intent?: string | null;
 }
 
 export interface ApiProfileCreateResponse {
   id: number;
   welcome_summary: string;
   user_vector: Record<string, any>;
+  profile?: ApiProfile | null;
 }
 
 export interface ApiSouvenir {

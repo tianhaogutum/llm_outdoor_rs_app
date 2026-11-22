@@ -19,6 +19,8 @@
  *   logger.error('Error information', error);
  */
 
+import { resolveApiBaseUrl } from "./api-base";
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogEntry {
@@ -46,7 +48,7 @@ class Logger {
 
   constructor() {
     this.isDevelopment = process.env.NODE_ENV === 'development';
-    this.apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    this.apiBaseUrl = resolveApiBaseUrl();
     this.loadFromLocalStorage();
     this.startAutoSend();
     

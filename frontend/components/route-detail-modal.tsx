@@ -9,10 +9,26 @@ import {
   MapPin,
   Clock,
   TrendingUp,
+  TrendingDown,
   Mountain,
   Sparkles,
   Lock,
+  Repeat,
+  MoveRight,
+  Train,
+  Bus,
+  Car,
+  Star,
+  Footprints,
 } from "lucide-react";
+import { featureLabel } from "@/lib/api-transforms";
+import { OsmAttribution, formatDuration, formatKm, routePlaceLine } from "@/components/route-facts";
+
+const ACCESS_ICONS = { train: Train, tram: Train, bus: Bus, parking: Car } as const;
+
+function pct(share?: number): string {
+  return share === undefined ? "–" : `${Math.round(share * 100)}%`;
+}
 
 interface RouteDetailModalProps {
   route: Route;
@@ -35,6 +51,9 @@ export function RouteDetailModal({
   const isCompleted = userProfile.completedRoutes.includes(route.id);
 
   const hasCompletedQuestionnaire = isLoggedIn && userProfile.explorerType;
+  const facts = route.facts;
+  const isOsm = facts?.source === "osm";
+  const tags = facts?.allTags?.length ? facts.allTags : route.tags;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center p-2 sm:p-4 overflow-y-auto">
@@ -97,15 +116,29 @@ export function RouteDetailModal({
             </div>
             <p className="text-muted-foreground flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              {route.location}
+              {routePlaceLine(route)}
+              {facts?.region && <span className="text-xs">· {facts.region}</span>}
             </p>
           </div>
 
-          {/* Description */}
-          <div
-            className="text-foreground leading-relaxed line-clamp-9"
-            dangerouslySetInnerHTML={{ __html: route.description }}
-          />
+          {/* Description: OSM text is plain text (never injected as HTML); legacy texts carry markup */}
+          {isOsm ? (
+            <div className="space-y-1">
+              <p className="text-foreground leading-relaxed whitespace-pre-line line-clamp-9">
+                {route.description}
+              </p>
+              {facts?.descriptionGenerated && (
+                <p className="text-xs italic text-muted-foreground">
+                  Description generated from OpenStreetMap facts about this route.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div
+              className="text-foreground leading-relaxed line-clamp-9"
+              dangerouslySetInnerHTML={{ __html: route.description }}
+            />
+          )}
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg border-2 border-border">
@@ -113,24 +146,137 @@ export function RouteDetailModal({
               <Mountain className="w-6 h-6 mx-auto mb-1 text-primary" />
               <p className="text-sm text-muted-foreground">Distance</p>
               <p className="text-lg font-bold text-foreground">
-                {route.distance} km
+                {formatKm(route.distance)}
               </p>
             </div>
             <div className="text-center">
               <TrendingUp className="w-6 h-6 mx-auto mb-1 text-primary" />
-              <p className="text-sm text-muted-foreground">Elevation</p>
+              <p className="text-sm text-muted-foreground">Ascent</p>
               <p className="text-lg font-bold text-foreground">
                 {route.elevation} m
               </p>
             </div>
+            {facts?.descent !== undefined && (
+              <div className="text-center">
+                <TrendingDown className="w-6 h-6 mx-auto mb-1 text-primary" />
+                <p className="text-sm text-muted-foreground">Descent</p>
+                <p className="text-lg font-bold text-foreground">{facts.descent} m</p>
+              </div>
+            )}
             <div className="text-center">
               <Clock className="w-6 h-6 mx-auto mb-1 text-primary" />
               <p className="text-sm text-muted-foreground">Duration</p>
               <p className="text-lg font-bold text-foreground">
-                {Math.round(route.duration / 60)}h {route.duration % 60}m
+                {formatDuration(route.duration, facts?.estDays)}
               </p>
             </div>
+            {facts?.isLoop !== undefined && (
+              <div className="text-center">
+                {facts.isLoop ? (
+                  <Repeat className="w-6 h-6 mx-auto mb-1 text-primary" />
+                ) : (
+                  <MoveRight className="w-6 h-6 mx-auto mb-1 text-primary" />
+                )}
+                <p className="text-sm text-muted-foreground">Shape</p>
+                <p className="text-lg font-bold text-foreground">
+                  {facts.isLoop ? "Loop" : "Linear"}
+                </p>
+              </div>
+            )}
+            {facts?.minEle !== undefined && facts?.maxEle !== undefined && (
+              <div className="text-center">
+                <Mountain className="w-6 h-6 mx-auto mb-1 text-primary" />
+                <p className="text-sm text-muted-foreground">Elevation range</p>
+                <p className="text-lg font-bold text-foreground">
+                  {facts.minEle}–{facts.maxEle} m
+                </p>
+              </div>
+            )}
+            {facts?.maxGrade && (
+              <div className="text-center">
+                <Footprints className="w-6 h-6 mx-auto mb-1 text-primary" />
+                <p className="text-sm text-muted-foreground">Hardest grade</p>
+                <p className="text-lg font-bold text-foreground">{facts.maxGrade}</p>
+              </div>
+            )}
           </div>
+
+          {/* Highlights: named OSM features on the route */}
+          {facts && facts.highlights.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-3">Highlights</h3>
+              <ul className="grid sm:grid-cols-2 gap-2">
+                {facts.highlights.map((h) => (
+                  <li
+                    key={`${h.type}-${h.name}`}
+                    className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg border border-border text-sm"
+                  >
+                    <Star className="w-4 h-4 text-accent shrink-0" />
+                    <span className="flex-1 text-foreground">
+                      {h.name}
+                      <span className="text-muted-foreground"> · {featureLabel(h.type)}</span>
+                    </span>
+                    <span className="text-xs text-muted-foreground">km {h.atKm}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Getting there and terrain */}
+          {facts && (facts.access.length > 0 || facts.endAccess.length > 0 || facts.surface) && (
+            <div className="grid md:grid-cols-2 gap-4">
+              {(facts.access.length > 0 || facts.endAccess.length > 0) && (
+                <div className="p-3 rounded-lg border border-border space-y-2">
+                  <h4 className="font-semibold text-foreground">Getting there</h4>
+                  {facts.access.map((a) => {
+                    const Icon = ACCESS_ICONS[a.kind];
+                    return (
+                      <p key={`start-${a.kind}`} className="text-sm text-foreground flex items-center gap-2">
+                        <Icon className="w-4 h-4 text-primary shrink-0" />
+                        {a.label}
+                      </p>
+                    );
+                  })}
+                  {facts.endAccess.length > 0 && (
+                    <>
+                      <p className="text-xs text-muted-foreground pt-1">At the finish</p>
+                      {facts.endAccess.map((a) => {
+                        const Icon = ACCESS_ICONS[a.kind];
+                        return (
+                          <p key={`end-${a.kind}`} className="text-sm text-foreground flex items-center gap-2">
+                            <Icon className="w-4 h-4 text-primary shrink-0" />
+                            {a.label}
+                          </p>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+              )}
+              {facts.surface && (
+                <div className="p-3 rounded-lg border border-border space-y-2">
+                  <h4 className="font-semibold text-foreground">Surface</h4>
+                  <div className="flex h-3 w-full overflow-hidden rounded-full border border-border">
+                    <div className="bg-primary" style={{ width: pct(facts.surface.paved) }} />
+                    <div className="bg-accent" style={{ width: pct(facts.surface.unpaved) }} />
+                  </div>
+                  <p className="text-sm text-foreground">
+                    Paved {pct(facts.surface.paved)} · Unpaved {pct(facts.surface.unpaved)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Paths {pct(facts.surface.path)} · Tracks {pct(facts.surface.track)} · Roads {pct(facts.surface.road)}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {facts && facts.protectedAreas.length > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Passes through: {facts.protectedAreas.join(", ")}
+            </p>
+          )}
 
           {/* Breakpoints Preview */}
           <div>
@@ -148,9 +294,12 @@ export function RouteDetailModal({
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-foreground">{bp.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {bp.distance} km
-                    </p>
+                    {bp.poiType && (
+                      <p className="text-sm text-muted-foreground">
+                        {bp.poiType !== "start" && bp.poiType !== "finish" && `${featureLabel(bp.poiType)} · `}
+                        km {bp.distance}
+                      </p>
+                    )}
                   </div>
                   {bp.type === "quest" && (
                     <Badge variant="secondary" className="text-xs">
@@ -162,14 +311,28 @@ export function RouteDetailModal({
             </div>
           </div>
 
-          {/* Tags - Maximum 3 tags */}
-          {route.tags.length > 0 && (
+          {/* Tags (all of them for catalogue routes) */}
+          {tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {route.tags.map((tag) => (
+              {tags.map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   #{tag}
                 </Badge>
               ))}
+            </div>
+          )}
+
+          {isOsm && (
+            <div className="space-y-1">
+              <OsmAttribution route={route} />
+              {facts?.website && /^https?:\/\//i.test(facts.website) && (
+                <p className="text-[11px] text-muted-foreground">
+                  Route website (from OSM):{" "}
+                  <a href={facts.website} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
+                    {facts.website.replace(/^https?:\/\//, "").slice(0, 60)}
+                  </a>
+                </p>
+              )}
             </div>
           )}
 

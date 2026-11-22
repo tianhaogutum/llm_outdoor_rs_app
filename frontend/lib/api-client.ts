@@ -6,8 +6,7 @@
  */
 
 import { logger } from './logger';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { describeApiBaseUrl, resolveApiBaseUrl } from './api-base';
 
 export class ApiError extends Error {
   constructor(message: string, public status: number, public data?: unknown) {
@@ -20,7 +19,7 @@ class ApiClient {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = API_BASE_URL;
+    this.baseURL = resolveApiBaseUrl();
     logger.info('API Client initialized', { baseURL: this.baseURL }, 'ApiClient', 'INIT');
   }
 
@@ -186,7 +185,7 @@ class ApiClient {
           stack: error.stack
         }, 'ApiClient');
         throw new ApiError(
-          "Network error: Could not connect to the server. Please check if the backend is running on http://localhost:8000",
+          `Network error: Could not connect to the server. Please check if the backend is running on ${describeApiBaseUrl()}`,
           0,
           { networkError: true, originalError: error.message }
         );
@@ -363,6 +362,28 @@ class ApiClient {
   }
 
   /**
+   * Resolve a typed place name against the catalogue's localities (autocomplete)
+   */
+  async searchPlaces(query: string, limit: number = 8): Promise<ApiPlaceSearchResponse> {
+    const params = new URLSearchParams({ q: query, limit: String(limit) });
+    return this.get<ApiPlaceSearchResponse>(`api/places?${params.toString()}`, undefined, 10000);
+  }
+
+  /**
+   * Get one route with breakpoints and catalogue facts
+   */
+  async getRoute(routeId: number): Promise<ApiRoute> {
+    return this.get<ApiRoute>(`api/routes/${routeId}`);
+  }
+
+  /**
+   * Get a route's line ([[lon, lat], ...]) and elevation profile for the map
+   */
+  async getRouteGeometry(routeId: number): Promise<ApiRouteGeometry> {
+    return this.get<ApiRouteGeometry>(`api/routes/${routeId}/geometry`, undefined, 15000);
+  }
+
+  /**
    * Get all achievement definitions
    */
   async getAchievements(): Promise<ApiAchievement[]> {
@@ -398,4 +419,7 @@ import type {
   ApiProfileAchievement,
   ApiProfileStatistics,
   ApiProfile,
+  ApiPlaceSearchResponse,
+  ApiRoute,
+  ApiRouteGeometry,
 } from "./api-types";

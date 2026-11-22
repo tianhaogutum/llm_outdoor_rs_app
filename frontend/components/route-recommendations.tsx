@@ -10,6 +10,7 @@ import { apiClient } from "@/lib/api-client";
 import { ApiRecommendationResponse } from "@/lib/api-types";
 import { transformApiRoutes, transformApiSouvenir } from "@/lib/api-transforms";
 import { logger } from "@/lib/logger";
+import { describeApiBaseUrl } from "@/lib/api-base";
 import { calculateLevelFromXp } from "@/lib/level-system";
 import {
   Mountain,
@@ -31,6 +32,14 @@ import { FeedbackDialog } from "@/components/feedback-dialog";
 import { UserProfileModal } from "@/components/user-profile-modal";
 import { SouvenirGallery } from "@/components/souvenir-gallery";
 import { RecommendationScoreModal } from "@/components/recommendation-score-modal";
+import {
+  HighlightChips,
+  OsmAttribution,
+  RouteShapeBadge,
+  formatDuration,
+  formatKm,
+  routePlaceLine,
+} from "@/components/route-facts";
 
 interface RouteRecommendationsProps {
   userProfile: UserProfile;
@@ -208,7 +217,7 @@ export function RouteRecommendations({
           error.message.includes("Failed to fetch")
         ) {
           errorMessage =
-            "Network error: Could not connect to the server. Please check if the backend is running on http://localhost:8000";
+            `Network error: Could not connect to the server. Please check if the backend is running on ${describeApiBaseUrl()}`;
         } else if (error.message.includes("timeout")) {
           errorMessage =
             "Request timeout: The server took too long to respond. Please try again.";
@@ -1008,7 +1017,7 @@ export function RouteRecommendations({
                   <option value={30}>30</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
-                  <option value={999}>All</option>
+                  <option value={200}>200</option>
                 </select>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -1124,6 +1133,7 @@ export function RouteRecommendations({
                   >
                     {getDifficultyLabel(route.difficulty)}
                   </Badge>
+                  <RouteShapeBadge route={route} className="absolute bottom-2 left-2" />
                 </div>
 
                 {/* Content */}
@@ -1133,8 +1143,8 @@ export function RouteRecommendations({
                       {route.name}
                     </h3>
                     <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {route.location}
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{routePlaceLine(route)}</span>
                     </p>
                   </div>
 
@@ -1142,18 +1152,26 @@ export function RouteRecommendations({
                     {route.description}
                   </p>
 
+                  <HighlightChips route={route} limit={3} />
+
                   {/* Stats */}
-                  <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div className="grid grid-cols-4 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Distance</p>
                       <p className="font-semibold text-foreground">
-                        {route.distance} km
+                        {formatKm(route.distance)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Ascent</p>
+                      <p className="font-semibold text-foreground">
+                        {route.elevation} m
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Duration</p>
                       <p className="font-semibold text-foreground">
-                        {Math.round(route.duration / 60)}h
+                        {formatDuration(route.duration)}
                       </p>
                     </div>
                     <div>
@@ -1184,6 +1202,7 @@ export function RouteRecommendations({
                       </Button>
                     )}
                   </div>
+                  <OsmAttribution route={route} />
                 </div>
               </Card>
             );

@@ -2,14 +2,16 @@
 
 import { Route, Breakpoint } from '@/lib/mock-data';
 import { MapPin, CheckCircle2, Sparkles, Target } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   parseGPX,
   findClosestPointOnTrack,
-  projectToSVG,
+  projectToSVGPreservingShape,
   generatePathFromPoints,
   type GPXTrack,
 } from '@/lib/gpx-parser';
+import { apiClient } from '@/lib/api-client';
+import { OsmAttribution } from '@/components/route-facts';
 
 interface RouteSimulationMapProps {
   route: Route;
@@ -263,7 +265,7 @@ export function RouteSimulationMap({
   const height = 350; // Slightly taller for better vertical spacing
   const padding = 60; // More padding for labels
   
-  // Parse GPX data if available
+  // Parse GPX data if available (legacy routes)
   const gpxTrack = useMemo(() => {
     if (route.gpxData) {
       return parseGPX(route.gpxData);
@@ -271,11 +273,34 @@ export function RouteSimulationMap({
     return null;
   }, [route.gpxData]);
 
+  // Real line of catalogue routes, from GET /api/routes/{id}/geometry
+  const [geometryTrack, setGeometryTrack] = useState<GPXTrack | null>(null);
+  useEffect(() => {
+    setGeometryTrack(null);
+    const routeIdNum = parseInt(route.id, 10);
+    if (route.gpxData || isNaN(routeIdNum) || !route.facts?.source) return;
+    let cancelled = false;
+    apiClient
+      .getRouteGeometry(routeIdNum)
+      .then((geometry) => {
+        if (cancelled || geometry.coords.length < 2) return;
+        setGeometryTrack({ points: geometry.coords.map(([lon, lat]) => ({ lat, lon })) });
+      })
+      .catch((error) => {
+        console.warn(`No geometry for route ${route.id}; using the schematic layout`, error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [route.id, route.gpxData, route.facts?.source]);
+
+  const track = gpxTrack ?? geometryTrack;
+
   // Calculate layout: use GPX if available, otherwise use fixed layouts
   const { pathD, positions, labelOffsets } = useMemo(() => {
-    if (gpxTrack && gpxTrack.points.length > 0) {
-      // Use GPX data for realistic route visualization
-      const projectedPoints = projectToSVG(gpxTrack.points, width, height, padding);
+    if (track && track.points.length > 0) {
+      // Real line (GPX or OSM geometry), drawn with its true shape
+      const projectedPoints = projectToSVGPreservingShape(track.points, width, height, padding);
       const pathD = generatePathFromPoints(projectedPoints);
 
       // Find closest points on track for each breakpoint
@@ -286,13 +311,13 @@ export function RouteSimulationMap({
         if (breakpoint.latitude && breakpoint.longitude) {
           // Find closest point on GPX track
           const closest = findClosestPointOnTrack(
-            gpxTrack,
+            track,
             breakpoint.latitude,
             breakpoint.longitude
           );
 
-          // Project the closest point to SVG coordinates
-          const projectedClosest = projectToSVG([closest.point], width, height, padding)[0];
+          // Same projection as the line (projecting the point alone would use its own bounding box)
+          const projectedClosest = projectedPoints[closest.index];
           positions.push(projectedClosest);
 
           // Calculate label offset based on position
@@ -321,7 +346,7 @@ export function RouteSimulationMap({
         return generateDefaultLayout(count, width, height, padding);
       }
     }
-  }, [gpxTrack, breakpoints, width, height, padding]);
+  }, [track, breakpoints, width, height, padding]);
   
   return (
     <div className="relative w-full bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border-4 border-border p-4">
@@ -332,6 +357,11 @@ export function RouteSimulationMap({
           {gpxTrack && (
             <span className="text-xs text-muted-foreground ml-auto font-normal">
               📍 GPX Track
+            </span>
+          )}
+          {!gpxTrack && geometryTrack && (
+            <span className="text-xs text-muted-foreground ml-auto font-normal">
+              📍 Real route line
             </span>
           )}
         </h3>
@@ -472,6 +502,8 @@ export function RouteSimulationMap({
         )}
       </svg>
       
+      {geometryTrack && <OsmAttribution route={route} className="mt-2 text-right" />}
+
       {/* Legend */}
       <div className="mt-4 flex flex-wrap gap-4 text-xs">
         <div className="flex items-center gap-2">

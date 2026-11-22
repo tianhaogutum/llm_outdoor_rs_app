@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -10,8 +10,26 @@ import {
   defaultUserProfile,
 } from "@/lib/mock-data";
 import { apiClient } from "@/lib/api-client";
-import { ApiProfileCreateResponse } from "@/lib/api-types";
-import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
+import { ApiPlace, ApiProfileCreate, ApiProfileCreateResponse } from "@/lib/api-types";
+import { ArrowRight, ArrowLeft, Sparkles, MapPin } from "lucide-react";
+
+// Optional last step: slots used by hard filters (radius, distance cap) and retrieval (intent).
+const RADIUS_OPTIONS: Array<{ value: number | null; label: string }> = [
+  { value: null, label: "ANY" },
+  { value: 10, label: "10 KM" },
+  { value: 25, label: "25 KM" },
+  { value: 50, label: "50 KM" },
+  { value: 100, label: "100 KM" },
+];
+const DISTANCE_CAP_OPTIONS: Array<{ value: number | null; label: string }> = [
+  { value: null, label: "ANY" },
+  { value: 5, label: "5 KM" },
+  { value: 10, label: "10 KM" },
+  { value: 20, label: "20 KM" },
+  { value: 40, label: "40 KM" },
+  { value: 80, label: "80 KM" },
+];
+const INTENT_MAX_LENGTH = 500;
 
 interface OnboardingQuestionnaireProps {
   onComplete: (profile: UserProfile) => void;
@@ -29,8 +47,79 @@ export function OnboardingQuestionnaire({
   const [welcomeSummary, setWelcomeSummary] = useState<string | null>(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
-  const progress =
-    ((currentQuestion + 1) / questionnaireQuestions.length) * 100;
+  // Step 4 (optional): home, travel radius, distance cap, free-text intent
+  const [homeQuery, setHomeQuery] = useState("");
+  const [home, setHome] = useState<ApiPlace | null>(null);
+  const [placeSuggestions, setPlaceSuggestions] = useState<ApiPlace[]>([]);
+  const [isSearchingPlaces, setIsSearchingPlaces] = useState(false);
+  const [placeSearchError, setPlaceSearchError] = useState<string | null>(null);
+  const [travelRadiusKm, setTravelRadiusKm] = useState<number | null>(null);
+  const [distanceCapKm, setDistanceCapKm] = useState<number | null>(null);
+  const [intent, setIntent] = useState("");
+  const searchSeq = useRef(0);
+
+  const totalSteps = questionnaireQuestions.length + 1;
+  const isDetailsStep = currentQuestion === questionnaireQuestions.length;
+  const progress = ((currentQuestion + 1) / totalSteps) * 100;
+
+  // Debounced place autocomplete against the catalogue's own localities
+  useEffect(() => {
+    const q = homeQuery.trim();
+    if (home && q === home.name) return; // the field shows the chosen place
+    if (q.length < 2) {
+      setPlaceSuggestions([]);
+      setPlaceSearchError(null);
+      return;
+    }
+    const seq = ++searchSeq.current;
+    const timer = setTimeout(async () => {
+      setIsSearchingPlaces(true);
+      try {
+        const response = await apiClient.searchPlaces(q, 8);
+        if (seq === searchSeq.current) {
+          setPlaceSuggestions(response.places);
+          setPlaceSearchError(response.places.length === 0 ? "NO MATCHING PLACE IN THE CATALOGUE" : null);
+        }
+      } catch (error) {
+        if (seq === searchSeq.current) {
+          setPlaceSuggestions([]);
+          setPlaceSearchError("PLACE SEARCH UNAVAILABLE");
+        }
+      } finally {
+        if (seq === searchSeq.current) setIsSearchingPlaces(false);
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [homeQuery, home]);
+
+  const choosePlace = (place: ApiPlace) => {
+    setHome(place);
+    setHomeQuery(place.name);
+    setPlaceSuggestions([]);
+    setPlaceSearchError(null);
+  };
+
+  const buildProfilePayload = (): ApiProfileCreate => {
+    const payload: ApiProfileCreate = {
+      fitness: answers.fitness,
+      type: answers.type || [],
+      narrative: answers.narrative,
+    };
+    if (home) payload.home = { name: home.name, lat: home.lat, lon: home.lon };
+    // A radius only means something relative to a home
+    if (travelRadiusKm !== null && home) payload.travel_radius_km = travelRadiusKm;
+    if (distanceCapKm !== null) payload.distance_cap_km = distanceCapKm;
+    const trimmedIntent = intent.trim();
+    if (trimmedIntent) payload.intent = trimmedIntent;
+    return payload;
+  };
+
+  const profileSlots = () => ({
+    home: home ? { name: home.name, lat: home.lat, lon: home.lon } : null,
+    travelRadiusKm: home ? travelRadiusKm : null,
+    distanceCapKm,
+    intent: intent.trim() || null,
+  });
 
   const handleAnswer = (
     questionId: string,
@@ -49,7 +138,7 @@ export function OnboardingQuestionnaire({
   };
 
   const handleNext = () => {
-    if (currentQuestion < questionnaireQuestions.length - 1) {
+    if (currentQuestion < totalSteps - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       generateExplorerType();
@@ -86,11 +175,7 @@ export function OnboardingQuestionnaire({
     try {
       const response = await apiClient.post<ApiProfileCreateResponse>(
         "api/profiles",
-        {
-          fitness: answers.fitness,
-          type: answers.type || [],
-          narrative: answers.narrative,
-        }
+        buildProfilePayload()
       );
 
       setBackendProfileId(response.id);
@@ -114,11 +199,7 @@ export function OnboardingQuestionnaire({
       if (!finalBackendProfileId) {
         const response = await apiClient.post<ApiProfileCreateResponse>(
           "api/profiles",
-          {
-            fitness: answers.fitness,
-            type: answers.type || [],
-            narrative: answers.narrative,
-          }
+          buildProfilePayload()
         );
 
         finalBackendProfileId = response.id;
@@ -137,6 +218,7 @@ export function OnboardingQuestionnaire({
         fitnessLevel: answers.fitness,
         preferredTypes: answers.type || [],
         narrativeStyle: answers.narrative,
+        ...profileSlots(),
       };
 
       console.log(
@@ -158,6 +240,7 @@ export function OnboardingQuestionnaire({
         fitnessLevel: answers.fitness,
         preferredTypes: answers.type || [],
         narrativeStyle: answers.narrative,
+        ...profileSlots(),
       };
 
       console.warn(
@@ -170,11 +253,12 @@ export function OnboardingQuestionnaire({
     }
   };
 
-  const question = questionnaireQuestions[currentQuestion];
-  const isAnswered =
-    question.type === "multiple"
-      ? answers[question.id]?.length > 0
-      : answers[question.id];
+  const question = isDetailsStep ? null : questionnaireQuestions[currentQuestion];
+  const isAnswered = !question
+    ? true // the details step is optional
+    : question.type === "multiple"
+    ? answers[question.id]?.length > 0
+    : answers[question.id];
 
   if (showSummary) {
     return (
@@ -252,6 +336,34 @@ export function OnboardingQuestionnaire({
                   ))}
                 </div>
               </div>
+              {(home || travelRadiusKm || distanceCapKm || intent.trim()) && (
+                <div className="pt-2 border-t-2 border-dashed border-border grid grid-cols-2 gap-4 text-[10px]">
+                  {home && (
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground">HOME</p>
+                      <p className="font-pixel text-foreground uppercase">{home.name}</p>
+                    </div>
+                  )}
+                  {home && travelRadiusKm && (
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground">TRAVEL RADIUS</p>
+                      <p className="font-pixel text-foreground">{travelRadiusKm} KM</p>
+                    </div>
+                  )}
+                  {distanceCapKm && (
+                    <div className="space-y-1">
+                      <p className="text-muted-foreground">MAX ROUTE LENGTH</p>
+                      <p className="font-pixel text-foreground">{distanceCapKm} KM</p>
+                    </div>
+                  )}
+                  {intent.trim() && (
+                    <div className="space-y-1 col-span-2">
+                      <p className="text-muted-foreground">LOOKING FOR</p>
+                      <p className="text-foreground leading-relaxed">&ldquo;{intent.trim()}&rdquo;</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <button
@@ -290,7 +402,7 @@ export function OnboardingQuestionnaire({
               CHARACTER CREATION
             </h2>
             <span className="text-xs font-pixel">
-              Q {currentQuestion + 1}/{questionnaireQuestions.length}
+              Q {currentQuestion + 1}/{totalSteps}
             </span>
           </div>
           <div className="health-bar-container">
@@ -305,26 +417,148 @@ export function OnboardingQuestionnaire({
           <div className="space-y-4">
             <div className="bg-muted p-4 pixel-border-sm">
               <p className="text-[10px] md:text-xs leading-relaxed text-foreground font-pixel">
-                {question.question}
+                {question
+                  ? question.question
+                  : "Where do you start from, and what are you looking for? (optional)"}
               </p>
             </div>
           </div>
 
+          {isDetailsStep && (
+            <div className="space-y-5">
+              {/* Home location with autocomplete */}
+              <div className="space-y-2 relative">
+                <label htmlFor="home-place" className="block text-[10px] font-pixel text-foreground">
+                  🏠 HOME
+                </label>
+                <div className="flex items-center gap-2 bg-card pixel-border-sm px-3">
+                  <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <input
+                    id="home-place"
+                    type="text"
+                    autoComplete="off"
+                    value={homeQuery}
+                    onChange={(e) => {
+                      setHomeQuery(e.target.value);
+                      if (home && e.target.value !== home.name) setHome(null);
+                    }}
+                    placeholder="Town or village in Bavaria, e.g. Garmisch"
+                    className="w-full py-3 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+                    aria-autocomplete="list"
+                    aria-controls="home-place-suggestions"
+                  />
+                  {isSearchingPlaces && <span className="text-[10px] animate-pulse">…</span>}
+                  {home && <span className="text-lg" aria-label="place selected">✓</span>}
+                </div>
+                {placeSuggestions.length > 0 && (
+                  <ul
+                    id="home-place-suggestions"
+                    role="listbox"
+                    className="absolute z-20 left-0 right-0 bg-card pixel-border-sm max-h-64 overflow-y-auto"
+                  >
+                    {placeSuggestions.map((place) => (
+                      <li key={place.id} role="option" aria-selected={home?.id === place.id}>
+                        <button
+                          type="button"
+                          onClick={() => choosePlace(place)}
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-muted flex items-center justify-between gap-2"
+                        >
+                          <span className="text-foreground">
+                            {place.name}
+                            <span className="text-muted-foreground"> · {place.admin_district}</span>
+                          </span>
+                          <span className="text-[10px] text-muted-foreground shrink-0">
+                            {place.route_count} {place.route_count === 1 ? "route" : "routes"}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {placeSearchError && !home && (
+                  <p className="text-[10px] text-muted-foreground font-pixel">{placeSearchError}</p>
+                )}
+                {!home && homeQuery.trim().length >= 2 && placeSuggestions.length > 0 && (
+                  <p className="text-[10px] text-muted-foreground">Pick a place from the list to use it.</p>
+                )}
+              </div>
+
+              {/* Travel radius */}
+              <div className="space-y-2">
+                <p className="text-[10px] font-pixel text-foreground">🚗 HOW FAR WILL YOU TRAVEL TO THE START?</p>
+                <div className="flex flex-wrap gap-2">
+                  {RADIUS_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => setTravelRadiusKm(opt.value)}
+                      disabled={opt.value !== null && !home}
+                      title={opt.value !== null && !home ? "Choose a home first" : undefined}
+                      className={`px-3 py-2 pixel-border-sm text-[10px] font-pixel disabled:opacity-40 disabled:cursor-not-allowed ${
+                        travelRadiusKm === opt.value ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Distance cap */}
+              <div className="space-y-2">
+                <p className="text-[10px] font-pixel text-foreground">📏 LONGEST ROUTE YOU WANT</p>
+                <div className="flex flex-wrap gap-2">
+                  {DISTANCE_CAP_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.label}
+                      type="button"
+                      onClick={() => setDistanceCapKm(opt.value)}
+                      className={`px-3 py-2 pixel-border-sm text-[10px] font-pixel ${
+                        distanceCapKm === opt.value ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Free-text intent */}
+              <div className="space-y-2">
+                <label htmlFor="intent" className="block text-[10px] font-pixel text-foreground">
+                  💬 WHAT ARE YOU LOOKING FOR?
+                </label>
+                <textarea
+                  id="intent"
+                  value={intent}
+                  maxLength={INTENT_MAX_LENGTH}
+                  onChange={(e) => setIntent(e.target.value)}
+                  rows={3}
+                  placeholder="e.g. a quiet lake loop with a hut stop, fine for a seven-year-old"
+                  className="w-full p-3 bg-card pixel-border-sm text-xs text-foreground outline-none placeholder:text-muted-foreground resize-none"
+                />
+                <p className="text-[10px] text-muted-foreground text-right">
+                  {intent.length}/{INTENT_MAX_LENGTH}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-3">
-            {question.options.map((option) => {
+            {(question?.options ?? []).map((option) => {
               const isSelected =
-                question.type === "multiple"
-                  ? (answers[question.id] || []).includes(option.value)
-                  : answers[question.id] === option.value;
+                question!.type === "multiple"
+                  ? (answers[question!.id] || []).includes(option.value)
+                  : answers[question!.id] === option.value;
 
               return (
                 <button
                   key={option.value}
                   onClick={() =>
                     handleAnswer(
-                      question.id,
+                      question!.id,
                       option.value,
-                      question.type === "multiple"
+                      question!.type === "multiple"
                     )
                   }
                   className={`w-full p-4 text-left pixel-border-sm text-[10px] md:text-xs transition-all flex items-center gap-3 ${
@@ -362,7 +596,7 @@ export function OnboardingQuestionnaire({
                   : "bg-primary text-primary-foreground hover:bg-primary/90"
               }`}
             >
-              {currentQuestion === questionnaireQuestions.length - 1
+              {currentQuestion === totalSteps - 1
                 ? "✓ FINISH"
                 : "NEXT →"}
             </button>

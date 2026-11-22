@@ -179,6 +179,40 @@ export function projectToSVG(
 }
 
 /**
+ * Project GPS coordinates to SVG coordinates keeping the real shape: equirectangular projection
+ * (longitude scaled by cos(mean latitude)), one scale for both axes, centred in the viewport.
+ */
+export function projectToSVGPreservingShape(
+  points: GPXPoint[],
+  width: number,
+  height: number,
+  padding: number = 40
+): Array<{ x: number; y: number }> {
+  if (points.length === 0) {
+    return [];
+  }
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  for (const p of points) {
+    if (p.lat < minLat) minLat = p.lat;
+    if (p.lat > maxLat) maxLat = p.lat;
+    if (p.lon < minLon) minLon = p.lon;
+    if (p.lon > maxLon) maxLon = p.lon;
+  }
+  const kx = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
+  const spanX = Math.max((maxLon - minLon) * kx, 1e-6);
+  const spanY = Math.max(maxLat - minLat, 1e-6);
+  const usableWidth = width - 2 * padding;
+  const usableHeight = height - 2 * padding;
+  const scale = Math.min(usableWidth / spanX, usableHeight / spanY);
+  const offsetX = padding + (usableWidth - spanX * scale) / 2;
+  const offsetY = padding + (usableHeight - spanY * scale) / 2;
+  return points.map((p) => ({
+    x: offsetX + (p.lon - minLon) * kx * scale,
+    y: offsetY + (maxLat - p.lat) * scale,
+  }));
+}
+
+/**
  * Generate SVG path from projected points
  */
 export function generatePathFromPoints(
