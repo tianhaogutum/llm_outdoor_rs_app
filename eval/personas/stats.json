@@ -1,0 +1,229 @@
+{
+ "n": 300,
+ "split": {
+  "dev": 200,
+  "test": 100
+ },
+ "activity_style": {
+  "cycling/mtb": 27,
+  "cycling/touring": 70,
+  "hiking/hiking": 203
+ },
+ "party": {
+  "couple": 51,
+  "family_school": 32,
+  "family_young": 26,
+  "friends": 45,
+  "older": 40,
+  "solo": 64,
+  "stroller": 9,
+  "with_dog": 33
+ },
+ "with_dog": 44,
+ "region": {
+  "Mittelfranken": 43,
+  "Niederbayern": 20,
+  "Oberbayern": 88,
+  "Oberfranken": 39,
+  "Oberpfalz": 26,
+  "Schwaben": 49,
+  "Unterfranken": 35
+ },
+ "distinct_towns": 197,
+ "top_towns": [
+  [
+   "Augsburg",
+   7
+  ],
+  [
+   "Nürnberg",
+   7
+  ],
+  [
+   "München",
+   6
+  ],
+  [
+   "Holzkirchen",
+   4
+  ],
+  [
+   "Aschaffenburg",
+   4
+  ],
+  [
+   "Ingolstadt",
+   4
+  ],
+  [
+   "Erlangen",
+   3
+  ],
+  [
+   "Kaufbeuren",
+   3
+  ]
+ ],
+ "transport": {
+  "car": 246,
+  "train": 54
+ },
+ "multi_day": 13,
+ "radius_widened": 40,
+ "max_travel_km": {
+  "min": 20.0,
+  "p10": 30.0,
+  "p25": 31.0,
+  "median": 40.0,
+  "p75": 60.0,
+  "p90": 80.0,
+  "max": 122.0
+ },
+ "max_distance_km": {
+  "min": 6.3,
+  "p10": 11.8,
+  "p25": 15.4,
+  "median": 23.5,
+  "p75": 59.0,
+  "p90": 92.6,
+  "max": 461.1
+ },
+ "max_ascent_m": {
+  "min": 150.0,
+  "p10": 250.0,
+  "p25": 440.0,
+  "median": 600.0,
+  "p75": 910.0,
+  "p90": 1270.0,
+  "max": 4890.0
+ },
+ "questionnaire_fitness": {
+  "advanced": 84,
+  "beginner": 68,
+  "intermediate": 148
+ },
+ "fitness_misjudged": {
+  "-1": 28,
+  "0": 219,
+  "1": 53
+ },
+ "questionnaire_types": {
+  "family-fun": 5,
+  "history-culture": 13,
+  "history-culture+family-fun": 4,
+  "history-culture+natural-scenery": 55,
+  "history-culture+natural-scenery+family-fun": 31,
+  "natural-scenery": 155,
+  "natural-scenery+family-fun": 37
+ },
+ "desires": {
+  "lake": 149,
+  "refreshment": 128,
+  "quiet_nature": 125,
+  "viewpoint": 124,
+  "summit": 109,
+  "beer_garden": 108,
+  "culture": 108,
+  "river": 85,
+  "waterfall_gorge": 55,
+  "train_access": 54,
+  "cave_geology": 43,
+  "hut": 38,
+  "swimming": 35,
+  "wildlife": 33,
+  "playground": 20,
+  "multi_day": 13
+ },
+ "intent_styles": {
+  "detailed": 54,
+  "medium": 113,
+  "short": 82,
+  "vague": 51
+ },
+ "eligible_n": {
+  "min": 40.0,
+  "p10": 60.9,
+  "p25": 102.0,
+  "median": 282.0,
+  "p75": 550.2,
+  "p90": 927.2,
+  "max": 2989.0
+ },
+ "eligible_activity_match": {
+  "min": 10.0,
+  "p10": 40.7,
+  "p25": 68.8,
+  "median": 248.0,
+  "p75": 529.8,
+  "p90": 927.2,
+  "max": 2989.0
+ },
+ "eligible_n_by_style": {
+  "hiking": {
+   "min": 44.0,
+   "p10": 97.2,
+   "p25": 209.5,
+   "median": 400.0,
+   "p75": 687.5,
+   "p90": 1056.8,
+   "max": 2989.0
+  },
+  "mtb": {
+   "min": 49.0,
+   "p10": 62.0,
+   "p25": 87.0,
+   "median": 185.0,
+   "p75": 380.5,
+   "p90": 472.4,
+   "max": 602.0
+  },
+  "touring": {
+   "min": 40.0,
+   "p10": 49.7,
+   "p25": 58.5,
+   "median": 74.0,
+   "p75": 148.8,
+   "p90": 336.9,
+   "max": 488.0
+  }
+ },
+ "eligible_activity_match_by_style": {
+  "hiking": {
+   "min": 44.0,
+   "p10": 97.2,
+   "p25": 209.5,
+   "median": 400.0,
+   "p75": 687.5,
+   "p90": 1056.8,
+   "max": 2989.0
+  },
+  "mtb": {
+   "min": 10.0,
+   "p10": 11.0,
+   "p25": 12.0,
+   "median": 15.0,
+   "p75": 23.0,
+   "p90": 30.8,
+   "max": 74.0
+  },
+  "touring": {
+   "min": 34.0,
+   "p10": 42.9,
+   "p25": 51.0,
+   "median": 68.5,
+   "p75": 148.8,
+   "p90": 291.7,
+   "max": 460.0
+  }
+ },
+ "intent_words": {
+  "min": 4.0,
+  "p10": 7.0,
+  "p25": 15.0,
+  "median": 27.0,
+  "p75": 32.0,
+  "p90": 38.0,
+  "max": 51.0
+ },
+ "personas_sha256": "e56c999efd2049a0f820e239111987943e2df4275d1733cb306a816007d6eb9d"
+}

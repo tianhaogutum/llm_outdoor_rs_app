@@ -1,0 +1,3669 @@
+{
+ "source": "OpenStreetMap place=city|town nodes with a population tag, inside Bayern (admin_level=4), from the pinned Geofabrik extract used for the catalogue. (c) OpenStreetMap contributors, ODbL 1.0.",
+ "builder": "backend/evalkit/towns.py",
+ "towns": [
+  {
+   "name": "Allersberg",
+   "osm_node": 526219051,
+   "place": "town",
+   "population": 5176,
+   "lat": 49.2513,
+   "lon": 11.23568,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Altdorf bei Nürnberg",
+   "osm_node": 240079524,
+   "place": "town",
+   "population": 8223,
+   "lat": 49.38581,
+   "lon": 11.35643,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Ansbach",
+   "osm_node": 31015267,
+   "place": "town",
+   "population": 40554,
+   "lat": 49.30286,
+   "lon": 10.57223,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Bad Windsheim",
+   "osm_node": 60162030,
+   "place": "town",
+   "population": 12102,
+   "lat": 49.50232,
+   "lon": 10.41759,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Baiersdorf",
+   "osm_node": 639654218,
+   "place": "town",
+   "population": 8349,
+   "lat": 49.65687,
+   "lon": 11.03112,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Burgbernheim",
+   "osm_node": 240064894,
+   "place": "town",
+   "population": 2089,
+   "lat": 49.45134,
+   "lon": 10.32296,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Burgthann",
+   "osm_node": 1595955664,
+   "place": "town",
+   "population": 11436,
+   "lat": 49.35704,
+   "lon": 11.31696,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Cadolzburg",
+   "osm_node": 34009910,
+   "place": "town",
+   "population": 10160,
+   "lat": 49.45914,
+   "lon": 10.85639,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Colmberg",
+   "osm_node": 1587087803,
+   "place": "town",
+   "population": 2154,
+   "lat": 49.3548,
+   "lon": 10.4094,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Dietenhofen",
+   "osm_node": 240102621,
+   "place": "town",
+   "population": 5703,
+   "lat": 49.40021,
+   "lon": 10.68853,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Dinkelsbühl",
+   "osm_node": 240124742,
+   "place": "town",
+   "population": 11657,
+   "lat": 49.06917,
+   "lon": 10.3194,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Eckental",
+   "osm_node": 1594844142,
+   "place": "town",
+   "population": 14154,
+   "lat": 49.57649,
+   "lon": 11.20587,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Ellingen",
+   "osm_node": 240126526,
+   "place": "town",
+   "population": 3761,
+   "lat": 49.06081,
+   "lon": 10.96774,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Erlangen",
+   "osm_node": 17193023,
+   "place": "city",
+   "population": 120028,
+   "lat": 49.59775,
+   "lon": 11.00374,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Feucht",
+   "osm_node": 609290999,
+   "place": "town",
+   "population": 13357,
+   "lat": 49.37525,
+   "lon": 11.21582,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Feuchtwangen",
+   "osm_node": 240044813,
+   "place": "town",
+   "population": 12293,
+   "lat": 49.16786,
+   "lon": 10.33133,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Fürth",
+   "osm_node": 1602111978,
+   "place": "city",
+   "population": 135082,
+   "lat": 49.47725,
+   "lon": 10.98936,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Greding",
+   "osm_node": 240064462,
+   "place": "town",
+   "population": 7121,
+   "lat": 49.04599,
+   "lon": 11.35258,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Gunzenhausen",
+   "osm_node": 240040759,
+   "place": "town",
+   "population": 16222,
+   "lat": 49.11471,
+   "lon": 10.75459,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Heideck",
+   "osm_node": 240116778,
+   "place": "town",
+   "population": 4659,
+   "lat": 49.13267,
+   "lon": 11.12605,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Heilsbronn",
+   "osm_node": 1353886538,
+   "place": "town",
+   "population": 9413,
+   "lat": 49.33753,
+   "lon": 10.789,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Heroldsberg",
+   "osm_node": 31019161,
+   "place": "town",
+   "population": 7417,
+   "lat": 49.53318,
+   "lon": 11.15266,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Herrieden",
+   "osm_node": 1187729502,
+   "place": "town",
+   "population": 7726,
+   "lat": 49.23308,
+   "lon": 10.49764,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Hersbruck",
+   "osm_node": 35212335,
+   "place": "town",
+   "population": 12470,
+   "lat": 49.50858,
+   "lon": 11.42851,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Herzogenaurach",
+   "osm_node": 1597452713,
+   "place": "town",
+   "population": 25835,
+   "lat": 49.56904,
+   "lon": 10.882,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Hilpoltstein",
+   "osm_node": 240112461,
+   "place": "town",
+   "population": 4973,
+   "lat": 49.18939,
+   "lon": 11.19209,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Höchstadt an der Aisch",
+   "osm_node": 25733807,
+   "place": "town",
+   "population": 13158,
+   "lat": 49.70358,
+   "lon": 10.80472,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Langenzenn",
+   "osm_node": 31426596,
+   "place": "town",
+   "population": 10443,
+   "lat": 49.49461,
+   "lon": 10.79489,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Lauf an der Pegnitz",
+   "osm_node": 240035687,
+   "place": "town",
+   "population": 26515,
+   "lat": 49.51181,
+   "lon": 11.28134,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Leutershausen",
+   "osm_node": 1188765337,
+   "place": "town",
+   "population": 5642,
+   "lat": 49.3,
+   "lon": 10.4076,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Markt Bibart",
+   "osm_node": 1269330250,
+   "place": "town",
+   "population": 1905,
+   "lat": 49.64779,
+   "lon": 10.42635,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Merkendorf",
+   "osm_node": 240033797,
+   "place": "town",
+   "population": 2840,
+   "lat": 49.20374,
+   "lon": 10.70184,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Neuendettelsau",
+   "osm_node": 1183193715,
+   "place": "town",
+   "population": 7828,
+   "lat": 49.28512,
+   "lon": 10.78867,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Neustadt an der Aisch",
+   "osm_node": 2874703368,
+   "place": "town",
+   "population": 12479,
+   "lat": 49.58,
+   "lon": 10.60876,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Nürnberg",
+   "osm_node": 1569338041,
+   "place": "city",
+   "population": 531159,
+   "lat": 49.45387,
+   "lon": 11.0773,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Oberasbach",
+   "osm_node": 926081183,
+   "place": "town",
+   "population": 17183,
+   "lat": 49.43031,
+   "lon": 10.96756,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Pappenheim",
+   "osm_node": 240109618,
+   "place": "town",
+   "population": 2107,
+   "lat": 48.93476,
+   "lon": 10.97443,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Pleinfeld",
+   "osm_node": 26752159,
+   "place": "town",
+   "population": 7405,
+   "lat": 49.10538,
+   "lon": 10.98564,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Rednitzhembach",
+   "osm_node": 33503073,
+   "place": "town",
+   "population": 903,
+   "lat": 49.30149,
+   "lon": 11.0783,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Roth",
+   "osm_node": 1625917023,
+   "place": "town",
+   "population": 12292,
+   "lat": 49.24592,
+   "lon": 11.09088,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Rothenburg ob der Tauber",
+   "osm_node": 1576883007,
+   "place": "town",
+   "population": 11297,
+   "lat": 49.37725,
+   "lon": 10.179,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Roßtal",
+   "osm_node": 873637575,
+   "place": "town",
+   "population": 10102,
+   "lat": 49.39779,
+   "lon": 10.88491,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Röthenbach an der Pegnitz",
+   "osm_node": 240044463,
+   "place": "town",
+   "population": 11792,
+   "lat": 49.48501,
+   "lon": 11.24749,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Scheinfeld",
+   "osm_node": 34543696,
+   "place": "town",
+   "population": 4762,
+   "lat": 49.66534,
+   "lon": 10.46257,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Schillingsfürst",
+   "osm_node": 240042133,
+   "place": "town",
+   "population": 2835,
+   "lat": 49.28677,
+   "lon": 10.26065,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Schnaittach",
+   "osm_node": 35287822,
+   "place": "town",
+   "population": 7949,
+   "lat": 49.55961,
+   "lon": 11.34008,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Schwabach",
+   "osm_node": 26752984,
+   "place": "town",
+   "population": 40428,
+   "lat": 49.32905,
+   "lon": 11.02077,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Schwarzenbruck",
+   "osm_node": 25927283,
+   "place": "town",
+   "population": 8397,
+   "lat": 49.35546,
+   "lon": 11.24106,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Spalt",
+   "osm_node": 34922439,
+   "place": "town",
+   "population": 5227,
+   "lat": 49.17533,
+   "lon": 10.92542,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Stein",
+   "osm_node": 951384120,
+   "place": "town",
+   "population": 14025,
+   "lat": 49.41418,
+   "lon": 11.01535,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Thalmässing",
+   "osm_node": 609292916,
+   "place": "town",
+   "population": 1697,
+   "lat": 49.08796,
+   "lon": 11.21996,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Treuchtlingen",
+   "osm_node": 240115475,
+   "place": "town",
+   "population": 6957,
+   "lat": 48.95529,
+   "lon": 10.91076,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Uffenheim",
+   "osm_node": 1588566560,
+   "place": "town",
+   "population": 6393,
+   "lat": 49.54477,
+   "lon": 10.23047,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Wassertrüdingen",
+   "osm_node": 240094337,
+   "place": "town",
+   "population": 6129,
+   "lat": 49.03988,
+   "lon": 10.59768,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Weißenburg in Bayern",
+   "osm_node": 240052604,
+   "place": "town",
+   "population": 18578,
+   "lat": 49.03057,
+   "lon": 10.9719,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Wendelstein",
+   "osm_node": 240042842,
+   "place": "town",
+   "population": 5642,
+   "lat": 49.35551,
+   "lon": 11.1433,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Windsbach",
+   "osm_node": 34921767,
+   "place": "town",
+   "population": 6175,
+   "lat": 49.24688,
+   "lon": 10.82637,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Wolframs-Eschenbach",
+   "osm_node": 1217622926,
+   "place": "town",
+   "population": 2877,
+   "lat": 49.2265,
+   "lon": 10.72588,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Zirndorf",
+   "osm_node": 240024523,
+   "place": "town",
+   "population": 25957,
+   "lat": 49.44576,
+   "lon": 10.95605,
+   "region": "Mittelfranken"
+  },
+  {
+   "name": "Abensberg",
+   "osm_node": 240111905,
+   "place": "town",
+   "population": 5419,
+   "lat": 48.81532,
+   "lon": 11.84596,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Arnstorf",
+   "osm_node": 240073519,
+   "place": "town",
+   "population": 6627,
+   "lat": 48.56109,
+   "lon": 12.81748,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Bad Abbach",
+   "osm_node": 33454191,
+   "place": "town",
+   "population": 7585,
+   "lat": 48.93571,
+   "lon": 12.04019,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Bad Birnbach",
+   "osm_node": 1408854624,
+   "place": "town",
+   "population": 5583,
+   "lat": 48.44314,
+   "lon": 13.08938,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Bad Füssing",
+   "osm_node": 2846399426,
+   "place": "town",
+   "population": 6994,
+   "lat": 48.35067,
+   "lon": 13.30954,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Bad Griesbach im Rottal",
+   "osm_node": 240039213,
+   "place": "town",
+   "population": 8485,
+   "lat": 48.45134,
+   "lon": 13.1931,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Bogen",
+   "osm_node": 240044080,
+   "place": "town",
+   "population": 5000,
+   "lat": 48.90542,
+   "lon": 12.69207,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Deggendorf",
+   "osm_node": 240083444,
+   "place": "town",
+   "population": 36854,
+   "lat": 48.83335,
+   "lon": 12.96205,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Dingolfing",
+   "osm_node": 60601502,
+   "place": "town",
+   "population": 20890,
+   "lat": 48.63008,
+   "lon": 12.49774,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Eggenfelden",
+   "osm_node": 25478935,
+   "place": "town",
+   "population": 13090,
+   "lat": 48.40319,
+   "lon": 12.76262,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Ergolding",
+   "osm_node": 240083008,
+   "place": "town",
+   "population": 13511,
+   "lat": 48.57634,
+   "lon": 12.17148,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Freyung",
+   "osm_node": 240129389,
+   "place": "town",
+   "population": 7212,
+   "lat": 48.80819,
+   "lon": 13.54737,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Geiselhöring",
+   "osm_node": 240051099,
+   "place": "town",
+   "population": 6755,
+   "lat": 48.82589,
+   "lon": 12.3926,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Grafenau",
+   "osm_node": 735173869,
+   "place": "town",
+   "population": 8498,
+   "lat": 48.85624,
+   "lon": 13.39694,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Hauzenberg",
+   "osm_node": 240124093,
+   "place": "town",
+   "population": 12408,
+   "lat": 48.65158,
+   "lon": 13.62374,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Kelheim",
+   "osm_node": 1403293336,
+   "place": "town",
+   "population": 15648,
+   "lat": 48.91849,
+   "lon": 11.87228,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Landau an der Isar",
+   "osm_node": 60601520,
+   "place": "town",
+   "population": 14776,
+   "lat": 48.66997,
+   "lon": 12.69122,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Landshut",
+   "osm_node": 240053773,
+   "place": "town",
+   "population": 71922,
+   "lat": 48.53622,
+   "lon": 12.15166,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Mainburg",
+   "osm_node": 240071816,
+   "place": "town",
+   "population": 15517,
+   "lat": 48.64105,
+   "lon": 11.78643,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Mallersdorf-Pfaffenberg",
+   "osm_node": 240067126,
+   "place": "town",
+   "population": 6622,
+   "lat": 48.77431,
+   "lon": 12.23779,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Neustadt an der Donau",
+   "osm_node": 240081388,
+   "place": "town",
+   "population": 13670,
+   "lat": 48.80926,
+   "lon": 11.76383,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Ortenburg",
+   "osm_node": 63661947,
+   "place": "town",
+   "population": 7307,
+   "lat": 48.54633,
+   "lon": 13.2231,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Osterhofen",
+   "osm_node": 240031628,
+   "place": "town",
+   "population": 11334,
+   "lat": 48.70196,
+   "lon": 13.02014,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Passau",
+   "osm_node": 240057351,
+   "place": "town",
+   "population": 54401,
+   "lat": 48.57482,
+   "lon": 13.46097,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Perlesreut",
+   "osm_node": 240124200,
+   "place": "town",
+   "population": 2981,
+   "lat": 48.77908,
+   "lon": 13.44228,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Pfarrkirchen",
+   "osm_node": 240066283,
+   "place": "town",
+   "population": 11816,
+   "lat": 48.43203,
+   "lon": 12.93863,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Plattling",
+   "osm_node": 446250344,
+   "place": "town",
+   "population": 12401,
+   "lat": 48.77669,
+   "lon": 12.87337,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Pocking",
+   "osm_node": 63655606,
+   "place": "town",
+   "population": 14560,
+   "lat": 48.40152,
+   "lon": 13.31077,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Regen",
+   "osm_node": 240025021,
+   "place": "town",
+   "population": 12298,
+   "lat": 48.97008,
+   "lon": 13.12626,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Riedenburg",
+   "osm_node": 3991229705,
+   "place": "town",
+   "population": 2160,
+   "lat": 48.96228,
+   "lon": 11.6836,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Rottenburg an der Laaber",
+   "osm_node": 240103106,
+   "place": "town",
+   "population": 7658,
+   "lat": 48.70254,
+   "lon": 12.02732,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Schöllnach",
+   "osm_node": 115303133,
+   "place": "town",
+   "population": 4780,
+   "lat": 48.75568,
+   "lon": 13.17969,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Schönberg",
+   "osm_node": 240121086,
+   "place": "town",
+   "population": 3906,
+   "lat": 48.83972,
+   "lon": 13.33767,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Siegenburg",
+   "osm_node": 240036520,
+   "place": "town",
+   "population": 1783,
+   "lat": 48.7546,
+   "lon": 11.84925,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Simbach am Inn",
+   "osm_node": 240046856,
+   "place": "town",
+   "population": 9781,
+   "lat": 48.26631,
+   "lon": 13.028,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Straubing",
+   "osm_node": 46902829,
+   "place": "town",
+   "population": 44741,
+   "lat": 48.88198,
+   "lon": 12.56972,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Tittling",
+   "osm_node": 63691866,
+   "place": "town",
+   "population": 3775,
+   "lat": 48.72784,
+   "lon": 13.38062,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Untergriesbach",
+   "osm_node": 240118758,
+   "place": "town",
+   "population": 6408,
+   "lat": 48.57353,
+   "lon": 13.66788,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Viechtach",
+   "osm_node": 30047818,
+   "place": "town",
+   "population": 8002,
+   "lat": 49.08007,
+   "lon": 12.88627,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Vilsbiburg",
+   "osm_node": 305619291,
+   "place": "town",
+   "population": 11426,
+   "lat": 48.44848,
+   "lon": 12.3558,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Vilshofen an der Donau",
+   "osm_node": 240058826,
+   "place": "town",
+   "population": 18654,
+   "lat": 48.63376,
+   "lon": 13.18685,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Waldkirchen",
+   "osm_node": 60602342,
+   "place": "town",
+   "population": 10456,
+   "lat": 48.73002,
+   "lon": 13.60158,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Zwiesel",
+   "osm_node": 38573096,
+   "place": "town",
+   "population": 9502,
+   "lat": 49.01303,
+   "lon": 13.23076,
+   "region": "Niederbayern"
+  },
+  {
+   "name": "Altenmarkt an der Alz",
+   "osm_node": 240092564,
+   "place": "town",
+   "population": 4200,
+   "lat": 48.00243,
+   "lon": 12.53605,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Altötting",
+   "osm_node": 60599675,
+   "place": "town",
+   "population": 12613,
+   "lat": 48.22681,
+   "lon": 12.67579,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Aschheim",
+   "osm_node": 555020642,
+   "place": "town",
+   "population": 6684,
+   "lat": 48.17135,
+   "lon": 11.71603,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bad Aibling",
+   "osm_node": 34578696,
+   "place": "town",
+   "population": 17633,
+   "lat": 47.86405,
+   "lon": 12.00977,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bad Feilnbach",
+   "osm_node": 59603976,
+   "place": "town",
+   "population": 7199,
+   "lat": 47.77459,
+   "lon": 12.00708,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bad Kohlgrub",
+   "osm_node": 1700556846,
+   "place": "town",
+   "population": 2900,
+   "lat": 47.66592,
+   "lon": 11.0519,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bad Reichenhall",
+   "osm_node": 21623655,
+   "place": "town",
+   "population": 17513,
+   "lat": 47.72227,
+   "lon": 12.87609,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bad Tölz",
+   "osm_node": 1683463410,
+   "place": "town",
+   "population": 19821,
+   "lat": 47.761,
+   "lon": 11.55961,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Beilngries",
+   "osm_node": 30224395,
+   "place": "town",
+   "population": 5302,
+   "lat": 49.03516,
+   "lon": 11.47383,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Berchtesgaden",
+   "osm_node": 21627771,
+   "place": "town",
+   "population": 7741,
+   "lat": 47.63302,
+   "lon": 13.00201,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Bruckmühl",
+   "osm_node": 240119749,
+   "place": "town",
+   "population": 15878,
+   "lat": 47.88283,
+   "lon": 11.91461,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Burghausen",
+   "osm_node": 240057442,
+   "place": "town",
+   "population": 17715,
+   "lat": 48.15886,
+   "lon": 12.83294,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Burgkirchen an der Alz",
+   "osm_node": 60599843,
+   "place": "town",
+   "population": 10690,
+   "lat": 48.16769,
+   "lon": 12.73078,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Dachau",
+   "osm_node": 240024838,
+   "place": "town",
+   "population": 45621,
+   "lat": 48.25951,
+   "lon": 11.43467,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Dießen am Ammersee",
+   "osm_node": 54806925,
+   "place": "town",
+   "population": 10239,
+   "lat": 47.94779,
+   "lon": 11.10497,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Dorfen",
+   "osm_node": 240075478,
+   "place": "town",
+   "population": 14052,
+   "lat": 48.27278,
+   "lon": 12.15055,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Ebersberg",
+   "osm_node": 240094970,
+   "place": "town",
+   "population": 11132,
+   "lat": 48.07828,
+   "lon": 11.96944,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Eichstätt",
+   "osm_node": 240115631,
+   "place": "town",
+   "population": 8692,
+   "lat": 48.89334,
+   "lon": 11.1839,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Erding",
+   "osm_node": 2193947697,
+   "place": "town",
+   "population": 38644,
+   "lat": 48.30644,
+   "lon": 11.90766,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Feldkirchen",
+   "osm_node": 240046314,
+   "place": "town",
+   "population": 5817,
+   "lat": 48.14758,
+   "lon": 11.72992,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Freilassing",
+   "osm_node": 34964315,
+   "place": "town",
+   "population": 15890,
+   "lat": 47.84097,
+   "lon": 12.98239,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Freising",
+   "osm_node": 26597860,
+   "place": "town",
+   "population": 45857,
+   "lat": 48.40083,
+   "lon": 11.74396,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Fürstenfeldbruck",
+   "osm_node": 240121309,
+   "place": "town",
+   "population": 34648,
+   "lat": 48.17947,
+   "lon": 11.25472,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Gaimersheim",
+   "osm_node": 240112166,
+   "place": "town",
+   "population": 12086,
+   "lat": 48.80845,
+   "lon": 11.36996,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Garching an der Alz",
+   "osm_node": 60600117,
+   "place": "town",
+   "population": 8704,
+   "lat": 48.1318,
+   "lon": 12.58271,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Garching bei München",
+   "osm_node": 240084687,
+   "place": "town",
+   "population": 17656,
+   "lat": 48.25139,
+   "lon": 11.65097,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Garmisch-Partenkirchen",
+   "osm_node": 27383264,
+   "place": "town",
+   "population": 26102,
+   "lat": 47.49237,
+   "lon": 11.09628,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Gauting",
+   "osm_node": 51300127,
+   "place": "town",
+   "population": 20097,
+   "lat": 48.06678,
+   "lon": 11.38029,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Geisenfeld",
+   "osm_node": 21622466,
+   "place": "town",
+   "population": 9704,
+   "lat": 48.68421,
+   "lon": 11.6134,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Geretsried",
+   "osm_node": 21133736,
+   "place": "town",
+   "population": 24892,
+   "lat": 47.86469,
+   "lon": 11.47935,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Germering",
+   "osm_node": 240058497,
+   "place": "town",
+   "population": 38478,
+   "lat": 48.13736,
+   "lon": 11.36143,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Gilching",
+   "osm_node": 38106589,
+   "place": "town",
+   "population": 18388,
+   "lat": 48.11403,
+   "lon": 11.29215,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Glonn",
+   "osm_node": 240035347,
+   "place": "town",
+   "population": 4343,
+   "lat": 47.98789,
+   "lon": 11.86563,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Grafing bei München",
+   "osm_node": 240030992,
+   "place": "town",
+   "population": 14096,
+   "lat": 48.04538,
+   "lon": 11.96607,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Gräfelfing",
+   "osm_node": 51299492,
+   "place": "town",
+   "population": 13058,
+   "lat": 48.1212,
+   "lon": 11.42998,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Grünwald",
+   "osm_node": 1682211105,
+   "place": "town",
+   "population": 11086,
+   "lat": 48.04866,
+   "lon": 11.53007,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Haag in Oberbayern",
+   "osm_node": 1348070807,
+   "place": "town",
+   "population": 6411,
+   "lat": 48.16146,
+   "lon": 12.18277,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Haar",
+   "osm_node": 240115254,
+   "place": "town",
+   "population": 23056,
+   "lat": 48.10957,
+   "lon": 11.72648,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Hausham",
+   "osm_node": 2051306344,
+   "place": "town",
+   "population": 8291,
+   "lat": 47.75073,
+   "lon": 11.83941,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Herrsching am Ammersee",
+   "osm_node": 129966712,
+   "place": "town",
+   "population": 10206,
+   "lat": 47.99929,
+   "lon": 11.17481,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Holzkirchen",
+   "osm_node": 240026842,
+   "place": "town",
+   "population": 15804,
+   "lat": 47.87723,
+   "lon": 11.70157,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Höhenkirchen-Siegertsbrunn",
+   "osm_node": 2367799978,
+   "place": "town",
+   "population": 10368,
+   "lat": 48.01979,
+   "lon": 11.72058,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Ingolstadt",
+   "osm_node": 2110382406,
+   "place": "city",
+   "population": 127886,
+   "lat": 48.76302,
+   "lon": 11.42504,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Ismaning",
+   "osm_node": 50839656,
+   "place": "town",
+   "population": 15221,
+   "lat": 48.22424,
+   "lon": 11.67153,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Kaufering",
+   "osm_node": 34557684,
+   "place": "town",
+   "population": 9880,
+   "lat": 48.08713,
+   "lon": 10.86053,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Kirchheim bei München",
+   "osm_node": 18164984,
+   "place": "town",
+   "population": 7000,
+   "lat": 48.17575,
+   "lon": 11.75622,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Kolbermoor",
+   "osm_node": 53348358,
+   "place": "town",
+   "population": 18065,
+   "lat": 47.85566,
+   "lon": 12.05958,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Kösching",
+   "osm_node": 30646242,
+   "place": "town",
+   "population": 8748,
+   "lat": 48.81095,
+   "lon": 11.50088,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Landsberg am Lech",
+   "osm_node": 1683112949,
+   "place": "town",
+   "population": 27140,
+   "lat": 48.04975,
+   "lon": 10.87687,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Lenggries",
+   "osm_node": 2392072013,
+   "place": "town",
+   "population": 10077,
+   "lat": 47.68316,
+   "lon": 11.5764,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Manching",
+   "osm_node": 429972276,
+   "place": "town",
+   "population": 12500,
+   "lat": 48.71714,
+   "lon": 11.49407,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Markt Indersdorf",
+   "osm_node": 103562761,
+   "place": "town",
+   "population": 9693,
+   "lat": 48.36138,
+   "lon": 11.37432,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Markt Schwaben",
+   "osm_node": 20931233,
+   "place": "town",
+   "population": 12703,
+   "lat": 48.19007,
+   "lon": 11.86893,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Miesbach",
+   "osm_node": 44313921,
+   "place": "town",
+   "population": 12001,
+   "lat": 47.79002,
+   "lon": 11.83354,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Mittenwald",
+   "osm_node": 22281426,
+   "place": "town",
+   "population": 7926,
+   "lat": 47.44178,
+   "lon": 11.26143,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Moosburg an der Isar",
+   "osm_node": 240108949,
+   "place": "town",
+   "population": 17363,
+   "lat": 48.4667,
+   "lon": 11.9333,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Murnau am Staffelsee",
+   "osm_node": 1661214349,
+   "place": "town",
+   "population": 12395,
+   "lat": 47.67788,
+   "lon": 11.20119,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Mühldorf am Inn",
+   "osm_node": 240127434,
+   "place": "town",
+   "population": 20500,
+   "lat": 48.2405,
+   "lon": 12.5251,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "München",
+   "osm_node": 1700534808,
+   "place": "city",
+   "population": 1505036,
+   "lat": 48.13711,
+   "lon": 11.57538,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Neubiberg",
+   "osm_node": 1576229104,
+   "place": "town",
+   "population": 13480,
+   "lat": 48.07699,
+   "lon": 11.66151,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Neuburg an der Donau",
+   "osm_node": 25622784,
+   "place": "town",
+   "population": 28184,
+   "lat": 48.73736,
+   "lon": 11.1786,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Neumarkt-Sankt Veit",
+   "osm_node": 240054231,
+   "place": "town",
+   "population": 6334,
+   "lat": 48.3608,
+   "lon": 12.50838,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Neuötting",
+   "osm_node": 60599761,
+   "place": "town",
+   "population": 8612,
+   "lat": 48.24058,
+   "lon": 12.68674,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Oberammergau",
+   "osm_node": 31925454,
+   "place": "town",
+   "population": 5379,
+   "lat": 47.59734,
+   "lon": 11.06407,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Oberhaching",
+   "osm_node": 240063972,
+   "place": "town",
+   "population": 13462,
+   "lat": 48.02618,
+   "lon": 11.59625,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Oberschleißheim",
+   "osm_node": 51542439,
+   "place": "town",
+   "population": 11353,
+   "lat": 48.25494,
+   "lon": 11.55461,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Olching",
+   "osm_node": 51572477,
+   "place": "town",
+   "population": 28347,
+   "lat": 48.20778,
+   "lon": 11.32788,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Ottobrunn",
+   "osm_node": 1574349116,
+   "place": "town",
+   "population": 20784,
+   "lat": 48.06484,
+   "lon": 11.66478,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Peiting",
+   "osm_node": 889285957,
+   "place": "town",
+   "population": 11678,
+   "lat": 47.79599,
+   "lon": 10.92287,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Peißenberg",
+   "osm_node": 100387771,
+   "place": "town",
+   "population": 12516,
+   "lat": 47.79967,
+   "lon": 11.06552,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Penzberg",
+   "osm_node": 2458405336,
+   "place": "town",
+   "population": 16092,
+   "lat": 47.75185,
+   "lon": 11.3763,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Pfaffenhofen an der Ilm",
+   "osm_node": 240059158,
+   "place": "town",
+   "population": 27318,
+   "lat": 48.52967,
+   "lon": 11.5085,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Planegg",
+   "osm_node": 51299539,
+   "place": "town",
+   "population": 10459,
+   "lat": 48.10374,
+   "lon": 11.422,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Poing",
+   "osm_node": 7132434799,
+   "place": "town",
+   "population": 16100,
+   "lat": 48.17205,
+   "lon": 11.80908,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Prien am Chiemsee",
+   "osm_node": 1683463458,
+   "place": "town",
+   "population": 10512,
+   "lat": 47.85417,
+   "lon": 12.34555,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Puchheim",
+   "osm_node": 240112029,
+   "place": "town",
+   "population": 20524,
+   "lat": 48.17049,
+   "lon": 11.35264,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Raubling",
+   "osm_node": 5275807921,
+   "place": "town",
+   "population": 11000,
+   "lat": 47.78926,
+   "lon": 12.11,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Reichertshofen",
+   "osm_node": 240076504,
+   "place": "town",
+   "population": 5000,
+   "lat": 48.65766,
+   "lon": 11.46835,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Rohrbach an der Ilm",
+   "osm_node": 240095322,
+   "place": "town",
+   "population": 5818,
+   "lat": 48.61371,
+   "lon": 11.56317,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Rosenheim",
+   "osm_node": 51296461,
+   "place": "town",
+   "population": 61844,
+   "lat": 47.85579,
+   "lon": 12.1273,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Schongau",
+   "osm_node": 2664960796,
+   "place": "town",
+   "population": 12023,
+   "lat": 47.8119,
+   "lon": 10.89721,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Schrobenhausen",
+   "osm_node": 131871334,
+   "place": "town",
+   "population": 16172,
+   "lat": 48.56134,
+   "lon": 11.26545,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Siegsdorf",
+   "osm_node": 240050029,
+   "place": "town",
+   "population": 8382,
+   "lat": 47.82338,
+   "lon": 12.64282,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Starnberg",
+   "osm_node": 240075726,
+   "place": "town",
+   "population": 23115,
+   "lat": 47.99869,
+   "lon": 11.34108,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Taufkirchen",
+   "osm_node": 240071916,
+   "place": "town",
+   "population": 17724,
+   "lat": 48.046,
+   "lon": 11.61519,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Taufkirchen (Vils)",
+   "osm_node": 79681489,
+   "place": "town",
+   "population": 9265,
+   "lat": 48.3442,
+   "lon": 12.13113,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Tegernsee",
+   "osm_node": 54813027,
+   "place": "town",
+   "population": 3944,
+   "lat": 47.70992,
+   "lon": 11.75433,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Teisendorf",
+   "osm_node": 240103732,
+   "place": "town",
+   "population": 9115,
+   "lat": 47.84904,
+   "lon": 12.82184,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Tittmoning",
+   "osm_node": 34824923,
+   "place": "town",
+   "population": 5826,
+   "lat": 48.06217,
+   "lon": 12.76765,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Traunreut",
+   "osm_node": 29112429,
+   "place": "town",
+   "population": 20935,
+   "lat": 47.96233,
+   "lon": 12.59242,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Traunstein",
+   "osm_node": 1811516787,
+   "place": "town",
+   "population": 15000,
+   "lat": 47.86953,
+   "lon": 12.64846,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Trostberg",
+   "osm_node": 60600213,
+   "place": "town",
+   "population": 7000,
+   "lat": 48.02773,
+   "lon": 12.55302,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Tutzing",
+   "osm_node": 54805263,
+   "place": "town",
+   "population": 9506,
+   "lat": 47.90864,
+   "lon": 11.27982,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Unterföhring",
+   "osm_node": 50839534,
+   "place": "town",
+   "population": 7553,
+   "lat": 48.19206,
+   "lon": 11.64019,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Unterhaching",
+   "osm_node": 25248769,
+   "place": "town",
+   "population": 23217,
+   "lat": 48.06622,
+   "lon": 11.61022,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Unterschleißheim",
+   "osm_node": 34674721,
+   "place": "town",
+   "population": 26363,
+   "lat": 48.27307,
+   "lon": 11.57027,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Vaterstetten",
+   "osm_node": 1682211213,
+   "place": "town",
+   "population": 22087,
+   "lat": 48.10582,
+   "lon": 11.77102,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Vohburg an der Donau",
+   "osm_node": 240055145,
+   "place": "town",
+   "population": 4724,
+   "lat": 48.77068,
+   "lon": 11.61678,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Waging am See",
+   "osm_node": 1339390400,
+   "place": "town",
+   "population": 6888,
+   "lat": 47.93358,
+   "lon": 12.73413,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Waldkraiburg",
+   "osm_node": 60600469,
+   "place": "town",
+   "population": 22525,
+   "lat": 48.20619,
+   "lon": 12.40218,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Wasserburg am Inn",
+   "osm_node": 31269193,
+   "place": "town",
+   "population": 12439,
+   "lat": 48.06152,
+   "lon": 12.22003,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Weilheim in Oberbayern",
+   "osm_node": 240114592,
+   "place": "town",
+   "population": 18000,
+   "lat": 47.83951,
+   "lon": 11.14164,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Wolfratshausen",
+   "osm_node": 25532515,
+   "place": "town",
+   "population": 19589,
+   "lat": 47.91046,
+   "lon": 11.42664,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Wolnzach",
+   "osm_node": 60404925,
+   "place": "town",
+   "population": 10942,
+   "lat": 48.603,
+   "lon": 11.627,
+   "region": "Oberbayern"
+  },
+  {
+   "name": "Arzberg",
+   "osm_node": 240029518,
+   "place": "town",
+   "population": 6043,
+   "lat": 50.05733,
+   "lon": 12.18586,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bad Berneck",
+   "osm_node": 26309926,
+   "place": "town",
+   "population": 3047,
+   "lat": 50.04926,
+   "lon": 11.67531,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bad Rodach",
+   "osm_node": 147656604,
+   "place": "town",
+   "population": 6336,
+   "lat": 50.34113,
+   "lon": 10.7785,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bad Staffelstein",
+   "osm_node": 69333337,
+   "place": "town",
+   "population": 10662,
+   "lat": 50.10283,
+   "lon": 10.99916,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bad Steben",
+   "osm_node": 28980010,
+   "place": "town",
+   "population": 3618,
+   "lat": 50.36613,
+   "lon": 11.64373,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bad Weißenstadt",
+   "osm_node": 240090628,
+   "place": "town",
+   "population": 3010,
+   "lat": 50.10147,
+   "lon": 11.8847,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bamberg",
+   "osm_node": 1646638496,
+   "place": "town",
+   "population": 72821,
+   "lat": 49.8916,
+   "lon": 10.88685,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Baunach",
+   "osm_node": 37009449,
+   "place": "town",
+   "population": 4013,
+   "lat": 49.98533,
+   "lon": 10.85112,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Bayreuth",
+   "osm_node": 21636385,
+   "place": "town",
+   "population": 72295,
+   "lat": 49.94463,
+   "lon": 11.57435,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Betzenstein",
+   "osm_node": 240085648,
+   "place": "town",
+   "population": 2555,
+   "lat": 49.6808,
+   "lon": 11.41778,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Burgebrach",
+   "osm_node": 190933598,
+   "place": "town",
+   "population": 6468,
+   "lat": 49.82825,
+   "lon": 10.74129,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Burgkunstadt",
+   "osm_node": 240109835,
+   "place": "town",
+   "population": 6915,
+   "lat": 50.14288,
+   "lon": 11.25155,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Coburg",
+   "osm_node": 26118368,
+   "place": "town",
+   "population": 41405,
+   "lat": 50.25822,
+   "lon": 10.96456,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Creußen",
+   "osm_node": 240082645,
+   "place": "town",
+   "population": 4778,
+   "lat": 49.84385,
+   "lon": 11.62528,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Ebermannstadt",
+   "osm_node": 1646635600,
+   "place": "town",
+   "population": 6839,
+   "lat": 49.78021,
+   "lon": 11.18751,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Forchheim",
+   "osm_node": 21749653,
+   "place": "town",
+   "population": 32907,
+   "lat": 49.72008,
+   "lon": 11.05792,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Gefrees",
+   "osm_node": 220624405,
+   "place": "town",
+   "population": 4798,
+   "lat": 50.09499,
+   "lon": 11.73871,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Goldkronach",
+   "osm_node": 240096011,
+   "place": "town",
+   "population": 3698,
+   "lat": 50.01148,
+   "lon": 11.68739,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Gräfenberg",
+   "osm_node": 240049046,
+   "place": "town",
+   "population": 4106,
+   "lat": 49.64489,
+   "lon": 11.24953,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Gößweinstein",
+   "osm_node": 17167482,
+   "place": "town",
+   "population": 4082,
+   "lat": 49.76943,
+   "lon": 11.33699,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Hallstadt",
+   "osm_node": 59750061,
+   "place": "town",
+   "population": 8494,
+   "lat": 49.9288,
+   "lon": 10.87546,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Helmbrechts",
+   "osm_node": 23771533,
+   "place": "town",
+   "population": 9470,
+   "lat": 50.23498,
+   "lon": 11.71631,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Hirschaid",
+   "osm_node": 21749652,
+   "place": "town",
+   "population": 12586,
+   "lat": 49.81659,
+   "lon": 10.98977,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Hof",
+   "osm_node": 28979768,
+   "place": "town",
+   "population": 44522,
+   "lat": 50.31875,
+   "lon": 11.9163,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Hohenberg an der Eger",
+   "osm_node": 240051550,
+   "place": "town",
+   "population": 1531,
+   "lat": 50.09688,
+   "lon": 12.22305,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Hollfeld",
+   "osm_node": 21637109,
+   "place": "town",
+   "population": 5180,
+   "lat": 49.93899,
+   "lon": 11.29189,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Kirchenlamitz",
+   "osm_node": 2465673447,
+   "place": "town",
+   "population": 3303,
+   "lat": 50.15154,
+   "lon": 11.95029,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Kronach",
+   "osm_node": 240045827,
+   "place": "town",
+   "population": 16808,
+   "lat": 50.2405,
+   "lon": 11.32435,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Kulmbach",
+   "osm_node": 240083018,
+   "place": "town",
+   "population": 27592,
+   "lat": 50.10712,
+   "lon": 11.45818,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Lichtenfels",
+   "osm_node": 21724992,
+   "place": "town",
+   "population": 20169,
+   "lat": 50.14616,
+   "lon": 11.06383,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Ludwigsstadt",
+   "osm_node": 240068052,
+   "place": "town",
+   "population": 3797,
+   "lat": 50.48423,
+   "lon": 11.3895,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Marktleuthen",
+   "osm_node": 1394718392,
+   "place": "town",
+   "population": 3623,
+   "lat": 50.12797,
+   "lon": 11.99451,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Marktredwitz",
+   "osm_node": 2352372995,
+   "place": "town",
+   "population": 18087,
+   "lat": 50.00099,
+   "lon": 12.08564,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Münchberg",
+   "osm_node": 1674429569,
+   "place": "town",
+   "population": 11521,
+   "lat": 50.19114,
+   "lon": 11.79139,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Naila",
+   "osm_node": 206153108,
+   "place": "town",
+   "population": 8162,
+   "lat": 50.32963,
+   "lon": 11.70841,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Neunkirchen am Brand",
+   "osm_node": 25735249,
+   "place": "town",
+   "population": 8520,
+   "lat": 49.61265,
+   "lon": 11.13001,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Neustadt bei Coburg",
+   "osm_node": 185402950,
+   "place": "town",
+   "population": 15278,
+   "lat": 50.32731,
+   "lon": 11.12401,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Nordhalben",
+   "osm_node": 30085134,
+   "place": "town",
+   "population": 2040,
+   "lat": 50.37412,
+   "lon": 11.51192,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Pegnitz",
+   "osm_node": 240070436,
+   "place": "town",
+   "population": 14137,
+   "lat": 49.75649,
+   "lon": 11.54094,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Pottenstein",
+   "osm_node": 240057635,
+   "place": "town",
+   "population": 5363,
+   "lat": 49.77108,
+   "lon": 11.40928,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Rehau",
+   "osm_node": 240054925,
+   "place": "town",
+   "population": 9929,
+   "lat": 50.24808,
+   "lon": 12.03455,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Rödental",
+   "osm_node": 144654867,
+   "place": "town",
+   "population": 13116,
+   "lat": 50.29599,
+   "lon": 11.04319,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Scheßlitz",
+   "osm_node": 277879178,
+   "place": "town",
+   "population": 7184,
+   "lat": 49.97622,
+   "lon": 11.0332,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Schlüsselfeld",
+   "osm_node": 30977438,
+   "place": "town",
+   "population": 5871,
+   "lat": 49.75692,
+   "lon": 10.61863,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Schwarzenbach am Wald",
+   "osm_node": 1694320524,
+   "place": "town",
+   "population": 5169,
+   "lat": 50.2836,
+   "lon": 11.62717,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Schwarzenbach an der Saale",
+   "osm_node": 91726540,
+   "place": "town",
+   "population": 7127,
+   "lat": 50.22263,
+   "lon": 11.93245,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Schönwald",
+   "osm_node": 240026356,
+   "place": "town",
+   "population": 3697,
+   "lat": 50.19812,
+   "lon": 12.09077,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Selb",
+   "osm_node": 240066823,
+   "place": "town",
+   "population": 14139,
+   "lat": 50.16962,
+   "lon": 12.13092,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Selbitz",
+   "osm_node": 240126828,
+   "place": "town",
+   "population": 4740,
+   "lat": 50.31397,
+   "lon": 11.74858,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Seßlach",
+   "osm_node": 27223176,
+   "place": "town",
+   "population": 4082,
+   "lat": 50.18764,
+   "lon": 10.84296,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Speichersdorf",
+   "osm_node": 1635403579,
+   "place": "town",
+   "population": 6250,
+   "lat": 49.87439,
+   "lon": 11.78351,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Stadtsteinach",
+   "osm_node": 21636429,
+   "place": "town",
+   "population": 2561,
+   "lat": 50.16167,
+   "lon": 11.50555,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Thierstein",
+   "osm_node": 240105414,
+   "place": "town",
+   "population": 1311,
+   "lat": 50.1071,
+   "lon": 12.10332,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Waischenfeld",
+   "osm_node": 64728378,
+   "place": "town",
+   "population": 3195,
+   "lat": 49.84657,
+   "lon": 11.345,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Wallenfels",
+   "osm_node": 240027831,
+   "place": "town",
+   "population": 2700,
+   "lat": 50.26769,
+   "lon": 11.47308,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Weidenberg",
+   "osm_node": 240091689,
+   "place": "town",
+   "population": 6568,
+   "lat": 49.93969,
+   "lon": 11.72245,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Weismain",
+   "osm_node": 25935131,
+   "place": "town",
+   "population": 4845,
+   "lat": 50.085,
+   "lon": 11.24004,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Wunsiedel",
+   "osm_node": 240103247,
+   "place": "town",
+   "population": 10154,
+   "lat": 50.03732,
+   "lon": 12.00273,
+   "region": "Oberfranken"
+  },
+  {
+   "name": "Amberg",
+   "osm_node": 240071747,
+   "place": "town",
+   "population": 43529,
+   "lat": 49.44534,
+   "lon": 11.85816,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Auerbach in der Oberpfalz",
+   "osm_node": 240126491,
+   "place": "town",
+   "population": 9115,
+   "lat": 49.69261,
+   "lon": 11.63028,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Bad Kötzting",
+   "osm_node": 29693302,
+   "place": "town",
+   "population": 7390,
+   "lat": 49.17582,
+   "lon": 12.85293,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Bruck in der Oberpfalz",
+   "osm_node": 71639410,
+   "place": "town",
+   "population": 3144,
+   "lat": 49.25015,
+   "lon": 12.30815,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Burglengenfeld",
+   "osm_node": 46845290,
+   "place": "town",
+   "population": 9130,
+   "lat": 49.20711,
+   "lon": 12.03996,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Bärnau",
+   "osm_node": 240071001,
+   "place": "town",
+   "population": 1492,
+   "lat": 49.81099,
+   "lon": 12.43046,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Cham",
+   "osm_node": 30039459,
+   "place": "town",
+   "population": 17013,
+   "lat": 49.21782,
+   "lon": 12.66637,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Dietfurt an der Altmühl",
+   "osm_node": 240029042,
+   "place": "town",
+   "population": 2398,
+   "lat": 49.03496,
+   "lon": 11.58765,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Erbendorf",
+   "osm_node": 27378585,
+   "place": "town",
+   "population": 5369,
+   "lat": 49.83828,
+   "lon": 12.04839,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Eschenbach in der Oberpfalz",
+   "osm_node": 1642582810,
+   "place": "town",
+   "population": 4015,
+   "lat": 49.75311,
+   "lon": 11.82946,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Eslarn",
+   "osm_node": 936328038,
+   "place": "town",
+   "population": 3050,
+   "lat": 49.58285,
+   "lon": 12.52144,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Freystadt",
+   "osm_node": 240038095,
+   "place": "town",
+   "population": 9089,
+   "lat": 49.19896,
+   "lon": 11.32859,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Furth im Wald",
+   "osm_node": 21635387,
+   "place": "town",
+   "population": 8953,
+   "lat": 49.30816,
+   "lon": 12.84528,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Grafenwöhr",
+   "osm_node": 240043516,
+   "place": "town",
+   "population": 6907,
+   "lat": 49.72132,
+   "lon": 11.90444,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Hemau",
+   "osm_node": 3543179078,
+   "place": "town",
+   "population": 8592,
+   "lat": 49.05175,
+   "lon": 11.78251,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Kemnath",
+   "osm_node": 240038192,
+   "place": "town",
+   "population": 4000,
+   "lat": 49.87069,
+   "lon": 11.8889,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Maxhütte-Haidhof",
+   "osm_node": 46909450,
+   "place": "town",
+   "population": 10513,
+   "lat": 49.19873,
+   "lon": 12.09599,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Mitterteich",
+   "osm_node": 240127542,
+   "place": "town",
+   "population": 6317,
+   "lat": 49.95096,
+   "lon": 12.24298,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Nabburg",
+   "osm_node": 56235168,
+   "place": "town",
+   "population": 6107,
+   "lat": 49.45438,
+   "lon": 12.18069,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Neumarkt in der Oberpfalz",
+   "osm_node": 240084358,
+   "place": "town",
+   "population": 40808,
+   "lat": 49.28005,
+   "lon": 11.45854,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Neunburg vorm Wald",
+   "osm_node": 240040919,
+   "place": "town",
+   "population": 8267,
+   "lat": 49.34875,
+   "lon": 12.38198,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Neustadt am Kulm",
+   "osm_node": 240043437,
+   "place": "town",
+   "population": 1318,
+   "lat": 49.82569,
+   "lon": 11.83532,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Neustadt an der Waldnaab",
+   "osm_node": 282442829,
+   "place": "town",
+   "population": 6106,
+   "lat": 49.73099,
+   "lon": 12.1725,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Neutraubling",
+   "osm_node": 34207240,
+   "place": "town",
+   "population": 13255,
+   "lat": 48.99266,
+   "lon": 12.19908,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Nittenau",
+   "osm_node": 47167729,
+   "place": "town",
+   "population": 1766,
+   "lat": 49.19745,
+   "lon": 12.27163,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Oberviechtach",
+   "osm_node": 52115603,
+   "place": "town",
+   "population": 4918,
+   "lat": 49.46027,
+   "lon": 12.41898,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Parsberg",
+   "osm_node": 2494462460,
+   "place": "town",
+   "population": 7783,
+   "lat": 49.15988,
+   "lon": 11.71877,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Pfreimd",
+   "osm_node": 240030619,
+   "place": "town",
+   "population": 5412,
+   "lat": 49.49361,
+   "lon": 12.17987,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Pleystein",
+   "osm_node": 240124206,
+   "place": "town",
+   "population": 2703,
+   "lat": 49.64593,
+   "lon": 12.40998,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Postbauer-Heng",
+   "osm_node": 199516866,
+   "place": "town",
+   "population": 7936,
+   "lat": 49.30366,
+   "lon": 11.35275,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Pressath",
+   "osm_node": 41167365,
+   "place": "town",
+   "population": 4670,
+   "lat": 49.76982,
+   "lon": 11.9343,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Regensburg",
+   "osm_node": 240120926,
+   "place": "city",
+   "population": 151517,
+   "lat": 49.01953,
+   "lon": 12.09749,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Regenstauf",
+   "osm_node": 46844806,
+   "place": "town",
+   "population": 6465,
+   "lat": 49.12398,
+   "lon": 12.12782,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Roding",
+   "osm_node": 240051052,
+   "place": "town",
+   "population": 13060,
+   "lat": 49.19642,
+   "lon": 12.5167,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Rötz",
+   "osm_node": 240123577,
+   "place": "town",
+   "population": 3528,
+   "lat": 49.34209,
+   "lon": 12.52788,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Schönsee",
+   "osm_node": 240067094,
+   "place": "town",
+   "population": 2439,
+   "lat": 49.51027,
+   "lon": 12.54665,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Sulzbach-Rosenberg",
+   "osm_node": 13076689615,
+   "place": "town",
+   "population": 19543,
+   "lat": 49.50519,
+   "lon": 11.7397,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Teublitz",
+   "osm_node": 46909538,
+   "place": "town",
+   "population": 7408,
+   "lat": 49.22119,
+   "lon": 12.08525,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Tirschenreuth",
+   "osm_node": 240023497,
+   "place": "town",
+   "population": 8189,
+   "lat": 49.87802,
+   "lon": 12.33721,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Vilseck",
+   "osm_node": 319743105,
+   "place": "town",
+   "population": 6387,
+   "lat": 49.61242,
+   "lon": 11.80701,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Vohenstrauß",
+   "osm_node": 1658320454,
+   "place": "town",
+   "population": 7722,
+   "lat": 49.62383,
+   "lon": 12.34144,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Waldershof",
+   "osm_node": 240070065,
+   "place": "town",
+   "population": 2830,
+   "lat": 49.98295,
+   "lon": 12.06636,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Waldmünchen",
+   "osm_node": 80313028,
+   "place": "town",
+   "population": 7319,
+   "lat": 49.37757,
+   "lon": 12.70621,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Waldsassen",
+   "osm_node": 240023502,
+   "place": "town",
+   "population": 7501,
+   "lat": 50.00403,
+   "lon": 12.30825,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Weiden in der Oberpfalz",
+   "osm_node": 487224833,
+   "place": "town",
+   "population": 42444,
+   "lat": 49.67527,
+   "lon": 12.16316,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Windischeschenbach",
+   "osm_node": 240086968,
+   "place": "town",
+   "population": 5566,
+   "lat": 49.80076,
+   "lon": 12.15659,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Wörth an der Donau",
+   "osm_node": 240041829,
+   "place": "town",
+   "population": 4488,
+   "lat": 49.00122,
+   "lon": 12.40416,
+   "region": "Oberpfalz"
+  },
+  {
+   "name": "Aichach",
+   "osm_node": 240084074,
+   "place": "town",
+   "population": 21488,
+   "lat": 48.45915,
+   "lon": 11.131,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Augsburg",
+   "osm_node": 1559853166,
+   "place": "city",
+   "population": 301033,
+   "lat": 48.36903,
+   "lon": 10.89795,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Bad Wörishofen",
+   "osm_node": 470319784,
+   "place": "town",
+   "population": 13925,
+   "lat": 48.00482,
+   "lon": 10.59264,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Bobingen",
+   "osm_node": 33368076,
+   "place": "town",
+   "population": 16574,
+   "lat": 48.26879,
+   "lon": 10.83379,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Buchloe",
+   "osm_node": 34557695,
+   "place": "town",
+   "population": 11983,
+   "lat": 48.03738,
+   "lon": 10.72828,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Burgau",
+   "osm_node": 240027364,
+   "place": "town",
+   "population": 8399,
+   "lat": 48.43171,
+   "lon": 10.4072,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Diedorf",
+   "osm_node": 240043070,
+   "place": "town",
+   "population": 10229,
+   "lat": 48.35465,
+   "lon": 10.77762,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Dillingen an der Donau",
+   "osm_node": 33534388,
+   "place": "town",
+   "population": 19149,
+   "lat": 48.57719,
+   "lon": 10.49435,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Dinkelscherben",
+   "osm_node": 621427293,
+   "place": "town",
+   "population": 6647,
+   "lat": 48.34855,
+   "lon": 10.59099,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Donauwörth",
+   "osm_node": 253814401,
+   "place": "town",
+   "population": 19590,
+   "lat": 48.71804,
+   "lon": 10.78073,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Fischach",
+   "osm_node": 240089975,
+   "place": "town",
+   "population": 4678,
+   "lat": 48.28921,
+   "lon": 10.6559,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Friedberg",
+   "osm_node": 240047817,
+   "place": "town",
+   "population": 29081,
+   "lat": 48.3552,
+   "lon": 10.97865,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Füssen",
+   "osm_node": 27388601,
+   "place": "town",
+   "population": 14139,
+   "lat": 47.5676,
+   "lon": 10.69932,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Gersthofen",
+   "osm_node": 688525287,
+   "place": "town",
+   "population": 21685,
+   "lat": 48.42482,
+   "lon": 10.87786,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Gundelfingen an der Donau",
+   "osm_node": 240077484,
+   "place": "town",
+   "population": 7854,
+   "lat": 48.55344,
+   "lon": 10.36783,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Günzburg",
+   "osm_node": 171650377,
+   "place": "town",
+   "population": 21028,
+   "lat": 48.45552,
+   "lon": 10.27662,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Harburg (Schwaben)",
+   "osm_node": 240107791,
+   "place": "town",
+   "population": 1811,
+   "lat": 48.78721,
+   "lon": 10.68896,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Höchstädt an der Donau",
+   "osm_node": 240093764,
+   "place": "town",
+   "population": 6765,
+   "lat": 48.61144,
+   "lon": 10.56708,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Ichenhausen",
+   "osm_node": 1628636302,
+   "place": "town",
+   "population": 8529,
+   "lat": 48.3711,
+   "lon": 10.30524,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Illertissen",
+   "osm_node": 240035515,
+   "place": "town",
+   "population": 16775,
+   "lat": 48.22292,
+   "lon": 10.10534,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Kaufbeuren",
+   "osm_node": 240078045,
+   "place": "town",
+   "population": 41759,
+   "lat": 47.88038,
+   "lon": 10.62225,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Kempten (Allgäu)",
+   "osm_node": 240126519,
+   "place": "town",
+   "population": 67645,
+   "lat": 47.72671,
+   "lon": 10.31688,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Krumbach (Schwaben)",
+   "osm_node": 240110473,
+   "place": "town",
+   "population": 12729,
+   "lat": 48.24306,
+   "lon": 10.3631,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Königsbrunn",
+   "osm_node": 240062765,
+   "place": "town",
+   "population": 29207,
+   "lat": 48.26795,
+   "lon": 10.88838,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Lauingen (Donau)",
+   "osm_node": 84837353,
+   "place": "town",
+   "population": 10736,
+   "lat": 48.57108,
+   "lon": 10.43054,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Leipheim",
+   "osm_node": 240086658,
+   "place": "town",
+   "population": 6800,
+   "lat": 48.44872,
+   "lon": 10.22135,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Marktoberdorf",
+   "osm_node": 1015605096,
+   "place": "town",
+   "population": 18487,
+   "lat": 47.77809,
+   "lon": 10.61888,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Meitingen",
+   "osm_node": 240089720,
+   "place": "town",
+   "population": 11121,
+   "lat": 48.54553,
+   "lon": 10.8523,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Memmingen",
+   "osm_node": 240036844,
+   "place": "town",
+   "population": 45343,
+   "lat": 47.98631,
+   "lon": 10.1808,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Mering",
+   "osm_node": 240130474,
+   "place": "town",
+   "population": 12676,
+   "lat": 48.26783,
+   "lon": 10.98688,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Mindelheim",
+   "osm_node": 1685809860,
+   "place": "town",
+   "population": 15108,
+   "lat": 48.04642,
+   "lon": 10.48825,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Monheim",
+   "osm_node": 240118919,
+   "place": "town",
+   "population": 2340,
+   "lat": 48.84236,
+   "lon": 10.85627,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Neu-Ulm",
+   "osm_node": 61205988,
+   "place": "town",
+   "population": 62610,
+   "lat": 48.39535,
+   "lon": 10.00052,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Neusäß",
+   "osm_node": 2245582657,
+   "place": "town",
+   "population": 21858,
+   "lat": 48.39287,
+   "lon": 10.83545,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Nördlingen",
+   "osm_node": 29006353,
+   "place": "town",
+   "population": 20546,
+   "lat": 48.85113,
+   "lon": 10.48838,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Obergünzburg",
+   "osm_node": 60011978,
+   "place": "town",
+   "population": 6469,
+   "lat": 47.84588,
+   "lon": 10.41929,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Oettingen in Bayern",
+   "osm_node": 240040640,
+   "place": "town",
+   "population": 5093,
+   "lat": 48.953,
+   "lon": 10.60392,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Ottobeuren",
+   "osm_node": 115212629,
+   "place": "town",
+   "population": 8672,
+   "lat": 47.94173,
+   "lon": 10.29998,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Pöttmes",
+   "osm_node": 29091016,
+   "place": "town",
+   "population": 2226,
+   "lat": 48.58209,
+   "lon": 11.0893,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Rain",
+   "osm_node": 240070269,
+   "place": "town",
+   "population": 8627,
+   "lat": 48.69015,
+   "lon": 10.91591,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Schwabmünchen",
+   "osm_node": 39694054,
+   "place": "town",
+   "population": 13153,
+   "lat": 48.18056,
+   "lon": 10.75781,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Senden",
+   "osm_node": 240046109,
+   "place": "town",
+   "population": 22332,
+   "lat": 48.32519,
+   "lon": 10.04712,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Stadtbergen",
+   "osm_node": 715740353,
+   "place": "town",
+   "population": 14621,
+   "lat": 48.36663,
+   "lon": 10.84428,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Thannhausen",
+   "osm_node": 240118822,
+   "place": "town",
+   "population": 5955,
+   "lat": 48.28293,
+   "lon": 10.46823,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Türkheim",
+   "osm_node": 1683130862,
+   "place": "town",
+   "population": 6998,
+   "lat": 48.06257,
+   "lon": 10.64035,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Vöhringen",
+   "osm_node": 240105080,
+   "place": "town",
+   "population": 13084,
+   "lat": 48.2833,
+   "lon": 10.0833,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Weißenhorn",
+   "osm_node": 95112963,
+   "place": "town",
+   "population": 13252,
+   "lat": 48.30449,
+   "lon": 10.16015,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Wemding",
+   "osm_node": 96546093,
+   "place": "town",
+   "population": 5757,
+   "lat": 48.87455,
+   "lon": 10.72402,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Wertingen",
+   "osm_node": 1199949653,
+   "place": "town",
+   "population": 8871,
+   "lat": 48.56196,
+   "lon": 10.68264,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Zusmarshausen",
+   "osm_node": 320828778,
+   "place": "town",
+   "population": 6348,
+   "lat": 48.39966,
+   "lon": 10.5964,
+   "region": "Schwaben"
+  },
+  {
+   "name": "Alzenau",
+   "osm_node": 240043434,
+   "place": "town",
+   "population": 7500,
+   "lat": 50.08632,
+   "lon": 9.07298,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Amorbach",
+   "osm_node": 148127744,
+   "place": "town",
+   "population": 4145,
+   "lat": 49.64467,
+   "lon": 9.21973,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Arnstein",
+   "osm_node": 240087535,
+   "place": "town",
+   "population": 8343,
+   "lat": 49.97834,
+   "lon": 9.9685,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Aschaffenburg",
+   "osm_node": 240047795,
+   "place": "town",
+   "population": 67844,
+   "lat": 49.97381,
+   "lon": 9.14467,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Aub",
+   "osm_node": 240070107,
+   "place": "town",
+   "population": 1545,
+   "lat": 49.5525,
+   "lon": 10.06529,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Bad Brückenau",
+   "osm_node": 26632680,
+   "place": "town",
+   "population": 6400,
+   "lat": 50.31014,
+   "lon": 9.79122,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Bad Kissingen",
+   "osm_node": 33015882,
+   "place": "town",
+   "population": 21650,
+   "lat": 50.19994,
+   "lon": 10.07674,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Bad Königshofen",
+   "osm_node": 240097609,
+   "place": "town",
+   "population": 7043,
+   "lat": 50.29933,
+   "lon": 10.46749,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Bad Neustadt an der Saale",
+   "osm_node": 33970342,
+   "place": "town",
+   "population": 16179,
+   "lat": 50.32264,
+   "lon": 10.21649,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Bischofsheim in der Rhön",
+   "osm_node": 240110212,
+   "place": "town",
+   "population": 4825,
+   "lat": 50.40111,
+   "lon": 10.00753,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Dettelbach",
+   "osm_node": 240107509,
+   "place": "town",
+   "population": 6949,
+   "lat": 49.80191,
+   "lon": 10.16121,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Ebern",
+   "osm_node": 71562306,
+   "place": "town",
+   "population": 7434,
+   "lat": 50.09462,
+   "lon": 10.79347,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Eibelstadt",
+   "osm_node": 28888752,
+   "place": "town",
+   "population": 2873,
+   "lat": 49.72434,
+   "lon": 10.00027,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Elsenfeld",
+   "osm_node": 3404832737,
+   "place": "town",
+   "population": 8947,
+   "lat": 49.84731,
+   "lon": 9.16185,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Eltmann",
+   "osm_node": 68660819,
+   "place": "town",
+   "population": 5844,
+   "lat": 49.9725,
+   "lon": 10.66621,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Erlenbach am Main",
+   "osm_node": 240104940,
+   "place": "town",
+   "population": 10235,
+   "lat": 49.80462,
+   "lon": 9.15947,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Fladungen",
+   "osm_node": 1667005735,
+   "place": "town",
+   "population": 2296,
+   "lat": 50.52104,
+   "lon": 10.14585,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Gemünden am Main",
+   "osm_node": 25738926,
+   "place": "town",
+   "population": 10290,
+   "lat": 50.05648,
+   "lon": 9.68987,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Gerolzhofen",
+   "osm_node": 2644357227,
+   "place": "town",
+   "population": 6902,
+   "lat": 49.90097,
+   "lon": 10.34941,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Goldbach",
+   "osm_node": 240117146,
+   "place": "town",
+   "population": 9823,
+   "lat": 49.99887,
+   "lon": 9.18276,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Großostheim",
+   "osm_node": 28790715,
+   "place": "town",
+   "population": 8505,
+   "lat": 49.92075,
+   "lon": 9.07559,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Hammelburg",
+   "osm_node": 240046933,
+   "place": "town",
+   "population": 11925,
+   "lat": 50.11522,
+   "lon": 9.89044,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Haßfurt",
+   "osm_node": 240089515,
+   "place": "town",
+   "population": 13539,
+   "lat": 50.03187,
+   "lon": 10.50656,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Hofheim in Unterfranken",
+   "osm_node": 68706695,
+   "place": "town",
+   "population": 5079,
+   "lat": 50.13669,
+   "lon": 10.52317,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Höchberg",
+   "osm_node": 2734966646,
+   "place": "town",
+   "population": 9329,
+   "lat": 49.78183,
+   "lon": 9.87868,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Hösbach",
+   "osm_node": 27361870,
+   "place": "town",
+   "population": 13359,
+   "lat": 50.00399,
+   "lon": 9.20238,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Iphofen",
+   "osm_node": 240028188,
+   "place": "town",
+   "population": 4419,
+   "lat": 49.70421,
+   "lon": 10.26078,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Karlstadt",
+   "osm_node": 1675852861,
+   "place": "town",
+   "population": 14810,
+   "lat": 49.96145,
+   "lon": 9.76425,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Kitzingen",
+   "osm_node": 240128564,
+   "place": "town",
+   "population": 20449,
+   "lat": 49.73807,
+   "lon": 10.16012,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Klingenberg am Main",
+   "osm_node": 240079887,
+   "place": "town",
+   "population": 6305,
+   "lat": 49.78241,
+   "lon": 9.18278,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Lohr am Main",
+   "osm_node": 240047193,
+   "place": "town",
+   "population": 15012,
+   "lat": 49.99475,
+   "lon": 9.57378,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Mainbernheim",
+   "osm_node": 66565890,
+   "place": "town",
+   "population": 2314,
+   "lat": 49.70876,
+   "lon": 10.21778,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Marktbreit",
+   "osm_node": 88952922,
+   "place": "town",
+   "population": 3757,
+   "lat": 49.66689,
+   "lon": 10.14358,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Marktheidenfeld",
+   "osm_node": 36630260,
+   "place": "town",
+   "population": 7158,
+   "lat": 49.84441,
+   "lon": 9.60039,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Marktsteft",
+   "osm_node": 240107302,
+   "place": "town",
+   "population": 1768,
+   "lat": 49.69672,
+   "lon": 10.1351,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Miltenberg",
+   "osm_node": 240039199,
+   "place": "town",
+   "population": 8050,
+   "lat": 49.70176,
+   "lon": 9.25597,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Mömbris",
+   "osm_node": 165872061,
+   "place": "town",
+   "population": 12320,
+   "lat": 50.06911,
+   "lon": 9.16602,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Münnerstadt",
+   "osm_node": 240043443,
+   "place": "town",
+   "population": 3705,
+   "lat": 50.24904,
+   "lon": 10.19426,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Obernburg am Main",
+   "osm_node": 148141327,
+   "place": "town",
+   "population": 8500,
+   "lat": 49.84223,
+   "lon": 9.14805,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Ochsenfurt",
+   "osm_node": 240071220,
+   "place": "town",
+   "population": 11522,
+   "lat": 49.66436,
+   "lon": 10.06476,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Ostheim vor der Rhön",
+   "osm_node": 240054444,
+   "place": "town",
+   "population": 3425,
+   "lat": 50.46027,
+   "lon": 10.23305,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Schweinfurt",
+   "osm_node": 240106077,
+   "place": "town",
+   "population": 56625,
+   "lat": 50.04515,
+   "lon": 10.23406,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Volkach",
+   "osm_node": 115629242,
+   "place": "town",
+   "population": 9444,
+   "lat": 49.86569,
+   "lon": 10.22618,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Wörth am Main",
+   "osm_node": 148143967,
+   "place": "town",
+   "population": 4936,
+   "lat": 49.79551,
+   "lon": 9.15746,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Würzburg",
+   "osm_node": 25738881,
+   "place": "city",
+   "population": 124700,
+   "lat": 49.79337,
+   "lon": 9.93098,
+   "region": "Unterfranken"
+  },
+  {
+   "name": "Zeil am Main",
+   "osm_node": 240036555,
+   "place": "town",
+   "population": 5840,
+   "lat": 50.01375,
+   "lon": 10.5948,
+   "region": "Unterfranken"
+  }
+ ]
+}
