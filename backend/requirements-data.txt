@@ -1,0 +1,6 @@
+# Phase 1 data pipeline (python -m pipeline.build / pipeline.stats).
+# Pinned for reproducibility: outputs are byte-identical only with the same
+# library versions (shapely/GEOS simplification and numpy float behaviour).
+numpy==2.5.5
+osmium==4.3.2
+shapely==2.2.0
