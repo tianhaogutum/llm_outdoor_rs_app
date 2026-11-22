@@ -54,7 +54,7 @@ class PipelineConfig:
     filters: bool = True
     filter: FilterConfig = field(default_factory=FilterConfig)
     generators: tuple[str, ...] = ("bm25", "dense")
-    rrf_k: int = 60
+    rrf_k: int = 30
     gen_depth: int = 100
     cand_depth: int = 50
     ranker: str = "none"

@@ -149,6 +149,91 @@ def _split_of(doc: dict[str, Any], pid: str) -> str:
     return _SPLITS[pid]
 
 
+def _m(d: dict[str, Any], split: str, key: str) -> str:
+    return _ci(d["metrics"][split][key])
+
+
+def _candidate_generation(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    by = {d["system"]: d for d in docs}
+    gens = [("v2_bm25", "BM25F"), ("v3_dense", "dense (exact cosine)"), ("v4_rrf", "RRF(BM25, dense)")]
+    if not any(n in by for n, _ in gens):
+        return []
+    L = [
+        "## Candidate generation (Phase 3b)",
+        "",
+        cap,
+        "",
+        "Each generator over the eligible set, ranked by its own score (the `v2`-`v4` systems). Recall@50 is "
+        "pool-relative: the share of a persona's known relevant routes in the generator's top 50.",
+        "",
+        "| Generator | System | Recall@50 (test) | NDCG@10 (test) | Recall@50 (dev) | NDCG@10 (dev) |",
+        "|---|---|---|---|---|---|",
+    ]
+    for n, label in gens:
+        if n in by:
+            d = by[n]
+            L.append(
+                f"| {label} | `{n}` | {_m(d, 'test', 'recall_at_50')} | {_m(d, 'test', 'ndcg_at_10')} | "
+                f"{_m(d, 'dev', 'recall_at_50')} | {_m(d, 'dev', 'ndcg_at_10')} |"
+            )
+    cg = _load("_cg_dev.json")
+    if cg:
+        L += [
+            "",
+            f"Dev-only tuning ({cg['n_personas']} dev personas, `eval/results/_cg_dev.json`; `python -m evalkit.cg tune`)."
+            " Measured against the qrels at the time of tuning, without new judgements: Recall@50 and a *condensed* "
+            "NDCG@10 (unjudged routes dropped before the cut). The pool contains plain BM25 of the intent "
+            "(`pool_intent_lexical`), which favours the `plain` variant.",
+            "",
+            "| BM25 variant | Recall@50 (dev) | condensed NDCG@10 (dev) | ΔRecall@50 vs plain |",
+            "|---|---|---|---|",
+        ]
+        for name, v in cg["bm25"].items():
+            dv = v.get("recall_vs_plain")
+            dcell = f"{dv['diff']:+.3f} [{dv['lo']:+.3f}, {dv['hi']:+.3f}]" if dv else "–"
+            L.append(f"| {name} | {_ci(v['recall_at_50'])} | {_ci(v['condensed_ndcg_at_10'])} | {dcell} |")
+        L += ["", "| Dense document text | Recall@50 (dev) | condensed NDCG@10 (dev) |", "|---|---|---|"]
+        for name, v in cg["dense"].items():
+            if name == "paired_recall":
+                continue
+            L.append(f"| `{name}` | {_ci(v['recall_at_50'])} | {_ci(v['condensed_ndcg_at_10'])} |")
+        for k, v in cg["dense"].get("paired_recall", {}).items():
+            L.append(f"\nPaired ΔRecall@50 ({k}): {v['diff']:+.3f} [{v['lo']:+.3f}, {v['hi']:+.3f}].")
+        L += ["", "| RRF k | Recall@50 (dev) | condensed NDCG@10 (dev) |", "|---|---|---|"]
+        for k, v in sorted(cg["rrf_k"].items(), key=lambda kv: int(kv[0])):
+            L.append(f"| {k} | {_ci(v['recall_at_50'])} | {_ci(v['condensed_ndcg_at_10'])} |")
+        qz = cg.get("quantisation")
+        if qz:
+            L += [
+                "",
+                f"Committed document matrix: {qz['committed_precision']}, {qz['committed_file_bytes'] / 1e6:.1f} MB "
+                f"(float32 would be {qz['float32_bytes'] / 1e6:.1f} MB). Rankings vs float32 on the dev queries:",
+                "",
+                "| Precision | top-10 overlap | identical top-10 order | identical top-50 order | max abs cosine diff |",
+                "|---|---|---|---|---|",
+            ]
+            for prec in ("float16", "int8"):
+                z = qz[prec]
+                L.append(
+                    f"| {prec} | {z['top10_overlap_mean']:.4f} | {100 * z['top10_identical_order_share']:.1f}% | "
+                    f"{100 * z['top50_identical_order_share']:.1f}% | {z['max_abs_cosine_diff']:.2e} |"
+                )
+            lo, med, hi = qz["example_cosine_range"]
+            L.append(
+                f"\nCosines are compressed into a narrow band (one dev persona's eligible set: min {lo:.3f}, median "
+                f"{med:.3f}, max {hi:.3f}), so differences of 1e-5 already swap near-ties."
+            )
+        ex = cg.get("exact_search")
+        if ex:
+            L.append(
+                f"\nExact search over the whole catalogue ({ex['n_docs']} x {ex['dim']}, no filter): "
+                f"{ex['ms_per_query_full_catalogue']:.3f} ms per query ({ex['ns_per_doc']:.0f} ns per document; "
+                f"{ex['machine_note']})."
+            )
+    L.append("")
+    return L
+
+
 def render() -> str:
     docs = _systems()
     q = _load("_qrels.json")
@@ -171,6 +256,7 @@ def render() -> str:
         paired = _paired(docs, split)
         if paired:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
+    L += _candidate_generation(docs, cap)
     L += [
         "## Latency (locally measured, varies run to run)",
         "",

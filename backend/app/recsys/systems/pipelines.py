@@ -24,10 +24,16 @@ BM25_DEFAULT = BM25Config(stem=True, glossary=False, negation=True, expand=True,
 
 CONFIGS: dict[str, PipelineConfig] = {
     "v1_filters": PipelineConfig(generators=(), ranker="v0", bm25=BM25_DEFAULT),
+    "v2_bm25": PipelineConfig(generators=("bm25",), ranker="none", bm25=BM25_DEFAULT),
+    "v3_dense": PipelineConfig(generators=("dense",), ranker="none", bm25=BM25_DEFAULT),
+    "v4_rrf": PipelineConfig(generators=("bm25", "dense"), ranker="none", bm25=BM25_DEFAULT),
 }
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
+    "v2_bm25": "filters + BM25F over title/description/tags, ranked by BM25",
+    "v3_dense": "filters + dense retrieval (exact cosine), ranked by similarity",
+    "v4_rrf": "filters + BM25 and dense fused by reciprocal rank, ranked by RRF",
 }
 
 

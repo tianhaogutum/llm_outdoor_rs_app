@@ -103,7 +103,34 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
         for p in pairs:
             if got.get((p["persona_id"], p["route_id"])) != sec[p["pair_id"]]:
                 problems.append(f"second judge differs for {p['pair_id']}")
+    # 5. the systems' own upstream calls (query embeddings, ranker API): re-run every stored run of a
+    #    system that uses the LLM client and compare its rankings with the committed run file
+    from evalkit import evaluate as E
+
+    for name in E.stored_systems():
+        from app.recsys import get_system_spec
+
+        if not get_system_spec(name).uses_llm:
+            continue
+        client = E.system_client()
+        client.reset_touched()
+        run, _, _ = E.run_system(name, catalog, list(pmap.values()))
+        keys += client.touched_keys()
+        if check:
+            stored, _ = E.load_run(name)
+            for pid, r in run.items():
+                if r["ids"] != stored[pid]["ids"]:
+                    problems.append(f"run differs: {name} {pid}")
+                    break
+    for extra in EXTRA_REPLAYS:
+        k, pr = extra(check)
+        keys += k
+        problems += pr
     return list(dict.fromkeys(keys)), problems
+
+
+# Further recorded experiments to replay (registered by evalkit modules: ranker pilot, LTR, MMR sweep).
+EXTRA_REPLAYS: list = []
 
 
 def export() -> None:
