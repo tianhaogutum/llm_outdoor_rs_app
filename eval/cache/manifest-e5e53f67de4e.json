@@ -1,0 +1,13 @@
+{
+  "format": "app.llm.frozen-cache",
+  "format_version": 1,
+  "key_version": 1,
+  "entries": 1484,
+  "by_capability": {
+    "generate": 1484
+  },
+  "vector_dims": [],
+  "files": [
+    "entries-e5e53f67de4e.jsonl.gz"
+  ]
+}
