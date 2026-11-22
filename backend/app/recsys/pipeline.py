@@ -61,7 +61,7 @@ class PipelineConfig:
     bm25: BM25Config = field(default_factory=BM25Config)
     embed_model: str = "gemini-embedding-001"
     embed_dim: int = 768
-    rank_model: str = "cohere/rerank-v3.5"
+    rank_model: str = "mongodb/rerank-3"  # chosen by the dev pilot (eval/results/_rank_pilot.json)
     rank_doc: str = "facts_desc"
     ltr_model: Optional[str] = None
     mmr_lambda: Optional[float] = None
@@ -86,6 +86,21 @@ class PipelineConfig:
         d["generators"] = list(self.generators)
         d["bm25"] = self.bm25.describe()
         return d
+
+
+@dataclass
+class _Retrieval:
+    hc: HardConstraints
+    fr: FilterResult
+    elig: np.ndarray
+    intent: str
+    traces: list[StageTrace]
+    stage: dict[str, np.ndarray]
+    per_term: dict[str, np.ndarray]
+    lists: dict[str, list[int]]
+    fused_inputs: dict[int, dict[str, int]]
+    cand: Optional[list[int]]
+    fallback: Optional[str]
 
 
 def _committed_doc_meta() -> dict[str, Any]:
@@ -230,11 +245,11 @@ class Pipeline:
 
         return run_sync(self.arecommend(query, k))
 
-    async def arecommend(self, query: UserQuery, k: int = 10) -> Recommendation:
+    async def _retrieve(self, query: UserQuery) -> _Retrieval:
+        """Stages 1-2: filter, generators, fusion. ``cand`` = eligible-set positions, or None (rule fallback)."""
         cfg = self.cfg
         cat = self.catalog
         traces: list[StageTrace] = []
-        contrib: dict[str, dict[int, Any]] = {}
         intent = (query.intent or "").strip()
 
         # 1. filter ------------------------------------------------------
@@ -324,6 +339,23 @@ class Pipeline:
         fallback = None
         if cand is None and cfg.generators and not intent:
             fallback = "no_intent"
+
+        return _Retrieval(hc, fr, elig, intent, traces, stage, per_term, lists, fused_inputs, cand, fallback)
+
+    async def arecommend(self, query: UserQuery, k: int = 10) -> Recommendation:
+        cfg = self.cfg
+        cat = self.catalog
+        contrib: dict[str, dict[int, Any]] = {}
+        r = await self._retrieve(query)
+        hc, fr, elig, intent, traces = r.hc, r.fr, r.elig, r.intent, r.traces
+        stage, per_term, lists, fused_inputs, cand, fallback = (
+            r.stage,
+            r.per_term,
+            r.lists,
+            r.fused_inputs,
+            r.cand,
+            r.fallback,
+        )
 
         # 3. ranking -------------------------------------------------------
         ranker = cfg.ranker if cand is not None else "v0"
@@ -503,6 +535,21 @@ class Pipeline:
         if fallback:
             traces[0].info["fallback"] = fallback
         return Recommendation(query.request_id, self.name, out_ids, [round(float(s), 6) for s in final_scores], traces)
+
+    async def afeatures(self, query: UserQuery, *, with_api: bool = True) -> tuple[list[int], np.ndarray]:
+        """Candidate route ids and their full feature matrix (over ``FEATURES``), as the learned ranker sees
+        them; used to build training data. ``with_api`` adds the ranker-API score (one rank call)."""
+        r = await self._retrieve(query)
+        if not r.cand:
+            return [], np.zeros((0, len(FEATURES)))
+        ca = np.array(r.cand, dtype=np.int64)
+        st = stage_arrays(len(ca))
+        for key_ in ("bm25", "bm25_rank", "dense", "dense_rank", "rrf", "fused_rank"):
+            st[key_] = r.stage[key_][ca]
+        if with_api:
+            st["rank_api"] = (await self._rank_api(r.intent, r.elig[ca]))[0]
+        X = build_features(self.catalog, query, r.elig[ca], st, r.fr.home_km, parse_intent(r.intent))
+        return [int(self.catalog.ids[r.elig[j]]) for j in ca], X
 
     # ------------------------------------------------------------ stage helpers
     def _v0(self, query: UserQuery, pool: np.ndarray, limit: Optional[int]):

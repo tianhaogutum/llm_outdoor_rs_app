@@ -122,15 +122,25 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
                 if r["ids"] != stored[pid]["ids"]:
                     problems.append(f"run differs: {name} {pid}")
                     break
-    for extra in EXTRA_REPLAYS:
+    for extra in _extra_replays():
         k, pr = extra(check)
         keys += k
         problems += pr
     return list(dict.fromkeys(keys)), problems
 
 
-# Further recorded experiments to replay (registered by evalkit modules: ranker pilot, LTR, MMR sweep).
-EXTRA_REPLAYS: list = []
+def _extra_replays() -> list:
+    """Further recorded experiments to replay: ranker pilot, MMR sweep (each returns (keys, problems))."""
+    from evalkit import rank_pilot
+
+    out = [rank_pilot.replay]
+    try:
+        from evalkit import mmr_sweep
+
+        out.append(mmr_sweep.replay)
+    except ImportError:  # pragma: no cover
+        pass
+    return out
 
 
 def export() -> None:

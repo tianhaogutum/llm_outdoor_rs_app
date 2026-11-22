@@ -27,6 +27,7 @@ CONFIGS: dict[str, PipelineConfig] = {
     "v2_bm25": PipelineConfig(generators=("bm25",), ranker="none", bm25=BM25_DEFAULT),
     "v3_dense": PipelineConfig(generators=("dense",), ranker="none", bm25=BM25_DEFAULT),
     "v4_rrf": PipelineConfig(generators=("bm25", "dense"), ranker="none", bm25=BM25_DEFAULT),
+    "v5_rank_api": PipelineConfig(generators=("bm25", "dense"), ranker="api", bm25=BM25_DEFAULT),
 }
 
 DESCRIPTIONS: dict[str, str] = {
@@ -34,6 +35,7 @@ DESCRIPTIONS: dict[str, str] = {
     "v2_bm25": "filters + BM25F over title/description/tags, ranked by BM25",
     "v3_dense": "filters + dense retrieval (exact cosine), ranked by similarity",
     "v4_rrf": "filters + BM25 and dense fused by reciprocal rank, ranked by RRF",
+    "v5_rank_api": "v4_rrf top-50 re-ranked by the semantic ranker API",
 }
 
 

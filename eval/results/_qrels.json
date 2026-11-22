@@ -1,39 +1,39 @@
 {
  "by_source": {
-  "llm": 10604,
+  "llm": 11182,
   "rule": 5598
  },
  "grades_all": {
-  "0": 6753,
-  "1": 5271,
-  "2": 3198,
-  "3": 980
+  "0": 6783,
+  "1": 5546,
+  "2": 3414,
+  "3": 1037
  },
  "grades_llm": {
-  "0": 1155,
-  "1": 5271,
-  "2": 3198,
-  "3": 980
+  "0": 1185,
+  "1": 5546,
+  "2": 3414,
+  "3": 1037
  },
  "judges": {
-  "g35f-min-b8": 10604
+  "g35f-min-b8": 11182
  },
  "models": {
-  "gemini-3.5-flash": 10604
+  "gemini-3.5-flash": 11182
  },
- "pairs": 16202,
+ "pairs": 16780,
  "personas": 300,
- "qrels_sha256": "ed1af577cb3dd70b0b953a1194addd09af45e178369da41f94cd810c9f9d8636",
+ "qrels_sha256": "61f66fd20940155d5508b7bd3029b893bacd37a3cfbb415a9c28cadc70eaf728",
  "relevant_per_persona": {
-  "max": 35,
-  "median": 14,
+  "max": 36,
+  "median": 15,
   "min": 1,
   "personas_without_relevant": 0
  },
  "rubrics": {
-  "rubric/v1": 16202
+  "rubric/v1": 16780
  },
- "rule_share": 0.3455,
+ "rule_share": 0.3336,
  "rules": {
   "distance_cap": 63,
   "radius": 4836,

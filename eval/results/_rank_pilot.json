@@ -1,0 +1,311 @@
+{
+ "best_by_condensed_ndcg": "mongodb/rerank-3",
+ "candidates": "v4_rrf fused top 50",
+ "doc_formulations": [
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.715464,
+    "lo": 0.606033,
+    "mean": 0.661494,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000773,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 377.043812,
+    "p95": 874.364
+   },
+   "model": "mongodb/rerank-3",
+   "reported_models": [
+    "rerank-3"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.097773,
+    "hi": 0.135721,
+    "lo": 0.059387,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.69953,
+    "lo": 0.588156,
+    "mean": 0.645175,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000513,
+   "doc": "desc",
+   "latency_ms": {
+    "p50": 330.816292,
+    "p95": 637.260211
+   },
+   "model": "mongodb/rerank-3",
+   "reported_models": [
+    "rerank-3"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.081453,
+    "hi": 0.123136,
+    "lo": 0.038487,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  }
+ ],
+ "models": [
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.667885,
+    "lo": 0.564387,
+    "mean": 0.615069,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.001775,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 505.213438,
+    "p95": 1190.844284
+   },
+   "model": "cohere/rerank-v3.5",
+   "reported_models": [
+    "cohere.rerank-v3-5:0",
+    "rerank-v3.5"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.051347,
+    "hi": 0.091337,
+    "lo": 0.013775,
+    "n": 40,
+    "p_le_0": 0.002
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.680122,
+    "lo": 0.578052,
+    "mean": 0.630794,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.002,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 516.531646,
+    "p95": 1011.16244
+   },
+   "model": "cohere/rerank-4-fast",
+   "reported_models": [
+    "rerank-v4.0-fast"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.067072,
+    "hi": 0.111003,
+    "lo": 0.026323,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.716746,
+    "lo": 0.591415,
+    "mean": 0.653094,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.0025,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 711.793625,
+    "p95": 1453.263948
+   },
+   "model": "cohere/rerank-4-pro",
+   "reported_models": [
+    "rerank-v4.0-pro"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.089372,
+    "hi": 0.132359,
+    "lo": 0.044454,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.688199,
+    "lo": 0.581765,
+    "mean": 0.635446,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000305,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 456.058229,
+    "p95": 700.915642
+   },
+   "model": "cohere/rerank-5-fast",
+   "reported_models": [
+    "rerank-v5.0-fast"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.071724,
+    "hi": 0.108477,
+    "lo": 0.033175,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.703627,
+    "lo": 0.582954,
+    "mean": 0.646108,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000705,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 527.020292,
+    "p95": 1038.379321
+   },
+   "model": "cohere/rerank-5-pro",
+   "reported_models": [
+    "rerank-v5.0-pro"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.082386,
+    "hi": 0.133205,
+    "lo": 0.033441,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.702522,
+    "lo": 0.588238,
+    "mean": 0.646455,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000309,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 407.357958,
+    "p95": 669.465573
+   },
+   "model": "mongodb/rerank-3-lite",
+   "reported_models": [
+    "rerank-3-lite"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.082734,
+    "hi": 0.123829,
+    "lo": 0.048818,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.715464,
+    "lo": 0.606033,
+    "mean": 0.661494,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.000773,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 377.043812,
+    "p95": 874.364
+   },
+   "model": "mongodb/rerank-3",
+   "reported_models": [
+    "rerank-3"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.097773,
+    "hi": 0.135721,
+    "lo": 0.059387,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "condensed_ndcg_at_10": {
+    "hi": 0.706985,
+    "lo": 0.598776,
+    "mean": 0.65322,
+    "n": 40
+   },
+   "cost_usd_per_call": 0.003842,
+   "doc": "facts_desc",
+   "latency_ms": {
+    "p50": 1119.409396,
+    "p95": 2360.014277
+   },
+   "model": "qwen/qwen3-reranker-8b",
+   "reported_models": [
+    "accounts/fireworks/models/qwen3-reranker-8b",
+    "qwen/qwen3-reranker-8b"
+   ],
+   "vs_rrf_order": {
+    "diff": 0.089498,
+    "hi": 0.124402,
+    "lo": 0.053141,
+    "n": 40,
+    "p_le_0": 0.0
+   }
+  }
+ ],
+ "n_personas": 40,
+ "personas": [
+  "P001",
+  "P010",
+  "P013",
+  "P029",
+  "P032",
+  "P039",
+  "P057",
+  "P064",
+  "P066",
+  "P072",
+  "P089",
+  "P097",
+  "P101",
+  "P120",
+  "P133",
+  "P136",
+  "P139",
+  "P140",
+  "P141",
+  "P149",
+  "P151",
+  "P152",
+  "P158",
+  "P180",
+  "P188",
+  "P189",
+  "P191",
+  "P199",
+  "P226",
+  "P234",
+  "P243",
+  "P249",
+  "P261",
+  "P262",
+  "P265",
+  "P270",
+  "P279",
+  "P283",
+  "P284",
+  "P285"
+ ],
+ "rrf_order": {
+  "hi": 0.614814,
+  "lo": 0.514519,
+  "mean": 0.563722,
+  "n": 40
+ },
+ "schema": "evalkit.rank_pilot/v1",
+ "split": "dev"
+}

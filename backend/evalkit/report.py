@@ -180,8 +180,9 @@ def _candidate_generation(docs: list[dict[str, Any]], cap: str) -> list[str]:
     if cg:
         L += [
             "",
-            f"Dev-only tuning ({cg['n_personas']} dev personas, `eval/results/_cg_dev.json`; `python -m evalkit.cg tune`)."
-            " Measured against the qrels at the time of tuning, without new judgements: Recall@50 and a *condensed* "
+            f"Dev-only tuning ({cg['n_personas']} dev personas, `eval/results/_cg_dev.json`; "
+            "`python -m evalkit.cg tune`). Measured against the qrels at the time of tuning, without new "
+            "judgements: Recall@50 and a *condensed* "
             "NDCG@10 (unjudged routes dropped before the cut). The pool contains plain BM25 of the intent "
             "(`pool_intent_lexical`), which favours the `plain` variant.",
             "",
@@ -209,7 +210,8 @@ def _candidate_generation(docs: list[dict[str, Any]], cap: str) -> list[str]:
                 f"Committed document matrix: {qz['committed_precision']}, {qz['committed_file_bytes'] / 1e6:.1f} MB "
                 f"(float32 would be {qz['float32_bytes'] / 1e6:.1f} MB). Rankings vs float32 on the dev queries:",
                 "",
-                "| Precision | top-10 overlap | identical top-10 order | identical top-50 order | max abs cosine diff |",
+                "| Precision | top-10 overlap | identical top-10 order | identical top-50 order | "
+                "max abs cosine diff |",
                 "|---|---|---|---|---|",
             ]
             for prec in ("float16", "int8"):
@@ -231,6 +233,36 @@ def _candidate_generation(docs: list[dict[str, Any]], cap: str) -> list[str]:
                 f"{ex['machine_note']})."
             )
     L.append("")
+    return L
+
+
+def _rank_pilot() -> list[str]:
+    rp = _load("_rank_pilot.json")
+    if not rp:
+        return []
+    L = [
+        "## Ranker API pilot (Phase 3c i, dev)",
+        "",
+        f"Every OpenRouter reranker re-ranks the same candidate lists ({rp['candidates']}) of {rp['n_personas']} "
+        "seeded dev personas, so the judged subset is identical for all models; quality is the condensed NDCG@10 "
+        "over the judged candidates, cost is OpenRouter's reported charge per call, latency the measured request "
+        f"time. RRF order on the same lists: {_ci(rp['rrf_order'])}. `eval/results/_rank_pilot.json`.",
+        "",
+        "| Model (requested) | Reported id | Document text | condensed NDCG@10 | Δ vs RRF order | Cost/call | "
+        "Latency p50 / p95 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in rp["models"] + rp["doc_formulations"][1:]:
+        if "error" in r:
+            L.append(f"| `{r['model']}` | – | {r['doc']} | error: {r['error'][:60]} | | | |")
+            continue
+        v = r["vs_rrf_order"]
+        L.append(
+            f"| `{r['model']}` | {', '.join(f'`{m}`' for m in r['reported_models'])} | {r['doc']} | "
+            f"{_ci(r['condensed_ndcg_at_10'])} | {v['diff']:+.3f} [{v['lo']:+.3f}, {v['hi']:+.3f}] | "
+            f"{r['cost_usd_per_call']:.5f} USD | {r['latency_ms']['p50']:.0f} / {r['latency_ms']['p95']:.0f} ms |"
+        )
+    L += ["", f"Best on dev: `{rp['best_by_condensed_ndcg']}`.", ""]
     return L
 
 
@@ -257,6 +289,7 @@ def render() -> str:
         if paired:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
     L += _candidate_generation(docs, cap)
+    L += _rank_pilot()
     L += [
         "## Latency (locally measured, varies run to run)",
         "",
