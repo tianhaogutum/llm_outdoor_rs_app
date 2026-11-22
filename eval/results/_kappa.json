@@ -1,0 +1,48 @@
+{
+ "llm_vs_llm": {
+  "confusion_rows_first": [
+   [
+    12,
+    23,
+    3,
+    0
+   ],
+   [
+    0,
+    27,
+    11,
+    0
+   ],
+   [
+    0,
+    3,
+    32,
+    2
+   ],
+   [
+    0,
+    1,
+    16,
+    20
+   ]
+  ],
+  "exact": 0.606667,
+  "first": "g35f-min-b8",
+  "linear_kappa": 0.623176,
+  "n": 150,
+  "note": "interim signal only: two LLM judges from different vendors; NOT a human check",
+  "qwk": 0.758097,
+  "second": "second-sonnet55",
+  "second_models": [
+   "anthropic/claude-sonnet-5.5"
+  ],
+  "within_one": 0.973333
+ },
+ "n_pairs": 150,
+ "owner": {
+  "expected_file": "eval/owner_labels/owner_labels.csv",
+  "status": "owner labels missing"
+ },
+ "production_judge": "g35f-min-b8",
+ "schema": "evalkit.kappa/v1"
+}
