@@ -1,0 +1,495 @@
+{
+  "drop_counts": {
+    "inactive_state": 9,
+    "unnamed": 2075,
+    "no_member_ways": 50,
+    "incomplete_in_extract": 1065,
+    "stitch_failed": 893,
+    "too_short": 990,
+    "too_long": 2,
+    "outside_region": 83,
+    "superroute_single_child": 55,
+    "no_elevation": 0,
+    "duplicate": 56
+  },
+  "drop_examples": {
+    "duplicate": [
+      197344,
+      6477438,
+      20344794,
+      3794451,
+      2721292,
+      2721298,
+      6477935,
+      12468763,
+      6770675,
+      1927098,
+      3692659,
+      9291303,
+      11717415,
+      1124445,
+      1926397
+    ],
+    "inactive_state": [
+      11496,
+      240367,
+      1665395,
+      1997752,
+      3794306,
+      6552637,
+      11264988,
+      12769421,
+      18997123
+    ],
+    "incomplete_in_extract": [
+      2281,
+      2938,
+      2944,
+      4525,
+      4713,
+      6239,
+      7277,
+      7818,
+      8836,
+      10178,
+      12186,
+      13132,
+      16433,
+      17666,
+      18722
+    ],
+    "no_member_ways": [
+      48084,
+      898942,
+      1471753,
+      2142134,
+      2520394,
+      2884717,
+      3045256,
+      3046177,
+      3333590,
+      6082791,
+      6661737,
+      7638786,
+      9164154,
+      9166550,
+      9644355
+    ],
+    "outside_region": [
+      8527,
+      33879,
+      103943,
+      105165,
+      154595,
+      167901,
+      167902,
+      273702,
+      300392,
+      318579,
+      551083,
+      1059816,
+      1177741,
+      1186720,
+      1213825
+    ],
+    "stitch_failed": [
+      3507,
+      5650,
+      7500,
+      7575,
+      14420,
+      17957,
+      22502,
+      28432,
+      30206,
+      30628,
+      31088,
+      31184,
+      33101,
+      33104,
+      33124
+    ],
+    "superroute_single_child": [
+      33360,
+      83249,
+      90120,
+      96761,
+      104698,
+      165997,
+      222198,
+      276290,
+      301659,
+      1076135,
+      1187142,
+      1376650,
+      1622908,
+      1721699,
+      1988880
+    ],
+    "too_long": [
+      100366,
+      14864985
+    ],
+    "too_short": [
+      4584,
+      5624,
+      8328,
+      9564,
+      50048,
+      52034,
+      58822,
+      61529,
+      71356,
+      103956,
+      103959,
+      121236,
+      131685,
+      143172,
+      149983
+    ],
+    "unnamed": [
+      7479,
+      28351,
+      33130,
+      35980,
+      35981,
+      48012,
+      66799,
+      78187,
+      178396,
+      207405,
+      215384,
+      224060,
+      254347,
+      254348,
+      279543
+    ]
+  },
+  "stitching": {
+    "assembled_attempts": 11371,
+    "graph_assembly": 4108,
+    "graph_accepted": 3215,
+    "accepted_with_dropped_branches": 1055,
+    "ordered_single_segment": 7263,
+    "failed": 893,
+    "accepted_with_bridged_gaps": 1065
+  },
+  "dedup": {
+    "pairs_compared": 10129,
+    "dropped": 56
+  },
+  "region_selection_counts_by_start_admin5": {
+    "Mittelfranken": 1444,
+    "Niederbayern": 844,
+    "Oberbayern": 1818,
+    "Oberfranken": 1628,
+    "Oberpfalz": 1363,
+    "Schwaben": 560,
+    "Unterfranken": 1773,
+    "outside Bavaria": 56
+  },
+  "validation": {
+    "ascent_vs_osm_tag_validation_half": {
+      "n": 101,
+      "median_rel_err": 0.019,
+      "mean_rel_err": 0.037,
+      "median_abs_rel_err": 0.171,
+      "p90_abs_rel_err": 0.622,
+      "share_within_10pct": 0.297,
+      "share_within_20pct": 0.554,
+      "median_abs_err": 57.0
+    },
+    "ascent_vs_osm_tag_calibration_half": {
+      "n": 114,
+      "median_rel_err": 0.002,
+      "mean_rel_err": 0.052,
+      "median_abs_rel_err": 0.145,
+      "p90_abs_rel_err": 0.582,
+      "share_within_10pct": 0.307,
+      "share_within_20pct": 0.605,
+      "median_abs_err": 45.0
+    },
+    "ascent_raw_dem_no_smoothing_validation_half": {
+      "n": 101,
+      "median_rel_err": 0.542,
+      "mean_rel_err": 0.801,
+      "median_abs_rel_err": 0.569,
+      "p90_abs_rel_err": 1.776,
+      "share_within_10pct": 0.03,
+      "share_within_20pct": 0.129,
+      "median_abs_err": 261.5
+    },
+    "length_vs_osm_distance_tag": {
+      "n": 4776,
+      "median_rel_err": -0.003,
+      "mean_rel_err": -0.019,
+      "median_abs_rel_err": 0.023,
+      "p90_abs_rel_err": 0.188,
+      "share_within_10pct": 0.807,
+      "share_within_20pct": 0.907,
+      "median_abs_err": 229.0
+    },
+    "dem_calibration": {
+      "chosen": {
+        "window_m": 240.0,
+        "hysteresis_m": 2.0,
+        "median_abs_rel_err": 0.14429050994322506,
+        "median_rel_err": 0.0009304180109125284
+      },
+      "grid": [
+        {
+          "window_m": 0.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.6174544019671769,
+          "median_rel_err": 0.6174544019671769
+        },
+        {
+          "window_m": 0.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.4368916983934603,
+          "median_rel_err": 0.4368916983934603
+        },
+        {
+          "window_m": 0.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.3082288595677201,
+          "median_rel_err": 0.2681827578264352
+        },
+        {
+          "window_m": 0.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.22425791790974298,
+          "median_rel_err": 0.10068582075566704
+        },
+        {
+          "window_m": 0.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.16669738482386803,
+          "median_rel_err": -0.008744454938233497
+        },
+        {
+          "window_m": 60.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.44480383982400856,
+          "median_rel_err": 0.44480383982400856
+        },
+        {
+          "window_m": 60.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.33297301210500585,
+          "median_rel_err": 0.30517395522899005
+        },
+        {
+          "window_m": 60.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.2706704399591648,
+          "median_rel_err": 0.2088300604075655
+        },
+        {
+          "window_m": 60.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.20035131111475613,
+          "median_rel_err": 0.06331364207607276
+        },
+        {
+          "window_m": 60.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.17465419511452746,
+          "median_rel_err": -0.047007420753198303
+        },
+        {
+          "window_m": 100.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.30280110770214086,
+          "median_rel_err": 0.2872864210377222
+        },
+        {
+          "window_m": 100.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.25491143644137815,
+          "median_rel_err": 0.21133345925915573
+        },
+        {
+          "window_m": 100.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.2256159237991492,
+          "median_rel_err": 0.11661977795509383
+        },
+        {
+          "window_m": 100.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.16755798110389208,
+          "median_rel_err": 0.015193195774523924
+        },
+        {
+          "window_m": 100.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.1782046714815015,
+          "median_rel_err": -0.0764547568467207
+        },
+        {
+          "window_m": 160.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.19025268533187709,
+          "median_rel_err": 0.10146145542392
+        },
+        {
+          "window_m": 160.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.20152360239356532,
+          "median_rel_err": 0.06849917972827622
+        },
+        {
+          "window_m": 160.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.15825199001751195,
+          "median_rel_err": 0.02416517975179424
+        },
+        {
+          "window_m": 160.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.16255853123662056,
+          "median_rel_err": -0.04954533023356324
+        },
+        {
+          "window_m": 160.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.20025828472728752,
+          "median_rel_err": -0.12449146888705737
+        },
+        {
+          "window_m": 240.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.16079632318015674,
+          "median_rel_err": 0.014825592893115755
+        },
+        {
+          "window_m": 240.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.14429050994322506,
+          "median_rel_err": 0.0009304180109125284
+        },
+        {
+          "window_m": 240.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.15776192601314193,
+          "median_rel_err": -0.04425074953424503
+        },
+        {
+          "window_m": 240.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.18012224587786163,
+          "median_rel_err": -0.11510099147849036
+        },
+        {
+          "window_m": 240.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.21568335169004,
+          "median_rel_err": -0.18054966245394072
+        },
+        {
+          "window_m": 320.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.14971091161372846,
+          "median_rel_err": -0.03667306495846759
+        },
+        {
+          "window_m": 320.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.15542835720607073,
+          "median_rel_err": -0.055982088698403126
+        },
+        {
+          "window_m": 320.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.17147187592035115,
+          "median_rel_err": -0.09617717261603201
+        },
+        {
+          "window_m": 320.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.204020552654039,
+          "median_rel_err": -0.1534705423819204
+        },
+        {
+          "window_m": 320.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.24937160865779373,
+          "median_rel_err": -0.20750012706565796
+        },
+        {
+          "window_m": 400.0,
+          "hysteresis_m": 0.0,
+          "median_abs_rel_err": 0.17008553290438982,
+          "median_rel_err": -0.08570750821585735
+        },
+        {
+          "window_m": 400.0,
+          "hysteresis_m": 2.0,
+          "median_abs_rel_err": 0.18336495105186518,
+          "median_rel_err": -0.10709574809429027
+        },
+        {
+          "window_m": 400.0,
+          "hysteresis_m": 5.0,
+          "median_abs_rel_err": 0.1883936549436631,
+          "median_rel_err": -0.12599177103374953
+        },
+        {
+          "window_m": 400.0,
+          "hysteresis_m": 10.0,
+          "median_abs_rel_err": 0.254284218956223,
+          "median_rel_err": -0.202691909617323
+        },
+        {
+          "window_m": 400.0,
+          "hysteresis_m": 15.0,
+          "median_abs_rel_err": 0.2702418904069493,
+          "median_rel_err": -0.21837562834886304
+        }
+      ]
+    }
+  },
+  "dem_void_samples": 0,
+  "dem_missing_tile_samples": 0,
+  "feature_index_counts": {
+    "aerialway_station": 324,
+    "alpine_hut": 185,
+    "archaeological_site": 919,
+    "attraction": 3158,
+    "beer_garden": 1330,
+    "bird_hide": 18,
+    "bus_stop": 82932,
+    "campsite": 632,
+    "castle": 1192,
+    "cave": 964,
+    "church": 15816,
+    "drinking_water": 2445,
+    "geological": 1716,
+    "glacier": 2,
+    "gorge": 181,
+    "lake": 2468,
+    "monastery": 161,
+    "monument": 562,
+    "museum": 1483,
+    "natural_monument_tree": 1795,
+    "parking": 73204,
+    "peak": 10716,
+    "picnic_site": 388,
+    "place": 33576,
+    "playground": 23265,
+    "restaurant": 29052,
+    "river": 5205,
+    "ruins": 647,
+    "saddle": 367,
+    "shelter": 15336,
+    "spring": 1356,
+    "swimming": 286,
+    "train_station": 1212,
+    "tram_stop": 886,
+    "viewpoint": 5661,
+    "waterfall": 599,
+    "wilderness_hut": 94,
+    "zoo": 138
+  }
+}

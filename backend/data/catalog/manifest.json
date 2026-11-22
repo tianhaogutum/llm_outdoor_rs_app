@@ -1,0 +1,289 @@
+{
+  "catalogue": "outdoor routes, Bavaria (Freistaat Bayern)",
+  "pipeline_version": "1.0.0",
+  "extract_version": 3,
+  "inputs": {
+    "osm": {
+      "file": "bayern-261101.osm.pbf",
+      "url": "https://download.geofabrik.de/europe/germany/bayern/bayern-261101.osm.pbf",
+      "md5": "e081102904686f1af63e61fdbb341c09",
+      "sha256": "fa9f2a8d4848af87a9a90b762f18d9b3c0c86129282d1b6765176ab05eba314f",
+      "bytes": 856688379,
+      "osmosis_replication_timestamp": "2026-11-01T21:21:36Z",
+      "osmosis_replication_sequence_number": "4952",
+      "osmosis_replication_base_url": "https://download.geofabrik.de/europe/germany/bayern-updates",
+      "licence": "ODbL 1.0, (c) OpenStreetMap contributors"
+    },
+    "dem": {
+      "source": "Mapzen/Tilezen Terrain Tiles on AWS Open Data (skadi, 1 arc-second HGT), mostly SRTM",
+      "tiles": [
+        {
+          "tile": "N47E009",
+          "file": "N47E009.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N47/N47E009.hgt.gz",
+          "sha256": "09ad8900736431e587ede7258b4fbbf399d639dfdad562ce83628faa4a043ae8",
+          "bytes": 11443260
+        },
+        {
+          "tile": "N47E010",
+          "file": "N47E010.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N47/N47E010.hgt.gz",
+          "sha256": "247874ed191f70e7ae611a2100b43296916a2b3abe2e0b935020072a66df7144",
+          "bytes": 13586656
+        },
+        {
+          "tile": "N47E011",
+          "file": "N47E011.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N47/N47E011.hgt.gz",
+          "sha256": "8607d04d340b5b7bc853aa3511701460dcaf9dfe056f05bc4d70ce7bdeaccde4",
+          "bytes": 14063455
+        },
+        {
+          "tile": "N47E012",
+          "file": "N47E012.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N47/N47E012.hgt.gz",
+          "sha256": "40ffc7d5ad56a0f101d4670943c8b98f022725d917d6ec3bea067b248dc37922",
+          "bytes": 14516007
+        },
+        {
+          "tile": "N47E013",
+          "file": "N47E013.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N47/N47E013.hgt.gz",
+          "sha256": "80c0470c1aa6d896ee6ca96fc9302a693b6321834db006f3d4e7c5fa4891f31d",
+          "bytes": 15176367
+        },
+        {
+          "tile": "N48E010",
+          "file": "N48E010.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N48/N48E010.hgt.gz",
+          "sha256": "7e7bdd4d420412dfcc3ae1eb0e3b629731821ba26cb9f705de9a9cd211e857f9",
+          "bytes": 7318296
+        },
+        {
+          "tile": "N48E011",
+          "file": "N48E011.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N48/N48E011.hgt.gz",
+          "sha256": "7df8621e3f0e99568035184b18435f5e9e2399bac1cc52840b23016a4996a267",
+          "bytes": 6981432
+        },
+        {
+          "tile": "N48E012",
+          "file": "N48E012.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N48/N48E012.hgt.gz",
+          "sha256": "3efc4a43c6baeb2ce36423e9feebeb284b854cadd164899d2ac366ef5e235544",
+          "bytes": 7450630
+        },
+        {
+          "tile": "N48E013",
+          "file": "N48E013.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N48/N48E013.hgt.gz",
+          "sha256": "5f5cc8b56f5035f1083f922cf87768b34dac89b1e638c7acde0ff375ad9475aa",
+          "bytes": 9806434
+        },
+        {
+          "tile": "N49E009",
+          "file": "N49E009.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N49/N49E009.hgt.gz",
+          "sha256": "6ce87553f00a31672100b58f5bed213e2c609db614f3750ea74099e9008c5c0a",
+          "bytes": 9325095
+        },
+        {
+          "tile": "N49E010",
+          "file": "N49E010.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N49/N49E010.hgt.gz",
+          "sha256": "cf8ce2819f74ddbb92a674da6a6fbe7e2f66598df655fd82c3c209b455da6304",
+          "bytes": 7322056
+        },
+        {
+          "tile": "N49E011",
+          "file": "N49E011.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N49/N49E011.hgt.gz",
+          "sha256": "6daf855c624b88240df78af46960a17ffd9906080675aa4facae4c291cd13925",
+          "bytes": 8755260
+        },
+        {
+          "tile": "N49E012",
+          "file": "N49E012.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N49/N49E012.hgt.gz",
+          "sha256": "7d00ac4783dbed9dd906105236e8d03ab5ab3d689fc56ce52f6344d1c97bfd91",
+          "bytes": 9188540
+        },
+        {
+          "tile": "N49E013",
+          "file": "N49E013.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N49/N49E013.hgt.gz",
+          "sha256": "9636a3553832a01a05fdf228e68edca7a1e856216b6469d6638ca47a6292760c",
+          "bytes": 9345702
+        },
+        {
+          "tile": "N50E008",
+          "file": "N50E008.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N50/N50E008.hgt.gz",
+          "sha256": "ba77bdd4f18fd0ffe4a74a01ee2fbd93d766ad3fc4b61f2fe7525bb22625fdef",
+          "bytes": 8455883
+        },
+        {
+          "tile": "N50E009",
+          "file": "N50E009.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N50/N50E009.hgt.gz",
+          "sha256": "661c05cfd4333c380f6ed9ee32c19ecc03f0ba8a14e736a52eccd7e78f4d5fbd",
+          "bytes": 9005493
+        },
+        {
+          "tile": "N50E010",
+          "file": "N50E010.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N50/N50E010.hgt.gz",
+          "sha256": "a31fe80673f5ed0f578281f11297e5e2e4263cd031eb52b7e4e2243c0ab2afd5",
+          "bytes": 8558730
+        },
+        {
+          "tile": "N50E011",
+          "file": "N50E011.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N50/N50E011.hgt.gz",
+          "sha256": "636a1f5490112a85af1238dfae87009f73de0c3fa368a22a33d47241a2052177",
+          "bytes": 8931814
+        },
+        {
+          "tile": "N50E012",
+          "file": "N50E012.hgt.gz",
+          "url": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/N50/N50E012.hgt.gz",
+          "sha256": "0f10da7ac84e87f303dcc94b3dfafb4c522f0766eb86166d8da1126ac4adc8f1",
+          "bytes": 8298289
+        }
+      ],
+      "licence": "see ATTRIBUTION.md (SRTM public domain courtesy of USGS; EU-DEM/Copernicus; Austria DGM, data.gv.at)"
+    }
+  },
+  "region": {
+    "name": "Bavaria (Freistaat Bayern)",
+    "admin_level": "4",
+    "admin_names": [
+      "Bayern"
+    ],
+    "area_km2": 70994
+  },
+  "parameters": {
+    "COORD_DECIMALS": 5,
+    "DEDUP_MATCH_TOL_M": 40.0,
+    "DEDUP_MIN_OVERLAP": 0.9,
+    "DEM_SAMPLE_SPACING_M": 20.0,
+    "DEM_URL_TEMPLATE": "https://elevation-tiles-prod.s3.amazonaws.com/skadi/{lat_dir}/{name}.hgt.gz",
+    "FEATURE_LIST_CAP": 8,
+    "GEOMETRY_SIMPLIFY_TOL_M": 10.0,
+    "INACTIVE_STATES": [
+      "abandoned",
+      "construction",
+      "disused",
+      "planned",
+      "proposed"
+    ],
+    "LENGTH_LIMITS_M": {
+      "hiking": [
+        1000,
+        400000
+      ],
+      "running": [
+        1000,
+        60000
+      ],
+      "cycling": [
+        3000,
+        800000
+      ],
+      "mtb": [
+        3000,
+        300000
+      ]
+    },
+    "LOOP_MAX_ENDPOINT_DIST_M": 300.0,
+    "MAIN_ROLES": [
+      "",
+      "backward",
+      "forward",
+      "main",
+      "route",
+      "section"
+    ],
+    "OSM_EXPECTED_MD5": {
+      "bayern-261101": "e081102904686f1af63e61fdbb341c09"
+    },
+    "OSM_EXTRACT": "bayern-261101",
+    "OSM_URL_TEMPLATE": "https://download.geofabrik.de/europe/germany/bayern/{name}.osm.pbf",
+    "OUT_AND_BACK_MIN_OVERLAP": 0.7,
+    "OUT_AND_BACK_TOL_M": 30.0,
+    "REGION_ADMIN_LEVEL": "4",
+    "REGION_ADMIN_NAMES": [
+      "Bayern"
+    ],
+    "REGION_MIN_INSIDE_SHARE": 0.75,
+    "REGION_NAME": "Bavaria (Freistaat Bayern)",
+    "ROUTE_TYPES": {
+      "hiking": "hiking",
+      "foot": "hiking",
+      "walking": "hiking",
+      "nordic_walking": "hiking",
+      "bicycle": "cycling",
+      "mtb": "mtb",
+      "running": "running",
+      "fitness_trail": "running"
+    },
+    "STITCH_GAP_TOLERANCE_M": 50.0,
+    "STITCH_MAX_GAP_M": 100.0,
+    "STITCH_MAX_GAP_SHARE": 0.02,
+    "STITCH_MIN_COVERAGE": 0.9,
+    "DEM_SMOOTH_WINDOW_M_CHOSEN": 240.0,
+    "DEM_HYSTERESIS_M_CHOSEN": 2.0
+  },
+  "counts": {
+    "relations_considered": 14625,
+    "dropped": {
+      "inactive_state": 9,
+      "unnamed": 2075,
+      "no_member_ways": 50,
+      "incomplete_in_extract": 1065,
+      "stitch_failed": 893,
+      "too_short": 990,
+      "too_long": 2,
+      "outside_region": 83,
+      "superroute_single_child": 55,
+      "no_elevation": 0,
+      "duplicate": 56
+    },
+    "final": 9347,
+    "by_activity": {
+      "cycling": 1428,
+      "hiking": 7648,
+      "mtb": 216,
+      "running": 55
+    },
+    "by_category": {
+      "Cycling": 1351,
+      "Hiking trail": 7155,
+      "Jogging": 52,
+      "Long distance cycling": 77,
+      "Mountainbiking": 216,
+      "Theme trail": 493,
+      "Trail running": 3
+    },
+    "by_difficulty": {
+      "0": 5869,
+      "1": 2329,
+      "2": 623,
+      "3": 526
+    }
+  },
+  "outputs": {
+    "routes.jsonl.gz": {
+      "sha256": "064fd0b25c717e862c1e174633a1327c8be8299c30be568c1460fdb98d26a9aa",
+      "bytes": 4823544
+    },
+    "geometry.jsonl.gz": {
+      "sha256": "67970a5623e6836309b03039c7b549c4ecc3526afc525b3c82c59bac26e8d58d",
+      "bytes": 6247540
+    },
+    "details.jsonl.gz": {
+      "sha256": "685f788d422771ed9e1eb4fb6ae901b5edaf055d224ac40166d9b5a64e357794",
+      "bytes": 2991432
+    }
+  }
+}
