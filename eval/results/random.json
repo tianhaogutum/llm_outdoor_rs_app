@@ -3234,7 +3234,7 @@
  "schema": "evalkit.results/v1",
  "system": "random",
  "volatile": {
-  "generated_at": "2026-11-22T22:24:47Z",
+  "generated_at": "2026-11-22T22:31:00Z",
   "latency_ms_nominal": {
    "all": {
     "definition": "local compute + recorded upstream latency",

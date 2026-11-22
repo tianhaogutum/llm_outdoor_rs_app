@@ -74,3 +74,55 @@ Found while writing the tests. None of these is changed in `v0_rules` (the spec 
 - The catalogue is committed gzip-compressed (`backend/data/catalog/routes.jsonl.gz`, 4.8 MB instead of 31 MB), written with a fixed gzip mtime so the bytes depend only on the content.
 - Running routes are too few (55) to evaluate; simulated users cover hiking and cycling only.
 - Ascent is the weakest field (SRTM is a surface model): median absolute error about 17% against the 101 held-out routes that carry an OSM `ascent` tag, and flat lake circuits over-count.
+
+## D9. Relevance judge: `gemini-3.5-flash`, thinking minimal, batches of 8 (2026-11-22)
+
+Chosen by a pilot (`make judge-pilot`; details in [EVAL.md](EVAL.md) section 4, numbers in
+`eval/results/_judge_pilot.json`), not by assumption. 80 stratified pairs from 20 dev personas,
+reference `anthropic/claude-opus-5.5` with reasoning (another vendor, clearly stronger):
+
+| Candidate | QWK vs reference | QWK between two batch orders | Nominal cost / pair |
+|---|---|---|---|
+| `gemini-2.5-flash`, thinking off, batch 8 (the spec's default) | 0.691 / 0.779 | 0.822 | 0.00026 USD |
+| `gemini-2.5-flash`, thinking 1024, batch 8 | 0.796 | – | 0.00056 USD |
+| `gemini-2.5-flash`, thinking off, batch 4 | 0.778 | – | 0.00031 USD |
+| `gemini-3.5-flash` (`global`), thinking low, batch 8 | 0.828 / 0.812 | 0.915 | 0.00189 USD |
+| `gemini-3.5-flash` (`global`), thinking minimal, batch 8 | 0.836 / 0.807 | 0.864 | 0.00116 USD |
+
+- Agreement: the two `gemini-3.5-flash` configurations are best and indistinguishable on 80 pairs.
+  `gemini-2.5-flash` without thinking is clearly worse and the least stable across batch orders.
+- Cost: "minimal" is about 60% of "low". The full pool (5,749 LLM pairs) cost 7.26 USD with it; "low"
+  measured about 0.0024 USD per pair live, about 14 USD. Every later system adds holes, so this
+  compounds over Phase 3.
+- Lifecycle: `gemini-2.5-flash` is past its documented retirement date (D2); `gemini-3.5-flash` is GA
+  with retirement no earlier than 2027-05-19. It is served only on the `global` endpoint for this
+  project, so judge prompts (simulated personas and OSM route facts, no personal data) leave the EU
+  region. The intent writer and second judge go through OpenRouter anyway.
+- Accepted cost of the choice: lower batch-order stability than "low" (0.864 vs 0.915). Revisit if
+  the owner's labels show the judge is the weak link.
+
+The relevance judge is Google, the intent writer is OpenAI (`openai/gpt-6-luna`), and the pilot
+reference and interim second judge are Anthropic (`claude-opus-5.5`, `claude-sonnet-5.5`), so no
+model grades text it wrote. The owner checkpoint (D5) is still open: 150 blind pairs are in
+`eval/owner_labels/`. Until `make kappa` has real labels, every table says the judge is unvalidated.
+
+## D10. Evaluation harness choices (2026-11-22)
+
+- **Home towns** are the 407 OSM `place=city|town` nodes with a population inside Bavaria, weighted by
+  population^0.5 (pure population weighting would put about a fifth of the personas in Munich).
+- **Eligible set**: the travel radius widens (×1.25 steps, up to 150 km) until at least 40 routes pass
+  the hard constraints and at least 10 are of the persona's own activity; 40 of 300 personas widened.
+- **Running is not simulated** (55 routes, D8).
+- **Hard-constraint violations are graded 0 by rule** without an LLM call (49% of pooled pairs, almost
+  all from the two baselines, which do not see the home location).
+- **Two pool-only contributors** (`pool_latent`, `pool_intent_lexical`) join the pool and never appear
+  in result tables. `pool_latent` supplies most known-relevant pairs; this pooling bias is documented in
+  EVAL.md section 4.
+- **Coverage@10 has no CI**: it is a set statistic, and a with-replacement bootstrap biases it downwards.
+- **Results determinism**: everything except a `volatile` block (local timings, run ledger, timestamp)
+  is byte-identical on rerun; `make replay-check` proves a credential-free replay from the committed
+  frozen cache `eval/cache/`.
+- **Spend for Phase 2** (real, from the local spend log `python -m evalkit.llm`): 9.93 USD in total.
+  Vertex 8.56 (`gemini-3.5-flash` 8.36: full pool 7.26 plus pilot; `gemini-2.5-flash` 0.20, pilot);
+  OpenRouter 1.37 (`claude-sonnet-5.5` second judge 0.79, `claude-opus-5.5` pilot reference 0.53,
+  `gpt-6-luna` intents 0.05). The full judging run was capped at 12 USD per process. Reruns cost 0.

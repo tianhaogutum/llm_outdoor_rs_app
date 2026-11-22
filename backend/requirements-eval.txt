@@ -1,0 +1,6 @@
+# Evaluation harness (backend/evalkit). The harness needs nothing beyond the runtime requirements
+# (numpy, pydantic, the LLM client); the test suite reaches it through requirements-dev.txt.
+-r requirements.txt
+# Only `python -m evalkit.towns` (rebuilding eval/personas/towns.json from the OSM extract) needs the
+# data-pipeline libraries:
+#   -r requirements-data.txt

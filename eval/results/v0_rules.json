@@ -3242,22 +3242,22 @@
  "schema": "evalkit.results/v1",
  "system": "v0_rules",
  "volatile": {
-  "generated_at": "2026-11-22T22:24:45Z",
+  "generated_at": "2026-11-22T22:31:00Z",
   "latency_ms_nominal": {
    "all": {
     "definition": "local compute + recorded upstream latency",
-    "p50": 28.204,
-    "p95": 90.9836
+    "p50": 27.508,
+    "p95": 89.68535
    },
    "dev": {
     "definition": "local compute + recorded upstream latency",
-    "p50": 28.0955,
-    "p95": 90.35035
+    "p50": 27.387,
+    "p95": 90.90225
    },
    "test": {
     "definition": "local compute + recorded upstream latency",
-    "p50": 29.3075,
-    "p95": 93.31755
+    "p50": 27.6255,
+    "p95": 88.41005
    }
   },
   "llm_ledger": null,
