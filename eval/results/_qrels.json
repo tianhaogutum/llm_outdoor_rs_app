@@ -1,0 +1,43 @@
+{
+ "by_source": {
+  "llm": 5749,
+  "rule": 5598
+ },
+ "grades_all": {
+  "0": 6221,
+  "1": 2419,
+  "2": 1988,
+  "3": 719
+ },
+ "grades_llm": {
+  "0": 623,
+  "1": 2419,
+  "2": 1988,
+  "3": 719
+ },
+ "judges": {
+  "g35f-min-b8": 5749
+ },
+ "models": {
+  "gemini-3.5-flash": 5749
+ },
+ "pairs": 11347,
+ "personas": 300,
+ "qrels_sha256": "2671eda7e2ed94b69004d37e070f14a19af7e051041339ca7e1d0cc38afaf71f",
+ "relevant_per_persona": {
+  "max": 21,
+  "median": 10,
+  "min": 1,
+  "personas_without_relevant": 0
+ },
+ "rubrics": {
+  "rubric/v1": 11347
+ },
+ "rule_share": 0.4933,
+ "rules": {
+  "distance_cap": 63,
+  "radius": 4836,
+  "radius+distance_cap": 699
+ },
+ "schema": "evalkit.qrels_stats/v1"
+}
