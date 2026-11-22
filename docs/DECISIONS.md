@@ -54,3 +54,16 @@ The 150 blind labels can only come from the owner. The harness produces the blin
 ## D6. Deployment (pending owner)
 
 Dockerfile, rate limit and budget cap are built. Nothing is deployed and no public URL is created without the owner's explicit approval of target and spend.
+
+## D7. More baseline findings from Phase 0 (2026-11-22)
+
+Found while writing the tests. None of these is changed in `v0_rules` (the spec allows only the two decay fixes there); the new pipeline and Phase 5 address them.
+
+1. **Feedback is applied twice and compounds.** `POST /profiles/{id}/feedback` applies all of the profile's feedback to the user vector and saves the result back to `user_vector_json`; ranking then applies all feedback again on top of the saved vector. After *n* feedbacks the shift is roughly n(n+1)/2 + 1 steps, and the questionnaire's original vector is lost. The offline baseline (`rank_routes_v0`) applies feedback once to the original vector.
+2. **A profile without a user vector gets HTTP 500**: the fallback path returns routes whose breakpoints are not loaded, and serialising them fails.
+3. **"Random" recommendations are not random over the catalogue**: the query takes `limit * 3` rows before shuffling, so they always come from the lowest route ids.
+4. **Feedback on a route outside the current category tab does not shift the user vector**, because route vectors are built only from that tab's candidates. The same profile gets a different adjusted vector on each tab.
+5. **The penalty and the drop-at-4 rule ignore age**: only the vector shift decays; an old thumbs-down filters a route forever.
+6. **The UI never sees the feedback fields**: the response schema drops `feedback_penalty`, `feedback_count`, `base_score` and `final_score`.
+7. 29 of the 111 legacy routes have no tags (tag score is a flat 0.2), and many routes tie on the total score, so their order is just id order.
+8. `calculate_distance_score` divides by the user's maximum distance, so a vector with maximum 0 crashes.
