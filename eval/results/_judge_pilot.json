@@ -1,0 +1,592 @@
+{
+ "batch_order_sensitivity": [
+  {
+   "config": "g25f-t0-b8",
+   "confusion": [
+    [
+     11,
+     3,
+     0,
+     0
+    ],
+    [
+     5,
+     20,
+     3,
+     1
+    ],
+    [
+     0,
+     3,
+     17,
+     3
+    ],
+    [
+     0,
+     0,
+     6,
+     8
+    ]
+   ],
+   "exact_agreement": 0.7,
+   "n": 80,
+   "qwk_between_orders": 0.8218409765753877
+  },
+  {
+   "config": "g35f-low-b8",
+   "confusion": [
+    [
+     7,
+     3,
+     0,
+     0
+    ],
+    [
+     4,
+     28,
+     2,
+     0
+    ],
+    [
+     0,
+     1,
+     26,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     9
+    ]
+   ],
+   "exact_agreement": 0.875,
+   "n": 80,
+   "qwk_between_orders": 0.9148029818956337
+  },
+  {
+   "config": "g35f-min-b8",
+   "confusion": [
+    [
+     5,
+     3,
+     0,
+     0
+    ],
+    [
+     6,
+     27,
+     3,
+     0
+    ],
+    [
+     0,
+     2,
+     23,
+     1
+    ],
+    [
+     0,
+     0,
+     1,
+     9
+    ]
+   ],
+   "exact_agreement": 0.8,
+   "n": 80,
+   "qwk_between_orders": 0.8641765704584041
+  }
+ ],
+ "candidates": [
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": null,
+    "max_tokens": 2500,
+    "model": "gemini-2.5-flash",
+    "name": "g25f-t0-b8",
+    "provider": "vertex",
+    "thinking": 0
+   },
+   "confusion_reference_rows": [
+    [
+     6,
+     2,
+     0,
+     0
+    ],
+    [
+     8,
+     22,
+     9,
+     2
+    ],
+    [
+     0,
+     5,
+     14,
+     6
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.6,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 14,
+    "1": 29,
+    "2": 23,
+    "3": 14
+   },
+   "mean_grade_minus_reference": 0.1,
+   "models": [
+    "gemini-2.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.000261,
+   "nominal_cost_usd": 0.041755,
+   "nominal_latency_ms_per_call": 2405.3,
+   "qwk_vs_reference": 0.6914958392530952,
+   "run": "g25f-t0-b8",
+   "within_one": 0.975
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": null,
+    "max_tokens": 4000,
+    "model": "gemini-2.5-flash",
+    "name": "g25f-t1k-b8",
+    "provider": "vertex",
+    "thinking": 1024
+   },
+   "confusion_reference_rows": [
+    [
+     8,
+     0,
+     0,
+     0
+    ],
+    [
+     6,
+     23,
+     12,
+     0
+    ],
+    [
+     0,
+     2,
+     20,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.7125,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 14,
+    "1": 25,
+    "2": 32,
+    "3": 9
+   },
+   "mean_grade_minus_reference": 0.0875,
+   "models": [
+    "gemini-2.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0005597,
+   "nominal_cost_usd": 0.089548,
+   "nominal_latency_ms_per_call": 6512.2,
+   "qwk_vs_reference": 0.796279893711249,
+   "run": "g25f-t1k-b8",
+   "within_one": 1.0
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": "global",
+    "max_tokens": 6000,
+    "model": "gemini-3.5-flash",
+    "name": "g35f-low-b8",
+    "provider": "vertex",
+    "thinking": "low"
+   },
+   "confusion_reference_rows": [
+    [
+     6,
+     2,
+     0,
+     0
+    ],
+    [
+     4,
+     30,
+     7,
+     0
+    ],
+    [
+     0,
+     2,
+     20,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.775,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 10,
+    "1": 34,
+    "2": 27,
+    "3": 9
+   },
+   "mean_grade_minus_reference": 0.075,
+   "models": [
+    "gemini-3.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0018894,
+   "nominal_cost_usd": 0.302306,
+   "nominal_latency_ms_per_call": 4961.3,
+   "qwk_vs_reference": 0.8279569892473119,
+   "run": "g35f-low-b8",
+   "within_one": 1.0
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": "global",
+    "max_tokens": 4000,
+    "model": "gemini-3.5-flash",
+    "name": "g35f-min-b8",
+    "provider": "vertex",
+    "thinking": "minimal"
+   },
+   "confusion_reference_rows": [
+    [
+     6,
+     2,
+     0,
+     0
+    ],
+    [
+     2,
+     32,
+     7,
+     0
+    ],
+    [
+     0,
+     2,
+     19,
+     4
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.7875,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 8,
+    "1": 36,
+    "2": 26,
+    "3": 10
+   },
+   "mean_grade_minus_reference": 0.1125,
+   "models": [
+    "gemini-3.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0011597,
+   "nominal_cost_usd": 0.185549,
+   "nominal_latency_ms_per_call": 2928.4,
+   "qwk_vs_reference": 0.8356694055099081,
+   "run": "g35f-min-b8",
+   "within_one": 1.0
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 4,
+    "location": null,
+    "max_tokens": 2500,
+    "model": "gemini-2.5-flash",
+    "name": "g25f-t0-b4",
+    "provider": "vertex",
+    "thinking": 0
+   },
+   "confusion_reference_rows": [
+    [
+     7,
+     0,
+     1,
+     0
+    ],
+    [
+     8,
+     28,
+     5,
+     0
+    ],
+    [
+     0,
+     3,
+     15,
+     7
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.7,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 15,
+    "1": 31,
+    "2": 21,
+    "3": 13
+   },
+   "mean_grade_minus_reference": 0.0375,
+   "models": [
+    "gemini-2.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.000312,
+   "nominal_cost_usd": 0.024961,
+   "nominal_latency_ms_per_call": 1428.1,
+   "qwk_vs_reference": 0.7783251231527093,
+   "run": "g25f-t0-b4",
+   "within_one": 0.9875
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": null,
+    "max_tokens": 2500,
+    "model": "gemini-2.5-flash",
+    "name": "g25f-t0-b8",
+    "provider": "vertex",
+    "thinking": 0
+   },
+   "confusion_reference_rows": [
+    [
+     7,
+     1,
+     0,
+     0
+    ],
+    [
+     9,
+     23,
+     9,
+     0
+    ],
+    [
+     0,
+     2,
+     17,
+     6
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.6625,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 16,
+    "1": 26,
+    "2": 26,
+    "3": 12
+   },
+   "mean_grade_minus_reference": 0.0625,
+   "models": [
+    "gemini-2.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0002549,
+   "nominal_cost_usd": 0.040778,
+   "nominal_latency_ms_per_call": 2096.2,
+   "qwk_vs_reference": 0.7793216183081324,
+   "run": "g25f-t0-b8#order2",
+   "within_one": 1.0
+  },
+  {
+   "calls": 20,
+   "config": {
+    "batch_size": 8,
+    "location": "global",
+    "max_tokens": 6000,
+    "model": "gemini-3.5-flash",
+    "name": "g35f-low-b8",
+    "provider": "vertex",
+    "thinking": "low"
+   },
+   "confusion_reference_rows": [
+    [
+     6,
+     2,
+     0,
+     0
+    ],
+    [
+     5,
+     28,
+     8,
+     0
+    ],
+    [
+     0,
+     2,
+     20,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.75,
+   "failures": 0,
+   "grade_distribution": {
+    "0": 11,
+    "1": 32,
+    "2": 28,
+    "3": 9
+   },
+   "mean_grade_minus_reference": 0.075,
+   "models": [
+    "gemini-3.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0020952,
+   "nominal_cost_usd": 0.335229,
+   "nominal_latency_ms_per_call": 5515.2,
+   "qwk_vs_reference": 0.8124267291910903,
+   "run": "g35f-low-b8#order2",
+   "within_one": 1.0
+  },
+  {
+   "calls": 22,
+   "config": {
+    "batch_size": 8,
+    "location": "global",
+    "max_tokens": 4000,
+    "model": "gemini-3.5-flash",
+    "name": "g35f-min-b8",
+    "provider": "vertex",
+    "thinking": "minimal"
+   },
+   "confusion_reference_rows": [
+    [
+     6,
+     2,
+     0,
+     0
+    ],
+    [
+     5,
+     29,
+     6,
+     1
+    ],
+    [
+     0,
+     1,
+     21,
+     3
+    ],
+    [
+     0,
+     0,
+     0,
+     6
+    ]
+   ],
+   "exact_agreement": 0.775,
+   "failures": 2,
+   "grade_distribution": {
+    "0": 11,
+    "1": 32,
+    "2": 27,
+    "3": 10
+   },
+   "mean_grade_minus_reference": 0.0875,
+   "models": [
+    "gemini-3.5-flash"
+   ],
+   "n": 80,
+   "nominal_cost_per_pair_usd": 0.0011925,
+   "nominal_cost_usd": 0.190794,
+   "nominal_latency_ms_per_call": 2601.8,
+   "qwk_vs_reference": 0.8071625344352618,
+   "run": "g35f-min-b8#order2",
+   "within_one": 0.9875
+  }
+ ],
+ "n_pairs": 80,
+ "n_personas": 20,
+ "reference": "ref-opus55",
+ "reference_grade_distribution": {
+  "0": 8,
+  "1": 41,
+  "2": 25,
+  "3": 6
+ },
+ "reference_meta": {
+  "calls": 20,
+  "config": {
+   "batch_size": 4,
+   "location": null,
+   "max_tokens": 12000,
+   "model": "anthropic/claude-opus-5.5",
+   "name": "ref-opus55",
+   "provider": "openrouter",
+   "thinking": "medium"
+  },
+  "failures": 0,
+  "models": [
+   "anthropic/claude-opus-5.5"
+  ],
+  "nominal_cost_per_pair_usd": 0.0066739,
+  "nominal_cost_usd": 0.533916,
+  "nominal_latency_ms_per_call": 7606.4
+ },
+ "schema": "evalkit.judge_pilot/v1",
+ "strata": {
+  "hiking": 12,
+  "mtb": 3,
+  "touring": 5
+ }
+}
