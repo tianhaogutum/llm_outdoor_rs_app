@@ -38,3 +38,6 @@ out/
 backend/logs/
 *.log
 
+
+# TypeScript incremental build info
+*.tsbuildinfo
