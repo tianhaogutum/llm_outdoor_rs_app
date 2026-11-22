@@ -10,10 +10,10 @@ from alembic import context
 
 # Import your models and database configuration
 from app.database import Base
-from app.settings import get_settings
 
 # Import all models here so Alembic can detect them
 from app.models import entities  # noqa: F401
+from app.settings import get_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
