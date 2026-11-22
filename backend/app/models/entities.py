@@ -4,7 +4,7 @@ Domain database models for the hiking simulator backend.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -26,17 +26,17 @@ class DemoProfile(Base):
     genai_welcome_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     unlocked_routes_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    souvenirs: Mapped[List["Souvenir"]] = relationship(
+    souvenirs: Mapped[list[Souvenir]] = relationship(
         "Souvenir",
         back_populates="demo_profile",
         cascade="all, delete-orphan",
     )
-    feedback_entries: Mapped[List["ProfileFeedback"]] = relationship(
+    feedback_entries: Mapped[list[ProfileFeedback]] = relationship(
         "ProfileFeedback",
         back_populates="demo_profile",
         cascade="all, delete-orphan",
     )
-    achievements: Mapped[List["ProfileAchievement"]] = relationship(
+    achievements: Mapped[list[ProfileAchievement]] = relationship(
         "ProfileAchievement",
         back_populates="demo_profile",
         cascade="all, delete-orphan",
@@ -58,6 +58,7 @@ class Route(Base):
     category_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     length_meters: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     duration_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    # 0-3 (easy, moderate, difficult, expert); see DIFFICULTY_MIN / DIFFICULTY_MAX in recommendation_service
     difficulty: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     short_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     tags_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
@@ -70,18 +71,18 @@ class Route(Base):
     story_prologue_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     story_epilogue_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    breakpoints: Mapped[List["Breakpoint"]] = relationship(
+    breakpoints: Mapped[list[Breakpoint]] = relationship(
         "Breakpoint",
         back_populates="route",
         cascade="all, delete-orphan",
         order_by="Breakpoint.order_index",
     )
-    souvenirs: Mapped[List["Souvenir"]] = relationship(
+    souvenirs: Mapped[list[Souvenir]] = relationship(
         "Souvenir",
         back_populates="route",
         cascade="all, delete-orphan",
     )
-    feedback_entries: Mapped[List["ProfileFeedback"]] = relationship(
+    feedback_entries: Mapped[list[ProfileFeedback]] = relationship(
         "ProfileFeedback",
         back_populates="route",
         cascade="all, delete-orphan",
@@ -110,8 +111,8 @@ class Breakpoint(Base):
     longitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     main_quest_snippet: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    route: Mapped["Route"] = relationship("Route", back_populates="breakpoints")
-    mini_quests: Mapped[List["MiniQuest"]] = relationship(
+    route: Mapped[Route] = relationship("Route", back_populates="breakpoints")
+    mini_quests: Mapped[list[MiniQuest]] = relationship(
         "MiniQuest",
         back_populates="breakpoint",
         cascade="all, delete-orphan",
@@ -137,7 +138,7 @@ class MiniQuest(Base):
     task_description: Mapped[str] = mapped_column(Text, nullable=False)
     xp_reward: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
 
-    breakpoint: Mapped["Breakpoint"] = relationship("Breakpoint", back_populates="mini_quests")
+    breakpoint: Mapped[Breakpoint] = relationship("Breakpoint", back_populates="mini_quests")
 
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
         return f"<MiniQuest id={self.id} breakpoint_id={self.breakpoint_id}>"
@@ -169,8 +170,8 @@ class Souvenir(Base):
     xp_breakdown_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     pixel_image_svg: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # LLM-generated pixel art SVG
 
-    demo_profile: Mapped["DemoProfile"] = relationship("DemoProfile", back_populates="souvenirs")
-    route: Mapped["Route"] = relationship("Route", back_populates="souvenirs")
+    demo_profile: Mapped[DemoProfile] = relationship("DemoProfile", back_populates="souvenirs")
+    route: Mapped[Route] = relationship("Route", back_populates="souvenirs")
 
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
         return f"<Souvenir id={self.id} profile_id={self.demo_profile_id} route_id={self.route_id}>"
@@ -193,9 +194,16 @@ class ProfileFeedback(Base):
         nullable=False,
     )
     reason: Mapped[str] = mapped_column(String(100), nullable=False)
+    # When the feedback was given; drives the time decay in the recommender.
+    # SQLite stores CURRENT_TIMESTAMP (UTC) and returns naive datetimes: treat them as UTC.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
 
-    demo_profile: Mapped["DemoProfile"] = relationship("DemoProfile", back_populates="feedback_entries")
-    route: Mapped["Route"] = relationship("Route", back_populates="feedback_entries")
+    demo_profile: Mapped[DemoProfile] = relationship("DemoProfile", back_populates="feedback_entries")
+    route: Mapped[Route] = relationship("Route", back_populates="feedback_entries")
 
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
         return f"<ProfileFeedback id={self.id} reason={self.reason!r}>"
@@ -213,10 +221,11 @@ class Achievement(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     icon: Mapped[str] = mapped_column(String(10), nullable=False)
-    condition_type: Mapped[str] = mapped_column(String(20), nullable=False)  # route_count, route_type, level, xp, distance
+    # route_count, route_type, level, xp, distance
+    condition_type: Mapped[str] = mapped_column(String(20), nullable=False)
     condition_value: Mapped[str] = mapped_column(Text, nullable=False)  # JSON string
 
-    profile_achievements: Mapped[List["ProfileAchievement"]] = relationship(
+    profile_achievements: Mapped[list[ProfileAchievement]] = relationship(
         "ProfileAchievement",
         back_populates="achievement",
         cascade="all, delete-orphan",
@@ -248,10 +257,13 @@ class ProfileAchievement(Base):
         server_default=func.now(),
     )
 
-    demo_profile: Mapped["DemoProfile"] = relationship("DemoProfile", back_populates="achievements")
-    achievement: Mapped["Achievement"] = relationship("Achievement", back_populates="profile_achievements")
+    demo_profile: Mapped[DemoProfile] = relationship("DemoProfile", back_populates="achievements")
+    achievement: Mapped[Achievement] = relationship("Achievement", back_populates="profile_achievements")
 
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
-        return f"<ProfileAchievement id={self.id} profile_id={self.demo_profile_id} achievement_id={self.achievement_id}>"
+        return (
+            f"<ProfileAchievement id={self.id} profile_id={self.demo_profile_id} "
+            f"achievement_id={self.achievement_id}>"
+        )
 
 
