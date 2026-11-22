@@ -16,4 +16,9 @@ alembic>=1.13.0  # Database migrations
 greenlet>=3.0.0  # Required for SQLAlchemy async operations
 
 # HTTP client
-httpx>=0.27.0 
+httpx>=0.27.0
+
+# LLM / embedding / ranking client (app/llm)
+google-genai>=3.6.0  # Vertex AI generate + embeddings (Gen AI SDK, Vertex mode, ADC)
+google-cloud-discoveryengine>=0.20.0  # Vertex AI Ranking API (RANK_PROVIDER=vertex)
+numpy>=2.0  # embedding matrices, frozen-cache vectors
