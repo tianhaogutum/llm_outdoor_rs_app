@@ -33,6 +33,18 @@ MINI_QUESTS_KEY = "mini_quests"
 BREAKPOINT_PARENT_COLUMN = "route_id"
 MINI_QUEST_PARENT_COLUMN = "breakpoint_id"
 
+# Columns added for the OSM catalogue (migration 9b4e2d7f1a36). The legacy seed format predates them,
+# so the exporter writes them only when they hold a value: a DB seeded from the legacy file still
+# exports to that file byte for byte, and an OSM-seeded DB exports its catalogue facts.
+EXPORT_IF_SET_COLUMNS = {
+    ROUTE_TABLE: frozenset({
+        "source", "source_url", "activity", "start_lat", "start_lon", "is_loop", "descent_m",
+        "locality", "admin_district", "admin_region", "facts_json",
+    }),
+    BREAKPOINT_TABLE: frozenset({"at_m"}),
+    MINI_QUEST_TABLE: frozenset(),
+}
+
 
 def model_columns(table: str) -> list[str]:
     """Column names of ``table`` in the order the SQLAlchemy model declares them."""

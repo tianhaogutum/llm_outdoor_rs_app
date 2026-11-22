@@ -2,7 +2,9 @@
 Export all routes (with breakpoints and mini quests) from a SQLite DB to the JSONL seed file.
 
 Deterministic: routes by id, breakpoints by order_index (then id), quests by id; keys in model column
-order; UTF-8 without ASCII escaping. User data is not exported.
+order; UTF-8 without ASCII escaping. Catalogue-era columns are written only when set (see
+``EXPORT_IF_SET_COLUMNS``). Route geometries and places are not exported (they are rebuilt from the
+OSM catalogue by ``scripts/seed_from_catalog.py``). User data is not exported.
 
 Usage (from ``backend/``)::
 
@@ -25,6 +27,7 @@ from scripts.seed_io import (  # noqa: E402
     BREAKPOINT_TABLE,
     BREAKPOINTS_KEY,
     DEFAULT_SEED_FILE,
+    EXPORT_IF_SET_COLUMNS,
     MINI_QUEST_PARENT_COLUMN,
     MINI_QUEST_TABLE,
     MINI_QUESTS_KEY,
@@ -42,6 +45,12 @@ def _columns(conn: sqlite3.Connection, table: str, exclude: str | None = None) -
     return [c for c in model_columns(table) if c in present and c != exclude]
 
 
+def _row_dict(row: sqlite3.Row, columns: list[str], table: str) -> dict:
+    """``columns`` of ``row``; catalogue-era columns (EXPORT_IF_SET_COLUMNS) only when not NULL."""
+    optional = EXPORT_IF_SET_COLUMNS[table]
+    return {c: row[c] for c in columns if c not in optional or row[c] is not None}
+
+
 def iter_route_records(conn: sqlite3.Connection) -> Iterator[dict]:
     route_cols = _columns(conn, ROUTE_TABLE)
     bp_cols = _columns(conn, BREAKPOINT_TABLE, exclude=BREAKPOINT_PARENT_COLUMN)
@@ -51,18 +60,18 @@ def iter_route_records(conn: sqlite3.Connection) -> Iterator[dict]:
     for row in conn.execute(
         f"SELECT {MINI_QUEST_PARENT_COLUMN}, {', '.join(quest_cols)} FROM {MINI_QUEST_TABLE} ORDER BY id"
     ):
-        quests_by_bp.setdefault(row[0], []).append({c: row[c] for c in quest_cols})
+        quests_by_bp.setdefault(row[0], []).append(_row_dict(row, quest_cols, MINI_QUEST_TABLE))
 
     bps_by_route: dict[int, list[dict]] = {}
     for row in conn.execute(
         f"SELECT {BREAKPOINT_PARENT_COLUMN}, {', '.join(bp_cols)} FROM {BREAKPOINT_TABLE} ORDER BY order_index, id"
     ):
-        bp = {c: row[c] for c in bp_cols}
+        bp = _row_dict(row, bp_cols, BREAKPOINT_TABLE)
         bp[MINI_QUESTS_KEY] = quests_by_bp.get(row["id"], [])
         bps_by_route.setdefault(row[0], []).append(bp)
 
     for row in conn.execute(f"SELECT {', '.join(route_cols)} FROM {ROUTE_TABLE} ORDER BY id"):
-        record = {c: row[c] for c in route_cols}
+        record = _row_dict(row, route_cols, ROUTE_TABLE)
         record[BREAKPOINTS_KEY] = bps_by_route.get(row["id"], [])
         yield record
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func, text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -25,6 +25,17 @@ class DemoProfile(Base):
     user_vector_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     genai_welcome_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     unlocked_routes_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # Profile slots for hard filters and retrieval (all optional; absent = no constraint).
+    # Home location: a name plus WGS84 coordinates, usually resolved from the catalogue's localities
+    # (GET /api/places). Travel radius limits how far a route's start may be from home; the distance
+    # cap is an absolute upper bound on route length. The intent is the user's own words.
+    home_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    home_lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    home_lon: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    travel_radius_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    distance_cap_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    intent_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     souvenirs: Mapped[list[Souvenir]] = relationship(
         "Souvenir",
@@ -48,7 +59,15 @@ class DemoProfile(Base):
 
 class Route(Base):
     """
-    Core route metadata sourced from Outdooractive APIs plus custom storytelling fields.
+    Core route metadata plus custom storytelling fields.
+
+    Two catalogues can fill this table (one at a time): the legacy Outdooractive seed and the OSM
+    catalogue (docs/DATA.md). The catalogue columns after ``story_epilogue_body`` are NULL for legacy
+    routes.
+
+    ``elevation`` is the total **ascent** in metres for both catalogues (the legacy column name is
+    kept because XP, statistics and the v0_rules code read it); ``ascent_m`` is a read-only alias.
+    ``descent_m`` is new and only known for OSM routes.
     """
 
     __tablename__ = "routes"
@@ -71,6 +90,20 @@ class Route(Base):
     story_prologue_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     story_epilogue_body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
+    # --- catalogue facts (OSM catalogue; NULL for legacy routes) ---
+    source: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)  # "osm"
+    source_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # OSM relation page
+    activity: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)  # hiking|cycling|mtb|running
+    start_lat: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    start_lon: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    is_loop: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    descent_m: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    locality: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    admin_district: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    admin_region: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # Compact display facts (highlights, access, surface, ...); see scripts/catalog_seed.py:display_facts
+    facts_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
     breakpoints: Mapped[list[Breakpoint]] = relationship(
         "Breakpoint",
         back_populates="route",
@@ -88,8 +121,54 @@ class Route(Base):
         cascade="all, delete-orphan",
     )
 
+    @property
+    def ascent_m(self) -> Optional[int]:
+        """Total ascent in metres (stored in the legacy ``elevation`` column)."""
+        return self.elevation
+
     def __repr__(self) -> str:  # pragma: no cover - debugging helper
         return f"<Route id={self.id} title={self.title!r}>"
+
+
+class RouteGeometry(Base):
+    """
+    Simplified line and elevation profile of a route, kept out of ``routes`` so that loading all
+    routes (the recommender does) stays light. Served by ``GET /api/routes/{id}/geometry``.
+    """
+
+    __tablename__ = "route_geometries"
+
+    route_id: Mapped[int] = mapped_column(ForeignKey("routes.id", ondelete="CASCADE"), primary_key=True)
+    coords_json: Mapped[str] = mapped_column(Text, nullable=False)  # [[lon, lat], ...]
+    ele_profile_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # [m, ...] every ele_step_m
+    ele_step_m: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging helper
+        return f"<RouteGeometry route_id={self.route_id}>"
+
+
+class Place(Base):
+    """
+    Localities named by the catalogue (the ``locality`` of route starts), for resolving a typed home
+    location without an external geocoder. Coordinates are those of the route start closest to the
+    locality's place node; ``accuracy_m`` is that start's distance to the node.
+    """
+
+    __tablename__ = "places"
+    __table_args__ = (Index("ix_places_name_key", "name_key"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    name_key: Mapped[str] = mapped_column(String(255), nullable=False)  # normalised for matching
+    admin_district: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    admin_region: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    lat: Mapped[float] = mapped_column(Float, nullable=False)
+    lon: Mapped[float] = mapped_column(Float, nullable=False)
+    accuracy_m: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    route_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging helper
+        return f"<Place id={self.id} name={self.name!r}>"
 
 
 class Breakpoint(Base):
@@ -98,6 +177,7 @@ class Breakpoint(Base):
     """
 
     __tablename__ = "breakpoints"
+    __table_args__ = (Index("ix_breakpoints_route_id", "route_id"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     route_id: Mapped[int] = mapped_column(
@@ -110,6 +190,8 @@ class Breakpoint(Base):
     latitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     longitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     main_quest_snippet: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Position along the route in metres (derived OSM breakpoints; NULL for legacy hand-made ones)
+    at_m: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
 
     route: Mapped[Route] = relationship("Route", back_populates="breakpoints")
     mini_quests: Mapped[list[MiniQuest]] = relationship(
