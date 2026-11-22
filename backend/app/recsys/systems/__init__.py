@@ -8,7 +8,10 @@ stages as new modules and registers them the same way::
         return MySystem(catalog, **cfg)
 """
 
-from . import baselines  # noqa: E402,F401  (registers random and v0_rules)
+from . import (
+    baselines,  # noqa: E402,F401  (registers random and v0_rules)
+    pipelines,  # noqa: E402,F401  (registers the Phase 3 pipelines)
+)
 from .base import System, SystemSpec, build_system, get_system_spec, list_systems, register_system
 
 __all__ = ["System", "SystemSpec", "build_system", "get_system_spec", "list_systems", "register_system"]

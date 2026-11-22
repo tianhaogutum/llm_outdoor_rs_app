@@ -8,7 +8,27 @@ from typing import Any, Optional
 from evalkit import paths
 from evalkit.metrics import paired_bootstrap
 
-ORDER = ["random", "v0_rules"]  # later systems follow in registry/alphabetical order
+# Phase 3 ablation chain: each row adds one component to the previous one (docs/RECSYS.md)
+ABLATION = ["v0_rules", "v1_filters", "v2_bm25", "v3_dense", "v4_rrf", "v5_rank_api", "v6_ltr", "v7_mmr"]
+ABLATION_LABELS = {
+    "v0_rules": "baseline rule scorer",
+    "v1_filters": "+ hard filters",
+    "v2_bm25": "+ BM25 (replaces the rule scorer)",
+    "v3_dense": "+ dense (instead of BM25)",
+    "v4_rrf": "+ RRF (BM25 and dense fused)",
+    "v5_rank_api": "+ ranker (API) on the fused top 50",
+    "v6_ltr": "+ ranker (learned, with the API score as a feature)",
+    "v7_mmr": "+ MMR",
+}
+# further paired comparisons shown below the ablation
+EXTRA_PAIRS = [
+    ("v4_rrf", "v6_ltr_noapi"),
+    ("v6_ltr_noapi", "v6_ltr"),
+    ("v5_rank_api", "v6_ltr"),
+    ("v6_ltr_noapi", "recsys_v1"),
+    ("v7_mmr", "recsys_v1"),
+]
+ORDER = ["random", *ABLATION]  # other systems follow alphabetically
 COLUMNS = [
     ("ndcg_at_10", "NDCG@10"),
     ("mrr_at_10", "MRR@10"),
@@ -79,22 +99,16 @@ def _table(docs: list[dict[str, Any]], split: str) -> list[str]:
     return out
 
 
-def _paired(docs: list[dict[str, Any]], split: str) -> list[str]:
-    by = {d["system"]: d for d in docs}
-    if "v0_rules" not in by:
-        return []
-    base = by["random"] if "random" in by else None
-    pairs = [(b, d) for b in ([base] if base else []) for d in docs if d is not b]
-    if "v0_rules" in by:
-        pairs += [(by["v0_rules"], d) for d in docs if d["system"] not in ("random", "v0_rules")]
-    if not pairs:
-        return []
+def _paired_rows(by: dict[str, dict[str, Any]], pairs: list[tuple[str, str]], split: str) -> list[str]:
     out = [
         "| Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |",
         "|---|---|---|---|---|---|",
     ]
-    for a, b in pairs:
-        pids = sorted(pid for pid, row in a["per_persona"].items() if split == "all" or _split_of(a, pid) == split)
+    for an, bn in pairs:
+        if an not in by or bn not in by:
+            continue
+        a, b = by[an], by[bn]
+        pids = sorted(pid for pid in a["per_persona"] if split == "all" or _split_of(a, pid) == split)
         cells = []
         res_ndcg = None
         for key in ("ndcg_at_10", "mrr_at_10", "recall_at_50"):
@@ -111,7 +125,17 @@ def _paired(docs: list[dict[str, Any]], split: str) -> list[str]:
             + " | ".join(cells)
             + f" | {res_ndcg['p_le_0']:.3f} | {res_ndcg['n']} |"
         )
-    return out
+    return out if len(out) > 2 else []
+
+
+def _paired(docs: list[dict[str, Any]], split: str) -> list[str]:
+    """Baselines: v0_rules vs random. Phase 3: consecutive rows of the ablation chain, then EXTRA_PAIRS."""
+    by = {d["system"]: d for d in docs}
+    pairs = [("random", "v0_rules")]
+    chain = [n for n in ABLATION if n in by]
+    pairs += list(zip(chain, chain[1:], strict=False))
+    pairs += EXTRA_PAIRS
+    return _paired_rows(by, pairs, split)
 
 
 _SPLITS: dict[str, str] = {}

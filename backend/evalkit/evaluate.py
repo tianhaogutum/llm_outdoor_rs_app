@@ -53,17 +53,43 @@ def dumps(doc: dict[str, Any]) -> str:
 
 
 # --------------------------------------------------------------------------- runs
+_system_client = None
+
+
+def system_client():
+    """LLM client for the systems' own upstream calls (query embeddings, ranker API): embeddings on Vertex,
+    ranking on OpenRouter, or everything on the mock provider when LLM_PROVIDER=mock (tests, CI)."""
+    global _system_client
+    if _system_client is None:
+        from app.llm import LLMConfig
+        from evalkit.llm import make_client
+
+        if LLMConfig.from_settings().llm_provider == "mock":
+            _system_client = make_client("systems")
+        else:
+            _system_client = make_client("systems", embed_provider="vertex", rank_provider="openrouter")
+    return _system_client
+
+
+def make_system(name: str, catalog: Catalog, **config: Any):
+    spec = get_system_spec(name)
+    if spec.uses_llm and "llm" not in config:
+        config["llm"] = system_client()
+    return build_system(name, catalog, **config)
+
+
 def run_system(
-    name: str, catalog: Catalog, personas: list[Persona], depth: int = RUN_DEPTH, **config: Any
+    name: str, catalog: Catalog, personas: list[Persona], depth: int = RUN_DEPTH, *, concurrency: int = 8, **config: Any
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-    """Returns (run, timings, system config). The system only ever sees ``persona.to_query()``."""
-    system = build_system(name, catalog, **config)
+    """Returns (run, timings, system config). The system only ever sees ``persona.to_query()``.
+
+    Systems with an async entry point (``arecommend``) run ``concurrency`` personas at a time; their local
+    time is the sum of the stages' own compute (``Recommendation.local_ms``), which excludes waiting for
+    upstream calls (their recorded latency is added separately as nominal upstream latency)."""
+    system = make_system(name, catalog, **config)
     run, timings = {}, {}
-    for p in personas:
-        q = p.to_query()
-        t0 = time.perf_counter()
-        rec = system.recommend(q, depth)
-        wall = (time.perf_counter() - t0) * 1000
+
+    def record(p: Persona, rec, local_ms: float) -> None:
         run[p.persona_id] = {
             "ids": [int(r) for r in rec.route_ids],
             "scores": [round(float(s), 6) for s in rec.scores],
@@ -71,7 +97,31 @@ def run_system(
             "upstream_latency_ms": round(rec.upstream_latency_ms, 3),
             "upstream_cost_usd": round(rec.upstream_cost_usd, 9),
         }
-        timings[p.persona_id] = {"local_ms": round(max(wall, rec.local_ms), 3)}
+        timings[p.persona_id] = {"local_ms": round(local_ms, 3)}
+
+    if hasattr(system, "arecommend"):
+        import asyncio
+
+        from app.llm import run_sync
+
+        async def go():
+            sem = asyncio.Semaphore(concurrency)
+
+            async def one(p: Persona):
+                async with sem:
+                    return p, await system.arecommend(p.to_query(), depth)
+
+            return await asyncio.gather(*(one(p) for p in personas))
+
+        for p, rec in run_sync(go()):
+            record(p, rec, rec.local_ms)
+    else:
+        for p in personas:
+            q = p.to_query()
+            t0 = time.perf_counter()
+            rec = system.recommend(q, depth)
+            wall = (time.perf_counter() - t0) * 1000
+            record(p, rec, max(wall, rec.local_ms))
     return run, timings, system.config()
 
 
@@ -293,6 +343,8 @@ def _ledger() -> Optional[dict]:
     from evalkit.judge import _judge_clients
 
     reps = {n: c.usage_report() for n, c in _judge_clients.items()}
+    if _system_client is not None:
+        reps["systems"] = _system_client.usage_report()
     return reps or None
 
 
@@ -313,6 +365,41 @@ def evaluate(
     return doc
 
 
+# real cost per LLM-judged pair of the production judge as measured on the v1_filters holes (2.93 USD / 2206)
+JUDGE_COST_PER_PAIR_USD = 0.00133
+
+
+def estimate_holes(
+    names: list[str], *, catalog: Optional[Catalog] = None, personas: Optional[list[Persona]] = None
+) -> dict[str, Any]:
+    """Pool holes the given systems would add (rule-graded vs LLM-judged) and the judge's nominal cost.
+    Runs the systems (upstream calls go through the cache) but writes nothing."""
+    from evalkit.judge import rule_grade
+
+    catalog = catalog or get_catalog()
+    personas = personas or load_personas()
+    pm = {p.persona_id: p for p in personas}
+    runs = {}
+    for n in names:
+        if (paths.RUNS_DIR / f"{n}.jsonl").exists() and n not in names[-1:]:
+            runs[n] = load_run(n)[0]
+        else:
+            runs[n] = run_system(n, catalog, personas)[0]
+    q = Qrels.load()
+    pool = pool_pairs({n: {pid: r["ids"] for pid, r in run.items()} for n, run in runs.items()}, POOL_DEPTH)
+    holes = q.holes(pool)
+    llm = [h for h in holes if rule_grade(pm[h[0]], catalog, h[1]) is None]
+    by_split = {s: sum(1 for h in llm if pm[h[0]].split == s) for s in ("dev", "test")}
+    return {
+        "systems": names,
+        "holes": len(holes),
+        "rule_graded": len(holes) - len(llm),
+        "llm_pairs": len(llm),
+        "llm_pairs_by_split": by_split,
+        "est_judge_usd": round(len(llm) * JUDGE_COST_PER_PAIR_USD, 2),
+    }
+
+
 def evaluate_all(
     *, judge: bool = True, catalog: Optional[Catalog] = None, personas: Optional[list[Persona]] = None
 ) -> list[str]:
@@ -326,7 +413,7 @@ def evaluate_all(
     print(f"[eval-all] pool holes {rep}", file=sys.stderr)
     for n in names:
         run, timings = loaded[n]
-        config = build_system(n, catalog).config()
+        config = make_system(n, catalog).config()
         doc, vol = compute_results(n, catalog, personas, run, timings, qrels, config)
         write_results(n, doc, vol, _ledger())
     write_meta(catalog, personas, qrels)
@@ -338,8 +425,12 @@ def main(argv=None) -> None:
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--system")
     g.add_argument("--all", action="store_true")
+    g.add_argument("--estimate", nargs="+", metavar="SYSTEM", help="count pool holes and judge cost; writes nothing")
     ap.add_argument("--no-judge", action="store_true", help="fail instead of judging holes")
     args = ap.parse_args(argv)
+    if args.estimate:
+        print(json.dumps(estimate_holes(args.estimate), indent=1))
+        return
     if args.all:
         names = evaluate_all(judge=not args.no_judge)
         print("recomputed:", ", ".join(names))
