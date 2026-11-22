@@ -1,6 +1,7 @@
 # Developer entry points. Run from the repo root.
 #   make setup   create backend/.venv (if missing) and install backend/requirements-dev.txt
-#   make seed    rebuild backend/data/app.db from backend/data/seed/routes.jsonl
+#   make seed    rebuild backend/data/app.db from the OSM catalogue (CATALOG=legacy: the 111-route seed)
+#   make frontend  install and build the static frontend into frontend/out (served by the backend at /)
 #   make test    run the backend test suite (LLM_PROVIDER=mock, no network)
 #   make lint    ruff check on backend/
 #   make dev     run the API with autoreload on http://localhost:8000
@@ -36,9 +37,12 @@ DB        ?= $(abspath $(BACKEND)/data/app.db)
 SEED_FILE ?= $(abspath $(BACKEND)/data/seed/routes.jsonl)
 PORT      ?= 8000
 
+CATALOG     ?= osm
+CATALOG_DIR ?= $(abspath $(BACKEND)/data/catalog)
+
 SYSTEM ?= v0_rules
 
-.PHONY: setup seed test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
+.PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
 	kappa freeze replay-check
 
 setup:
@@ -52,7 +56,16 @@ setup:
 seed:
 	rm -f $(DB)
 	cd $(BACKEND) && DATABASE_URL=sqlite:///$(DB) $(PYTHON) -m alembic upgrade head
+ifeq ($(CATALOG),legacy)
 	cd $(BACKEND) && $(PYTHON) scripts/seed_from_jsonl.py --file $(SEED_FILE) --db $(DB)
+else ifeq ($(CATALOG),osm)
+	cd $(BACKEND) && $(PYTHON) scripts/seed_from_catalog.py --catalog $(CATALOG_DIR) --db $(DB)
+else
+	$(error CATALOG must be osm or legacy, not '$(CATALOG)')
+endif
+
+frontend:
+	cd frontend && pnpm install --frozen-lockfile && pnpm build
 
 test:
 	cd $(BACKEND) && LLM_PROVIDER=mock $(PYTHON) -m pytest $(PYTEST_ARGS)
