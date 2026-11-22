@@ -26,6 +26,9 @@ os.environ.setdefault("LLM_PROVIDER", "mock")
 os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{TEST_DB}"
 os.environ.setdefault("LOG_ENABLE_FILE", "false")
 os.environ.setdefault("LOG_ENABLE_CONSOLE", "false")
+# Keep the LLM cache out of the repo's .cache/ and ignore any frozen layers during tests.
+os.environ.setdefault("LLM_CACHE_DIR", str(_SESSION_DIR / "llm-cache"))
+os.environ["LLM_CACHE_FROZEN_DIRS"] = ""
 
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
