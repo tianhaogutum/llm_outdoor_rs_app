@@ -118,13 +118,23 @@ class LocalCache:
             self.directory.mkdir(parents=True, exist_ok=True)
             conn = sqlite3.connect(self.path, timeout=60.0, check_same_thread=False, isolation_level=None)
             conn.execute("PRAGMA busy_timeout=60000")
-            conn.execute("PRAGMA journal_mode=WAL")
-            conn.execute("PRAGMA synchronous=NORMAL")
-            conn.execute(
-                "CREATE TABLE IF NOT EXISTS entries ("
-                " key TEXT PRIMARY KEY, capability TEXT NOT NULL, payload TEXT NOT NULL,"
-                " vector BLOB, dim INTEGER, created_at REAL NOT NULL)"
-            )
+            # Switching a fresh file to WAL takes an exclusive lock that SQLite does not wait for, so several
+            # processes opening a new cache at once can get "database is locked" despite the busy timeout.
+            for attempt in range(50):
+                try:
+                    if conn.execute("PRAGMA journal_mode").fetchone()[0].lower() != "wal":
+                        conn.execute("PRAGMA journal_mode=WAL")
+                    conn.execute("PRAGMA synchronous=NORMAL")
+                    conn.execute(
+                        "CREATE TABLE IF NOT EXISTS entries ("
+                        " key TEXT PRIMARY KEY, capability TEXT NOT NULL, payload TEXT NOT NULL,"
+                        " vector BLOB, dim INTEGER, created_at REAL NOT NULL)"
+                    )
+                    break
+                except sqlite3.OperationalError as exc:
+                    if "locked" not in str(exc).lower() or attempt == 49:
+                        raise
+                    time.sleep(0.02 * (attempt + 1))
             self._conn_obj = conn
         return self._conn_obj
 
