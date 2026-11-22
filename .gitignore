@@ -3,6 +3,7 @@
 *.pyc
 __pycache__/
 .venv/
+backend/.venv/
 env/
 venv/
 
@@ -26,9 +27,17 @@ dist/
 out/
 
 
-# SQLite databases (excluding app.db)
+# SQLite databases: rebuilt with `make seed` from backend/data/seed/routes.jsonl
+backend/data/*.db
+backend/data/**/*.db
 *.db-journal
-!backend/data/app.db
+*.db-wal
+*.db-shm
+
+# Local data downloads (pipeline input) and tool caches
+backend/data/raw/
+.cache/
+.ruff_cache/
 
 # IDE
 .idea/
