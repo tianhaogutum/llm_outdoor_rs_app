@@ -6,7 +6,7 @@ A full-stack application with FastAPI backend and Next.js frontend, featuring ou
 
 **Backend:**
 
-- FastAPI (Python 3.11+)
+- FastAPI (Python 3.12)
 - SQLAlchemy with async SQLite
 - Alembic for database migrations
 
@@ -20,18 +20,32 @@ A full-stack application with FastAPI backend and Next.js frontend, featuring ou
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.12
 - Node.js 18+ (pnpm or npm)
+- GNU make (for the shortcuts below)
 
 ### 1. Backend Setup
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-alembic upgrade head
+make setup   # creates backend/.venv if missing, installs backend/requirements-dev.txt
+make seed    # builds backend/data/app.db from backend/data/seed/routes.jsonl
 ```
+
+The database is not committed; `make seed` deletes `backend/data/app.db`, runs `alembic upgrade head`
+and loads the route catalogue (routes, breakpoints, mini quests) from the JSONL seed file.
+User data (profiles, souvenirs, feedback) is not part of the seed.
+
+### Make targets
+
+| Target | What it does |
+|---|---|
+| `make setup` | create `backend/.venv` (uv if available, else `python3 -m venv`) and install dev requirements |
+| `make seed` | rebuild `backend/data/app.db` from `backend/data/seed/routes.jsonl` |
+| `make test` | run `pytest` in `backend/` with `LLM_PROVIDER=mock` (no network) |
+| `make lint` | `ruff check` on `backend/` (config in `backend/pyproject.toml`) |
+| `make dev` | run the API with autoreload on port 8000 |
+
+The targets use `backend/.venv/bin/python` when it exists, otherwise `python` from `PATH` (as in CI).
 
 ### 2. Frontend Setup
 
@@ -136,9 +150,18 @@ Or use the dev script:
 
 ## Scripts
 
-- `backend/scripts/seed_db.py` - Seed database with demo data
-- `backend/scripts/test_models.py` - Test database models
+- `backend/scripts/seed_from_jsonl.py` - Fill an empty, migrated DB from a JSONL route file (used by `make seed`)
+- `backend/scripts/export_seed.py` - Export the routes of a DB to `backend/data/seed/routes.jsonl`
 - `scripts/dev.sh` - Start development server
+
+## Tests
+
+```bash
+make test
+```
+
+Tests live in `backend/tests/` and never call an LLM or the network. `backend/tests/golden/` pins the
+full ranking of the rule-based recommender (`v0_rules`) as produced by the original scorer.
 
 ## Environment Variables
 
