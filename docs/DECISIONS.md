@@ -67,3 +67,10 @@ Found while writing the tests. None of these is changed in `v0_rules` (the spec 
 6. **The UI never sees the feedback fields**: the response schema drops `feedback_penalty`, `feedback_count`, `base_score` and `final_score`.
 7. 29 of the 111 legacy routes have no tags (tag score is a flat 0.2), and many routes tie on the total score, so their order is just id order.
 8. `calculate_distance_score` divides by the user's maximum distance, so a vector with maximum 0 crashes.
+
+## D8. Catalogue region and format (2026-11-22)
+
+- The region is the whole Free State of Bavaria, not only the Alps. Oberbayern + Schwaben alone give about 2,400 usable routes (below the 3,000 target) and lose many Allgäu routes at the Austrian and Baden-Württemberg borders. All of Bavaria is one Geofabrik extract and one administrative boundary and yields 9,347 routes after filtering and de-duplication. Details and all figures: [DATA.md](DATA.md).
+- The catalogue is committed gzip-compressed (`backend/data/catalog/routes.jsonl.gz`, 4.8 MB instead of 31 MB), written with a fixed gzip mtime so the bytes depend only on the content.
+- Running routes are too few (55) to evaluate; simulated users cover hiking and cycling only.
+- Ascent is the weakest field (SRTM is a surface model): median absolute error about 17% against the 101 held-out routes that carry an OSM `ascent` tag, and flat lake circuits over-count.

@@ -4,6 +4,8 @@
 #   make test    run the backend test suite (LLM_PROVIDER=mock, no network)
 #   make lint    ruff check on backend/
 #   make dev     run the API with autoreload on http://localhost:8000
+#   make data    rebuild the OSM route catalogue in backend/data/catalog (downloads ~0.9 GB once)
+#   make data-stats  print every figure quoted in docs/DATA.md
 #   make llm-smoke  one live generate/embed/rank call per configured provider (costs a fraction of a cent)
 #
 # Uses backend/.venv/bin/python when it exists, otherwise `python` from PATH (CI).
@@ -22,7 +24,7 @@ DB        ?= $(abspath $(BACKEND)/data/app.db)
 SEED_FILE ?= $(abspath $(BACKEND)/data/seed/routes.jsonl)
 PORT      ?= 8000
 
-.PHONY: setup seed test lint dev llm-smoke
+.PHONY: setup seed test lint dev llm-smoke data data-stats
 
 setup:
 	@if [ ! -x $(VENV)/bin/python ]; then \
@@ -48,3 +50,9 @@ dev:
 
 llm-smoke:
 	cd $(BACKEND) && $(PYTHON) scripts/llm_smoke.py
+
+data:
+	cd $(BACKEND) && $(PYTHON) -m pipeline.build
+
+data-stats:
+	cd $(BACKEND) && $(PYTHON) -m pipeline.stats
