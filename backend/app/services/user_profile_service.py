@@ -8,8 +8,12 @@ from typing import Any
 
 from app.api.schemas import ProfileCreate
 
+# Import narrative style prompts from genai_service for consistency
+from app.services.genai_service import NARRATIVE_STYLE_PROMPTS
 
-# Fitness level → Difficulty range and distance constraints
+# Fitness level → Difficulty range and distance constraints.
+# Difficulty is on the 0-3 route scale (0 easy, 1 moderate, 2 difficult, 3 expert;
+# DIFFICULTY_MIN / DIFFICULTY_MAX in recommendation_service).
 FITNESS_MAPPING = {
     "beginner": {
         "difficulty_range": [0, 1],
@@ -35,24 +39,21 @@ ADVENTURE_TYPE_TO_TAGS = {
     "family-fun": ["suitableforfamilies", "playground", "dining", "loopTour"],
 }
 
-# Import narrative style prompts from genai_service for consistency
-from app.services.genai_service import NARRATIVE_STYLE_PROMPTS
-
 
 def translate_questionnaire_to_vector(questionnaire: ProfileCreate) -> dict[str, Any]:
     """
     Translate questionnaire answers to a structured user_vector for recommendations.
-    
+
     Parameters
     ----------
     questionnaire : ProfileCreate
         User's questionnaire answers with fields: fitness, type (list), narrative
-    
+
     Returns
     -------
     dict[str, Any]
         User vector containing:
-        - difficulty_range: List of acceptable difficulty levels (0-6)
+        - difficulty_range: [min, max] acceptable difficulty on the 0-3 scale
         - max_distance_km: Maximum acceptable distance
         - min_distance_km: Minimum acceptable distance
         - preferred_tags: List of preferred route tags
@@ -64,22 +65,22 @@ def translate_questionnaire_to_vector(questionnaire: ProfileCreate) -> dict[str,
         questionnaire.fitness,
         FITNESS_MAPPING["beginner"]  # Default to beginner if unknown
     )
-    
+
     # 2. Map adventure types to preferred tags
     preferred_tags: list[str] = []
     for adventure_type in questionnaire.type:
         tags = ADVENTURE_TYPE_TO_TAGS.get(adventure_type, [])
         preferred_tags.extend(tags)
-    
+
     # Remove duplicates while preserving order
     preferred_tags = list(dict.fromkeys(preferred_tags))
-    
+
     # 3. Map narrative style to LLM prompt descriptor
     narrative_prompt_style = NARRATIVE_STYLE_PROMPTS.get(
         questionnaire.narrative,
         NARRATIVE_STYLE_PROMPTS["adventure"]  # Default to adventure
     )
-    
+
     # 4. Construct the user_vector
     user_vector = {
         "difficulty_range": fitness_config["difficulty_range"],
@@ -89,21 +90,21 @@ def translate_questionnaire_to_vector(questionnaire: ProfileCreate) -> dict[str,
         "narrative_prompt_style": narrative_prompt_style,
         "fitness_level": questionnaire.fitness,
     }
-    
+
     return user_vector
 
 
 def generate_fallback_welcome(questionnaire: ProfileCreate) -> str:
     """
     Generate a rule-based welcome message when GenAI is unavailable.
-    
+
     This serves as a fallback when Ollama or other LLM services are unavailable.
-    
+
     Parameters
     ----------
     questionnaire : ProfileCreate
         User's questionnaire answers
-    
+
     Returns
     -------
     str
@@ -127,24 +128,24 @@ def generate_fallback_welcome(questionnaire: ProfileCreate) -> str:
             "playful": "Peak Conqueror",
         },
     }
-    
+
     # Get the title
     fitness_titles = explorer_titles.get(questionnaire.fitness, explorer_titles["beginner"])
     title = fitness_titles.get(questionnaire.narrative, fitness_titles["adventure"])
-    
+
     # Map adventure types to English descriptions
     adventure_type_names = {
         "history-culture": "history and culture",
         "natural-scenery": "natural scenery",
         "family-fun": "family-friendly adventures",
     }
-    
+
     # Build adventure types description
     adventure_names = [
         adventure_type_names.get(t, t) for t in questionnaire.type
     ]
     adventure_description = " and ".join(adventure_names) if adventure_names else "exploration"
-    
+
     # Map narrative to style description
     narrative_styles = {
         "adventure": "epic adventures",
@@ -152,7 +153,7 @@ def generate_fallback_welcome(questionnaire: ProfileCreate) -> str:
         "playful": "playful journeys",
     }
     narrative_style = narrative_styles.get(questionnaire.narrative, "adventures")
-    
+
     # Construct the welcome message
     welcome_message = (
         f"Welcome, {title}!\n\n"
@@ -160,6 +161,6 @@ def generate_fallback_welcome(questionnaire: ProfileCreate) -> str:
         f"We've prepared a collection of {narrative_style} tailored just for you!\n\n"
         f"Ready to begin your legendary saga? 🤍"
     )
-    
+
     return welcome_message
 
