@@ -10,6 +10,7 @@ stages as new modules and registers them the same way::
 
 from . import (
     baselines,  # noqa: E402,F401  (registers random and v0_rules)
+    chat_e2e,  # noqa: E402,F401  (registers the Phase 4 end-to-end variants)
     pipelines,  # noqa: E402,F401  (registers the Phase 3 pipelines)
 )
 from .base import System, SystemSpec, build_system, get_system_spec, list_systems, register_system

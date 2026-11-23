@@ -71,10 +71,37 @@ def system_client():
     return _system_client
 
 
+_chat_client = None
+
+
+def chat_client():
+    """The chat extractor's client for systems that run the chat (``uses_chat``): pinned to the chosen chat
+    model (D18: Claude Haiku 5.5 via OpenRouter, reasoning off) whatever credentials are configured, so a
+    replay without credentials asks the frozen cache for the same calls; mock under LLM_PROVIDER=mock."""
+    global _chat_client
+    if _chat_client is None:
+        from app.chat.llm import CHAT_DEFAULTS, build_chat_client
+        from app.llm import LLMConfig
+        from evalkit import llm as L
+
+        cfg = LLMConfig.from_settings()
+        cm = CHAT_DEFAULTS["mock" if cfg.llm_provider == "mock" else "openrouter"]
+        frozen = cfg.frozen_dirs
+        import os
+
+        if "LLM_CACHE_FROZEN_DIRS" not in os.environ and paths.FROZEN_DIR.exists() and paths.FROZEN_DIR not in frozen:
+            frozen = (*frozen, paths.FROZEN_DIR)
+        _chat_client = build_chat_client(cm, config=cfg.with_(frozen_dirs=frozen), budget_usd=1.0)
+        L._clients.append(("chat", _chat_client))
+    return _chat_client
+
+
 def make_system(name: str, catalog: Catalog, **config: Any):
     spec = get_system_spec(name)
     if spec.uses_llm and "llm" not in config:
         config["llm"] = system_client()
+    if spec.uses_chat and "chat_llm" not in config:
+        config["chat_llm"] = chat_client()
     return build_system(name, catalog, **config)
 
 
@@ -368,6 +395,8 @@ def _ledger() -> Optional[dict]:
     reps = {n: c.usage_report() for n, c in _judge_clients.items()}
     if _system_client is not None:
         reps["systems"] = _system_client.usage_report()
+    if _chat_client is not None:
+        reps["chat"] = _chat_client.usage_report()
     return reps or None
 
 

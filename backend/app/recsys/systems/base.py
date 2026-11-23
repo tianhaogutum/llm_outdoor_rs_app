@@ -37,20 +37,26 @@ class SystemSpec:
     description: str = ""
     defaults: dict[str, Any] = field(default_factory=dict)
     uses_llm: bool = False  # factory accepts ``llm=`` (an app.llm client); the harness injects its own
+    uses_chat: bool = False  # factory accepts ``chat_llm=`` (the chat extractor's client); likewise injected
 
 
 _REGISTRY: dict[str, SystemSpec] = {}
 
 
 def register_system(
-    name: str, *, description: str = "", defaults: dict[str, Any] | None = None, uses_llm: bool = False
+    name: str,
+    *,
+    description: str = "",
+    defaults: dict[str, Any] | None = None,
+    uses_llm: bool = False,
+    uses_chat: bool = False,
 ):
     """Decorator registering ``factory(catalog, **config)`` under ``name``."""
 
     def deco(factory: Factory) -> Factory:
         if name in _REGISTRY and _REGISTRY[name].factory is not factory:
             raise ValueError(f"system {name!r} already registered")
-        _REGISTRY[name] = SystemSpec(name, factory, description, dict(defaults or {}), uses_llm)
+        _REGISTRY[name] = SystemSpec(name, factory, description, dict(defaults or {}), uses_llm, uses_chat)
         return factory
 
     return deco
