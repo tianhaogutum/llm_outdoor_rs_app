@@ -1087,7 +1087,8 @@ def _chat_eval() -> list[str]:
 
 GRID_KEYS = ("beta", "gamma", "eta_emb", "eta_tag", "nu_dup", "difficulty_step", "cap_step", "radius_step")
 SIM_ORDER = ["v0_rules", "v1_filters", "recsys_v1", "recsys_v1_fb_route", "recsys_v1_fb", "recsys_v1_fb_light",
-             "recsys_v1_fb_explore", "recsys_serve_noexplore", "recsys_serve"]
+             "recsys_v1_fb_explore", "recsys_serve_noexplore", "recsys_serve", "recsys_serve_v2_noexplore",
+             "recsys_serve_v2"]
 
 SERVED = "recsys_serve"  # the served default from D25 to D28; the sections on iteration 2, empty slots and feedback
 SERVED_NOW = "recsys_serve_v2"  # the served default since D28 (= recsys_serve_needs)
@@ -1146,25 +1147,28 @@ def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
     sim = _load("_simulation.json")
     if sim and SERVED in sim["metrics"]:
         met = sim["metrics"]
+        twin = f"{now}_noexplore"
         L += [
             "",
-            f"In the 10-round feedback simulation (test; simulated users *and* a simulated behaviour model, section "
-            f"\"Feedback loop\"; run before D28, so with `{SERVED}`, not `{now}`):",
+            "In the 10-round feedback simulation (test; simulated users *and* a simulated behaviour model, section "
+            "\"Feedback loop\"):",
             "",
             "| System | NDCG@10, mean of rounds 2-10 | NDCG@10, round 10 | Cumulative coverage, round 10 |",
             "|---|---|---|---|",
         ]
-        for n in ("recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore", SERVED):
+        for n in ("recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore", SERVED, twin, now):
             if n in met:
-                lab = f"`{n}` (served D25-D28)" if n == SERVED else f"`{n}`"
+                lab = f"**`{n}` (served default)**" if n == now else f"`{n}`"
+                if n == SERVED and now != SERVED:
+                    lab += " (served D25-D28)"
                 L.append(
                     f"| {lab} | {_ci(met[n]['ndcg_rounds_2_10'])} | {_ci(met[n]['rounds'][-1]['ndcg_at_10'])} | "
                     f"{100 * met[n]['rounds'][-1]['cumulative_coverage']:.1f}% |"
                 )
         L += ["", "| Comparison | ΔNDCG@10, rounds 2-10 [95% CI] | ΔNDCG@10, round 10 |", "|---|---|---|"]
         for pr_ in sim["paired"]:
-            if pr_["b"] in (SERVED, "recsys_serve_noexplore") and pr_["a"] in (
-                "recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore"
+            if pr_["b"] in (SERVED, "recsys_serve_noexplore", now) and pr_["a"] in (
+                "recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore", SERVED, twin
             ):
                 L.append(
                     f"| `{pr_['b']}` − `{pr_['a']}` | {_pair_cell(pr_['rounds_2_10'])} | "
@@ -1323,6 +1327,10 @@ def _simulation() -> list[str]:
             f"(`make sim-tune`, `eval/results/_sim_tuning.json`). Rule: {tu['rule']}. Chosen: **`{tu['best']}`**. The "
             "learned ranker is in-sample on dev (trained on dev labels), so dev lists start near the ideal and leave "
             "less for feedback to fix than test lists do.",
+            "",
+            "The rule chose `slots_only` when it was run (D21), and `recsys_v1_fb` and the served systems use those "
+            "settings. Rerun on the labels corrected in D29 its maximum is the grid point named above; the settings "
+            "of the registered systems were not changed by that (DECISIONS.md D29).",
             "",
             "| Grid point | NDCG@10 rounds 2-10 | Δ vs route effects only [95% CI] | Completions / persona | "
             "Parameters |",

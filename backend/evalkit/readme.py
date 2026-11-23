@@ -138,7 +138,9 @@ def _sim_pair(a: str, b: str, which: str = "rounds_2_10") -> str:
     from evalkit.report import _pair_cell
 
     p = next(p for p in _sim()["paired"] if p["a"] == a and p["b"] == b)
-    return _pair_cell(p[which] if which == "rounds_2_10" else p["per_round"][-1])
+    if which == "rounds_2_10":
+        return _pair_cell(p[which])
+    return _pair_cell(p["per_round"][0] if which == "round_1" else p["per_round"][-1])
 
 
 def _kappa_line() -> str:
@@ -188,10 +190,10 @@ def headline() -> str:
         f"personas it reaches {_m(SERVED)}, against {_m('v0_rules')} for the course project's rule scorer and "
         f"{_m('random')} for random order; the best single-request system without stated needs, `{PHASE3}`, "
         f"reaches {_m(PHASE3)} there, and the served default differs from it by {_diff(PHASE3, SERVED)} (paired). "
-        f"In a ten-round feedback simulation the previous default `{PREV}` keeps NDCG@10 at "
-        f"{_ci(sim[PREV]['ndcg_rounds_2_10'])} over rounds 2-10, while the same pipeline without feedback falls to "
-        f"{_ci(sim[PHASE3]['ndcg_rounds_2_10'])} because it keeps showing routes the user has already done (the "
-        "simulation has not been rerun with the stated-need stage).\n\n"
+        f"In a ten-round feedback simulation the served default keeps NDCG@10 at "
+        f"{_ci(sim[SERVED]['ndcg_rounds_2_10'])} over rounds 2-10 ({_ci(sim[PREV]['ndcg_rounds_2_10'])} for "
+        f"`{PREV}`), while the Phase 3 pipeline without feedback falls to {_ci(sim[PHASE3]['ndcg_rounds_2_10'])} "
+        "because it keeps showing routes the user has already done.\n\n"
         f"**Caveat on every number in this README:** the users are simulated ({_sys(SERVED)['data']['n_personas']} "
         f"personas plus {hn} holdout personas, all with LLM-written requests), relevance is graded by an LLM judge "
         f"(`{', '.join(sorted(j['models']))}`, rubric v1) {judge_status}. 95% bootstrap intervals over personas "
@@ -244,7 +246,9 @@ SIM_ROWS = [
     (PHASE3, "Phase 3 default, feedback off (control)"),
     ("recsys_v1_fb", "Phase 3 default + feedback loop"),
     ("recsys_serve_noexplore", f"`{PREV}` without the exploration slot"),
-    (PREV, "served default D25-D28 (not rerun for the stated-need stage)"),
+    (PREV, "served default D25-D28"),
+    (f"{SERVED}_noexplore", f"`{SERVED}` without the exploration slot"),
+    (SERVED, "**served default** (D28): `" + PREV + "` + stated needs as constraints"),
 ]
 
 
@@ -269,9 +273,10 @@ def simulation_table() -> str:
         )
     L += [
         "",
-        f"Exploration slot (`{PREV}` − `recsys_serve_noexplore`, rounds 2-10): "
-        f"{_sim_pair('recsys_serve_noexplore', PREV)} "
-        f"NDCG@10. Feedback (`{PREV}` − `{PHASE3}`, rounds 2-10): {_sim_pair(PHASE3, PREV)}.",
+        f"Rounds 2-10, paired: stated-need stage in the loop (`{SERVED}` − `{PREV}`) {_sim_pair(PREV, SERVED)}, "
+        f"round 1 {_sim_pair(PREV, SERVED, 'round_1')}, round 10 {_sim_pair(PREV, SERVED, 'round_10')}; "
+        f"exploration slot (`{SERVED}` − `{SERVED}_noexplore`) {_sim_pair(f'{SERVED}_noexplore', SERVED)}; "
+        f"feedback (`{SERVED}` − `{PHASE3}`) {_sim_pair(PHASE3, SERVED)} NDCG@10.",
     ]
     return "\n".join(L)
 
@@ -539,8 +544,10 @@ def review_overfit() -> str:
             f"- Cross-fitted dev (each dev persona ranked by a ranker copy that never saw it, EVAL.md section 13): "
             f"`{PREV}` in-sample {_m(PREV, split='dev')}, cross-fitted {_cf(PREV)}, test {_m(PREV)}; `{PHASE3}` "
             f"in-sample {_m(PHASE3, split='dev')}, cross-fitted {_cf(PHASE3)}, test {_m(PHASE3)}.",
-            f"- Feedback parameters: chosen on dev (`slots_only`); on the test simulation the light full loop "
-            f"beats the dev choice by {_sim_pair('recsys_v1_fb', 'recsys_v1_fb_light')} (rounds 2-10).",
+            "- Feedback parameters: chosen on dev (`slots_only`, D21; rerun on the D29-corrected labels the dev "
+            f"rule's maximum is `{(_load('_sim_tuning.json') or {}).get('best')}`, within noise, D29); on the test "
+            f"simulation the light full loop beats the dev choice by "
+            f"{_sim_pair('recsys_v1_fb', 'recsys_v1_fb_light')} (rounds 2-10).",
         ]
     )
 

@@ -11,9 +11,9 @@ credentials. The served default was last changed by a rule written down before t
 existed.
 
 <!-- BEGIN GENERATED readme-headline (make report; do not edit) -->
-On 150 holdout personas generated after the decision rule was written down and used for nothing else, the served default `recsys_serve_v2` reaches **NDCG@10 0.792 [0.765, 0.817]**, against 0.771 [0.744, 0.796] for the previous default `recsys_serve` (paired difference +0.021 [+0.010, +0.034]; [D28](docs/DECISIONS.md)). On the 100 test personas it reaches 0.744 [0.718, 0.770], against 0.018 [0.010, 0.026] for the course project's rule scorer and 0.017 [0.010, 0.027] for random order; the best single-request system without stated needs, `recsys_v1`, reaches 0.755 [0.729, 0.780] there, and the served default differs from it by -0.011 [-0.034, +0.013] (paired). In a ten-round feedback simulation the previous default `recsys_serve` keeps NDCG@10 at 0.679 [0.648, 0.710] over rounds 2-10, while the same pipeline without feedback falls to 0.314 [0.291, 0.336] because it keeps showing routes the user has already done (the simulation has not been rerun with the stated-need stage).
+On 150 holdout personas generated after the decision rule was written down and used for nothing else, the served default `recsys_serve_v2` reaches **NDCG@10 0.792 [0.766, 0.816]**, against 0.770 [0.743, 0.793] for the previous default `recsys_serve` (paired difference +0.023 [+0.012, +0.035]; [D28](docs/DECISIONS.md)). On the 100 test personas it reaches 0.744 [0.719, 0.770], against 0.017 [0.010, 0.026] for the course project's rule scorer and 0.017 [0.010, 0.027] for random order; the best single-request system without stated needs, `recsys_v1`, reaches 0.757 [0.731, 0.782] there, and the served default differs from it by -0.013 [-0.036, +0.011] (paired). In a ten-round feedback simulation the served default keeps NDCG@10 at 0.685 [0.654, 0.712] over rounds 2-10 (0.678 [0.647, 0.708] for `recsys_serve`), while the Phase 3 pipeline without feedback falls to 0.316 [0.292, 0.338] because it keeps showing routes the user has already done.
 
-**Caveat on every number in this README:** the users are simulated (300 personas plus 150 holdout personas, all with LLM-written requests), relevance is graded by an LLM judge (`gemini-3.5-flash`, rubric v1) that is **not yet validated against the owner's labels**, and the only agreement figure so far is LLM-vs-LLM (QWK 0.76). 95% bootstrap intervals over personas in brackets.
+**Caveat on every number in this README:** the users are simulated (300 personas plus 150 holdout personas, all with LLM-written requests), relevance is graded by an LLM judge (`gemini-3.5-flash`, rubric v1) that is **not yet validated against the owner's labels**, and the only agreement figure so far is LLM-vs-LLM (QWK 0.75). 95% bootstrap intervals over personas in brackets.
 <!-- END GENERATED readme-headline -->
 
 **Contents:** [What it does](#what-it-does) · [Architecture](#architecture) · [Results](#results) ·
@@ -86,17 +86,17 @@ the RRF row fuses both), then the Phase 3 default and the served default. Protoc
 | System | What it adds | NDCG@10 | Δ NDCG@10 vs | MRR@10 | Recall@50 | Violations@10 | Cost/request |
 |---|---|---|---|---|---|---|---|
 | `random` | random | 0.017 [0.010, 0.027] | – | 0.036 [0.008, 0.073] | 0.017 [0.010, 0.025] | 93.1% [91.3%, 94.6%] | 0.000000 USD |
-| `v0_rules` | course project's rule scorer | 0.018 [0.010, 0.026] | +0.000 [-0.011, +0.011] (`random`) | 0.035 [0.011, 0.065] | 0.048 [0.032, 0.064] | 93.9% [91.7%, 95.6%] | 0.000000 USD |
-| `v1_filters` | + hard filters | 0.368 [0.334, 0.402] | +0.351 [+0.318, +0.382] (`v0_rules`) | 0.420 [0.355, 0.488] | 0.523 [0.450, 0.592] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
-| `v2_bm25` | + BM25 (replaces the rule scorer) | 0.548 [0.509, 0.586] | +0.179 [+0.132, +0.229] (`v1_filters`) | 0.703 [0.635, 0.770] | 0.749 [0.704, 0.791] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
-| `v3_dense` | dense retrieval instead of BM25 | 0.526 [0.491, 0.561] | -0.022 [-0.065, +0.022] (`v2_bm25`) | 0.688 [0.626, 0.754] | 0.719 [0.673, 0.765] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `v4_rrf` | + RRF fusion of BM25 and dense | 0.599 [0.564, 0.637] | +0.074 [+0.049, +0.100] (`v3_dense`) | 0.765 [0.705, 0.826] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `v5_rank_api` | + ranker API on the fused top 50 | 0.639 [0.598, 0.679] | +0.039 [+0.008, +0.067] (`v4_rrf`) | 0.799 [0.739, 0.856] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `v6_ltr` | + learned ranker (LambdaMART, API score as a feature) | 0.771 [0.741, 0.800] | +0.132 [+0.094, +0.172] (`v5_rank_api`) | 0.924 [0.882, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `v7_mmr` | + MMR diversity | 0.766 [0.737, 0.794] | -0.005 [-0.011, +0.002] (`v6_ltr`) | 0.926 [0.883, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `recsys_v1` | Phase 3 default: learned ranker without the API, MMR | 0.755 [0.729, 0.780] | -0.011 [-0.025, +0.002] (`v7_mmr`) | 0.915 [0.876, 0.949] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `recsys_serve` | served default D25-D28: ranker without the cap feature, feedback, exploration slot | 0.720 [0.688, 0.748] | -0.035 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.831 [0.798, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `recsys_serve_v2` | **served default** (D28): + stated needs as constraints in front of retrieval | 0.744 [0.718, 0.770] | +0.024 [+0.007, +0.046] (`recsys_serve`) | 0.926 [0.889, 0.959] | 0.763 [0.727, 0.797] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `v0_rules` | course project's rule scorer | 0.017 [0.010, 0.026] | +0.000 [-0.011, +0.011] (`random`) | 0.035 [0.011, 0.065] | 0.048 [0.032, 0.064] | 93.9% [91.7%, 95.6%] | 0.000000 USD |
+| `v1_filters` | + hard filters | 0.367 [0.333, 0.401] | +0.350 [+0.317, +0.382] (`v0_rules`) | 0.419 [0.354, 0.486] | 0.525 [0.451, 0.593] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
+| `v2_bm25` | + BM25 (replaces the rule scorer) | 0.552 [0.514, 0.590] | +0.185 [+0.136, +0.235] (`v1_filters`) | 0.703 [0.635, 0.770] | 0.751 [0.706, 0.792] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
+| `v3_dense` | dense retrieval instead of BM25 | 0.526 [0.491, 0.563] | -0.026 [-0.068, +0.018] (`v2_bm25`) | 0.688 [0.626, 0.754] | 0.718 [0.672, 0.764] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `v4_rrf` | + RRF fusion of BM25 and dense | 0.602 [0.566, 0.638] | +0.076 [+0.050, +0.103] (`v3_dense`) | 0.765 [0.705, 0.826] | 0.831 [0.797, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `v5_rank_api` | + ranker API on the fused top 50 | 0.641 [0.599, 0.680] | +0.038 [+0.008, +0.066] (`v4_rrf`) | 0.799 [0.739, 0.856] | 0.831 [0.797, 0.862] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `v6_ltr` | + learned ranker (LambdaMART, API score as a feature) | 0.774 [0.744, 0.802] | +0.133 [+0.095, +0.173] (`v5_rank_api`) | 0.924 [0.882, 0.958] | 0.831 [0.797, 0.862] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `v7_mmr` | + MMR diversity | 0.770 [0.740, 0.797] | -0.004 [-0.011, +0.002] (`v6_ltr`) | 0.926 [0.883, 0.958] | 0.831 [0.797, 0.862] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `recsys_v1` | Phase 3 default: learned ranker without the API, MMR | 0.757 [0.731, 0.782] | -0.013 [-0.026, +0.000] (`v7_mmr`) | 0.915 [0.876, 0.949] | 0.831 [0.797, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `recsys_serve` | served default D25-D28: ranker without the cap feature, feedback, exploration slot | 0.721 [0.690, 0.750] | -0.036 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.832 [0.798, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `recsys_serve_v2` | **served default** (D28): + stated needs as constraints in front of retrieval | 0.744 [0.719, 0.770] | +0.023 [+0.006, +0.045] (`recsys_serve`) | 0.926 [0.889, 0.959] | 0.762 [0.725, 0.796] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
 
 Test split, 100 personas; Δ = paired bootstrap of the per-persona difference. Every top 10 is fully judged. All systems, the dev split and every other comparison: [RESULTS.md](docs/RESULTS.md).
 <!-- END GENERATED readme-results -->
@@ -116,8 +116,8 @@ answers, with the commands to rerun each experiment: [REVIEW.md](docs/REVIEW.md)
 Ten weekly rounds per test persona: each system shows a top 10, a behaviour model written for this project
 completes at most one route and rejects a few with a reason, and the next round sees that feedback
 ([EVAL.md](docs/EVAL.md) section 10, `make simulate`). Per-round NDCG@10 gives no credit for re-showing what
-the user already did. The simulation was run with the D25 default `recsys_serve`; it has not been rerun with the
-stated-need stage of the current default.
+the user already did. Since D29 it includes the served default `recsys_serve_v2` and its no-exploration twin next
+to the D25 default `recsys_serve`.
 
 ![NDCG@10 by feedback round](docs/convergence.png)
 
@@ -127,19 +127,24 @@ stated-need stage of the current default.
 | System | | NDCG@10, round 1 | NDCG@10, mean of rounds 2-10 | NDCG@10, round 10 | Cumulative coverage after 10 rounds |
 |---|---|---|---|---|---|
 | `v0_rules` | course project's rule scorer with its own feedback | 0.017 [0.010, 0.026] | 0.019 [0.013, 0.027] | 0.023 [0.015, 0.031] | 8.5% |
-| `v1_filters` | hard filters + rule scorer, same feedback | 0.359 [0.324, 0.393] | 0.299 [0.276, 0.322] | 0.254 [0.226, 0.280] | 18.1% |
-| `recsys_v1` | Phase 3 default, feedback off (control) | 0.733 [0.705, 0.760] | 0.314 [0.291, 0.336] | 0.129 [0.111, 0.147] | 8.2% |
-| `recsys_v1_fb` | Phase 3 default + feedback loop | 0.733 [0.705, 0.760] | 0.699 [0.665, 0.730] | 0.688 [0.649, 0.724] | 16.7% |
-| `recsys_serve_noexplore` | `recsys_serve` without the exploration slot | 0.711 [0.677, 0.742] | 0.691 [0.658, 0.722] | 0.682 [0.644, 0.717] | 16.7% |
-| `recsys_serve` | served default D25-D28 (not rerun for the stated-need stage) | 0.700 [0.667, 0.731] | 0.679 [0.648, 0.710] | 0.678 [0.639, 0.714] | 18.7% |
+| `v1_filters` | hard filters + rule scorer, same feedback | 0.357 [0.323, 0.391] | 0.299 [0.275, 0.322] | 0.254 [0.226, 0.280] | 18.0% |
+| `recsys_v1` | Phase 3 default, feedback off (control) | 0.734 [0.704, 0.760] | 0.316 [0.292, 0.338] | 0.131 [0.113, 0.150] | 8.2% |
+| `recsys_v1_fb` | Phase 3 default + feedback loop | 0.734 [0.704, 0.760] | 0.699 [0.665, 0.731] | 0.690 [0.649, 0.725] | 16.7% |
+| `recsys_serve_noexplore` | `recsys_serve` without the exploration slot | 0.711 [0.678, 0.743] | 0.689 [0.658, 0.720] | 0.678 [0.640, 0.713] | 16.7% |
+| `recsys_serve` | served default D25-D28 | 0.700 [0.666, 0.730] | 0.678 [0.647, 0.708] | 0.674 [0.635, 0.711] | 18.8% |
+| `recsys_serve_v2_noexplore` | `recsys_serve_v2` without the exploration slot | 0.738 [0.711, 0.767] | 0.693 [0.662, 0.722] | 0.662 [0.624, 0.698] | 17.1% |
+| `recsys_serve_v2` | **served default** (D28): `recsys_serve` + stated needs as constraints | 0.722 [0.695, 0.750] | 0.685 [0.654, 0.712] | 0.656 [0.619, 0.692] | 18.7% |
 
-Exploration slot (`recsys_serve` − `recsys_serve_noexplore`, rounds 2-10): -0.011 [-0.015, -0.008] NDCG@10. Feedback (`recsys_serve` − `recsys_v1`, rounds 2-10): +0.365 [+0.346, +0.384].
+Rounds 2-10, paired: stated-need stage in the loop (`recsys_serve_v2` − `recsys_serve`) +0.006 [-0.017, +0.029], round 1 +0.022 [+0.006, +0.043], round 10 -0.018 [-0.053, +0.018]; exploration slot (`recsys_serve_v2` − `recsys_serve_v2_noexplore`) -0.009 [-0.011, -0.006]; feedback (`recsys_serve_v2` − `recsys_v1`) +0.369 [+0.344, +0.393] NDCG@10.
 <!-- END GENERATED readme-simulation -->
 
 Without feedback even the best single-request system collapses, because it shows the same list every week; with
 route effects and slot steps it stays near its first-round quality. The exploration slot costs a little NDCG and
 buys coverage; the benefit it exists for (finding tastes the form did not capture) cannot appear with simulated
-users whose preferences are fixed and fully known to the judge.
+users whose preferences are fixed and fully known to the judge. The stated-need stage's first-round lead over
+`recsys_serve` does not last: it shrinks every round and is gone by the last ones, so over rounds 2-10 the two
+are indistinguishable. A likely reason, not yet checked: the filter narrows the candidates, so fewer suitable
+routes are left once the user has done or rejected some.
 
 ## Failure analysis
 
@@ -149,10 +154,10 @@ iteration 3, because test had been read to develop iteration 2; the earlier test
 kept below it in the same document.
 
 <!-- BEGIN GENERATED readme-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst holdout queries of `recsys_serve_v2`, by where they dropped out of the top 10: exploration 0, filter 0, mmr 0, needs 12, ranker 22, retrieval 29; shown 29 (of 92).
+Known-relevant routes (grade ≥ 2) of the 10 worst holdout queries of `recsys_serve_v2`, by where they dropped out of the top 10: exploration 0, filter 0, mmr 0, needs 10, ranker 17, retrieval 31; shown 29 (of 87).
 
 - Class A: 1 of 10 (H021)
-- Class C: 6 of 10 (H089, H121, H030, H136, H148, H149)
+- Class C: 6 of 10 (H089, H121, H030, H136, H148, H002)
 - Class E: 3 of 10 (H042, H104, H101)
 <!-- END GENERATED readme-failures -->
 
@@ -163,8 +168,8 @@ Known-relevant routes (grade ≥ 2) of the 10 worst holdout queries of `recsys_s
   holdout list now that stated lengths and day counts are read.
 - **C. The evaluation's fault:** the judge marks routes down for wishes the user never stated (a mountain-bike
   style, arriving by train, a lake), which the latent profile has and the written request does not. The largest
-  class on the holdout. One case is a plain bug: the judge's card rounds the persona's distance cap, so routes the
-  hard filter admits can be graded 0 for exceeding it.
+  class on the holdout. One case was a plain bug, fixed and re-judged in D29: the judge's card rounded the
+  persona's distance cap, so routes the hard filter admits could be graded 0 for exceeding it.
 - **D. Not a ranking failure:** many good routes, and the line between grade 2 and 3 is drawn by unstated detail.
 - **E. The stated-need stage's own choices** (new on the holdout): its relaxation drops a stated mountain-bike need
   before the train need, its stroller check is stricter than the judge, and it enforces a stated loop the judge
@@ -188,11 +193,11 @@ D27), and test was run once, afterwards.
 <!-- BEGIN GENERATED readme-iteration2 (make report; do not edit) -->
 | Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |
 |---|---|---|---|---|---|
-| `recsys_serve_needs` (filter in front of retrieval) | -0.013 [-0.024, -0.003] | no | +0.018 [+0.006, +0.029] | +0.024 [+0.007, +0.046] | 0.0% [0.0%, 0.0%] |
-| `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
-| `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs` (filter in front of retrieval) | -0.013 [-0.024, -0.003] | no | +0.018 [+0.006, +0.029] | +0.023 [+0.006, +0.045] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.024 [-0.040, -0.008] | no | +0.022 [+0.008, +0.036] | +0.023 [+0.003, +0.047] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_demote` (post-ranker demotion) | -0.030 [-0.043, -0.019] | no | +0.012 [+0.002, +0.023] | +0.025 [+0.009, +0.046] | 0.0% [0.0%, 0.0%] |
 
-Iteration 2 left the served default unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md, test analysis) under `recsys_serve_needs_promote` (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+Iteration 2 left the served default unchanged: `recsys_serve` 0.721 [0.690, 0.750] on test, 0.851 [0.833, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md, test analysis) under `recsys_serve_needs_promote` (NDCG@10 before→after): P018 0.19→0.71, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P110 0.44→0.44, P218 0.44→0.77, P177 0.46→0.77, P048 0.47→0.47, P225 0.47→0.53.
 <!-- END GENERATED readme-iteration2 -->
 
 **The outcome was a null result by the rule, and the stage stayed off** (iteration 3 then decided it cleanly,
@@ -224,10 +229,10 @@ rule applied as written.
 
 | System | Dev, cross-fitted: Δ NDCG@10 (gate) | Holdout NDCG@10 | Holdout Δ vs `recsys_serve` (95% CI) | Simultaneous lower bound (c = 2.00) | Holdout violations@10 | Eligible |
 |---|---|---|---|---|---|---|
-| `recsys_serve` | – | 0.771 [0.744, 0.796] | – | – | 0.0% [0.0%, 0.0%] | – |
-| `recsys_serve_needs` (filter in front of retrieval) **(chosen)** | +0.018 [+0.006, +0.029] | 0.792 [0.765, 0.817] | +0.021 [+0.010, +0.034] | +0.009 | 0.0% [0.0%, 0.0%] | yes |
-| `recsys_serve_needs_promote` (filter, strict matches promoted) | +0.021 [+0.007, +0.036] | 0.790 [0.764, 0.814] | +0.019 [+0.003, +0.034] | +0.003 | 0.0% [0.0%, 0.0%] | yes |
-| `recsys_serve_needs_demote` (post-ranker demotion) | +0.011 [+0.001, +0.021] | 0.777 [0.750, 0.800] | +0.006 [-0.007, +0.020] | -0.008 | 0.0% [0.0%, 0.0%] | no |
+| `recsys_serve` | – | 0.770 [0.743, 0.793] | – | – | 0.0% [0.0%, 0.0%] | – |
+| `recsys_serve_needs` (filter in front of retrieval) **(chosen)** | +0.018 [+0.006, +0.029] | 0.792 [0.766, 0.816] | +0.023 [+0.012, +0.035] | +0.010 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | +0.022 [+0.008, +0.036] | 0.790 [0.765, 0.813] | +0.021 [+0.006, +0.036] | +0.005 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_demote` (post-ranker demotion) | +0.012 [+0.002, +0.023] | 0.777 [0.750, 0.799] | +0.008 [-0.006, +0.021] | -0.006 | 0.0% [0.0%, 0.0%] | no |
 
 Decision by the rule registered before the holdout existed: `recsys_serve_needs` is served as `recsys_serve_v2`. Simultaneous bound: one-sided 95% for the three variants together (max-T over a joint paired bootstrap, 10,000 resamples); the 95% CIs beside it are per variant and decide nothing.
 <!-- END GENERATED readme-iteration3 -->
@@ -236,18 +241,19 @@ Decision by the rule registered before the holdout existed: `recsys_serve_needs`
 `recsys_serve` stays registered and unchanged.** The promote variant was also eligible with a smaller bound, and
 the demotion variant was not. The gain is modest and its lower bound is close to zero, it rests on simulated users
 and an unvalidated judge, and the holdout's own failure analysis shows where the stage still costs quality
-([FAILURES.md](docs/FAILURES.md) class E). The feedback simulation was not rerun with the stage. The holdout is now
-a reporting split only.
+([FAILURES.md](docs/FAILURES.md) class E). In the feedback simulation the stage's first-round lead does not last
+([Feedback simulation](#feedback-simulation)). The decision was re-checked on the holdout grades corrected in D29
+(the judge card's rounding) and does not change. The holdout is now a reporting split only.
 
 ## Limitations
 
 <!-- BEGIN GENERATED readme-limits (make report; do not edit) -->
 - Test split: 100 personas; dev: 200; holdout: 150 (D28).
 - Judge pilot (80 pairs): QWK 0.84 against a stronger LLM reference, mean grade +0.11 above it; QWK 0.86 between two batch orders of the same pairs.
-- Judge validation: owner labels: **missing** (the 150 blind pairs are in `eval/owner_labels/`); interim, **not a human check**: a second LLM judge (`anthropic/claude-sonnet-5.5`) agrees with the production judge at QWK 0.758 (exact 0.61, within one grade 0.97) on the same 150 pairs.
-- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.886 [0.872, 0.901], test 0.755 [0.729, 0.780].
-- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, `recsys_serve`'s ranker is +0.031 [+0.001, +0.063] ahead of `recsys_v1`'s.
-- For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.761 [0.729, 0.789] on test; `recsys_v1`: 0.755 [0.729, 0.780].
+- Judge validation: owner labels: **missing** (the 150 blind pairs are in `eval/owner_labels/`); interim, **not a human check**: a second LLM judge (`anthropic/claude-sonnet-5.5`) agrees with the production judge at QWK 0.753 (exact 0.60, within one grade 0.97) on the same 150 pairs.
+- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.883 [0.868, 0.899], test 0.757 [0.731, 0.782].
+- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.010] on test; with the cap slot left empty, `recsys_serve`'s ranker is +0.029 [-0.002, +0.061] ahead of `recsys_v1`'s.
+- For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.765 [0.734, 0.793] on test; `recsys_v1`: 0.757 [0.731, 0.782].
 <!-- END GENERATED readme-limits -->
 
 - **Simulated users.** Personas are sampled from a hand-written latent model; their requests are written by an

@@ -193,6 +193,16 @@ that fails the schema is split in halves, a skipped label is re-graded alone. Ev
 stores grade, reason, judge config, the model id reported by the provider, rubric, and the batch it
 was graded in (so the exact call can be replayed).
 
+**Card version (D29).** The first card (`card/v1`, lines without a `card` key) printed the persona's travel
+radius, comfortable band and distance cap rounded to whole kilometres (a 6.4 km cap read "no more than 6 km"),
+while the rules use the exact values. `card/v2` (`"card": "card/v2"`, every judgement since D29) prints them as
+stored and the distance from home to 0.1 km, so no route the rules admit is printed above a hard limit. Pairs whose
+grade the rounding could have changed (`python -m evalkit.rejudge estimate`: printed length above the printed cap,
+a different position relative to the comfortable band, or printed distance above the printed radius) were
+re-judged with `card/v2` in every qrels file; the new line keeps the old judgement under `previous` and
+`make replay-check` replays both. A control sample of unaffected pairs re-judged the same way measures how much
+re-judging alone changes (`eval/results/_rejudge.json`).
+
 **Choosing the judge (pilot, `make judge-pilot`).** 80 pairs from 20 dev personas stratified over
 activity style and party; per persona one of `pool_latent`'s top 3, one of its ranks 4-15, one
 feasible route from `v0_rules`' top 50 (else a mid-ranked feasible one) and one random feasible
@@ -622,6 +632,7 @@ decision is recorded in DECISIONS.md with the qrels digest it was taken on).
 
 **Limits.** The same simulator and judge as everything else, so the holdout guards against overfitting to the dev
 and test *users*, not against the simulator's or the judge's assumptions. 150 personas give a standard error of
-under one point of NDCG@10 for a paired difference; small true effects can be missed. The judge's card rounds the
-distance cap to whole kilometres while the rule-grader uses the exact cap (found in the holdout failure analysis,
-FAILURES.md H149); this affects every split equally and is still to be fixed.
+under one point of NDCG@10 for a paired difference; small true effects can be missed. The judge's card rounded the
+distance cap to whole kilometres while the rule-grader uses the exact cap (found in the holdout failure analysis);
+fixed in D29 (card v2, section 4) and the affected pairs of every qrels file, the holdout's included, re-judged.
+The D28 decision was re-applied to the corrected holdout qrels and is unchanged.

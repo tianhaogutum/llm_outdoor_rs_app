@@ -593,4 +593,101 @@ holdout judging 4.8, latency under 0.01).
 **Still open after D28** (in addition to D26's owner items, of which "confirm or change the served default" now
 refers to `recsys_serve_v2`): the stage's class-E fixes and an effort need, developed on cross-fitted dev; the
 judge card's cap rounding (re-judge); re-tuning the feedback parameters on cross-fitted dev (D21); rerunning the
-feedback simulation with the stage.
+feedback simulation with the stage. *(Card rounding and the simulation: done in D29.)*
+
+## D29. The judge card's rounding: fixed, affected pairs re-judged; the served default in the simulation (2026-11-23)
+
+**The bug.** The judge's persona card (`evalkit/cards.py`, now called `card/v1`) printed the travel radius, the
+comfortable distance band and the distance cap with `:.0f`, and the route card printed the distance from home the
+same way, while the rule-grader and the hard filter use the exact values. A holdout persona with a 6.4 km cap read
+"absolutely no more than 6 km", and the judge graded 6.0-6.4 km routes 0 for "exceeding" it (FAILURES.md, H149).
+Checked line by line: ascent (whole metres against a tolerance in tens), days (integers), route length (0.1 km
+against a cap stored with one decimal) and every other number on the cards were printed exactly enough. 411 of the
+450 personas' caps have a decimal; every radius is a whole number, so the radius rounding never mattered.
+
+**The fix.** `card/v2` prints radius, band and cap as stored (one decimal at most) and the distance from home to
+0.1 km. A route the rules admit can then never be printed above a hard limit (unit test over random limits); for
+the soft band, a printed position can differ from the exact one only for a route within 0.05 km of an edge (66 of
+the re-judged pairs are such routes; immaterial for a rubric that asks for "inside or very close to" the band). New judgements carry `"card": "card/v2"`; lines without
+the key are v1. `card/v1` stays in the code, unchanged, because the persona intents, the judge pilot, the second
+judge on the owner set and every v1 judgement replay from prompts built with it. The owner's labelling page was
+re-rendered with v2 cards (same 150 pair ids; nothing had been labelled); the interim second judge stays as recorded
+(v1).
+
+**Which pairs were affected** (`evalkit/rejudge.py`, rule `affected`): an LLM-graded v1 pair whose printed length is
+above the printed cap although it is within the exact cap (`cap`), or whose position relative to the comfortable
+band (below / inside / above) differs between printed and exact numbers (`band`), or whose printed distance from
+home is above the printed radius although it is within it (`radius`: none). Rule-graded pairs never reached the
+judge.
+
+| Qrels file | LLM pairs | Affected: cap | Affected: band | Re-judged | Changed | Up / down |
+|---|---|---|---|---|---|---|
+| pooled (`qrels.jsonl`) | 14,828 | 39 | 424 | 463 | 138 | 81 / 57 |
+| simulation (`sim_qrels.jsonl`) | 2,709 | 1 | 89 | 90 | 24 | 10 / 14 |
+| holdout (`holdout_qrels.jsonl`) | 3,684 | 10 | 129 | 139 | 42 | 26 / 16 |
+| **total** | 21,221 | 50 | 642 | **692** | **204** | 117 / 87 |
+
+Each file was re-judged separately with `card/v2` (production judge, batched per persona over its affected pairs,
+seed 0). The new line replaces the old one and keeps it under `previous` (old grade, reason and batch), so both
+grades are in the file and `make replay-check` replays both; `eval/results/_rejudge.json` has the old-to-new
+matrices per file and reason.
+
+**Which changes the card caused.** Re-judging in new, smaller batches changes grades by itself (D9: batch-order
+stability). A control of 200 *unaffected* pairs from the same personas, re-judged the same way
+(`rejudge_control.jsonl`, grades not used), changed 42 (21%), 20 up and 22 down. Against that:
+
+- *Cap*: 32 of 50 changed (64%), **all upwards**, mean grade 0.34 → 1.20. The bug, as described.
+- *Band*: 172 of 642 changed (27%), 85 up and 87 down: hardly above the control's rate. Changes agree with the
+  direction the exact band predicts somewhat more often than not (107 vs 65), so the band rounding had a small
+  effect, but most of these 172 are the judge's batch noise, now recorded with the corrected card.
+
+**Consequences** (everything rescored: `make eval-all`, `make simulate`, `make sim-tune`, `make failures`, `make
+report`; snapshot figures, RESULTS.md is generated):
+
+- **D28 (holdout decision): unchanged.** Re-applied mechanically to the corrected holdout qrels (sha256 prefix now
+  `f3f4685399e2`): all three variants still pass the cross-fitted dev gate (filter +0.018 [+0.006, +0.029], promote
+  +0.022 [+0.008, +0.036], demote +0.012 [+0.002, +0.023]); c = 2.00; simultaneous lower bounds filter **+0.010**
+  (was +0.009), promote +0.005 (was +0.003), demote −0.006 (was −0.008); violations 0 for all. Eligible: filter and
+  promote; the filter has the larger bound. `recsys_serve_needs` (served as `recsys_serve_v2`) still wins;
+  `_holdout.json` was rewritten by the rule's code, nothing else changed.
+- **D25: unchanged.** Every main-split NDCG@10 moved by at most 0.005 and no paired comparison changed sign:
+  `recsys_serve` − `recsys_v1` on test is −0.036 [−0.053, −0.020] (was −0.035); in the simulation `recsys_serve`
+  0.678 over rounds 2-10 vs 0.316 for `recsys_v1` and 0.699 for `recsys_v1_fb`, exploration −0.011 [−0.014, −0.008].
+- **D27: unchanged.** In-sample dev, no variant meets rule 1 (filter −0.013 [−0.024, −0.003]); cross-fitted dev
+  within 0.001 of before (`_needs_dev.json` recomputed, no judging).
+- **D21: its rule now picks a different grid point.** `make sim-tune` on the corrected labels (2 new pairs judged):
+  `light` 0.7749 vs `slots_only` 0.7744 over rounds 2-10, so the pre-stated rule (highest mean) now names
+  `light`, by 0.0006, where the five light settings are within ±0.0015 of each other and each one's CI against
+  route effects alone is about ±0.015. **Not acted on**: the registered systems and the served default keep
+  `slots_only`. Reasons: the flip is far inside the comparison's noise and comes from grades the control shows
+  are mostly re-judging noise; D21 itself says the in-sample dev comparison is the wrong basis and that the
+  re-tune belongs on cross-fitted dev or real feedback (still open); and changing the feedback settings changes
+  the served system, which is the coordinator's call (D25). Stated here so the call can be made.
+- **The learned ranker's training labels: not retrained.** Of the 18,380 pinned labels (`ltr_train_v1.jsonl`), 398
+  were re-judged and 121 now differ from the corrected grade (0.66%; 73 up, 48 down; most of them band changes at
+  noise level); 32 of the 398 are cap pairs, 21 of which changed (all upwards). That is too small to move a LambdaMART model trained on
+  18,380 rows in any way the evaluation could detect, and retraining would replace the committed ranker behind
+  every system, including the one the holdout decision was taken on, so the D28 comparison would no longer be of
+  the systems it pre-registered. The file stays as the record of what the ranker was trained on. Same for the MMR
+  sweep labels (82 of 13,354 differ) and the ranker-API pilot labels (12 of 2,095).
+- **Failure analysis.** H149 rose from 0.474 to 0.733 and left the holdout's ten worst; H002 (class C) took its
+  place, so the class counts are unchanged. The test list has the same ten personas. The interim LLM-vs-LLM
+  agreement on the owner set moved from QWK 0.758 to 0.753 (7 of its 150 pairs were re-judged).
+- Not recomputed, snapshots of their time: `_cg_dev.json` (D13), `_ltr*.json` (pinned labels),
+  `_failures_recsys_serve_dev.json` (D27's hand classes refer to it).
+
+**Feedback simulation with the served default (D28 open item).** `make simulate` (test, 100 personas, every shown
+route judged) now includes `recsys_serve_v2` and its no-exploration twin (a config override, not a registered
+system). Over rounds 2-10 the served default is at the level of `recsys_serve` (+0.006 [−0.017, +0.029]): it starts
+ahead (round 1 +0.022 [+0.006, +0.043]) and the lead shrinks every round, reversing by round 10 (−0.018 [−0.053,
++0.018]). A likely reason, not checked: the filter narrows the candidates, so fewer suitable routes are left once
+the user has done or rejected some. Exploration costs −0.009 [−0.011, −0.006] on it. Reporting only; nothing is
+decided on it. **The holdout simulation was not run**: its judging was estimated at 4.77 USD (2,254 pairs, `python
+-m evalkit.simulate estimate --holdout`), more than was left of this task's 6 USD allowance; the command exists.
+
+**Spend** (local ledger): 2.46 USD (re-judging 1.27, control 0.44, simulation and dev tuning 0.75).
+
+**Still open** (D26's owner items unchanged): the stage's class-E fixes and an effort need, developed on
+cross-fitted dev; re-tuning the feedback parameters on cross-fitted dev (D21, now with the note above); the
+holdout feedback simulation if the cost is wanted; whether the stated-need filter should relax as the user
+consumes routes (the simulation pattern above), to be developed on dev.

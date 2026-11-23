@@ -2,13 +2,13 @@
  "llm_vs_llm": {
   "confusion_rows_first": [
    [
-    12,
+    11,
     23,
     3,
     0
    ],
    [
-    0,
+    1,
     27,
     11,
     0
@@ -26,12 +26,12 @@
     20
    ]
   ],
-  "exact": 0.606667,
+  "exact": 0.6,
   "first": "g35f-min-b8",
-  "linear_kappa": 0.623176,
+  "linear_kappa": 0.615261,
   "n": 150,
   "note": "interim signal only: two LLM judges from different vendors; NOT a human check",
-  "qwk": 0.758097,
+  "qwk": 0.752793,
   "second": "second-sonnet55",
   "second_models": [
    "anthropic/claude-sonnet-5.5"

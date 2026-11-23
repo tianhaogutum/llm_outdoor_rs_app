@@ -31,10 +31,10 @@
   "exploration": 0,
   "filter": 0,
   "mmr": 0,
-  "needs": 1,
-  "ranker": 9,
-  "retrieval": 14,
-  "shown": 7
+  "needs": 0,
+  "ranker": 5,
+  "retrieval": 13,
+  "shown": 4
  },
  "n_best_traced": 5,
  "n_worst": 10,
@@ -6762,1078 +6762,6 @@
   {
    "best_missed": [
     {
-     "bm25_rank": 4,
-     "bm25_score": 7.944,
-     "dense_rank": 77,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 119,
-      "difficulty": 0,
-      "home_km": 46.5,
-      "length_km": 4.0,
-      "locality": "Thuisbrunn",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.398,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Cave",
-       "Viewpoint",
-       "Ruins",
-       "Waymarked"
-      ],
-      "title": "Rundweg Egloffstein Rotring"
-     },
-     "final_rank": 18,
-     "fused_rank": 16,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 18,
-     "ltr_top": [
-      {
-       "contribution": -0.593965,
-       "name": "duration_h",
-       "value": 1.333333
-      },
-      {
-       "contribution": -0.327968,
-       "name": "length_km",
-       "value": 4.035
-      },
-      {
-       "contribution": 0.262946,
-       "name": "intent_km_gap",
-       "value": 0.193
-      }
-     ],
-     "mmr_after": 18,
-     "mmr_before": 18,
-     "pooled_by": [
-      "pool_intent_lexical"
-     ],
-     "reason": "At 4.0 km, this easy loop fits the distance perfectly and features a viewpoint and church ruins, matching the main wishes.",
-     "route_id": 545456,
-     "violations": []
-    },
-    {
-     "bm25_rank": 7,
-     "bm25_score": 6.375,
-     "dense_rank": 303,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 93,
-      "difficulty": 0,
-      "home_km": 46.2,
-      "length_km": 3.6,
-      "locality": "Egloffstein",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.247,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Cave",
-       "Viewpoint",
-       "Castle",
-       "Church/chapel",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Rundweg Egloffstein Blauring"
-     },
-     "final_rank": 25,
-     "fused_rank": 36,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 22,
-     "ltr_top": [
-      {
-       "contribution": -0.847319,
-       "name": "duration_h",
-       "value": 1.133333
-      },
-      {
-       "contribution": -0.404614,
-       "name": "length_km",
-       "value": 3.555
-      },
-      {
-       "contribution": -0.362426,
-       "name": "dense_rank",
-       "value": 303.0
-      }
-     ],
-     "mmr_after": 25,
-     "mmr_before": 22,
-     "pooled_by": [
-      "pool_intent_lexical"
-     ],
-     "reason": "This 3.6 km easy loop is ideal for older walkers, featuring multiple viewpoints and a castle, fully meeting all main wishes.",
-     "route_id": 1167467,
-     "violations": []
-    },
-    {
-     "bm25_rank": 21,
-     "bm25_score": 5.209,
-     "dense_rank": 113,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 75,
-      "difficulty": 0,
-      "home_km": 51.9,
-      "length_km": 3.0,
-      "locality": "Gößweinstein",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.476,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Summit route",
-       "Beer garden",
-       "Viewpoint",
-       "Castle",
-       "Monastery",
-       "Museum",
-       "Church/chapel",
-       "Playground",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Busy road sections",
-       "Waymarked"
-      ],
-      "title": "Rundwanderweg Gößweinstein Bärenstein"
-     },
-     "final_rank": null,
-     "fused_rank": 58,
-     "grade": 3,
-     "lost_at": "retrieval",
-     "ltr_rank": null,
-     "ltr_top": [],
-     "mmr_after": null,
-     "mmr_before": null,
-     "pooled_by": [
-      "pool_latent"
-     ],
-     "reason": "An easy 3.0 km walk that fully satisfies the wishes with a castle, monastery, museums, viewpoints, and a summit.",
-     "route_id": 2790458,
-     "violations": []
-    },
-    {
-     "bm25_rank": 17,
-     "bm25_score": 5.625,
-     "dense_rank": 19,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 108,
-      "difficulty": 0,
-      "home_km": 46.0,
-      "length_km": 5.0,
-      "locality": "Aufseß",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.852,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Suitable for strollers",
-       "Cave",
-       "Viewpoint",
-       "Castle",
-       "Church/chapel",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly paved",
-       "Waymarked"
-      ],
-      "title": "Rundweg um Aufseß"
-     },
-     "final_rank": 16,
-     "fused_rank": 9,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 11,
-     "ltr_top": [
-      {
-       "contribution": -0.359537,
-       "name": "length_km",
-       "value": 5.032
-      },
-      {
-       "contribution": -0.31521,
-       "name": "paved_share",
-       "value": 0.852
-      },
-      {
-       "contribution": -0.227013,
-       "name": "duration_h",
-       "value": 1.55
-      }
-     ],
-     "mmr_after": 16,
-     "mmr_before": 11,
-     "pooled_by": [
-      "pool_latent"
-     ],
-     "reason": "At 5.0 km, this easy loop fits the distance perfectly, featuring two castles and a viewpoint, matching all main wishes.",
-     "route_id": 3388038,
-     "violations": []
-    },
-    {
-     "bm25_rank": 5,
-     "bm25_score": 6.641,
-     "dense_rank": 111,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 92,
-      "difficulty": 0,
-      "home_km": 53.0,
-      "length_km": 4.0,
-      "locality": "Rothenburg ob der Tauber",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.961,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Beer garden",
-       "Viewpoint",
-       "Ruins",
-       "Museum",
-       "Church/chapel",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly paved",
-       "Waymarked"
-      ],
-      "title": "Rothenburger W3 - Kleiner Taubertalweg"
-     },
-     "final_rank": 22,
-     "fused_rank": 33,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 25,
-     "ltr_top": [
-      {
-       "contribution": -0.633553,
-       "name": "duration_h",
-       "value": 1.266667
-      },
-      {
-       "contribution": -0.399986,
-       "name": "paved_share",
-       "value": 0.961
-      },
-      {
-       "contribution": -0.380836,
-       "name": "length_km",
-       "value": 4.038
-      }
-     ],
-     "mmr_after": 22,
-     "mmr_before": 25,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "pool_latent"
-     ],
-     "reason": "Fits the distance and easy level, offering numerous viewpoints, ruins, and museums, though it is mostly paved.",
-     "route_id": 4061095,
-     "violations": []
-    }
-   ],
-   "explore": {
-    "active": true,
-    "cluster": 2,
-    "events": 0,
-    "label": "Cultural/historical interest / Castle / Museum",
-    "position": 10
-   },
-   "grade3_lost_at": {
-    "exploration": 0,
-    "filter": 0,
-    "mmr": 0,
-    "needs": 1,
-    "ranker": 6,
-    "retrieval": 1,
-    "shown": 4
-   },
-   "intent": "Could you suggest an easy walk near Schlüsselfeld, about 5 km, with castle ruins and a good viewpoint?",
-   "judged_grades": {
-    "0": 5,
-    "1": 3,
-    "2": 6,
-    "3": 12
-   },
-   "latent": {
-    "days": 1,
-    "desires": {
-     "culture": 0.83,
-     "summit": 0.45,
-     "viewpoint": 0.83
-    },
-    "dislikes": [
-     "alpine_terrain",
-     "steep_sections"
-    ],
-    "distance_band_km": [
-     2.2,
-     4.8
-    ],
-    "fitness": 0.13,
-    "max_ascent_m": 290,
-    "max_distance_km": 6.4,
-    "multi_day": false,
-    "party": {
-     "adults": 2,
-     "age_band": "65+",
-     "children_ages": [],
-     "dog": false,
-     "kind": "older",
-     "stroller": false
-    },
-    "shape": "any",
-    "surface": "any",
-    "technical_max": 0,
-    "transport": "car"
-   },
-   "mrr_at_10": 0.5,
-   "n_eligible": 530,
-   "ndcg_at_10": 0.474297,
-   "other_systems_ndcg_at_10": {
-    "recsys_serve": 0.461976,
-    "recsys_serve_needs_demote": 0.461976,
-    "recsys_serve_needs_promote": 0.474297
-   },
-   "persona_id": "H149",
-   "recall_at_50": 0.777778,
-   "relevant_lost_at": {
-    "exploration": 0,
-    "filter": 0,
-    "mmr": 0,
-    "needs": 2,
-    "ranker": 7,
-    "retrieval": 2,
-    "shown": 7
-   },
-   "seen": {
-    "category": "hiking",
-    "home_town": "Schlüsselfeld",
-    "max_distance_km": 6.4,
-    "max_travel_km": 60.0,
-    "questionnaire": {
-     "fitness": "beginner",
-     "narrative": "mystery",
-     "type": [
-      "history-culture",
-      "natural-scenery"
-     ]
-    }
-   },
-   "top10": [
-    {
-     "bm25_rank": 16,
-     "bm25_score": 5.646,
-     "dense_rank": 2,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 229,
-      "difficulty": 0,
-      "home_km": 27.2,
-      "length_km": 6.3,
-      "locality": "Rödelsee",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.725,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Beer garden",
-       "Viewpoint",
-       "Castle",
-       "Museum",
-       "Church/chapel",
-       "Picnic area",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly paved",
-       "Waymarked"
-      ],
-      "title": "Steinbruchweg"
-     },
-     "final_rank": 1,
-     "fused_rank": 3,
-     "grade": 0,
-     "lost_at": "shown",
-     "ltr_rank": 1,
-     "ltr_top": [
-      {
-       "contribution": 0.38022,
-       "name": "intent_km_gap",
-       "value": 0.2614
-      },
-      {
-       "contribution": 0.323923,
-       "name": "rrf",
-       "value": 0.052989
-      },
-      {
-       "contribution": -0.236821,
-       "name": "ascent_per_km",
-       "value": 36.467417
-      }
-     ],
-     "mmr_after": 1,
-     "mmr_before": 1,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.3 km, this route exceeds the absolute maximum distance limit of 6 km for this party.",
-     "route_id": 17831785,
-     "violations": []
-    },
-    {
-     "bm25_rank": 13,
-     "bm25_score": 5.805,
-     "dense_rank": 60,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 159,
-      "difficulty": 0,
-      "home_km": 45.9,
-      "length_km": 6.0,
-      "locality": "Aufseß",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.43,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Cave",
-       "Viewpoint",
-       "Castle",
-       "Church/chapel",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Rundweg Aufseß"
-     },
-     "final_rank": 2,
-     "fused_rank": 22,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 3,
-     "ltr_top": [
-      {
-       "contribution": 0.300175,
-       "name": "intent_km_gap",
-       "value": 0.1948
-      },
-      {
-       "contribution": 0.29776,
-       "name": "tag_cover",
-       "value": 0.666667
-      },
-      {
-       "contribution": -0.211976,
-       "name": "length_km",
-       "value": 5.974
-      }
-     ],
-     "mmr_after": 2,
-     "mmr_before": 3,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.0 km, this route is at the absolute maximum limit for this party, but it fits the main wishes with a castle and viewpoints.",
-     "route_id": 9792171,
-     "violations": []
-    },
-    {
-     "bm25_rank": 3,
-     "bm25_score": 8.84,
-     "dense_rank": 58,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 253,
-      "difficulty": 0,
-      "home_km": 43.7,
-      "length_km": 6.0,
-      "locality": "Streitberg",
-      "loop": false,
-      "max_grade": null,
-      "paved_share": 0.089,
-      "tags": [
-       "Linear route",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Cave",
-       "Viewpoint",
-       "Castle",
-       "Ruins",
-       "Church/chapel",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Kulturerlebnis Fränkische Schweiz - Streitberg - Muggendorf"
-     },
-     "final_rank": 3,
-     "fused_rank": 10,
-     "grade": 3,
-     "lost_at": "shown",
-     "ltr_rank": 2,
-     "ltr_top": [
-      {
-       "contribution": 0.858667,
-       "name": "tag_cover",
-       "value": 1.0
-      },
-      {
-       "contribution": -0.591921,
-       "name": "ascent_per_km",
-       "value": 42.328928
-      },
-      {
-       "contribution": 0.329707,
-       "name": "paved_share",
-       "value": 0.089
-      }
-     ],
-     "mmr_after": 3,
-     "mmr_before": 2,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.0 km, this route is at the absolute limit, but it perfectly features castle ruins, multiple viewpoints, and cultural highlights.",
-     "route_id": 1577077,
-     "violations": []
-    },
-    {
-     "bm25_rank": 15,
-     "bm25_score": 5.712,
-     "dense_rank": 3,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 165,
-      "difficulty": 0,
-      "home_km": 19.4,
-      "length_km": 6.0,
-      "locality": "Castell",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.62,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Flora",
-       "Summit route",
-       "Viewpoint",
-       "Castle",
-       "Picnic area",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Casteller Weg"
-     },
-     "final_rank": 4,
-     "fused_rank": 4,
-     "grade": 3,
-     "lost_at": "shown",
-     "ltr_rank": 4,
-     "ltr_top": [
-      {
-       "contribution": 0.38783,
-       "name": "intent_km_gap",
-       "value": 0.207
-      },
-      {
-       "contribution": -0.30671,
-       "name": "busy_road_share",
-       "value": 0.077
-      },
-      {
-       "contribution": 0.282353,
-       "name": "rrf",
-       "value": 0.052525
-      }
-     ],
-     "mmr_after": 4,
-     "mmr_before": 4,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.0 km, this is at the absolute maximum limit, but it perfectly fits the request with a castle, viewpoints, and summits.",
-     "route_id": 16358798,
-     "violations": []
-    },
-    {
-     "bm25_rank": 64,
-     "bm25_score": 3.447,
-     "dense_rank": 34,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 162,
-      "difficulty": 0,
-      "home_km": 52.7,
-      "length_km": 6.0,
-      "locality": "Unterwindsberg",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.318,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Cultural/historical interest",
-       "Summit route",
-       "Castle",
-       "Church/chapel",
-       "Drinking water",
-       "Waymarked"
-      ],
-      "title": "Simmelsdorfer Rundwanderweg Grün 4"
-     },
-     "final_rank": 5,
-     "fused_rank": 38,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 5,
-     "ltr_top": [
-      {
-       "contribution": 0.362803,
-       "name": "intent_km_gap",
-       "value": 0.1916
-      },
-      {
-       "contribution": 0.302148,
-       "name": "tag_cover",
-       "value": 0.666667
-      },
-      {
-       "contribution": -0.26067,
-       "name": "rrf",
-       "value": 0.026263
-      }
-     ],
-     "mmr_after": 5,
-     "mmr_before": 5,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.0 km, this is at the absolute maximum distance limit, features a castle and summit, but lacks a viewpoint.",
-     "route_id": 1014752,
-     "violations": []
-    },
-    {
-     "bm25_rank": 10,
-     "bm25_score": 5.868,
-     "dense_rank": 49,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 91,
-      "difficulty": 0,
-      "home_km": 54.3,
-      "length_km": 4.3,
-      "locality": "Pfaffenberg",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.062,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Flora",
-       "Fauna",
-       "Cave",
-       "Viewpoint",
-       "Castle",
-       "Church/chapel",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Panoramaweg im Ailsbachtal"
-     },
-     "final_rank": 6,
-     "fused_rank": 18,
-     "grade": 3,
-     "lost_at": "shown",
-     "ltr_rank": 6,
-     "ltr_top": [
-      {
-       "contribution": -0.355647,
-       "name": "duration_h",
-       "value": 1.35
-      },
-      {
-       "contribution": 0.314152,
-       "name": "intent_km_gap",
-       "value": 0.1454
-      },
-      {
-       "contribution": -0.298661,
-       "name": "length_km",
-       "value": 4.273
-      }
-     ],
-     "mmr_after": 6,
-     "mmr_before": 6,
-     "pooled_by": [
-      "pool_latent",
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "An easy 4.3 km walk featuring a castle (Burg Rabenstein) and multiple viewpoints, matching all main wishes.",
-     "route_id": 3250297,
-     "violations": []
-    },
-    {
-     "bm25_rank": 47,
-     "bm25_score": 3.808,
-     "dense_rank": 6,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 189,
-      "difficulty": 0,
-      "home_km": 46.0,
-      "length_km": 6.0,
-      "locality": "Eichelsdorf",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.055,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Cultural/historical interest",
-       "Flora",
-       "Viewpoint",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Auf Jägerpfaden zur Schwedenschanze"
-     },
-     "final_rank": 7,
-     "fused_rank": 13,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 9,
-     "ltr_top": [
-      {
-       "contribution": -0.450837,
-       "name": "tag_cover",
-       "value": 0.333333
-      },
-      {
-       "contribution": -0.403886,
-       "name": "pois_per_km",
-       "value": 0.17
-      },
-      {
-       "contribution": 0.352394,
-       "name": "paved_share",
-       "value": 0.055
-      }
-     ],
-     "mmr_after": 7,
-     "mmr_before": 9,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "This 6.0 km route is at the absolute limit of distance, has a viewpoint, but lacks the requested castle ruins.",
-     "route_id": 6630952,
-     "violations": []
-    },
-    {
-     "bm25_rank": 96,
-     "bm25_score": 3.004,
-     "dense_rank": 18,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 175,
-      "difficulty": 0,
-      "home_km": 54.9,
-      "length_km": 6.3,
-      "locality": "Sankt Helena",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.51,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Summit route",
-       "Castle",
-       "Church/chapel",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Simmelsdorfer Rundwanderweg Rot 8"
-     },
-     "final_rank": 8,
-     "fused_rank": 32,
-     "grade": 0,
-     "lost_at": "shown",
-     "ltr_rank": 7,
-     "ltr_top": [
-      {
-       "contribution": 0.345672,
-       "name": "intent_km_gap",
-       "value": 0.2568
-      },
-      {
-       "contribution": 0.290559,
-       "name": "tag_cover",
-       "value": 0.666667
-      },
-      {
-       "contribution": -0.247675,
-       "name": "rrf",
-       "value": 0.02877
-      }
-     ],
-     "mmr_after": 8,
-     "mmr_before": 7,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.3 km, this route exceeds the user's absolute maximum distance limit of 6 km.",
-     "route_id": 1003266,
-     "violations": []
-    },
-    {
-     "bm25_rank": 12,
-     "bm25_score": 5.82,
-     "dense_rank": 35,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 139,
-      "difficulty": 0,
-      "home_km": 25.2,
-      "length_km": 6.4,
-      "locality": "Schwanberg",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 1.0,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Suitable for strollers",
-       "Beer garden",
-       "Viewpoint",
-       "Castle",
-       "Museum",
-       "Church/chapel",
-       "Picnic area",
-       "Parking at start",
-       "Mostly paved",
-       "Waymarked"
-      ],
-      "title": "terroir f Spazierweg"
-     },
-     "final_rank": 9,
-     "fused_rank": 15,
-     "grade": 0,
-     "lost_at": "shown",
-     "ltr_rank": 8,
-     "ltr_top": [
-      {
-       "contribution": -0.381882,
-       "name": "paved_share",
-       "value": 1.0
-      },
-      {
-       "contribution": 0.317433,
-       "name": "intent_km_gap",
-       "value": 0.2738
-      },
-      {
-       "contribution": 0.271075,
-       "name": "tag_cover",
-       "value": 0.666667
-      }
-     ],
-     "mmr_after": 9,
-     "mmr_before": 8,
-     "pooled_by": [
-      "recsys_serve_needs",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 6.4 km, this route exceeds the user's absolute maximum distance of 6 km for older walkers with low fitness.",
-     "route_id": 17832835,
-     "violations": []
-    },
-    {
-     "bm25_rank": 8,
-     "bm25_score": 6.353,
-     "dense_rank": 20,
-     "eligible": true,
-     "explore": true,
-     "facts": {
-      "ascent_m": 134,
-      "difficulty": 0,
-      "home_km": 42.5,
-      "length_km": 4.7,
-      "locality": "Veilbronn",
-      "loop": false,
-      "max_grade": "T1",
-      "paved_share": 0.49,
-      "tags": [
-       "Linear route",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Waterfall",
-       "Castle",
-       "Ruins",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Veilbronn-Streitberg"
-     },
-     "final_rank": 10,
-     "fused_rank": 6,
-     "grade": 3,
-     "lost_at": "shown",
-     "ltr_rank": 15,
-     "ltr_top": [
-      {
-       "contribution": 0.856439,
-       "name": "tag_cover",
-       "value": 1.0
-      },
-      {
-       "contribution": -0.544771,
-       "name": "length_km",
-       "value": 4.724
-      },
-      {
-       "contribution": -0.405001,
-       "name": "duration_h",
-       "value": 1.566667
-      }
-     ],
-     "mmr_after": 14,
-     "mmr_before": 15,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "At 4.7 km, this easy walk fully fits the distance and low fitness level, offering both the requested castle ruins and scenic viewpoints.",
-     "route_id": 2891784,
-     "violations": []
-    }
-   ]
-  },
-  {
-   "best_missed": [
-    {
      "bm25_rank": 8,
      "bm25_score": 12.314,
      "dense_rank": 24,
@@ -9632,16 +8560,1032 @@
      "violations": []
     }
    ]
+  },
+  {
+   "best_missed": [
+    {
+     "bm25_rank": 4,
+     "bm25_score": 5.257,
+     "dense_rank": 25,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 62,
+      "difficulty": 0,
+      "home_km": 52.9,
+      "length_km": 8.8,
+      "locality": "Riegsee",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.615,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Lake",
+       "Castle",
+       "Church/chapel",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Riegsee-Rundweg"
+     },
+     "final_rank": 20,
+     "fused_rank": 8,
+     "grade": 3,
+     "lost_at": "ranker",
+     "ltr_rank": 18,
+     "ltr_top": [
+      {
+       "contribution": 0.851563,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.348685,
+       "name": "pois_per_km",
+       "value": 0.34
+      },
+      {
+       "contribution": -0.257943,
+       "name": "length_band_pos",
+       "value": -0.029575
+      }
+     ],
+     "mmr_after": 19,
+     "mmr_before": 18,
+     "pooled_by": [
+      "pool_latent"
+     ],
+     "reason": "This loop fits the comfortable distance, is flat and easy, and features both lakes and a castle, matching all main wishes perfectly.",
+     "route_id": 178442,
+     "violations": []
+    },
+    {
+     "bm25_rank": 8,
+     "bm25_score": 5.137,
+     "dense_rank": 4,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 46,
+      "difficulty": 0,
+      "home_km": 40.4,
+      "length_km": 9.7,
+      "locality": "Haslangkreit",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.957,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Cultural/historical interest",
+       "Suitable for strollers",
+       "Lake",
+       "Castle",
+       "Church/chapel",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly paved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Zum Schloss an der Paar"
+     },
+     "final_rank": 12,
+     "fused_rank": 2,
+     "grade": 3,
+     "lost_at": "ranker",
+     "ltr_rank": 13,
+     "ltr_top": [
+      {
+       "contribution": 0.823369,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.451616,
+       "name": "paved_share",
+       "value": 0.957
+      },
+      {
+       "contribution": -0.38382,
+       "name": "pois_per_km",
+       "value": 0.21
+      }
+     ],
+     "mmr_after": 11,
+     "mmr_before": 13,
+     "pooled_by": [
+      "pool_latent"
+     ],
+     "reason": "This loop fits the comfortable distance, is flat, and features both a lake and a castle, matching all main wishes perfectly.",
+     "route_id": 11161247,
+     "violations": []
+    },
+    {
+     "bm25_rank": 25,
+     "bm25_score": 3.661,
+     "dense_rank": 169,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 96,
+      "difficulty": 0,
+      "home_km": 42.7,
+      "length_km": 8.3,
+      "locality": "Penzberg",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.395,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Flora",
+       "Summit route",
+       "Lake",
+       "Waymarked"
+      ],
+      "title": "Rundweg 12 Nord"
+     },
+     "final_rank": null,
+     "fused_rank": 76,
+     "grade": 2,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "pool_latent"
+     ],
+     "reason": "This loop is a good length and features lakes, but it lacks the main wish of a castle or cultural site.",
+     "route_id": 178423,
+     "violations": []
+    },
+    {
+     "bm25_rank": 76,
+     "bm25_score": 3.276,
+     "dense_rank": 189,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 135,
+      "difficulty": 0,
+      "home_km": 6.0,
+      "length_km": 9.7,
+      "locality": "Geisenbrunn",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.524,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Geological highlights",
+       "Lake",
+       "Ruins",
+       "Church/chapel",
+       "Bus access",
+       "Public transport access",
+       "Waymarked"
+      ],
+      "title": "Via Zeitreise Gelbe Route"
+     },
+     "final_rank": null,
+     "fused_rank": 117,
+     "grade": 2,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "pool_latent"
+     ],
+     "reason": "This loop features ruins and a lake, but it lacks a castle and is mostly near settlements rather than quiet nature.",
+     "route_id": 5539627,
+     "violations": []
+    },
+    {
+     "bm25_rank": 93,
+     "bm25_score": 3.089,
+     "dense_rank": 42,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 24,
+      "difficulty": 0,
+      "home_km": 37.8,
+      "length_km": 5.2,
+      "locality": "Augsburg",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.367,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Flora",
+       "Summit route",
+       "Lake",
+       "Beer garden",
+       "Museum",
+       "Picnic area",
+       "Nature reserve",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "5km Rundweg Siebentischwald"
+     },
+     "final_rank": null,
+     "fused_rank": 52,
+     "grade": 2,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "pool_latent"
+     ],
+     "reason": "This easy loop is within the comfortable distance and features a lake and museum, but lacks the requested castle and quiet nature.",
+     "route_id": 21269701,
+     "violations": []
+    }
+   ],
+   "explore": {
+    "active": true,
+    "cluster": 2,
+    "events": 0,
+    "label": "Cultural/historical interest / Castle / Museum",
+    "position": 10
+   },
+   "grade3_lost_at": {
+    "exploration": 0,
+    "filter": 0,
+    "mmr": 0,
+    "needs": 0,
+    "ranker": 2,
+    "retrieval": 0,
+    "shown": 1
+   },
+   "intent": "Quiet lakeside walk past a castle",
+   "judged_grades": {
+    "0": 1,
+    "1": 14,
+    "2": 10,
+    "3": 3
+   },
+   "latent": {
+    "days": 1,
+    "desires": {
+     "culture": 0.71,
+     "lake": 0.88,
+     "quiet_nature": 0.63
+    },
+    "dislikes": [
+     "alpine_terrain",
+     "crowds",
+     "steep_sections"
+    ],
+    "distance_band_km": [
+     5.0,
+     10.8
+    ],
+    "fitness": 1.46,
+    "max_ascent_m": 540,
+    "max_distance_km": 18.0,
+    "multi_day": false,
+    "party": {
+     "adults": 2,
+     "age_band": "65+",
+     "children_ages": [],
+     "dog": false,
+     "kind": "older",
+     "stroller": false
+    },
+    "shape": "loop",
+    "surface": "any",
+    "technical_max": 0,
+    "transport": "car"
+   },
+   "mrr_at_10": 1.0,
+   "n_eligible": 855,
+   "ndcg_at_10": 0.57986,
+   "other_systems_ndcg_at_10": {
+    "recsys_serve": 0.57986,
+    "recsys_serve_needs_demote": 0.57986,
+    "recsys_serve_needs_promote": 0.57986
+   },
+   "persona_id": "H002",
+   "recall_at_50": 0.692308,
+   "relevant_lost_at": {
+    "exploration": 0,
+    "filter": 0,
+    "mmr": 0,
+    "needs": 0,
+    "ranker": 2,
+    "retrieval": 4,
+    "shown": 7
+   },
+   "seen": {
+    "category": "hiking",
+    "home_town": "Puchheim",
+    "max_distance_km": 18.0,
+    "max_travel_km": 80.0,
+    "questionnaire": {
+     "fitness": "advanced",
+     "narrative": "mystery",
+     "type": [
+      "natural-scenery"
+     ]
+    }
+   },
+   "top10": [
+    {
+     "bm25_rank": 15,
+     "bm25_score": 4.26,
+     "dense_rank": 3,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 153,
+      "difficulty": 1,
+      "home_km": 29.4,
+      "length_km": 16.5,
+      "locality": "Tutzing",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.444,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Flora",
+       "Lake",
+       "Beer garden",
+       "Castle",
+       "Monastery",
+       "Museum",
+       "Church/chapel",
+       "Playground",
+       "Swimming spot",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Parking at start"
+      ],
+      "title": "Tutzing - Bernried"
+     },
+     "final_rank": 1,
+     "fused_rank": 6,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 1,
+     "ltr_top": [
+      {
+       "contribution": 0.908013,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": 0.307448,
+       "name": "duration_h",
+       "value": 4.533333
+      },
+      {
+       "contribution": 0.268111,
+       "name": "pois_per_km",
+       "value": 1.69
+      }
+     ],
+     "mmr_after": 1,
+     "mmr_before": 1,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This loop features a lake, castles, a monastery, and a museum, but at 16.5 km it is very close to the absolute maximum distance.",
+     "route_id": 12408070,
+     "violations": []
+    },
+    {
+     "bm25_rank": 6,
+     "bm25_score": 5.188,
+     "dense_rank": 78,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 183,
+      "difficulty": 1,
+      "home_km": 74.8,
+      "length_km": 11.7,
+      "locality": "Nußdorf am Inn",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.536,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Geological highlights",
+       "Summit route",
+       "Lake",
+       "River",
+       "Cave",
+       "Castle",
+       "Museum",
+       "Church/chapel",
+       "Playground",
+       "Waymarked"
+      ],
+      "title": "Wanderweg 6 - Nußdorf"
+     },
+     "final_rank": 2,
+     "fused_rank": 14,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 2,
+     "ltr_top": [
+      {
+       "contribution": 0.924855,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.326019,
+       "name": "length_band_pos",
+       "value": 0.0435
+      },
+      {
+       "contribution": -0.295431,
+       "name": "paved_share",
+       "value": 0.536
+      }
+     ],
+     "mmr_after": 2,
+     "mmr_before": 2,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This loop fits the comfortable distance and features a lake, a castle, and a museum, but lacks the requested quiet nature.",
+     "route_id": 1861687,
+     "violations": []
+    },
+    {
+     "bm25_rank": 1,
+     "bm25_score": 5.832,
+     "dense_rank": 1,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 287,
+      "difficulty": 1,
+      "home_km": 49.2,
+      "length_km": 12.9,
+      "locality": "Naring",
+      "loop": false,
+      "max_grade": "T1",
+      "paved_share": 0.404,
+      "tags": [
+       "Linear route",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Lake",
+       "Viewpoint",
+       "Castle",
+       "Waymarked"
+      ],
+      "title": "Sterneck"
+     },
+     "final_rank": 3,
+     "fused_rank": 1,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 5,
+     "ltr_top": [
+      {
+       "contribution": 0.811938,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": 0.262714,
+       "name": "duration_h",
+       "value": 3.95
+      },
+      {
+       "contribution": -0.244058,
+       "name": "bm25_rank",
+       "value": 1.0
+      }
+     ],
+     "mmr_after": 3,
+     "mmr_before": 5,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This is a one-way route with a river crossing/ford, making it less suitable for older walkers, though it has a lake and castle.",
+     "route_id": 3103230,
+     "violations": []
+    },
+    {
+     "bm25_rank": 12,
+     "bm25_score": 4.8,
+     "dense_rank": 128,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 470,
+      "difficulty": 1,
+      "home_km": 76.4,
+      "length_km": 16.0,
+      "locality": "Samerberg",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.612,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Geological highlights",
+       "Flora",
+       "Summit route",
+       "Lake",
+       "River",
+       "Beer garden",
+       "Castle",
+       "Museum",
+       "Church/chapel",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Waymarked"
+      ],
+      "title": "Wanderweg 28 - Neubeuern"
+     },
+     "final_rank": 4,
+     "fused_rank": 46,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 3,
+     "ltr_top": [
+      {
+       "contribution": 0.925116,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": 0.392078,
+       "name": "duration_h",
+       "value": 5.233333
+      },
+      {
+       "contribution": -0.254284,
+       "name": "dense_rank",
+       "value": 128.0
+      }
+     ],
+     "mmr_after": 4,
+     "mmr_before": 3,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This loop features a castle and lake, but at 16 km it is much longer than the comfortable 11 km.",
+     "route_id": 2066699,
+     "violations": []
+    },
+    {
+     "bm25_rank": 14,
+     "bm25_score": 4.49,
+     "dense_rank": 2,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 88,
+      "difficulty": 0,
+      "home_km": 23.7,
+      "length_km": 6.1,
+      "locality": "Possenhofen",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.4,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Lake",
+       "Castle",
+       "Museum",
+       "Church/chapel",
+       "Swimming spot",
+       "Train access",
+       "Bus access",
+       "Public transport access"
+      ],
+      "title": "Elisabethweg"
+     },
+     "final_rank": 5,
+     "fused_rank": 4,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 4,
+     "ltr_top": [
+      {
+       "contribution": 0.868773,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.471133,
+       "name": "length_band_pos",
+       "value": -0.098725
+      },
+      {
+       "contribution": 0.240336,
+       "name": "pois_per_km",
+       "value": 1.65
+      }
+     ],
+     "mmr_after": 5,
+     "mmr_before": 4,
+     "pooled_by": [
+      "pool_latent",
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This easy loop fits the distance, features a lake and a castle, but is a highly popular, potentially crowded trail.",
+     "route_id": 1775073,
+     "violations": []
+    },
+    {
+     "bm25_rank": 5,
+     "bm25_score": 5.224,
+     "dense_rank": 9,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 13,
+      "difficulty": 0,
+      "home_km": 66.2,
+      "length_km": 5.4,
+      "locality": "Rain",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.138,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Lake",
+       "Castle",
+       "Playground",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Flat"
+      ],
+      "title": "AOKparcour Rain Jungbrunnen Route"
+     },
+     "final_rank": 6,
+     "fused_rank": 3,
+     "grade": 3,
+     "lost_at": "shown",
+     "ltr_rank": 10,
+     "ltr_top": [
+      {
+       "contribution": 0.802583,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.38012,
+       "name": "length_band_pos",
+       "value": -0.11415
+      },
+      {
+       "contribution": -0.367637,
+       "name": "length_km",
+       "value": 5.434
+      }
+     ],
+     "mmr_after": 6,
+     "mmr_before": 10,
+     "pooled_by": [
+      "pool_latent",
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This loop is within the comfortable distance, flat, and features a lake and a castle, matching the main wishes perfectly.",
+     "route_id": 15026423,
+     "violations": []
+    },
+    {
+     "bm25_rank": 27,
+     "bm25_score": 3.64,
+     "dense_rank": 69,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 198,
+      "difficulty": 1,
+      "home_km": 41.4,
+      "length_km": 13.6,
+      "locality": "Seeshaupt",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.206,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Lake",
+       "Church/chapel",
+       "Parking at start",
+       "Mostly unpaved",
+       "Waymarked"
+      ],
+      "title": "Kleiner Lauterbacher Waldweg 22"
+     },
+     "final_rank": 7,
+     "fused_rank": 28,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 7,
+     "ltr_top": [
+      {
+       "contribution": 0.331391,
+       "name": "duration_h",
+       "value": 3.933333
+      },
+      {
+       "contribution": -0.273937,
+       "name": "pois_per_km",
+       "value": 0.07
+      },
+      {
+       "contribution": 0.263553,
+       "name": "paved_share",
+       "value": 0.206
+      }
+     ],
+     "mmr_after": 7,
+     "mmr_before": 7,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This loop features lakes and quiet nature, but it lacks a castle, which is a main wish and part of the search query.",
+     "route_id": 5685151,
+     "violations": []
+    },
+    {
+     "bm25_rank": 11,
+     "bm25_score": 4.842,
+     "dense_rank": 81,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 73,
+      "difficulty": 1,
+      "home_km": 71.5,
+      "length_km": 12.0,
+      "locality": "Landshut",
+      "loop": false,
+      "max_grade": null,
+      "paved_share": 0.774,
+      "tags": [
+       "Linear route",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Lake",
+       "Beer garden",
+       "Castle",
+       "Monastery",
+       "Museum",
+       "Church/chapel",
+       "Playground",
+       "Nature reserve",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly paved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Via Sancti Martini HW-33-02 Landshut - Eching"
+     },
+     "final_rank": 8,
+     "fused_rank": 19,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 8,
+     "ltr_top": [
+      {
+       "contribution": 0.897127,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.289668,
+       "name": "paved_share",
+       "value": 0.774
+      },
+      {
+       "contribution": 0.288712,
+       "name": "duration_h",
+       "value": 3.2
+      }
+     ],
+     "mmr_after": 8,
+     "mmr_before": 8,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This is a one-way route instead of the preferred loop, and starts in a busy city center, missing the quiet nature wish.",
+     "route_id": 8386078,
+     "violations": []
+    },
+    {
+     "bm25_rank": 9,
+     "bm25_score": 5.122,
+     "dense_rank": 8,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 17,
+      "difficulty": 0,
+      "home_km": 6.0,
+      "length_km": 10.1,
+      "locality": "Geiselbullach",
+      "loop": false,
+      "max_grade": null,
+      "paved_share": 0.612,
+      "tags": [
+       "Linear route",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Lake",
+       "River",
+       "Castle",
+       "Church/chapel",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Flat",
+       "Waymarked",
+       "Pilgrimage route"
+      ],
+      "title": "neuer Jakobsweg Dachau - Olching"
+     },
+     "final_rank": 9,
+     "fused_rank": 7,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 9,
+     "ltr_top": [
+      {
+       "contribution": 0.823103,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": 0.331969,
+       "name": "ascent_per_km",
+       "value": 2.676978
+      },
+      {
+       "contribution": -0.252916,
+       "name": "length_band_pos",
+       "value": 0.00215
+      }
+     ],
+     "mmr_after": 9,
+     "mmr_before": 9,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This flat route features a castle and lake, but it is a one-way trail instead of the preferred loop.",
+     "route_id": 18827204,
+     "violations": []
+    },
+    {
+     "bm25_rank": 159,
+     "bm25_score": 2.461,
+     "dense_rank": 22,
+     "eligible": true,
+     "explore": true,
+     "facts": {
+      "ascent_m": 8,
+      "difficulty": 0,
+      "home_km": 73.9,
+      "length_km": 3.4,
+      "locality": "Krumbach (Schwaben)",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.721,
+      "tags": [
+       "Round trip",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Castle",
+       "Church/chapel",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly paved",
+       "Flat"
+      ],
+      "title": "Kneipp-Rundweg"
+     },
+     "final_rank": 10,
+     "fused_rank": 69,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "At 3.4 km, this loop is too short for the comfortable range, and it is an urban walk lacking quiet nature and a lake.",
+     "route_id": 1229409,
+     "violations": []
+    }
+   ]
   }
  ],
- "qrels_sha256": "69db8f93f8de42c721b4892bd12d24962be64aa5f7f93539621bf03132ce2507",
+ "qrels_sha256": "f3f4685399e2360df88d43fe81ff47c0c9c4651a1ffc22762f72ede1efd72aa1",
  "relevant_lost_at_total": {
   "exploration": 0,
   "filter": 0,
   "mmr": 0,
-  "needs": 12,
-  "ranker": 22,
-  "retrieval": 29,
+  "needs": 10,
+  "ranker": 17,
+  "retrieval": 31,
   "shown": 29
  },
  "results_note": "Simulated users (LLM-written intents over sampled latent profiles); relevance judged by an LLM; the judge is not yet validated against the owner's labels.",

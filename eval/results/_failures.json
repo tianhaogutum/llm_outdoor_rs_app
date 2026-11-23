@@ -26,8 +26,8 @@
   "filter": 0,
   "mmr": 1,
   "needs": 0,
-  "ranker": 24,
-  "retrieval": 12,
+  "ranker": 25,
+  "retrieval": 11,
   "shown": 8
  },
  "n_best_traced": 5,
@@ -35,6 +35,72 @@
  "personas": [
   {
    "best_missed": [
+    {
+     "bm25_rank": 8,
+     "bm25_score": 18.494,
+     "dense_rank": 42,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 71,
+      "difficulty": 0,
+      "home_km": 25.6,
+      "length_km": 4.1,
+      "locality": "Betzenstein",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.392,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Geological highlights",
+       "Summit route",
+       "Cave",
+       "Castle",
+       "Church/chapel",
+       "Playground",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Waymarked"
+      ],
+      "title": "Betzenstein Rundwanderweg Grosser Wasserstein"
+     },
+     "final_rank": 37,
+     "fused_rank": 16,
+     "grade": 3,
+     "lost_at": "ranker",
+     "ltr_rank": 35,
+     "ltr_top": [
+      {
+       "contribution": -0.884481,
+       "name": "duration_h",
+       "value": 1.216667
+      },
+      {
+       "contribution": 0.678129,
+       "name": "tag_cover",
+       "value": 0.8
+      },
+      {
+       "contribution": -0.436273,
+       "name": "length_km",
+       "value": 4.123
+      }
+     ],
+     "mmr_after": 36,
+     "mmr_before": 35,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "v2_bm25"
+     ],
+     "reason": "This route fits the stroller, distance, and climbing limits, and features the requested caves, rock formations, and playgrounds.",
+     "route_id": 326081,
+     "violations": []
+    },
     {
      "bm25_rank": 118,
      "bm25_score": 9.926,
@@ -286,54 +352,6 @@
      "reason": "This route fits the length, has a cave, a playground, and a stroller-friendly surface with gentle climbing.",
      "route_id": 9792171,
      "violations": []
-    },
-    {
-     "bm25_rank": 370,
-     "bm25_score": 2.163,
-     "dense_rank": 74,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 29,
-      "difficulty": 0,
-      "home_km": 24.0,
-      "length_km": 7.6,
-      "locality": "Voggendorf",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.861,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Lake",
-       "Beer garden",
-       "Viewpoint",
-       "Church/chapel",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly paved",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Storchen-Lehrpfad Uehlfeld"
-     },
-     "final_rank": null,
-     "fused_rank": 113,
-     "grade": 2,
-     "lost_at": "retrieval",
-     "ltr_rank": null,
-     "ltr_top": [],
-     "mmr_after": null,
-     "mmr_before": null,
-     "pooled_by": [
-      "pool_latent"
-     ],
-     "reason": "Perfect length, flat, mostly paved, and has a playground, but completely lacks the main wish of caves or interesting rocks.",
-     "route_id": 168377,
-     "violations": []
     }
    ],
    "explore": {
@@ -348,16 +366,16 @@
     "filter": 0,
     "mmr": 0,
     "needs": 0,
-    "ranker": 3,
+    "ranker": 4,
     "retrieval": 1,
     "shown": 0
    },
    "intent": "Could you suggest an easy, stroller-friendly walk of around 8 km with an interesting cave or rock formation and a playground for the children? Please keep the climbing gentle.",
    "judged_grades": {
     "0": 36,
-    "1": 30,
+    "1": 29,
     "2": 11,
-    "3": 4
+    "3": 5
    },
    "latent": {
     "days": 1,
@@ -396,23 +414,23 @@
    },
    "mrr_at_10": 0.333333,
    "n_eligible": 571,
-   "ndcg_at_10": 0.20414,
+   "ndcg_at_10": 0.191715,
    "other_systems_ndcg_at_10": {
-    "recsys_v1": 0.3101,
-    "recsys_v1_nocap": 0.20414,
-    "v1_filters": 0.144635,
-    "v2_bm25": 0.434692,
-    "v3_dense": 0.393263,
-    "v4_rrf": 0.578544
+    "recsys_v1": 0.291227,
+    "recsys_v1_nocap": 0.191715,
+    "v1_filters": 0.135832,
+    "v2_bm25": 0.482683,
+    "v3_dense": 0.369328,
+    "v4_rrf": 0.543332
    },
    "persona_id": "P018",
-   "recall_at_50": 0.666667,
+   "recall_at_50": 0.6875,
    "relevant_lost_at": {
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
     "needs": 0,
-    "ranker": 8,
+    "ranker": 9,
     "retrieval": 5,
     "shown": 2
    },
@@ -2597,8 +2615,8 @@
    },
    "intent": "Could you suggest an easy, short walk with interesting caves or rocks and an inn along the way?",
    "judged_grades": {
-    "0": 34,
-    "1": 39,
+    "0": 35,
+    "1": 38,
     "2": 21,
     "3": 6
    },
@@ -2643,9 +2661,9 @@
     "recsys_v1": 0.53952,
     "recsys_v1_nocap": 0.388245,
     "v1_filters": 0.295272,
-    "v2_bm25": 0.318609,
+    "v2_bm25": 0.299986,
     "v3_dense": 0.275795,
-    "v4_rrf": 0.345556
+    "v4_rrf": 0.329515
    },
    "persona_id": "P190",
    "recall_at_50": 0.62963,
@@ -5699,1094 +5717,6 @@
   {
    "best_missed": [
     {
-     "bm25_rank": 228,
-     "bm25_score": 3.48,
-     "dense_rank": 32,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 10,
-      "difficulty": 0,
-      "home_km": 26.0,
-      "length_km": 3.8,
-      "locality": "Sand am Main",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.109,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Flora",
-       "Lake",
-       "Museum",
-       "Playground",
-       "Nature reserve",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Rundwanderweg Steigerwaldrunde Sander Altmain"
-     },
-     "final_rank": null,
-     "fused_rank": 57,
-     "grade": 3,
-     "lost_at": "retrieval",
-     "ltr_rank": null,
-     "ltr_top": [],
-     "mmr_after": null,
-     "mmr_before": null,
-     "pooled_by": [
-      "recsys_v1_qonly",
-      "v1_filters"
-     ],
-     "reason": "Fits the lake and quiet nature wishes, is easy for kids, and has public transport access, though it is slightly short.",
-     "route_id": 2257448,
-     "violations": []
-    },
-    {
-     "bm25_rank": 11,
-     "bm25_score": 8.629,
-     "dense_rank": 44,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 10,
-      "difficulty": 0,
-      "home_km": 44.7,
-      "length_km": 3.3,
-      "locality": "Baunach",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.088,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Lake",
-       "Museum",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Flat"
-      ],
-      "title": "Naturerlebnisweg Baunach"
-     },
-     "final_rank": 21,
-     "fused_rank": 16,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 20,
-     "ltr_top": [
-      {
-       "contribution": -1.229911,
-       "name": "duration_h",
-       "value": 0.85
-      },
-      {
-       "contribution": 0.65096,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.380004,
-       "name": "length_km",
-       "value": 3.281
-      }
-     ],
-     "mmr_after": 20,
-     "mmr_before": 20,
-     "pooled_by": [
-      "pool_latent",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2"
-     ],
-     "reason": "This route has train access, a lake, and is family-friendly, though it is slightly shorter than the comfortable range.",
-     "route_id": 3981766,
-     "violations": []
-    },
-    {
-     "bm25_rank": 2,
-     "bm25_score": 15.723,
-     "dense_rank": 5,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 19,
-      "difficulty": 0,
-      "home_km": 1.2,
-      "length_km": 3.2,
-      "locality": "Sennfeld",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.344,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Family-friendly",
-       "Lake",
-       "Train access",
-       "Public transport access",
-       "Parking at start",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Hase-Weg Sennfeld"
-     },
-     "final_rank": 16,
-     "fused_rank": 3,
-     "grade": 3,
-     "lost_at": "ranker",
-     "ltr_rank": 12,
-     "ltr_top": [
-      {
-       "contribution": -1.167688,
-       "name": "duration_h",
-       "value": 0.85
-      },
-      {
-       "contribution": 0.578921,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.460422,
-       "name": "length_km",
-       "value": 3.191
-      }
-     ],
-     "mmr_after": 15,
-     "mmr_before": 12,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "pool_latent",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_v2",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "v2_bm25",
-      "v3_dense",
-      "v4_rrf",
-      "v5_rank_api",
-      "v6_ltr",
-      "v6_ltr_noapi"
-     ],
-     "reason": "This route has train access, lakes, and is family-friendly, though it is slightly shorter than the comfortable range.",
-     "route_id": 6031763,
-     "violations": []
-    },
-    {
-     "bm25_rank": 227,
-     "bm25_score": 3.496,
-     "dense_rank": 42,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 98,
-      "difficulty": 0,
-      "home_km": 28.7,
-      "length_km": 6.1,
-      "locality": "Ebrach",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.439,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Fauna",
-       "Suitable for strollers",
-       "Lake",
-       "Museum",
-       "Playground",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Busy road sections",
-       "Waymarked"
-      ],
-      "title": "Rundweg \"Rund um den Baumwipfelpfad\""
-     },
-     "final_rank": null,
-     "fused_rank": 77,
-     "grade": 2,
-     "lost_at": "retrieval",
-     "ltr_rank": null,
-     "ltr_top": [],
-     "mmr_after": null,
-     "mmr_before": null,
-     "pooled_by": [
-      "recsys_v1_qonly",
-      "v1_filters"
-     ],
-     "reason": "Excellent fit with lakes, playgrounds, and public transport, but busy road sections and popular attractions might reduce quietness.",
-     "route_id": 1822600,
-     "violations": []
-    },
-    {
-     "bm25_rank": 10,
-     "bm25_score": 8.707,
-     "dense_rank": 165,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 99,
-      "difficulty": 0,
-      "home_km": 56.9,
-      "length_km": 3.4,
-      "locality": "Bertelsdorf",
-      "loop": false,
-      "max_grade": null,
-      "paved_share": 0.403,
-      "tags": [
-       "Linear route",
-       "Scenic",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Flora",
-       "Lake",
-       "Castle",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Parking at start"
-      ],
-      "title": "Rund um das Naturschutzgebiet Goldbergsee"
-     },
-     "final_rank": 24,
-     "fused_rank": 22,
-     "grade": 2,
-     "lost_at": "ranker",
-     "ltr_rank": 28,
-     "ltr_top": [
-      {
-       "contribution": -1.228276,
-       "name": "duration_h",
-       "value": 1.033333
-      },
-      {
-       "contribution": 0.797618,
-       "name": "tag_cover",
-       "value": 1.0
-      },
-      {
-       "contribution": -0.502002,
-       "name": "length_km",
-       "value": 3.381
-      }
-     ],
-     "mmr_after": 23,
-     "mmr_before": 28,
-     "pooled_by": [
-      "pool_latent",
-      "recsys_serve_needs_demote",
-      "recsys_v1_nocapslot",
-      "v2_bm25"
-     ],
-     "reason": "This is a one-way route rather than the preferred loop, and it ends at a different location, which is less ideal for a family.",
-     "route_id": 3117414,
-     "violations": []
-    }
-   ],
-   "explore": {
-    "active": true,
-    "cluster": 8,
-    "events": 0,
-    "label": "no theme tags",
-    "position": 10
-   },
-   "grade3_lost_at": {
-    "exploration": 0,
-    "filter": 0,
-    "mmr": 0,
-    "needs": 0,
-    "ranker": 2,
-    "retrieval": 1,
-    "shown": 1
-   },
-   "intent": "A quiet forest walk by a lake, easy for little kids and reachable by train from Schweinfurt.",
-   "judged_grades": {
-    "0": 34,
-    "1": 29,
-    "2": 9,
-    "3": 4
-   },
-   "latent": {
-    "days": 1,
-    "desires": {
-     "lake": 0.69,
-     "quiet_nature": 0.61,
-     "train_access": 1.0
-    },
-    "dislikes": [
-     "alpine_terrain",
-     "crowds"
-    ],
-    "distance_band_km": [
-     3.5,
-     7.5
-    ],
-    "fitness": 0.8,
-    "max_ascent_m": 250,
-    "max_distance_km": 11.3,
-    "multi_day": false,
-    "party": {
-     "adults": 2,
-     "age_band": "35-50",
-     "children_ages": [
-      4
-     ],
-     "dog": false,
-     "kind": "family_young",
-     "stroller": false
-    },
-    "shape": "loop",
-    "surface": "any",
-    "technical_max": 0,
-    "transport": "train"
-   },
-   "mrr_at_10": 0.5,
-   "n_eligible": 994,
-   "ndcg_at_10": 0.426538,
-   "other_systems_ndcg_at_10": {
-    "recsys_v1": 0.618594,
-    "recsys_v1_nocap": 0.426538,
-    "v1_filters": 0.287645,
-    "v2_bm25": 0.624333,
-    "v3_dense": 0.446045,
-    "v4_rrf": 0.56722
-   },
-   "persona_id": "P177",
-   "recall_at_50": 0.846154,
-   "relevant_lost_at": {
-    "exploration": 0,
-    "filter": 0,
-    "mmr": 0,
-    "needs": 0,
-    "ranker": 7,
-    "retrieval": 2,
-    "shown": 4
-   },
-   "seen": {
-    "category": "hiking",
-    "home_town": "Schweinfurt",
-    "max_distance_km": 11.3,
-    "max_travel_km": 60.0,
-    "questionnaire": {
-     "fitness": "beginner",
-     "narrative": "playful",
-     "type": [
-      "natural-scenery",
-      "family-fun"
-     ]
-    }
-   },
-   "top10": [
-    {
-     "bm25_rank": 8,
-     "bm25_score": 8.83,
-     "dense_rank": 9,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 22,
-      "difficulty": 0,
-      "home_km": 19.1,
-      "length_km": 5.2,
-      "locality": "Dingolshausen",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.18,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Flora",
-       "Lake",
-       "Mostly unpaved",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Rundweg Gerolzhofen G5"
-     },
-     "final_rank": 1,
-     "fused_rank": 6,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 1,
-     "ltr_top": [
-      {
-       "contribution": 0.578669,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.428101,
-       "name": "duration_h",
-       "value": 1.35
-      },
-      {
-       "contribution": 0.419688,
-       "name": "paved_share",
-       "value": 0.18
-      }
-     ],
-     "mmr_after": 1,
-     "mmr_before": 1,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "recsys_serve",
-      "recsys_serve_nocap",
-      "recsys_serve_nohome",
-      "recsys_serve_noslots",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nocapslot",
-      "recsys_v1_nosusp",
-      "v2_bm25",
-      "v3_dense",
-      "v4_rrf",
-      "v5_rank_api",
-      "v6_ltr",
-      "v6_ltr_noapi",
-      "v7_mmr"
-     ],
-     "reason": "This route has no train station or public transport mapped at the start, making it unreachable for a train traveler.",
-     "route_id": 12028622,
-     "violations": []
-    },
-    {
-     "bm25_rank": 204,
-     "bm25_score": 3.994,
-     "dense_rank": 15,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 165,
-      "difficulty": 0,
-      "home_km": 35.4,
-      "length_km": 6.4,
-      "locality": "Castell",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.343,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Flora",
-       "Lake",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Wengertsweg"
-     },
-     "final_rank": 2,
-     "fused_rank": 30,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 2,
-     "ltr_top": [
-      {
-       "contribution": 0.602888,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": 0.350219,
-       "name": "tag_hits",
-       "value": 3.0
-      },
-      {
-       "contribution": -0.272204,
-       "name": "pois_per_km",
-       "value": 0.31
-      }
-     ],
-     "mmr_after": 2,
-     "mmr_before": 2,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_nocap",
-      "recsys_serve_nohome",
-      "recsys_serve_noslots",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nocapslot",
-      "recsys_v1_nosusp",
-      "v6_ltr",
-      "v6_ltr_noapi",
-      "v7_mmr"
-     ],
-     "reason": "An easy loop of ideal length with a lake, but Castell has no train station, making it hard to reach for this party.",
-     "route_id": 16358796,
-     "violations": []
-    },
-    {
-     "bm25_rank": 1,
-     "bm25_score": 15.769,
-     "dense_rank": 2,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 24,
-      "difficulty": 0,
-      "home_km": 1.2,
-      "length_km": 4.8,
-      "locality": "Sennfeld",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.218,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Family-friendly",
-       "Lake",
-       "Train access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Igel-Weg Sennfeld"
-     },
-     "final_rank": 3,
-     "fused_rank": 1,
-     "grade": 3,
-     "lost_at": "shown",
-     "ltr_rank": 3,
-     "ltr_top": [
-      {
-       "contribution": -0.616823,
-       "name": "duration_h",
-       "value": 1.266667
-      },
-      {
-       "contribution": 0.575555,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.509784,
-       "name": "length_km",
-       "value": 4.803
-      }
-     ],
-     "mmr_after": 3,
-     "mmr_before": 3,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "pool_latent",
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_nocap",
-      "recsys_serve_nohome",
-      "recsys_serve_noslots",
-      "recsys_serve_v2",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nocapslot",
-      "recsys_v1_nosusp",
-      "v2_bm25",
-      "v3_dense",
-      "v4_rrf",
-      "v5_rank_api",
-      "v6_ltr",
-      "v6_ltr_noapi",
-      "v7_mmr"
-     ],
-     "reason": "This is an easy, flat loop starting near Schweinfurt Stadt train station, passing two lakes, and perfectly fitting the family's needs.",
-     "route_id": 6031766,
-     "violations": []
-    },
-    {
-     "bm25_rank": 9,
-     "bm25_score": 8.823,
-     "dense_rank": 10,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 27,
-      "difficulty": 0,
-      "home_km": 15.8,
-      "length_km": 6.5,
-      "locality": "Brünnstadt",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.463,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Family-friendly",
-       "Flora",
-       "Lake",
-       "Nature reserve",
-       "Flat"
-      ],
-      "title": "Gerolzhöfer Wanderweg"
-     },
-     "final_rank": 4,
-     "fused_rank": 10,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 4,
-     "ltr_top": [
-      {
-       "contribution": 0.599327,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.364247,
-       "name": "pois_per_km",
-       "value": 0.0
-      },
-      {
-       "contribution": 0.355945,
-       "name": "tag_hits",
-       "value": 3.0
-      }
-     ],
-     "mmr_after": 4,
-     "mmr_before": 4,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "recsys_serve",
-      "recsys_serve_nocap",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nocapslot",
-      "recsys_v1_nosusp",
-      "recsys_v1_qonly",
-      "v1_filters",
-      "v2_bm25",
-      "v3_dense",
-      "v4_rrf",
-      "v5_rank_api",
-      "v6_ltr",
-      "v6_ltr_noapi",
-      "v7_mmr"
-     ],
-     "reason": "This route has a lake and forest but lacks any mapped train station or public transport access at the start.",
-     "route_id": 2950482,
-     "violations": []
-    },
-    {
-     "bm25_rank": 200,
-     "bm25_score": 4.116,
-     "dense_rank": 23,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 176,
-      "difficulty": 0,
-      "home_km": 57.7,
-      "length_km": 5.8,
-      "locality": "Neuhütten",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.437,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Lake",
-       "Waymarked"
-      ],
-      "title": "Schwarzer Keiler, Rundwanderweg Neuhütten"
-     },
-     "final_rank": 5,
-     "fused_rank": 40,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 7,
-     "ltr_top": [
-      {
-       "contribution": 0.189055,
-       "name": "length_band_pos",
-       "value": 0.7295
-      },
-      {
-       "contribution": -0.181748,
-       "name": "length_km",
-       "value": 5.836
-      },
-      {
-       "contribution": -0.17368,
-       "name": "tag_cover",
-       "value": 0.5
-      }
-     ],
-     "mmr_after": 5,
-     "mmr_before": 7,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_v1_nocap",
-      "recsys_v1_nosusp",
-      "v7_mmr"
-     ],
-     "reason": "The route has the right length, a lake, and a playground, but there is no train station mapped near the start.",
-     "route_id": 6129062,
-     "violations": []
-    },
-    {
-     "bm25_rank": 232,
-     "bm25_score": 3.384,
-     "dense_rank": 14,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 58,
-      "difficulty": 0,
-      "home_km": 28.6,
-      "length_km": 4.8,
-      "locality": "Ebrach",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.277,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Lake",
-       "Playground",
-       "Nature reserve",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Blaue Nordic Walking Strecke Ebrach"
-     },
-     "final_rank": 6,
-     "fused_rank": 27,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 6,
-     "ltr_top": [
-      {
-       "contribution": 0.562042,
-       "name": "tag_cover",
-       "value": 0.75
-      },
-      {
-       "contribution": -0.456959,
-       "name": "duration_h",
-       "value": 1.35
-      },
-      {
-       "contribution": -0.406385,
-       "name": "length_km",
-       "value": 4.833
-      }
-     ],
-     "mmr_after": 6,
-     "mmr_before": 6,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nocapslot",
-      "recsys_v1_nosusp",
-      "v6_ltr",
-      "v6_ltr_noapi",
-      "v7_mmr"
-     ],
-     "reason": "This easy, quiet forest loop is the perfect length, features a lake and playground, but Ebrach lacks a direct train station.",
-     "route_id": 5662852,
-     "violations": []
-    },
-    {
-     "bm25_rank": 14,
-     "bm25_score": 8.262,
-     "dense_rank": 81,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 87,
-      "difficulty": 0,
-      "home_km": 50.6,
-      "length_km": 9.4,
-      "locality": "Oberbrunn",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.555,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Lake",
-       "River",
-       "Ruins",
-       "Church/chapel",
-       "Train access",
-       "Bus access",
-       "Public transport access",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Mainseeweg"
-     },
-     "final_rank": 7,
-     "fused_rank": 19,
-     "grade": 2,
-     "lost_at": "shown",
-     "ltr_rank": 5,
-     "ltr_top": [
-      {
-       "contribution": -0.266042,
-       "name": "rrf",
-       "value": 0.031736
-      },
-      {
-       "contribution": 0.214009,
-       "name": "popularity",
-       "value": 2.3
-      },
-      {
-       "contribution": -0.184786,
-       "name": "tag_cover",
-       "value": 0.5
-      }
-     ],
-     "mmr_after": 7,
-     "mmr_before": 5,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs",
-      "recsys_serve_needs_demote",
-      "recsys_serve_needs_promote",
-      "recsys_serve_nocap",
-      "recsys_serve_v2",
-      "recsys_v1_nocap",
-      "recsys_v1_nosusp"
-     ],
-     "reason": "This easy loop features lakes and is reachable by train, but at 9.4 km it is quite long for 4-year-olds.",
-     "route_id": 4570752,
-     "violations": []
-    },
-    {
-     "bm25_rank": 7,
-     "bm25_score": 9.147,
-     "dense_rank": 3,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 49,
-      "difficulty": 0,
-      "home_km": 3.4,
-      "length_km": 6.7,
-      "locality": "Grafenrheinfeld",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.047,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Family-friendly",
-       "Geological highlights",
-       "Lake",
-       "Mostly unpaved",
-       "Flat",
-       "Waymarked"
-      ],
-      "title": "Verwunschen-Verwunschen"
-     },
-     "final_rank": 8,
-     "fused_rank": 4,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 8,
-     "ltr_top": [
-      {
-       "contribution": -0.417978,
-       "name": "pois_per_km",
-       "value": 0.0
-      },
-      {
-       "contribution": 0.355742,
-       "name": "paved_share",
-       "value": 0.047
-      },
-      {
-       "contribution": -0.238965,
-       "name": "tag_cover",
-       "value": 0.5
-      }
-     ],
-     "mmr_after": 8,
-     "mmr_before": 8,
-     "pooled_by": [
-      "pool_intent_lexical",
-      "recsys_serve",
-      "recsys_serve_nohome",
-      "recsys_serve_noslots",
-      "recsys_v1",
-      "recsys_v1_chat",
-      "recsys_v1_nocap",
-      "recsys_v1_nosusp",
-      "v2_bm25",
-      "v3_dense",
-      "v4_rrf",
-      "v5_rank_api",
-      "v6_ltr_noapi"
-     ],
-     "reason": "This flat loop features multiple lakes and quiet nature, but it lacks public transport access at the start for a car-free family.",
-     "route_id": 7140465,
-     "violations": []
-    },
-    {
-     "bm25_rank": 13,
-     "bm25_score": 8.33,
-     "dense_rank": 20,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 106,
-      "difficulty": 0,
-      "home_km": 21.1,
-      "length_km": 7.7,
-      "locality": "Mailes",
-      "loop": true,
-      "max_grade": "T1",
-      "paved_share": 0.556,
-      "tags": [
-       "Round trip",
-       "Scenic",
-       "Refreshment stops available",
-       "Cultural/historical interest",
-       "Flora",
-       "Lake",
-       "Castle",
-       "Church/chapel",
-       "Bus access",
-       "Public transport access",
-       "Waymarked"
-      ],
-      "title": "Schlösserweg Mailes"
-     },
-     "final_rank": 9,
-     "fused_rank": 14,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 10,
-     "ltr_top": [
-      {
-       "contribution": -0.235975,
-       "name": "popularity",
-       "value": 0.86
-      },
-      {
-       "contribution": -0.216828,
-       "name": "tag_cover",
-       "value": 0.5
-      },
-      {
-       "contribution": -0.18329,
-       "name": "paved_share",
-       "value": 0.556
-      }
-     ],
-     "mmr_after": 9,
-     "mmr_before": 10,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_v1_nocap",
-      "recsys_v1_nosusp"
-     ],
-     "reason": "This route has no train station at the start, making it unreachable for a train-only user from Schweinfurt.",
-     "route_id": 11962208,
-     "violations": []
-    },
-    {
-     "bm25_rank": 24,
-     "bm25_score": 7.28,
-     "dense_rank": 179,
-     "eligible": true,
-     "explore": true,
-     "facts": {
-      "ascent_m": 150,
-      "difficulty": 0,
-      "home_km": 41.2,
-      "length_km": 8.1,
-      "locality": "Winterhausen",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.243,
-      "tags": [
-       "Round trip",
-       "Train access",
-       "Public transport access",
-       "Parking at start",
-       "Mostly unpaved",
-       "Waymarked"
-      ],
-      "title": "Muschelkalkweg Winterhausen"
-     },
-     "final_rank": 10,
-     "fused_rank": 42,
-     "grade": 1,
-     "lost_at": "shown",
-     "ltr_rank": 29,
-     "ltr_top": [
-      {
-       "contribution": -1.041005,
-       "name": "tag_cover",
-       "value": 0.25
-      },
-      {
-       "contribution": -0.332521,
-       "name": "dense_rank",
-       "value": 179.0
-      },
-      {
-       "contribution": -0.176976,
-       "name": "rule_tags",
-       "value": 0.0
-      }
-     ],
-     "mmr_after": 29,
-     "mmr_before": 29,
-     "pooled_by": [
-      "recsys_serve",
-      "recsys_serve_needs_demote"
-     ],
-     "reason": "This route has no lake, which is the user's main wish, and does not offer the requested quiet forest setting.",
-     "route_id": 12528215,
-     "violations": []
-    }
-   ]
-  },
-  {
-   "best_missed": [
-    {
      "bm25_rank": 22,
      "bm25_score": 4.085,
      "dense_rank": 39,
@@ -9211,6 +8141,1094 @@
   {
    "best_missed": [
     {
+     "bm25_rank": 11,
+     "bm25_score": 8.629,
+     "dense_rank": 44,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 10,
+      "difficulty": 0,
+      "home_km": 44.7,
+      "length_km": 3.3,
+      "locality": "Baunach",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.088,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Lake",
+       "Museum",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Flat"
+      ],
+      "title": "Naturerlebnisweg Baunach"
+     },
+     "final_rank": 21,
+     "fused_rank": 16,
+     "grade": 3,
+     "lost_at": "ranker",
+     "ltr_rank": 20,
+     "ltr_top": [
+      {
+       "contribution": -1.229911,
+       "name": "duration_h",
+       "value": 0.85
+      },
+      {
+       "contribution": 0.65096,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.380004,
+       "name": "length_km",
+       "value": 3.281
+      }
+     ],
+     "mmr_after": 20,
+     "mmr_before": 20,
+     "pooled_by": [
+      "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2"
+     ],
+     "reason": "This route has train access, a lake, and is family-friendly, though it is slightly shorter than the comfortable range.",
+     "route_id": 3981766,
+     "violations": []
+    },
+    {
+     "bm25_rank": 2,
+     "bm25_score": 15.723,
+     "dense_rank": 5,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 19,
+      "difficulty": 0,
+      "home_km": 1.2,
+      "length_km": 3.2,
+      "locality": "Sennfeld",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.344,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Family-friendly",
+       "Lake",
+       "Train access",
+       "Public transport access",
+       "Parking at start",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Hase-Weg Sennfeld"
+     },
+     "final_rank": 16,
+     "fused_rank": 3,
+     "grade": 3,
+     "lost_at": "ranker",
+     "ltr_rank": 12,
+     "ltr_top": [
+      {
+       "contribution": -1.167688,
+       "name": "duration_h",
+       "value": 0.85
+      },
+      {
+       "contribution": 0.578921,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.460422,
+       "name": "length_km",
+       "value": 3.191
+      }
+     ],
+     "mmr_after": 15,
+     "mmr_before": 12,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_v2",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "v2_bm25",
+      "v3_dense",
+      "v4_rrf",
+      "v5_rank_api",
+      "v6_ltr",
+      "v6_ltr_noapi"
+     ],
+     "reason": "This route has train access, lakes, and is family-friendly, though it is slightly shorter than the comfortable range.",
+     "route_id": 6031763,
+     "violations": []
+    },
+    {
+     "bm25_rank": 227,
+     "bm25_score": 3.496,
+     "dense_rank": 42,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 98,
+      "difficulty": 0,
+      "home_km": 28.7,
+      "length_km": 6.1,
+      "locality": "Ebrach",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.439,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Fauna",
+       "Suitable for strollers",
+       "Lake",
+       "Museum",
+       "Playground",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Busy road sections",
+       "Waymarked"
+      ],
+      "title": "Rundweg \"Rund um den Baumwipfelpfad\""
+     },
+     "final_rank": null,
+     "fused_rank": 77,
+     "grade": 2,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "recsys_v1_qonly",
+      "v1_filters"
+     ],
+     "reason": "Excellent fit with lakes, playgrounds, and public transport, but busy road sections and popular attractions might reduce quietness.",
+     "route_id": 1822600,
+     "violations": []
+    },
+    {
+     "bm25_rank": 228,
+     "bm25_score": 3.48,
+     "dense_rank": 32,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 10,
+      "difficulty": 0,
+      "home_km": 26.0,
+      "length_km": 3.8,
+      "locality": "Sand am Main",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.109,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Flora",
+       "Lake",
+       "Museum",
+       "Playground",
+       "Nature reserve",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Rundwanderweg Steigerwaldrunde Sander Altmain"
+     },
+     "final_rank": null,
+     "fused_rank": 57,
+     "grade": 2,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "recsys_v1_qonly",
+      "v1_filters"
+     ],
+     "reason": "This is an easy, flat loop along a lake with a playground, but it is only accessible by bus, not directly by train.",
+     "route_id": 2257448,
+     "violations": []
+    },
+    {
+     "bm25_rank": 10,
+     "bm25_score": 8.707,
+     "dense_rank": 165,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 99,
+      "difficulty": 0,
+      "home_km": 56.9,
+      "length_km": 3.4,
+      "locality": "Bertelsdorf",
+      "loop": false,
+      "max_grade": null,
+      "paved_share": 0.403,
+      "tags": [
+       "Linear route",
+       "Scenic",
+       "Family-friendly",
+       "Cultural/historical interest",
+       "Flora",
+       "Lake",
+       "Castle",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Parking at start"
+      ],
+      "title": "Rund um das Naturschutzgebiet Goldbergsee"
+     },
+     "final_rank": 24,
+     "fused_rank": 22,
+     "grade": 2,
+     "lost_at": "ranker",
+     "ltr_rank": 28,
+     "ltr_top": [
+      {
+       "contribution": -1.228276,
+       "name": "duration_h",
+       "value": 1.033333
+      },
+      {
+       "contribution": 0.797618,
+       "name": "tag_cover",
+       "value": 1.0
+      },
+      {
+       "contribution": -0.502002,
+       "name": "length_km",
+       "value": 3.381
+      }
+     ],
+     "mmr_after": 23,
+     "mmr_before": 28,
+     "pooled_by": [
+      "pool_latent",
+      "recsys_serve_needs_demote",
+      "recsys_v1_nocapslot",
+      "v2_bm25"
+     ],
+     "reason": "This is a one-way route rather than the preferred loop, and it ends at a different location, which is less ideal for a family.",
+     "route_id": 3117414,
+     "violations": []
+    }
+   ],
+   "explore": {
+    "active": true,
+    "cluster": 8,
+    "events": 0,
+    "label": "no theme tags",
+    "position": 10
+   },
+   "grade3_lost_at": {
+    "exploration": 0,
+    "filter": 0,
+    "mmr": 0,
+    "needs": 0,
+    "ranker": 2,
+    "retrieval": 0,
+    "shown": 1
+   },
+   "intent": "A quiet forest walk by a lake, easy for little kids and reachable by train from Schweinfurt.",
+   "judged_grades": {
+    "0": 34,
+    "1": 29,
+    "2": 10,
+    "3": 3
+   },
+   "latent": {
+    "days": 1,
+    "desires": {
+     "lake": 0.69,
+     "quiet_nature": 0.61,
+     "train_access": 1.0
+    },
+    "dislikes": [
+     "alpine_terrain",
+     "crowds"
+    ],
+    "distance_band_km": [
+     3.5,
+     7.5
+    ],
+    "fitness": 0.8,
+    "max_ascent_m": 250,
+    "max_distance_km": 11.3,
+    "multi_day": false,
+    "party": {
+     "adults": 2,
+     "age_band": "35-50",
+     "children_ages": [
+      4
+     ],
+     "dog": false,
+     "kind": "family_young",
+     "stroller": false
+    },
+    "shape": "loop",
+    "surface": "any",
+    "technical_max": 0,
+    "transport": "train"
+   },
+   "mrr_at_10": 0.5,
+   "n_eligible": 994,
+   "ndcg_at_10": 0.459706,
+   "other_systems_ndcg_at_10": {
+    "recsys_v1": 0.666695,
+    "recsys_v1_nocap": 0.459706,
+    "v1_filters": 0.257821,
+    "v2_bm25": 0.672881,
+    "v3_dense": 0.480729,
+    "v4_rrf": 0.611326
+   },
+   "persona_id": "P177",
+   "recall_at_50": 0.846154,
+   "relevant_lost_at": {
+    "exploration": 0,
+    "filter": 0,
+    "mmr": 0,
+    "needs": 0,
+    "ranker": 7,
+    "retrieval": 2,
+    "shown": 4
+   },
+   "seen": {
+    "category": "hiking",
+    "home_town": "Schweinfurt",
+    "max_distance_km": 11.3,
+    "max_travel_km": 60.0,
+    "questionnaire": {
+     "fitness": "beginner",
+     "narrative": "playful",
+     "type": [
+      "natural-scenery",
+      "family-fun"
+     ]
+    }
+   },
+   "top10": [
+    {
+     "bm25_rank": 8,
+     "bm25_score": 8.83,
+     "dense_rank": 9,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 22,
+      "difficulty": 0,
+      "home_km": 19.1,
+      "length_km": 5.2,
+      "locality": "Dingolshausen",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.18,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Flora",
+       "Lake",
+       "Mostly unpaved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Rundweg Gerolzhofen G5"
+     },
+     "final_rank": 1,
+     "fused_rank": 6,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 1,
+     "ltr_top": [
+      {
+       "contribution": 0.578669,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.428101,
+       "name": "duration_h",
+       "value": 1.35
+      },
+      {
+       "contribution": 0.419688,
+       "name": "paved_share",
+       "value": 0.18
+      }
+     ],
+     "mmr_after": 1,
+     "mmr_before": 1,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "recsys_serve",
+      "recsys_serve_nocap",
+      "recsys_serve_nohome",
+      "recsys_serve_noslots",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nocapslot",
+      "recsys_v1_nosusp",
+      "v2_bm25",
+      "v3_dense",
+      "v4_rrf",
+      "v5_rank_api",
+      "v6_ltr",
+      "v6_ltr_noapi",
+      "v7_mmr"
+     ],
+     "reason": "This route has no train station or public transport mapped at the start, making it unreachable for a train traveler.",
+     "route_id": 12028622,
+     "violations": []
+    },
+    {
+     "bm25_rank": 204,
+     "bm25_score": 3.994,
+     "dense_rank": 15,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 165,
+      "difficulty": 0,
+      "home_km": 35.4,
+      "length_km": 6.4,
+      "locality": "Castell",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.343,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Flora",
+       "Lake",
+       "Parking at start",
+       "Waymarked"
+      ],
+      "title": "Wengertsweg"
+     },
+     "final_rank": 2,
+     "fused_rank": 30,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 2,
+     "ltr_top": [
+      {
+       "contribution": 0.602888,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": 0.350219,
+       "name": "tag_hits",
+       "value": 3.0
+      },
+      {
+       "contribution": -0.272204,
+       "name": "pois_per_km",
+       "value": 0.31
+      }
+     ],
+     "mmr_after": 2,
+     "mmr_before": 2,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_nocap",
+      "recsys_serve_nohome",
+      "recsys_serve_noslots",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nocapslot",
+      "recsys_v1_nosusp",
+      "v6_ltr",
+      "v6_ltr_noapi",
+      "v7_mmr"
+     ],
+     "reason": "An easy loop of ideal length with a lake, but Castell has no train station, making it hard to reach for this party.",
+     "route_id": 16358796,
+     "violations": []
+    },
+    {
+     "bm25_rank": 1,
+     "bm25_score": 15.769,
+     "dense_rank": 2,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 24,
+      "difficulty": 0,
+      "home_km": 1.2,
+      "length_km": 4.8,
+      "locality": "Sennfeld",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.218,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Family-friendly",
+       "Lake",
+       "Train access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Igel-Weg Sennfeld"
+     },
+     "final_rank": 3,
+     "fused_rank": 1,
+     "grade": 3,
+     "lost_at": "shown",
+     "ltr_rank": 3,
+     "ltr_top": [
+      {
+       "contribution": -0.616823,
+       "name": "duration_h",
+       "value": 1.266667
+      },
+      {
+       "contribution": 0.575555,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.509784,
+       "name": "length_km",
+       "value": 4.803
+      }
+     ],
+     "mmr_after": 3,
+     "mmr_before": 3,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "pool_latent",
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_nocap",
+      "recsys_serve_nohome",
+      "recsys_serve_noslots",
+      "recsys_serve_v2",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nocapslot",
+      "recsys_v1_nosusp",
+      "v2_bm25",
+      "v3_dense",
+      "v4_rrf",
+      "v5_rank_api",
+      "v6_ltr",
+      "v6_ltr_noapi",
+      "v7_mmr"
+     ],
+     "reason": "This is an easy, flat loop starting near Schweinfurt Stadt train station, passing two lakes, and perfectly fitting the family's needs.",
+     "route_id": 6031766,
+     "violations": []
+    },
+    {
+     "bm25_rank": 9,
+     "bm25_score": 8.823,
+     "dense_rank": 10,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 27,
+      "difficulty": 0,
+      "home_km": 15.8,
+      "length_km": 6.5,
+      "locality": "Brünnstadt",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.463,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Family-friendly",
+       "Flora",
+       "Lake",
+       "Nature reserve",
+       "Flat"
+      ],
+      "title": "Gerolzhöfer Wanderweg"
+     },
+     "final_rank": 4,
+     "fused_rank": 10,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 4,
+     "ltr_top": [
+      {
+       "contribution": 0.599327,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.364247,
+       "name": "pois_per_km",
+       "value": 0.0
+      },
+      {
+       "contribution": 0.355945,
+       "name": "tag_hits",
+       "value": 3.0
+      }
+     ],
+     "mmr_after": 4,
+     "mmr_before": 4,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "recsys_serve",
+      "recsys_serve_nocap",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nocapslot",
+      "recsys_v1_nosusp",
+      "recsys_v1_qonly",
+      "v1_filters",
+      "v2_bm25",
+      "v3_dense",
+      "v4_rrf",
+      "v5_rank_api",
+      "v6_ltr",
+      "v6_ltr_noapi",
+      "v7_mmr"
+     ],
+     "reason": "This route has a lake and forest but lacks any mapped train station or public transport access at the start.",
+     "route_id": 2950482,
+     "violations": []
+    },
+    {
+     "bm25_rank": 200,
+     "bm25_score": 4.116,
+     "dense_rank": 23,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 176,
+      "difficulty": 0,
+      "home_km": 57.7,
+      "length_km": 5.8,
+      "locality": "Neuhütten",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.437,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Lake",
+       "Waymarked"
+      ],
+      "title": "Schwarzer Keiler, Rundwanderweg Neuhütten"
+     },
+     "final_rank": 5,
+     "fused_rank": 40,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 7,
+     "ltr_top": [
+      {
+       "contribution": 0.189055,
+       "name": "length_band_pos",
+       "value": 0.7295
+      },
+      {
+       "contribution": -0.181748,
+       "name": "length_km",
+       "value": 5.836
+      },
+      {
+       "contribution": -0.17368,
+       "name": "tag_cover",
+       "value": 0.5
+      }
+     ],
+     "mmr_after": 5,
+     "mmr_before": 7,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_v1_nocap",
+      "recsys_v1_nosusp",
+      "v7_mmr"
+     ],
+     "reason": "The route has the right length, a lake, and a playground, but there is no train station mapped near the start.",
+     "route_id": 6129062,
+     "violations": []
+    },
+    {
+     "bm25_rank": 232,
+     "bm25_score": 3.384,
+     "dense_rank": 14,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 58,
+      "difficulty": 0,
+      "home_km": 28.6,
+      "length_km": 4.8,
+      "locality": "Ebrach",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.277,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Family-friendly",
+       "Lake",
+       "Playground",
+       "Nature reserve",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Waymarked"
+      ],
+      "title": "Blaue Nordic Walking Strecke Ebrach"
+     },
+     "final_rank": 6,
+     "fused_rank": 27,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 6,
+     "ltr_top": [
+      {
+       "contribution": 0.562042,
+       "name": "tag_cover",
+       "value": 0.75
+      },
+      {
+       "contribution": -0.456959,
+       "name": "duration_h",
+       "value": 1.35
+      },
+      {
+       "contribution": -0.406385,
+       "name": "length_km",
+       "value": 4.833
+      }
+     ],
+     "mmr_after": 6,
+     "mmr_before": 6,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nocapslot",
+      "recsys_v1_nosusp",
+      "v6_ltr",
+      "v6_ltr_noapi",
+      "v7_mmr"
+     ],
+     "reason": "This easy, quiet forest loop is the perfect length, features a lake and playground, but Ebrach lacks a direct train station.",
+     "route_id": 5662852,
+     "violations": []
+    },
+    {
+     "bm25_rank": 14,
+     "bm25_score": 8.262,
+     "dense_rank": 81,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 87,
+      "difficulty": 0,
+      "home_km": 50.6,
+      "length_km": 9.4,
+      "locality": "Oberbrunn",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.555,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Lake",
+       "River",
+       "Ruins",
+       "Church/chapel",
+       "Train access",
+       "Bus access",
+       "Public transport access",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Mainseeweg"
+     },
+     "final_rank": 7,
+     "fused_rank": 19,
+     "grade": 2,
+     "lost_at": "shown",
+     "ltr_rank": 5,
+     "ltr_top": [
+      {
+       "contribution": -0.266042,
+       "name": "rrf",
+       "value": 0.031736
+      },
+      {
+       "contribution": 0.214009,
+       "name": "popularity",
+       "value": 2.3
+      },
+      {
+       "contribution": -0.184786,
+       "name": "tag_cover",
+       "value": 0.5
+      }
+     ],
+     "mmr_after": 7,
+     "mmr_before": 5,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
+      "recsys_serve_nocap",
+      "recsys_serve_v2",
+      "recsys_v1_nocap",
+      "recsys_v1_nosusp"
+     ],
+     "reason": "This easy loop features lakes and is reachable by train, but at 9.4 km it is quite long for 4-year-olds.",
+     "route_id": 4570752,
+     "violations": []
+    },
+    {
+     "bm25_rank": 7,
+     "bm25_score": 9.147,
+     "dense_rank": 3,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 49,
+      "difficulty": 0,
+      "home_km": 3.4,
+      "length_km": 6.7,
+      "locality": "Grafenrheinfeld",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.047,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Family-friendly",
+       "Geological highlights",
+       "Lake",
+       "Mostly unpaved",
+       "Flat",
+       "Waymarked"
+      ],
+      "title": "Verwunschen-Verwunschen"
+     },
+     "final_rank": 8,
+     "fused_rank": 4,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 8,
+     "ltr_top": [
+      {
+       "contribution": -0.417978,
+       "name": "pois_per_km",
+       "value": 0.0
+      },
+      {
+       "contribution": 0.355742,
+       "name": "paved_share",
+       "value": 0.047
+      },
+      {
+       "contribution": -0.238965,
+       "name": "tag_cover",
+       "value": 0.5
+      }
+     ],
+     "mmr_after": 8,
+     "mmr_before": 8,
+     "pooled_by": [
+      "pool_intent_lexical",
+      "recsys_serve",
+      "recsys_serve_nohome",
+      "recsys_serve_noslots",
+      "recsys_v1",
+      "recsys_v1_chat",
+      "recsys_v1_nocap",
+      "recsys_v1_nosusp",
+      "v2_bm25",
+      "v3_dense",
+      "v4_rrf",
+      "v5_rank_api",
+      "v6_ltr_noapi"
+     ],
+     "reason": "This flat loop features multiple lakes and quiet nature, but it lacks public transport access at the start for a car-free family.",
+     "route_id": 7140465,
+     "violations": []
+    },
+    {
+     "bm25_rank": 13,
+     "bm25_score": 8.33,
+     "dense_rank": 20,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 106,
+      "difficulty": 0,
+      "home_km": 21.1,
+      "length_km": 7.7,
+      "locality": "Mailes",
+      "loop": true,
+      "max_grade": "T1",
+      "paved_share": 0.556,
+      "tags": [
+       "Round trip",
+       "Scenic",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Flora",
+       "Lake",
+       "Castle",
+       "Church/chapel",
+       "Bus access",
+       "Public transport access",
+       "Waymarked"
+      ],
+      "title": "Schlösserweg Mailes"
+     },
+     "final_rank": 9,
+     "fused_rank": 14,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 10,
+     "ltr_top": [
+      {
+       "contribution": -0.235975,
+       "name": "popularity",
+       "value": 0.86
+      },
+      {
+       "contribution": -0.216828,
+       "name": "tag_cover",
+       "value": 0.5
+      },
+      {
+       "contribution": -0.18329,
+       "name": "paved_share",
+       "value": 0.556
+      }
+     ],
+     "mmr_after": 9,
+     "mmr_before": 10,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_v1_nocap",
+      "recsys_v1_nosusp"
+     ],
+     "reason": "This route is too long for a family with 4-year-olds, has high paved surface shares, and lacks train access at the start.",
+     "route_id": 11962208,
+     "violations": []
+    },
+    {
+     "bm25_rank": 24,
+     "bm25_score": 7.28,
+     "dense_rank": 179,
+     "eligible": true,
+     "explore": true,
+     "facts": {
+      "ascent_m": 150,
+      "difficulty": 0,
+      "home_km": 41.2,
+      "length_km": 8.1,
+      "locality": "Winterhausen",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.243,
+      "tags": [
+       "Round trip",
+       "Train access",
+       "Public transport access",
+       "Parking at start",
+       "Mostly unpaved",
+       "Waymarked"
+      ],
+      "title": "Muschelkalkweg Winterhausen"
+     },
+     "final_rank": 10,
+     "fused_rank": 42,
+     "grade": 1,
+     "lost_at": "shown",
+     "ltr_rank": 29,
+     "ltr_top": [
+      {
+       "contribution": -1.041005,
+       "name": "tag_cover",
+       "value": 0.25
+      },
+      {
+       "contribution": -0.332521,
+       "name": "dense_rank",
+       "value": 179.0
+      },
+      {
+       "contribution": -0.176976,
+       "name": "rule_tags",
+       "value": 0.0
+      }
+     ],
+     "mmr_after": 29,
+     "mmr_before": 29,
+     "pooled_by": [
+      "recsys_serve",
+      "recsys_serve_needs_demote"
+     ],
+     "reason": "This route has no lake, which is the user's main wish, and does not offer the requested quiet forest setting.",
+     "route_id": 12528215,
+     "violations": []
+    }
+   ]
+  },
+  {
+   "best_missed": [
+    {
      "bm25_rank": 81,
      "bm25_score": 5.877,
      "dense_rank": 357,
@@ -11375,13 +11393,13 @@
    ]
   }
  ],
- "qrels_sha256": "7f8bed2ce224dffd139df6e56d1cb7f5e452eece00cc439fd263e45394ddc452",
+ "qrels_sha256": "bb81ea47b3883d7b8e825201e0e9a953995ebbff0420f10cc95f849c6354faba",
  "relevant_lost_at_total": {
   "exploration": 1,
   "filter": 0,
   "mmr": 3,
   "needs": 0,
-  "ranker": 76,
+  "ranker": 77,
   "retrieval": 41,
   "shown": 40
  },
