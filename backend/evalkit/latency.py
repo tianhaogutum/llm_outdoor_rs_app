@@ -1,6 +1,8 @@
-"""Warm end-to-end latency of the default system and its ranker-API variant (live calls, cache off).
+"""Warm end-to-end latency of the served default, the Phase 3 default and its ranker-API variant (live calls,
+cache off).
 
-    cd backend && python -m evalkit.latency     # make latency -> eval/results/_latency.json (a few cents)
+    cd backend && python -m evalkit.latency                         # make latency -> eval/results/_latency.json
+    cd backend && python -m evalkit.latency --systems recsys_serve  # re-measure some systems, keep the others
 
 Why a separate benchmark: the evaluation's nominal latency adds the latency *recorded* when each
 upstream call was first made. Those recordings include cold starts (SDK client creation, auth, TLS)
@@ -25,14 +27,20 @@ from evalkit.evaluate import dumps
 from evalkit.llm import make_client
 from evalkit.personas import load_personas
 
-SYSTEMS = ("recsys_v1", "v7_mmr")
+SYSTEMS = ("recsys_serve", "recsys_v1", "v7_mmr")
 N = 60
 WARMUP = 5
 OUT = "_latency.json"
 BUDGET_MS = {"with_rank_api": 1500.0, "without_rank_api": 500.0}
 
 
-def main() -> None:
+def main(argv=None) -> None:
+    import argparse
+    import json
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--systems", nargs="+", default=list(SYSTEMS), choices=SYSTEMS)
+    args = ap.parse_args(argv)
     catalog = get_catalog()
     personas = [p for p in load_personas() if p.split == "dev"][: N + WARMUP]
     client = make_client(
@@ -48,7 +56,12 @@ def main() -> None:
         "budget_ms_p95": BUDGET_MS,
         "systems": {},
     }
-    for name in SYSTEMS:
+    prev = paths.RESULTS_DIR / OUT
+    if set(args.systems) != set(SYSTEMS) and prev.exists():  # keep the systems not re-measured now
+        old = json.loads(prev.read_text(encoding="utf-8"))
+        out["systems"] = {n: v for n, v in old["systems"].items() if n not in args.systems}
+        out["real_usd_earlier_runs"] = old.get("real_usd", 0.0) + old.get("real_usd_earlier_runs", 0.0)
+    for name in args.systems:
         sysm = build_system(name, catalog, llm=client)
 
         async def go(sysm=sysm):
@@ -94,6 +107,7 @@ def main() -> None:
             "within_budget": p95 <= budget,
         }
         print(name, out["systems"][name]["wall_ms"], out["systems"][name]["upstream_ms_p95"])
+    out["systems"] = {n: out["systems"][n] for n in SYSTEMS if n in out["systems"]}
     out["real_usd"] = client.usage_report()["real_usd"]
     (paths.RESULTS_DIR / OUT).write_text(dumps(out), encoding="utf-8")
 

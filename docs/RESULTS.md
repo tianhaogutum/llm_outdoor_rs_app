@@ -82,12 +82,13 @@ Other comparisons (test):
 | `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.011, +0.004] | +0.004 [+0.000, +0.011] | +0.000 [+0.000, +0.000] | 0.832 | 100 |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.010 [-0.043, +0.019] | +0.000 [+0.000, +0.000] | 0.955 | 100 |
 
-## Default system: latency and cost against the budget
+## Latency and cost against the budget (served default and Phase 3 default)
 
 Budget for this project: p95 ≤ 1.5 s nominal for a pipeline that calls the ranker API, p95 ≤ 500 ms for one that does not (query embedding included). Warm benchmark (`make latency`, 60 sequential dev requests after 5 warm-up requests, LLM cache off, live Vertex embedding and OpenRouter ranking, one arm64 laptop): wall time of `Pipeline.arecommend`. Cost per request: the mean nominal upstream cost over the test personas in the evaluation.
 
 | System | Ranker API | p50 ms | p95 ms | max ms | Upstream p95 ms by stage | Local compute p95 ms | Cost/request | Budget p95 | Within |
 |---|---|---|---|---|---|---|---|---|---|
+| `recsys_serve` | no | 100 | 203 | 4933 | dense 197 | 11.1 | 0.000005 USD | 500 ms | yes |
 | `recsys_v1` | no | 104 | 239 | 4055 | dense 220 | 20.0 | 0.000005 USD | 500 ms | yes |
 | `v7_mmr` | yes | 510 | 759 | 2101 | dense 182, rank_api 563 | 24.3 | 0.000782 USD | 1500 ms | yes |
 

@@ -233,10 +233,10 @@ the frozen models.
 
 **With vs without the ranker-API feature, and the call.** Grouped CV on dev gives the API feature a small
 gain in every fold (RESULTS.md "Learned ranker", per-fold line). The API adds one external call per
-request (cost per request and latency: RESULTS.md "Default system"), and a dependency whose failure would
+request (cost per request and latency: RESULTS.md "Latency and cost against the budget"), and a dependency whose failure would
 have to be handled. Decision (D14): **the default system does not call the ranker API.** The dev gain is
 small (well under the gain of any earlier stage), while the API adds its per-request cost and multiplies
-the median latency (both in the "Default system" table). If the API's latency or price drops, or real
+the median latency (both in the "Latency and cost against the budget" table). If the API's latency or price drops, or real
 feedback shows a larger gain, `v7_mmr` is one config change away. Disclosure: the test comparison
 (`v6_ltr` − `v6_ltr_noapi`, RESULTS.md "Other comparisons") had been computed before this call was
 written down; it agrees in sign with dev and did not change the rule used (dev CV gain vs cost).
@@ -269,7 +269,8 @@ it (`recsys_v1_qonly`, RESULTS.md "Phase 4 end-to-end"), and a model trained wit
 
 filters → BM25F + dense (top 100 each) → RRF (k 30, top 50) → learned ranker `v1_noapi` → MMR 0.8.
 Its test row, the comparison with `v7_mmr` (same with the API feature) and the latency/cost table
-against the budget are in RESULTS.md ("Phase 3 ablation", "Other comparisons", "Default system").
+against the budget are in RESULTS.md ("Phase 3 ablation", "Other comparisons", "Latency and cost against the
+budget").
 
 **Latency and cost.** Budget: p95 ≤ 500 ms without the ranker API, ≤ 1.5 s with it (query embedding
 included). `make latency` measures warm, sequential, cache-off requests end to end; both `recsys_v1`

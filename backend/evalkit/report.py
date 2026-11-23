@@ -425,10 +425,10 @@ def _ablation(docs: list[dict[str, Any]], cap: str) -> list[str]:
 def _default_system(docs: list[dict[str, Any]]) -> list[str]:
     lat = _load("_latency.json")
     by = {d["system"]: d for d in docs}
-    if not lat or "recsys_v1" not in by:
+    if not lat or not any(n in by for n in lat["systems"]):
         return []
     L = [
-        "## Default system: latency and cost against the budget",
+        "## Latency and cost against the budget (served default and Phase 3 default)",
         "",
         "Budget for this project: p95 ≤ 1.5 s nominal for a pipeline that calls the ranker API, p95 ≤ 500 ms for "
         f"one that does not (query embedding included). Warm benchmark (`make latency`, {lat['n']} sequential dev "
