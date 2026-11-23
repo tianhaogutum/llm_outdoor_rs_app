@@ -468,3 +468,83 @@ For the owner: serving a variant now would be a judgement call against the pre-r
 on a cross-fitted dev comparison before anything is run, with the train check and the promotion of dropped needs
 reconsidered on dev. Spend for iteration 2 (local spend log): about 0.8 USD (dev holes 0.4, cross-fitted check 0.2,
 test holes 0.25).
+
+## D28. Iteration 3: cross-fitted dev as the dev standard, and a fresh holdout decides (pre-registered 2026-11-23)
+
+**Why.** D27's acceptance rule used in-sample dev NDCG. The learned ranker was trained on the dev personas, so for
+any change that overrides it (filter, demotion, feedback) the dev comparison favours the unchanged system; the
+cross-fitted post-hoc check and the single test run both pointed the other way. Test has now been looked at for
+these variants, so it cannot decide between them cleanly. Iteration 3 fixes the dev protocol and decides on users
+nobody has seen.
+
+**1. Dev protocol (done before this entry; commit `359fe5d`).** Cross-fitted dev evaluation is a harness
+feature for every system with a learned ranker (`make eval SYSTEM=<name> CROSSFIT=1`, EVAL.md section 13): five
+copies of the system's ranker, each trained exactly like it (same pinned labels, features, LightGBM parameters and
+rounds) without one fold of dev personas (its own grouped-CV folds); each dev persona ranked by the copy that never
+saw it; holes judged (dev). It reproduces D27's post-hoc check exactly (same per-persona NDCG@10 for all 200 dev
+personas and the four systems). It now exists for all 16 stored systems with a learned ranker (cost about 0.2 USD
+of dev judging) and is reported next to in-sample dev (RESULTS.md "Dev with a cross-fitted learned ranker"). From
+now on a dev number used for a decision about a learned-ranker system is the cross-fitted one.
+
+**2. Pre-registration. Written and committed before any holdout persona, intent or judgement exists.** The code
+that applies it is `backend/evalkit/holdout.py` (`RULE`, `decide`; commit `cd1faac`, tested on synthetic
+data in `tests/evalkit/test_holdout.py`); this text is the commitment, the code implements it. Nothing below may be
+changed after the holdout exists; a bug fix to the code would be disclosed here with its effect.
+
+*Candidates* (as registered at `b0d3490`, unchanged; no new tuning, no new variant): the baseline `recsys_serve`
+(pipeline config sha256 prefix `96e7a72620f8`) and the three iteration-2 variants `recsys_serve_needs`
+(`52ad30ffcc06`), `recsys_serve_needs_promote` (`d2bab40ac2be`), `recsys_serve_needs_demote` (`44e8ab8d04e6`); all
+use the committed ranker `v1_noapi_nocap` and the committed document embeddings.
+
+*Primary metric.* Mean NDCG@10 over the holdout personas, every top 10 judged; paired per persona against
+`recsys_serve`.
+
+*Step 1, gate on cross-fitted dev.* A variant is tested on the holdout only if the paired-bootstrap 95% CI (1,000
+resamples, seed 20261122, the harness standard) of its cross-fitted dev NDCG@10 minus `recsys_serve`'s has its lower
+bound above 0. Disclosure: these numbers exist already (dev may be looked at): `recsys_serve_needs` +0.018 [+0.006,
++0.029], `_promote` +0.021 [+0.007, +0.036], `_demote` +0.011 [+0.001, +0.021]. All three pass, so m = 3 variants
+go to the holdout. The gate is a filter, not the test.
+
+*Step 2, holdout test with a correction for three variants.* For the gated variants jointly: one-sided simultaneous
+95% lower bounds of the mean paired holdout difference NDCG@10(variant) − NDCG@10(`recsys_serve`), single-step max-T
+over a joint paired bootstrap of the holdout personas (10,000 resamples, seed 20261122; `metrics.
+simultaneous_lower_bounds`): each resample draws one set of persona indices shared by all variants; T = the largest
+studentised deviation over the variants; c = its 95% quantile; bound = mean − c × bootstrap SE. The family-wise
+error of "this variant beats `recsys_serve`" is 5% over the three together. Why this and not Bonferroni: the three
+variants share most of their lists (two are the same filter), so their differences are strongly correlated and
+Bonferroni would be needlessly conservative; max-T uses the measured correlation and is never looser than
+Bonferroni when the variants are positively correlated. Why one-sided: the action is one-sided (a variant is served
+only if better; "worse" and "no difference" both mean keeping `recsys_serve`). The ordinary two-sided 95% paired CIs
+are reported next to it and decide nothing.
+
+*Step 3, eligibility and choice.* A variant is eligible if its simultaneous lower bound is above 0 **and** its mean
+holdout Violations@10 is not above `recsys_serve`'s. Among eligible variants the one with the largest simultaneous
+lower bound wins (ties: filter, promote, demote, in that order). Precondition: every top 10 of the four systems on
+the holdout is 100% judged; otherwise no decision is taken.
+
+*If a variant wins:* it is registered as **`recsys_serve_v2`** with exactly the winning variant's config;
+`recsys_serve` stays registered and unchanged; the API default (`backend/app/settings.py`, `backend/env.example`,
+the serving tests, SERVING.md, DEPLOY.md) switches to `recsys_serve_v2`. The narrative demo route set is re-selected
+only if the new default materially changes it (stated either way).
+
+*Null result:* no eligible variant. `recsys_serve` stays the served default; the three variants stay registered and
+off; this is recorded as a null result. It means a gain could not be shown at this size, not that there is none:
+on test the paired per-persona differences had an SD of about 0.10-0.11, so at 150 personas the SE is about 0.008-0.009
+and, with c near 2, a true gain of 0.02 would be detected only about half to two thirds of the time. No further variant, threshold or rule
+is tried on this holdout afterwards.
+
+*Holdout.* 150 personas, generator `personas/v1` with exactly the main parameters (`evalkit.personas.PARAMS`), new
+seed **20261128** (the latent and questionnaire stream; seed + 2 the intent style stream), every persona in split
+`holdout`, ids `H001`... = draw index. Duplicate check: a draw whose latent profile or whose system-visible profile
+slots (questionnaire vector, tab, home, travel radius, distance cap) equal those of any main persona or an earlier
+holdout draw is skipped (30 spare draws; skips stay visible as id gaps); identical intent texts are counted and
+reported, not removed. Intents by the same writer as before (`openai/gpt-6-luna` via OpenRouter, prompt
+`intent/v2`, temperature 0.9, cached). Its own qrels file `eval/qrels/holdout_qrels.jsonl`; pool = top 10 of the four
+candidates plus the two pool-only contributors (`pool_latent`, `pool_intent_lexical`); judge `g35f-min-b8`, rubric
+v1, hard-constraint violations graded 0 by rule; no other system is pooled on the holdout before the decision is
+written. Cost is estimated before judging (`--estimate ... --holdout`); if judging cannot be completed inside the
+iteration's 8 USD allowance, no decision is taken and that is reported.
+
+*Afterwards.* The holdout is used only for this decision and then as a reporting split. The worst-queries failure
+analysis of the system served after this decision moves to the holdout, because test has been used for development
+(D27).
