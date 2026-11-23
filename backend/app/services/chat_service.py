@@ -96,3 +96,21 @@ def user_query_for_profile(profile: DemoProfile, *, category: Optional[str] = No
     from app.chat.projection import user_query_from_slots
 
     return user_query_from_slots(slots, vector, request_id=request_id or f"profile-{profile.id}", category=category)
+
+
+def rules_extractor():
+    """The chat's no-LLM extractor: the keyword rules (``app.chat.rules``) through the same validator.
+
+    Used when the daily budget is spent (docs/SERVING.md, "Demo protections"); the turn policy, merge
+    rules and replies are unchanged, only the extraction is the offline baseline's (lower recall)."""
+    from app.chat.extract import Extraction, sanitize
+    from app.chat.rules import rule_extract
+    from app.chat.schema import ChatExtraction
+
+    async def run(message: str, current: ChatSlots, pending: Optional[str]) -> Extraction:
+        wire = ChatExtraction.model_validate(rule_extract(message))
+        update, dropped = sanitize(wire)
+        return Extraction(update=update, dropped=dropped, raw=wire.model_dump(), model="keyword-rules",
+                          provider="none")
+
+    return run

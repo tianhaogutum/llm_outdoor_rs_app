@@ -40,6 +40,10 @@ class DemoProfile(Base):
     # (app/chat/schema.py ChatState as JSON). Both null until the first chat turn.
     activity: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
     chat_state_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # The questionnaire's user vector as created, never rewritten by feedback. The baseline's feedback
+    # endpoint rewrites ``user_vector_json`` on every feedback (DECISIONS.md D7.1); the pipeline starts from
+    # this vector instead (plus the chat's slots) and applies feedback once (docs/SERVING.md).
+    questionnaire_vector_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     souvenirs: Mapped[list[Souvenir]] = relationship(
         "Souvenir",

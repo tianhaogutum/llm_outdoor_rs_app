@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -48,6 +49,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         # Log but don't fail startup if seeding fails
         logger.warning(f"⚠️ Achievement data seeding failed: {e}", exc_info=True)
+
+    # Recommender resources: catalogue, BM25 index, document matrix, ranker trees (once per process)
+    from app.services import recsys_service
+
+    t0 = time.perf_counter()
+    res = await asyncio.to_thread(recsys_service.load_resources, settings)
+    await recsys_service.warm_up(res)
+    res.startup["lifespan_recsys_ms"] = round((time.perf_counter() - t0) * 1000, 1)
+    app.state.recsys = res
+    try:  # DB vs catalogue (the request path re-checks per database URL)
+        from app.database import get_db_session
+
+        if res.catalog is not None and settings.recsys_system != "v0_rules":
+            async with await get_db_session() as session:
+                await recsys_service.check_db(session, res)
+    except Exception as e:  # e.g. DB not migrated yet; the first request checks again
+        logger.warning(f"⚠️ recsys DB check at start-up failed: {e}")
+    logger.info(f"🧭 recsys ready: {json.dumps(recsys_service.startup_report(res), default=str)}")
 
     logger.info("🎉 Application startup completed")
     yield
@@ -206,6 +225,20 @@ def create_app() -> FastAPI:
                 "X-Accel-Buffering": "no"
             }
         )
+
+    @app.get("/api/recsys/status", tags=["monitoring"])
+    async def recsys_status():
+        """Serving status: configured system, start-up timings and memory, DB check, daily budget."""
+        from app.services import recsys_service
+        from app.services.demo_guard import get_guard
+
+        res = getattr(app.state, "recsys", None)
+        return {
+            "recsys": recsys_service.startup_report(res),
+            "daily_budget": get_guard().budget.status(),
+            "rate_limit": {"enabled": settings.rate_limit_enabled, "window_s": settings.rate_limit_window_s,
+                           "limits": get_guard().limiter.limits},
+        }
 
     @app.get("/api/llm-messages", tags=["monitoring"])
     async def get_llm_messages(limit: int = 20):

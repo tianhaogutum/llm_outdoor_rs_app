@@ -8,6 +8,8 @@ from typing import Any, Optional
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.recsys.explain import StageContributions
+
 # Attribution the ODbL requires wherever OSM-derived routes are shown.
 OSM_ATTRIBUTION = "© OpenStreetMap contributors, ODbL 1.0"
 OSM_COPYRIGHT_URL = "https://www.openstreetmap.org/copyright"
@@ -104,6 +106,43 @@ def route_catalog_fields(route: Any) -> dict:
     return RouteCatalogFields.model_validate(data).model_dump()
 
 
+class FeedbackEventView(BaseModel):
+    reason: str  # too-hard | too-easy | too-far | not-interested | completed
+    age_days: float
+
+
+class FeedbackEffect(BaseModel):
+    """What the user's feedback did to this route. Until the pipeline's feedback stage exists, the only
+    effects are the rule scorer's penalty (no-intent path) and the interim serving rule that hides routes
+    rejected or completed in the last ``window_days`` (those never appear, so they are counted here)."""
+
+    events_considered: int = 0  # feedback events passed to the pipeline for this request
+    on_this_route: list[FeedbackEventView] = []  # events about this very route (older than the window)
+    rule_penalty: Optional[float] = None  # v0 rule scorer multiplier when it ranked this route
+    hidden_routes: int = 0  # routes hidden by the interim rule in this list
+    window_days: Optional[float] = None
+    stage: Optional[dict] = None  # the pipeline's own feedback-stage contribution, when it has one
+
+
+class ExplorationFlag(BaseModel):
+    is_exploration: bool = False
+    detail: Optional[dict] = None  # the exploration stage's contribution, when the pipeline has one
+
+
+class RouteExplanationResponse(BaseModel):
+    """Per-route explanation on pipeline paths (stages: ``app.recsys.explain.StageContributions``)."""
+
+    schema_version: str = "recsys.explanation/v1"
+    rank: int
+    score: float  # final pipeline score (MMR score, else ranker score); not a percentage
+    stages: StageContributions
+    feedback: FeedbackEffect = FeedbackEffect()
+    exploration: ExplorationFlag = ExplorationFlag()
+    n_candidates: Optional[int] = None  # routes the ranker ordered (for "ranked 3rd of 50")
+    n_eligible: Optional[int] = None  # routes that passed the hard filter
+    other_stages: Optional[dict] = None  # trace stages this API version does not know yet (kept, untyped)
+
+
 class RouteResponse(RouteCatalogFields):
     """Single route response schema with full details."""
 
@@ -125,8 +164,13 @@ class RouteResponse(RouteCatalogFields):
     gpx_data_raw: Optional[str] = None  # GPX track data for map visualization
     breakpoints: list[BreakpointResponse] = []
     is_locked: bool = False  # Computed field based on user XP
-    recommendation_score: Optional[float] = None  # CBF score (0.0-1.0)
-    recommendation_score_breakdown: Optional[RecommendationScoreBreakdown] = None  # Score components
+    recommendation_score: Optional[float] = None  # CBF score (0.0-1.0); baseline path only
+    recommendation_score_breakdown: Optional[RecommendationScoreBreakdown] = None  # Score components (baseline)
+    # Pipeline paths: per-stage contributions from the trace, and a one-line reason built only from those
+    # facts and the catalogue record (docs/SERVING.md "Explanations"). The baseline path has a reason too.
+    explanation: Optional[RouteExplanationResponse] = None
+    reason: Optional[str] = None
+    is_exploration: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -409,12 +453,44 @@ class RecommendationRequest(BaseModel):
     category: Optional[str] = None  # Activity category: running/hiking/cycling or None for all
 
 
+class ServedQuery(BaseModel):
+    """What the pipeline saw for this request (the profile state turned into a ``UserQuery``)."""
+
+    category: Optional[str] = None  # the tab applied ("" / None = every category)
+    home_name: Optional[str] = None
+    home: Optional[list[float]] = None  # [lat, lon]
+    travel_radius_km: Optional[float] = None
+    distance_cap_km: Optional[float] = None
+    intent: Optional[str] = None
+    vector_source: Optional[str] = None  # questionnaire | questionnaire+chat | reconstructed | user_vector | none
+    feedback_events: int = 0  # negative feedback rows + completions passed to the pipeline
+    suppressed_route_ids: list[int] = []  # hidden by the interim serving rule (docs/SERVING.md)
+    feedback_handled_by: Optional[str] = None  # pipeline (its feedback stage) | serving_interim_rule
+
+
+class ServedBy(BaseModel):
+    """Which system and path produced the list, and why (docs/SERVING.md "Paths and fallbacks")."""
+
+    configured_system: str  # RECSYS_SYSTEM
+    system: str  # what actually ranked: recsys_v1 | v2_bm25 | v0_rules | random | ...
+    path: str  # pipeline | no_llm | baseline | random
+    reason: Optional[str] = None  # why this path (no_intent, embedding_unavailable, timeout, budget, ...)
+    degraded: bool = False  # True if a fallback replaced the configured system
+    request_id: Optional[str] = None
+    explanation_schema: Optional[str] = None  # recsys.explanation/v1 on pipeline paths
+    query: Optional[ServedQuery] = None
+    stages: list[dict] = []  # StageSummary per stage (n_in, n_out, local_ms, upstream ms / USD, info)
+    latency_ms: Optional[float] = None
+    upstream_cost_usd: Optional[float] = None
+
+
 class RecommendationResponse(BaseModel):
     """Recommendation response schema."""
 
     routes: list[RouteResponse]
     total: int
     is_personalized: bool = False  # True if based on user profile, False if random
+    served_by: Optional[ServedBy] = None
 
 
 # ============================================================================

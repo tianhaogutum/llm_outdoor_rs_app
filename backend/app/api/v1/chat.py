@@ -22,7 +22,8 @@ from app.database import get_db
 from app.llm import BudgetExceeded, CacheMiss, LLMError, ProviderError, SchemaValidationError
 from app.logger import get_logger
 from app.models.entities import DemoProfile
-from app.services.chat_service import load_session, store_session
+from app.services.chat_service import load_session, rules_extractor, store_session
+from app.services.demo_guard import chat_llm_allowed, enforce_chat_limit
 
 logger = get_logger(__name__)
 
@@ -38,10 +39,14 @@ async def _profile(db: AsyncSession, profile_id: int) -> DemoProfile:
 
 @router.post("/{profile_id}/chat", response_model=ChatResponse)
 async def chat_turn(
-    profile_id: int, body: ChatRequest, db: Annotated[AsyncSession, Depends(get_db)]
+    profile_id: int,
+    body: ChatRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _limited: Annotated[None, Depends(enforce_chat_limit)] = None,
 ) -> ChatResponse:
     profile = await _profile(db, profile_id)
-    session = load_session(profile, db)
+    # Daily budget spent: the keyword extractor answers instead of the LLM (docs/SERVING.md)
+    session = load_session(profile, db, extractor=None if chat_llm_allowed() else rules_extractor())
     try:
         result = await session.send(body.message)
     except BudgetExceeded as e:

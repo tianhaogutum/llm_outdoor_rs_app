@@ -9,7 +9,7 @@ This module implements:
 import json
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -26,6 +26,7 @@ from app.api.schemas import (
 from app.database import get_db
 from app.logger import get_logger, log_business_logic, log_database_operation, log_request
 from app.models.entities import DemoProfile, ProfileAchievement, ProfileFeedback, Route, Souvenir
+from app.services.demo_guard import llm_narrative_allowed
 from app.services.genai_service import generate_welcome_summary
 from app.services.user_profile_service import (
     SLOT_FIELDS,
@@ -70,6 +71,7 @@ router = APIRouter(prefix="/profiles", tags=["profiles"])
 @router.post("", response_model=ProfileCreateResponse, status_code=status.HTTP_201_CREATED)
 async def submit_questionnaire(
     questionnaire: ProfileCreate,
+    request: Request,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ProfileCreateResponse:
     """
@@ -116,6 +118,8 @@ async def submit_questionnaire(
     # 2. Generate welcome summary with GenAI (with fallback)
     logger.debug("🤖 Generating welcome summary...")
     try:
+        if not llm_narrative_allowed(request):  # rate limit / daily budget: template text, no spend
+            raise HTTPException(status_code=503, detail="narrative limited (rate limit or daily budget)")
         welcome_summary = await generate_welcome_summary(questionnaire)
         logger.info("✅ GenAI welcome summary generated successfully")
     except HTTPException as e:
@@ -139,6 +143,8 @@ async def submit_questionnaire(
     logger.debug("💾 Creating user profile record...")
     new_profile = DemoProfile(
         user_vector_json=json.dumps(user_vector, ensure_ascii=False),
+        # kept as created: the pipeline starts from it, feedback never rewrites it (docs/SERVING.md)
+        questionnaire_vector_json=json.dumps(user_vector, ensure_ascii=False),
         genai_welcome_summary=welcome_summary,
         total_xp=0,
         level=1,

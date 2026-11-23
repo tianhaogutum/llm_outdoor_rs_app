@@ -141,6 +141,40 @@ class Settings(BaseSettings):
     )
     chat_budget_usd: float = Field(default=1.0, description="Hard stop: real USD per process for chat calls.")
 
+    # Serving the recommender (docs/SERVING.md). RECSYS_SYSTEM picks what the recommendations endpoint
+    # serves: a registered pipeline (default recsys_v1, see app/recsys/systems/pipelines.py) or the old
+    # rule scorer v0_rules (the DB path in recommendation_service, unchanged).
+    recsys_system: str = Field(default="recsys_v1", description="recsys_v1 (default), v7_mmr, ..., or v0_rules.")
+    recsys_timeout_s: float = Field(
+        default=2.0, description="Deadline for one pipeline call; on expiry the no-LLM path serves the request."
+    )
+    recsys_embed_retries: int = Field(default=1, description="Retries of the query-embedding call while serving.")
+    recsys_budget_usd: float = Field(
+        default=1.0, description="Hard stop: real USD per process for serving-time embedding/rank calls."
+    )
+    recsys_catalog_dir: Optional[Path] = Field(
+        default=None, description="Catalogue the pipeline serves (unset: backend/data/catalog). Tests use a subset."
+    )
+
+    # Demo protections (docs/SERVING.md). Off / generous by default for development.
+    rate_limit_enabled: bool = Field(default=False, description="Per-IP rate limit on endpoints that can spend.")
+    rate_limit_window_s: float = Field(default=60.0, description="Sliding window of the rate limit, seconds.")
+    rate_limit_chat: int = Field(default=20, description="Chat turns per IP per window (over: HTTP 429).")
+    rate_limit_recommendations: int = Field(
+        default=60, description="Live-provider recommendation requests per IP per window (over: no-LLM path)."
+    )
+    rate_limit_narrative: int = Field(
+        default=10, description="LLM narratives per IP per window (over: template text)."
+    )
+    rate_limit_trust_forwarded: bool = Field(
+        default=False, description="Take the client IP from X-Forwarded-For (only behind a trusted proxy)."
+    )
+    daily_budget_usd: float = Field(
+        default=5.0,
+        description="Real USD per UTC day over all LLM clients of the process; then the app serves the no-LLM "
+        "paths (recommendations without embeddings, keyword chat extraction, template narratives). 0 = off.",
+    )
+
     # Logging configuration
     log_level: str = Field(
         default="INFO",

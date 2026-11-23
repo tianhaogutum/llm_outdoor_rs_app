@@ -45,13 +45,16 @@ def test_recommendations_expose_catalogue_facts_for_every_tab(full_client):
         assert resp.status_code == 200, resp.text
         body = resp.json()
         assert body["is_personalized"] is True and body["total"] == 20
+        # the DB holds the catalogue, so the default pipeline serves (no intent: its rule path)
+        assert body["served_by"]["system"] == "recsys_v1" and body["served_by"]["reason"] == "no_intent"
         for route in body["routes"]:
             assert_osm_route_payload(route)
             if category:
                 assert route["category_name"] in CATEGORY_MAPPING[category]
             bps = route["breakpoints"]
             assert bps[0]["poi_type"] == "start" and bps[-1]["poi_type"] == "finish"
-            assert route["recommendation_score_breakdown"]["total"] == route["recommendation_score"]
+            assert route["explanation"]["stages"]["filter"]["verdict"] == "pass" and route["reason"]
+            assert route["recommendation_score"] is None  # the baseline's fields stay baseline-only
     # guest (random) recommendations work too
     guest = full_client.get("/api/routes/recommendations", params={"limit": 10}).json()
     assert guest["is_personalized"] is False and guest["total"] == 10

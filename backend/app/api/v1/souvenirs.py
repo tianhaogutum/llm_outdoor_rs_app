@@ -11,7 +11,7 @@ import logging
 from datetime import UTC
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -27,6 +27,7 @@ from app.api.schemas import (
 from app.database import get_db
 from app.models.entities import DemoProfile, Route, Souvenir
 from app.services.achievement_service import check_and_unlock_achievements
+from app.services.demo_guard import llm_narrative_allowed
 from app.services.genai_service import generate_pixel_art_svg, generate_post_run_summary
 from app.services.level_system import (
     calculate_level_from_xp,
@@ -43,6 +44,7 @@ async def create_souvenir(
     profile_id: int,
     request: RouteCompleteRequest,
     db: Annotated[AsyncSession, Depends(get_db)],
+    http_request: Request,
 ):
     """
     Complete a route and create a souvenir record.
@@ -103,6 +105,8 @@ async def create_souvenir(
 
         # 5. Generate AI summary
         try:
+            if not llm_narrative_allowed(http_request):  # rate limit / daily budget: template text
+                raise RuntimeError("narrative limited (rate limit or daily budget)")
             route_length_km = (route.length_meters / 1000) if route.length_meters else 0
             genai_summary = await generate_post_run_summary(
                 route_title=route.title,

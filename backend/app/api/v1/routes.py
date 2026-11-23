@@ -10,7 +10,7 @@ import json
 import time
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy import func, select
 from sqlalchemy import inspect as sa_inspect
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,7 +30,8 @@ from app.api.schemas import (
 from app.database import get_db
 from app.logger import get_logger, log_business_logic, log_request
 from app.models.entities import Breakpoint, DemoProfile, Route, RouteGeometry
-from app.services.recommendation_service import CATEGORY_MAPPING, get_recommended_routes
+from app.services import recsys_service
+from app.services.recommendation_service import CATEGORY_MAPPING
 from app.services.story_generator import generate_story_for_route
 
 logger = get_logger(__name__)
@@ -61,38 +62,31 @@ async def _ensure_breakpoints_loaded(db: AsyncSession, routes: list[Route]) -> N
 
 @router.get("/recommendations", response_model=RecommendationResponse)
 async def get_route_recommendations(
+    request: Request,
     profile_id: Optional[int] = None,
     category: Optional[str] = None,
     limit: Annotated[int, Query(ge=1, le=MAX_PAGE)] = 20,
     db: Annotated[AsyncSession, Depends(get_db)] = ...,
 ):
     """
-    Get route recommendations using Content-Based Filtering (CBF).
-
-    This endpoint implements US-02 (personalized recommendations) and US-01 (random recommendations).
+    Route recommendations from the configured system (``RECSYS_SYSTEM``, default ``recsys_v1``).
 
     Query Parameters:
-    - profile_id: Optional user profile ID for personalized recommendations
-    - category: Optional activity category filter (running/hiking/cycling)
-    - limit: Maximum number of routes to return (default: 20)
+    - profile_id: optional profile for personalised recommendations (404 if unknown); without it the
+      list is uniform random over the tab
+    - category: optional tab (running / hiking / cycling); without it the profile's activity, else all
+    - limit: number of routes (1-1000). On the pipeline's intent path at most its candidate depth (50)
+      come back; the no-intent and baseline paths can return more.
 
-    Behavior:
-    - If profile_id provided: Returns routes ranked by CBF similarity score
-    - If no profile_id: Returns random routes
-    - If category provided: Filters results by mapped category_name values
-
-    Returns:
-        RecommendationResponse with routes list and metadata
+    ``served_by`` says which system and path produced the list and why (docs/SERVING.md). Pipeline paths
+    carry a per-route ``explanation`` (per-stage contributions, ``recsys.explanation/v1``) and a one-line
+    ``reason``; the baseline path keeps ``recommendation_score`` / ``recommendation_score_breakdown``.
     """
     start_time = time.time()
-
-    logger.info("=" * 80)
     logger.info(f"🗺️ Fetching route recommendations: profile_id={profile_id}, category={category}, limit={limit}")
 
-    # Validate profile_id if provided and fetch profile once
     profile = None
     if profile_id is not None:
-        logger.debug(f"🔍 Validating user profile: profile_id={profile_id}")
         profile = await db.get(DemoProfile, profile_id)
         if not profile:
             logger.warning(f"❌ User profile not found: profile_id={profile_id}")
@@ -100,41 +94,26 @@ async def get_route_recommendations(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Profile with id {profile_id} not found"
             )
-        logger.debug(f"✅ User profile validated successfully: profile_id={profile_id}")
 
-    # Get recommended routes
-    logger.debug("🔄 Starting recommendation calculation...")
-    routes = await get_recommended_routes(
-        db=db,
-        profile_id=profile_id,
-        category=category,
-        limit=limit
+    res = getattr(request.app.state, "recsys", None)
+    served = await recsys_service.recommend(
+        db, res=res, profile=profile, category=category, limit=limit, request=request
     )
-    logger.info(f"✅ Recommendation calculation completed: returned {len(routes)} routes")
-    await _ensure_breakpoints_loaded(db, routes)
+    await _ensure_breakpoints_loaded(db, served.routes)
 
-    # Convert to response models
     route_responses = []
-    for route in routes:
+    for route in served.routes:
         route_dict = RouteResponse.model_validate(route).model_dump()
-        # Add is_locked field based on user XP (if profile exists)
-        if profile:
-            route_dict["is_locked"] = profile.total_xp < route.xp_required
-        else:
-            route_dict["is_locked"] = False
-
-        # Add recommendation score if available (set by recommendation_service)
-        if hasattr(route, 'recommendation_score'):
+        route_dict["is_locked"] = bool(profile and profile.total_xp < route.xp_required)
+        if hasattr(route, "recommendation_score"):  # baseline path (set by recommendation_service)
             route_dict["recommendation_score"] = route.recommendation_score
-            logger.debug(f"📊 Route {route.id} recommendation score: {route.recommendation_score:.4f}")
-        if hasattr(route, 'recommendation_score_breakdown'):
+        if hasattr(route, "recommendation_score_breakdown"):
             route_dict["recommendation_score_breakdown"] = route.recommendation_score_breakdown
-
+        route_dict.update(served.extras.get(route.id, {}))
         route_responses.append(RouteResponse(**route_dict))
 
     duration_ms = (time.time() - start_time) * 1000
-    is_personalized = profile_id is not None
-
+    sb = served.served_by
     log_request(
         logger,
         "GET",
@@ -144,16 +123,16 @@ async def get_route_recommendations(
         user_id=profile_id,
         category=category,
         routes_count=len(route_responses),
-        is_personalized=is_personalized
+        is_personalized=served.is_personalized,
+        system=sb.get("system"),
+        served_path=sb.get("path"),
+        reason=sb.get("reason"),
     )
-
-    logger.info(f"✅ Route recommendations returned successfully: {len(route_responses)} routes, personalized={is_personalized}, duration={duration_ms:.2f}ms")  # noqa: E501
-    logger.info("=" * 80)
-
     return RecommendationResponse(
         routes=route_responses,
         total=len(route_responses),
-        is_personalized=is_personalized
+        is_personalized=served.is_personalized,
+        served_by=sb,
     )
 
 
