@@ -420,8 +420,242 @@ def _ablation(docs: list[dict[str, Any]], cap: str) -> list[str]:
     extra = _paired_rows(by, EXTRA_PAIRS, "test")
     if extra:
         L += ["", "Other comparisons (test):", ""] + extra
+    it2 = [n for n in [SERVED, *NEEDS] if n in by]
+    if len(it2) > 1:
+        L += [
+            "",
+            "Iteration 2 rows (DECISIONS.md D27): the served default and the stated-need stage on top of it. "
+            "Reported on test once, after the decision was taken on dev (none is served).",
+            "",
+            "| Step | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | ILD@10 | Cost/request | Judged@10 |",
+            "|---|---|---|---|---|---|---|---|---|",
+        ]
+        for n in it2:
+            m = by[n]["metrics"]["test"]
+            lab = "served default (D25)" if n == SERVED else NEEDS_LABELS[n]
+            L.append(
+                f"| {lab} | `{n}` | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | "
+                f"{_ci(m['recall_at_50'])} | {_ci(m['violation_at_10'], pct=True)} | {_ci(m['ild_at_10'])} | "
+                f"{m['cost_usd']['mean']:.5f} USD | {100 * m['judged_share_at_10']:.0f}% |"
+            )
+        L += ["", "Paired against the served default (test):", ""]
+        L += _paired_rows(by, [(SERVED, n) for n in it2[1:]], "test")
     L.append("")
     return L
+
+
+def _pb_cell(r: dict[str, Any]) -> str:
+    return "n/a" if r.get("diff") is None else f"{r['diff']:+.3f} [{r['lo']:+.3f}, {r['hi']:+.3f}]"
+
+
+def _needs_section(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    """Iteration 2: the stated-need stage (``_needs_dev.json`` for the dev work, results files for the rows)."""
+    nd = _load("_needs_dev.json")
+    by = {d["system"]: d for d in docs}
+    if not nd or SERVED not in by or not all(n in by for n in NEEDS):
+        return []
+    ex = nd["extractor"]
+    L = [
+        "## Iteration 2: stated needs as constraints (D27)",
+        "",
+        cap,
+        "",
+        "Design: RECSYS.md section 13; protocol and the disclosure of where the hypothesis came from: EVAL.md "
+        "section 12. Everything up to the decision used dev only; test rows are reported once, afterwards.",
+        "",
+        f"**Extractor on dev intents** ({ex['n_dev']} dev personas, {ex['dev_personas_with_a_need']} with at least "
+        "one extracted need), scored against the simulated user's latent profile where a latent field corresponds "
+        "(used only to measure, never by a system). Recall is against the latent profile, so it is capped by what "
+        "the intent writer chose to mention.",
+        "",
+        "| Need | Fired | Precision | Recall vs latent | Latent counterpart |",
+        "|---|---|---|---|---|",
+    ]
+    truth = {
+        "stroller": "stroller party", "no_steps": "stroller party", "train": "travels by train",
+        "public_transport": "travels by train", "mtb": "MTB taste (cycling tab)", "loop": "prefers loops",
+        "one_way": "prefers one-way", "days": "multi-day trip",
+    }  # fmt: skip
+    for c, r in ex["per_need"].items():
+        if "precision" in r:
+            prec = "n/a" if r["precision"] is None else f"{r['precision']:.2f} ({r['tp']}/{r['tp'] + r['fp']})"
+            rec = "n/a" if r["recall"] is None else f"{r['recall']:.2f} ({r['tp']}/{r['tp'] + r['fn']})"
+            L.append(f"| `{c}` | {r['fired']} | {prec} | {rec} | {truth[c]} |")
+        elif r.get("band_share_mean") is not None:
+            L.append(
+                f"| `{c}` | {r['fired']} | – | – | latent comfortable band: {100 * r['band_share_mean']:.0f}% of it "
+                "inside the stated window on average |"
+            )
+        else:
+            L.append(f"| `{c}` | {r['fired']} | – | – | none |")
+    days = ex["per_need"]["days"].get("days_exact")
+    if days is not None:
+        L += ["", f"Day counts: the extracted number of days equals the latent one for {100 * days:.0f}% of the "
+              "multi-day personas (\"multi-day\" without a number is read as two days)."]
+    meets = nd["served_top10_meets_needs"]
+    L += [
+        "",
+        "**How often the served top 10 meets a stated need** (dev, catalogue facts only, no judge): mean share of "
+        "`recsys_serve`'s top 10 that meets the need strictly, over the dev personas who state it.",
+        "",
+        "| Need | Personas | `recsys_serve` | " + " | ".join(f"`{n}`" for n in NEEDS) + " |",
+        "|---|---|---|" + "---|" * len(NEEDS),
+    ]
+    pv = nd["dev"]["paired_vs_baseline"]
+    for c, r in meets.items():
+        cells = [f"{100 * pv[n]['top10_meets_needs'][c]['strict']:.0f}%" for n in NEEDS]
+        L.append(f"| `{c}` | {r['personas']} | {100 * r['strict']:.0f}% | " + " | ".join(cells) + " |")
+    rule = nd["rule"]
+    L += [
+        "",
+        "**The pre-registered comparison (dev).** Rule, fixed before any dev result of a variant: "
+        + "; ".join(rule["accept_if"])
+        + f". Choice: {rule['choose']}.",
+        "",
+        "| System | NDCG@10 dev | Δ vs `recsys_serve` (paired) | Violations@10 dev | Stage p95 ms | Accepted |",
+        "|---|---|---|---|---|---|",
+    ]
+    ms = nd.get("stage_ms", {})
+    L.append(
+        f"| `{SERVED}` | {_ci(by[SERVED]['metrics']['dev']['ndcg_at_10'])} | – | "
+        f"{_ci(by[SERVED]['metrics']['dev']['violation_at_10'], pct=True)} | – | (served) |"
+    )
+    for n in NEEDS:
+        a, b = by[SERVED], by[n]
+        pids = sorted(p for p in a["per_persona"] if _split_of(a, p) == "dev")
+        r = paired_bootstrap(
+            [a["per_persona"][p]["ndcg_at_10"] for p in pids],
+            [b["per_persona"][p]["ndcg_at_10"] for p in pids],
+            n_boot=a["protocol"]["bootstrap"]["n"],
+            seed=a["protocol"]["bootstrap"]["seed"],
+        )
+        v_ok = b["metrics"]["dev"]["violation_at_10"]["mean"] <= a["metrics"]["dev"]["violation_at_10"]["mean"]
+        p95 = ms.get(n, {}).get("p95")
+        ok = r["lo"] is not None and r["lo"] > 0 and v_ok and (p95 is None or p95 < 20)
+        L.append(
+            f"| `{n}` | {_ci(b['metrics']['dev']['ndcg_at_10'])} | {_pb_cell(r)} | "
+            f"{_ci(b['metrics']['dev']['violation_at_10'], pct=True)} | "
+            f"{'n/a' if p95 is None else f'{p95:.2f}'} | {'yes' if ok else '**no**'} |"
+        )
+    L += [
+        "",
+        "Stage p95: the stated-need stage's own compute per request on dev (local, machine-dependent; the end-to-end "
+        "latency is the served system's, dominated by the query embedding). The learned ranker is in-sample on dev "
+        "(trained on these personas' judgements), so `recsys_serve`'s dev row is optimistic.",
+    ]
+    cf = nd.get("dev_crossfit")
+    if cf:
+        base = SERVED + "@crossfit"
+        L += [
+            "",
+            "**Post-hoc check, not used for the decision: the same comparison with a cross-fitted ranker** (dev; "
+            f"{cf['models']['folds']} copies of the served ranker, each trained like it on four fifths of the dev "
+            f"personas, {cf['models']['rounds']} rounds; each persona ranked by the copy that never saw its labels; "
+            f"{cf['holes'].get('llm_pairs', 0)} new pairs judged):",
+            "",
+            "| System | NDCG@10 dev, cross-fitted | Δ vs `recsys_serve` cross-fitted | Better / worse by > 0.1 |",
+            "|---|---|---|---|",
+            f"| `{SERVED}` | {_ci(cf['systems'][base]['ndcg_at_10'])} | – | – |",
+        ]
+        for n in NEEDS:
+            r = cf["paired_vs_baseline"][n + "@crossfit"]
+            L.append(
+                f"| `{n}` | {_ci(cf['systems'][n + '@crossfit']['ndcg_at_10'])} | {_pb_cell(r['ndcg_at_10'])} | "
+                f"{r['better_by_0_1']} / {r['worse_by_0_1']} |"
+            )
+        needs_c = sorted(cf["paired_vs_baseline"][NEEDS[1] + "@crossfit"]["ndcg_at_10_by_need"])
+        L += [
+            "",
+            "Per stated need (Δ NDCG@10 against the served default over the dev personas who state it; in-sample "
+            "ranker / cross-fitted ranker):",
+            "",
+            "| Need | Dev personas | " + " | ".join(f"`{n}` dev / cross-fitted" for n in NEEDS) + " |",
+            "|---|---|" + "---|" * len(NEEDS),
+        ]
+        for c in needs_c:
+            n_p = pv[NEEDS[0]]["ndcg_at_10_by_need"][c]["n"]
+            cells = [
+                f"{pv[n]['ndcg_at_10_by_need'][c]['diff']:+.3f} / "
+                f"{cf['paired_vs_baseline'][n + '@crossfit']['ndcg_at_10_by_need'][c]['diff']:+.3f}"
+                for n in NEEDS
+            ]
+            L.append(f"| `{c}` | {n_p} | " + " | ".join(cells) + " |")
+    # test, reported once
+    L += [
+        "",
+        "**Test, reported once after the decision** (reporting only; 100 personas, every top 10 judged):",
+        "",
+        "| System | NDCG@10 test | Δ vs `recsys_serve` (paired) | Violations@10 | Recall@50 "
+        "| Better / worse by > 0.1 |",
+        "|---|---|---|---|---|---|",
+    ]
+    a = by[SERVED]
+    tp = sorted(p for p in a["per_persona"] if _split_of(a, p) == "test")
+    for n in NEEDS:
+        b = by[n]
+        r = paired_bootstrap(
+            [a["per_persona"][p]["ndcg_at_10"] for p in tp],
+            [b["per_persona"][p]["ndcg_at_10"] for p in tp],
+            n_boot=a["protocol"]["bootstrap"]["n"],
+            seed=a["protocol"]["bootstrap"]["seed"],
+        )
+        d = [
+            b["per_persona"][p]["ndcg_at_10"] - a["per_persona"][p]["ndcg_at_10"]
+            for p in tp
+            if b["per_persona"][p]["ndcg_at_10"] is not None and a["per_persona"][p]["ndcg_at_10"] is not None
+        ]
+        m = b["metrics"]["test"]
+        L.append(
+            f"| `{n}` | {_ci(m['ndcg_at_10'])} | {_pb_cell(r)} | {_ci(m['violation_at_10'], pct=True)} | "
+            f"{_ci(m['recall_at_50'])} | {sum(x > 0.1 for x in d)} / {sum(x < -0.1 for x in d)} |"
+        )
+    fa = _load("_failures.json")
+    if fa:
+        L += [
+            "",
+            f"The ten worst test queries of `{SERVED}` (FAILURES.md), NDCG@10 per system:",
+            "",
+            "| Persona | Class | `recsys_serve` | " + " | ".join(f"`{n}`" for n in NEEDS) + " |",
+            "|---|---|---|" + "---|" * len(NEEDS),
+        ]
+        classes = _failure_classes()
+        for f in fa["personas"]:
+            pid = f["persona_id"]
+            cells = [f"{by[n]['per_persona'][pid]['ndcg_at_10']:.3f}" for n in NEEDS]
+            L.append(
+                f"| {pid} | {classes.get(pid, '?')} | {a['per_persona'][pid]['ndcg_at_10']:.3f} | "
+                + " | ".join(cells)
+                + " |"
+            )
+    fp = _load("_failures_recsys_serve_needs_promote_test.json")
+    if fp:
+        tot = fp["relevant_lost_at_total"]
+        L += [
+            "",
+            f"The ten worst test queries of `{fp['system']}` (`python -m evalkit.failures --system {fp['system']}`): "
+            + ", ".join(f"{f['persona_id']} {f['ndcg_at_10']:.3f}" for f in fp["personas"])
+            + ". Their relevant routes by where they were lost: "
+            + ", ".join(f"{k} {v}" for k, v in tot.items())
+            + ".",
+        ]
+    L.append("")
+    return L
+
+
+def _failure_classes() -> dict[str, str]:
+    import re
+
+    text = (paths.DOCS_DIR / "FAILURES.md").read_text(encoding="utf-8")
+    out, cur = {}, None
+    for line in text.splitlines():
+        m = re.match(r"^### (P\d+)\b", line)
+        if m:
+            cur = m.group(1)
+        m = re.match(r"^\*\*Class:\*\* ([A-Z])\b", line)
+        if m and cur:
+            out[cur] = m.group(1)
+            cur = None
+    return out
 
 
 def _default_system(docs: list[dict[str, Any]]) -> list[str]:
@@ -659,6 +893,13 @@ SIM_ORDER = ["v0_rules", "v1_filters", "recsys_v1", "recsys_v1_fb_route", "recsy
              "recsys_v1_fb_explore", "recsys_serve_noexplore", "recsys_serve"]
 
 SERVED = "recsys_serve"
+# iteration 2: the served system plus the stated-need stage (docs/RECSYS.md section 13, DECISIONS.md D27)
+NEEDS = ["recsys_serve_needs", "recsys_serve_needs_promote", "recsys_serve_needs_demote"]
+NEEDS_LABELS = {
+    "recsys_serve_needs": "+ stated needs as a filter in front of retrieval",
+    "recsys_serve_needs_promote": "+ stated needs as a filter, strict matches promoted",
+    "recsys_serve_needs_demote": "+ stated needs as a post-ranker demotion",
+}
 
 
 def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
@@ -680,11 +921,13 @@ def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
         "Cost/request |",
         "|---|---|---|---|---|---|---|",
     ]
-    for n in ("recsys_v1", "recsys_v1_nocap", SERVED):
+    for n in ("recsys_v1", "recsys_v1_nocap", SERVED, *NEEDS):
         if n not in by:
             continue
         m = by[n]["metrics"]
         lab = f"**`{n}` (served default)**" if n == SERVED else f"`{n}`"
+        if n in NEEDS:
+            lab += " (iteration 2, not served: D27)"
         L.append(
             f"| {lab} | {_ci(m['test']['ndcg_at_10'])} | {_ci(m['test']['mrr_at_10'])} | "
             f"{_ci(m['test']['recall_at_50'])} | {_ci(m['test']['violation_at_10'], pct=True)} | "
@@ -692,7 +935,8 @@ def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
         )
     for split in ("test", "dev"):
         L += ["", f"Paired differences ({split}):", ""]
-        L += _paired_rows(by, [("recsys_v1", SERVED), ("recsys_v1_nocap", SERVED)], split)
+        pairs = [("recsys_v1", SERVED), ("recsys_v1_nocap", SERVED)] + [(SERVED, n) for n in NEEDS]
+        L += _paired_rows(by, pairs, split)
     sim = _load("_simulation.json")
     if sim and SERVED in sim["metrics"]:
         met = sim["metrics"]
@@ -912,6 +1156,7 @@ def render() -> str:
         return "\n".join(L) + "\n"
     cap = _caption(docs[0])
     L += _served(docs, cap)
+    L += _needs_section(docs, cap)
     L += _ablation(docs, cap)
     L += _default_system(docs)
     L += _reference(cap)

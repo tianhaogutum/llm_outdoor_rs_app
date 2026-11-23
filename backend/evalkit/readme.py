@@ -305,6 +305,50 @@ def limits() -> str:
     )
 
 
+NEEDS = ("recsys_serve_needs", "recsys_serve_needs_promote", "recsys_serve_needs_demote")
+NEEDS_TEXT = {
+    "recsys_serve_needs": "filter in front of retrieval",
+    "recsys_serve_needs_promote": "filter, strict matches promoted",
+    "recsys_serve_needs_demote": "post-ranker demotion",
+}
+
+
+def iteration2() -> str:
+    """Iteration 2 (D27): the pre-registered dev decision, the post-hoc cross-fitted check, the single test run."""
+    nd = _load("_needs_dev.json")
+    cf = nd["dev_crossfit"]["paired_vs_baseline"]
+    fa = _load("_failures.json")
+    s = _sys(SERVED)
+    L = [
+        "| Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | "
+        "Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |",
+        "|---|---|---|---|---|---|",
+    ]
+    for n in NEEDS:
+        dev = _diff(SERVED, n, split="dev")
+        lo = float(dev.split("[")[1].split(",")[0])
+        c = cf[n + "@crossfit"]["ndcg_at_10"]
+        L.append(
+            f"| `{n}` ({NEEDS_TEXT[n]}) | {dev} | {'yes' if lo > 0 else 'no'} | "
+            f"{c['diff']:+.3f} [{c['lo']:+.3f}, {c['hi']:+.3f}] | {_diff(SERVED, n)} | "
+            f"{_m(n, 'violation_at_10', pct=True)} |"
+        )
+    best = "recsys_serve_needs_promote"
+    b = _sys(best)
+    rows = []
+    for f in fa["personas"]:
+        pid = f["persona_id"]
+        old, new = s["per_persona"][pid]["ndcg_at_10"], b["per_persona"][pid]["ndcg_at_10"]
+        rows.append(f"{pid} {old:.2f}→{new:.2f}")
+    L += [
+        "",
+        f"The served default is unchanged: `{SERVED}` {_m(SERVED)} on test, {_m(SERVED, split='dev')} on dev "
+        "(in-sample ranker). Its ten worst test queries (FAILURES.md) under "
+        f"`{best}`, which is not served (NDCG@10 before→after): " + ", ".join(rows) + ".",
+    ]
+    return "\n".join(L)
+
+
 def readme_blocks() -> dict[str, str]:
     return {
         "readme-headline": headline(),
@@ -312,6 +356,7 @@ def readme_blocks() -> dict[str, str]:
         "readme-results": results_table(),
         "readme-simulation": simulation_table(),
         "readme-failures": failures_summary(),
+        "readme-iteration2": iteration2(),
         "readme-limits": limits(),
         "readme-cost-latency": cost_latency(),
     }
@@ -435,4 +480,5 @@ def review_blocks() -> dict[str, str]:
         "review-overfit": review_overfit(),
         "review-cost": review_cost(),
         "review-failures": failures_summary(),
+        "review-iteration2": iteration2(),
     }

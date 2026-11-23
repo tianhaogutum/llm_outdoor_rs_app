@@ -463,6 +463,89 @@ def _classes_block(prose: str, doc: dict[str, Any]) -> str:
     return "\n".join(f"- Class {c}: {len(ps)} of {len(want)} ({', '.join(ps)})" for c, ps in sorted(by_class.items()))
 
 
+ITERATION2 = ("recsys_serve_needs", "recsys_serve_needs_promote", "recsys_serve_needs_demote")
+ITERATION2_ANALYSED = "recsys_serve_needs_promote"  # chosen before the test run (DECISIONS.md D27)
+
+
+def _class_of(prose: str) -> dict[str, str]:
+    import re
+
+    out, cur = {}, None
+    for line in prose.splitlines():
+        m = re.match(r"^### (P\d+)\b", line)
+        if m:
+            cur = m.group(1)
+            continue
+        m = re.match(r"^\*\*Class:\*\* ([A-Z])\b", line)
+        if m and cur:
+            out[cur], cur = m.group(1), None
+    return out
+
+
+def _iteration2_block(prose: str, doc: dict[str, Any]) -> str:
+    """The stated-need variants on the ten worst test queries, the test queries they make worse, and the analysed
+    variant's own ten worst (``_failures_<variant>_test.json``)."""
+    from app.recsys.needs import extract_needs
+
+    res = {n: json.loads((paths.RESULTS_DIR / f"{n}.json").read_text(encoding="utf-8"))["per_persona"]
+           for n in (SYSTEM, *ITERATION2)}  # fmt: skip
+    personas = {p.persona_id: p for p in load_personas()}
+    cls = _class_of(prose)
+    L = [
+        f"NDCG@10 of the ten worst test queries of `{doc['system']}` under each stated-need variant (none is served; "
+        "DECISIONS.md D27). Stated needs = what the stage extracted from the intent.",
+        "",
+        "| Persona | Class | Stated needs | `" + SYSTEM + "` | " + " | ".join(f"`{n}`" for n in ITERATION2) + " |",
+        "|---|---|---|---|" + "---|" * len(ITERATION2),
+    ]
+    for f in doc["personas"]:
+        pid = f["persona_id"]
+        p = personas[pid]
+        needs = ", ".join(extract_needs(p.intent, p.latent["category"]).codes()) or "none"
+        L.append(
+            f"| {pid} | {cls.get(pid, '?')} | {needs} | {_f3(res[SYSTEM][pid]['ndcg_at_10'])} | "
+            + " | ".join(_f3(res[n][pid]["ndcg_at_10"]) for n in ITERATION2)
+            + " |"
+        )
+    test = sorted(pid for pid, p in personas.items() if p.split == "test")
+
+    def stated(pid: str) -> list[str]:
+        return extract_needs(personas[pid].intent, personas[pid].latent["category"]).codes()
+
+    L.append("")
+    for n in ITERATION2:
+        d = sorted(
+            (res[n][pid]["ndcg_at_10"] - res[SYSTEM][pid]["ndcg_at_10"], pid)
+            for pid in test
+            if res[n][pid]["ndcg_at_10"] is not None and res[SYSTEM][pid]["ndcg_at_10"] is not None
+        )
+        worse = [(x, pid) for x, pid in d if x < -0.1]
+        better = [(x, pid) for x, pid in d if x > 0.1]
+        L.append(
+            f"- `{n}`: {len(better)} test queries better and {len(worse)} worse by more than 0.1 NDCG@10"
+            + (
+                "; worse: " + ", ".join(f"{pid} {x:+.3f} ({', '.join(stated(pid))})" for x, pid in worse)
+                if worse
+                else ""
+            )
+            + "."
+        )
+    fp = paths.RESULTS_DIR / f"_failures_{ITERATION2_ANALYSED}_test.json"
+    if fp.exists():
+        own = json.loads(fp.read_text(encoding="utf-8"))
+        tot = own["relevant_lost_at_total"]
+        L += [
+            "",
+            f"The ten worst test queries of `{ITERATION2_ANALYSED}` itself (`python -m evalkit.failures --system "
+            f"{ITERATION2_ANALYSED}`): "
+            + ", ".join(f"{f['persona_id']} {_f3(f['ndcg_at_10'])}" for f in own["personas"])
+            + ". Their relevant routes by where they were lost: "
+            + ", ".join(f"{k} {v}" for k, v in tot.items())
+            + f" (total {sum(tot.values())}).",
+        ]
+    return "\n".join(L)
+
+
 def render_blocks(prose: str) -> dict[str, str]:
     """Generated blocks of docs/FAILURES.md from ``eval/results/_failures.json`` (and the class lines in
     ``prose``, the document's hand-written text)."""
@@ -490,4 +573,6 @@ def render_blocks(prose: str) -> dict[str, str]:
     }
     for f in doc["personas"]:
         blocks[f"failure-{f['persona_id'].lower()}"] = _persona_block(f)
+    if all((paths.RESULTS_DIR / f"{n}.json").exists() for n in ITERATION2):
+        blocks["failures-iteration2"] = _iteration2_block(prose, doc)
     return blocks

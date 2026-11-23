@@ -27,9 +27,9 @@ The 10 test personas with the lowest NDCG@10 of `recsys_serve` (served default),
 
 | Persona | Intent | NDCG@10 | `recsys_v1` | `v4_rrf` | `v2_bm25` | Relevant routes: lost at |
 |---|---|---|---|---|---|---|
-| [P018](#p018) | Could you suggest an easy, stroller-friendly walk of around 8 km with an interesting cave or rock formation and a playground for the children? Please keep the climbing gentle. | 0.220 | 0.334 | 0.624 | 0.468 | ranker 8, retrieval 2, shown 2 |
-| [P260](#p260) | A gentle lakeside walk with a café or inn along the way would be lovely! We’ll have a stroller, so smooth paths and no more than about 10 km, please. | 0.350 | 0.518 | 0.586 | 0.613 | mmr 1, ranker 15, retrieval 5, shown 7 |
-| [P190](#p190) | Could you suggest an easy, short walk with interesting caves or rocks and an inn along the way? | 0.388 | 0.540 | 0.346 | 0.319 | ranker 12, retrieval 9, shown 5 |
+| [P018](#p018) | Could you suggest an easy, stroller-friendly walk of around 8 km with an interesting cave or rock formation and a playground for the children? Please keep the climbing gentle. | 0.204 | 0.310 | 0.579 | 0.435 | ranker 8, retrieval 5, shown 2 |
+| [P260](#p260) | A gentle lakeside walk with a café or inn along the way would be lovely! We’ll have a stroller, so smooth paths and no more than about 10 km, please. | 0.350 | 0.518 | 0.586 | 0.613 | mmr 1, ranker 15, retrieval 8, shown 7 |
+| [P190](#p190) | Could you suggest an easy, short walk with interesting caves or rocks and an inn along the way? | 0.388 | 0.540 | 0.346 | 0.319 | ranker 12, retrieval 10, shown 5 |
 | [P145](#p145) | Could you suggest a quiet mountain bike loop with forest trails, a hut stop and a good viewpoint? I’m happy with a fairly challenging ride, but would like to avoid busy, popular routes. | 0.403 | 0.491 | 0.850 | 0.864 | ranker 5, shown 2 |
 | [P003](#p003) | A quiet, challenging mountain bike ride with forest trails beside a lake and a beer garden along the way. For a group of friends, about 30–70 km. | 0.413 | 0.467 | 0.665 | 0.556 | ranker 5, retrieval 1, shown 2 |
 | [P177](#p177) | A quiet forest walk by a lake, easy for little kids and reachable by train from Schweinfurt. | 0.427 | 0.619 | 0.567 | 0.624 | ranker 7, retrieval 2, shown 4 |
@@ -38,7 +38,7 @@ The 10 test personas with the lowest NDCG@10 of `recsys_serve` (served default),
 | [P048](#p048) | A quiet forest walk by a lake, with a place to eat or drink along the way. | 0.469 | 0.573 | 0.426 | 0.621 | mmr 1, ranker 10, retrieval 11, shown 8 |
 | [P225](#p225) | Could you suggest a mountain bike route to a summit with great views and a hut stop? | 0.471 | 0.592 | 0.530 | 0.372 | exploration 1, mmr 1, ranker 1, retrieval 1, shown 1 |
 
-All relevant routes of the ten personas, by where they were lost: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 34, shown 40 (total 154). Grade 3 only: exploration 0, filter 0, mmr 1, needs 0, ranker 24, retrieval 9, shown 8 (total 42).
+All relevant routes of the ten personas, by where they were lost: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 41, shown 40 (total 161). Grade 3 only: exploration 0, filter 0, mmr 1, needs 0, ranker 24, retrieval 12, shown 8 (total 45).
 <!-- END GENERATED failures-summary -->
 
 Context used in the diagnoses (persona counts, from `eval/personas/personas.jsonl`):
@@ -61,13 +61,13 @@ express, and second about routes that neither text retriever ranks high.
 *Stroller, caves and a playground, gentle.*
 
 <!-- BEGIN GENERATED failure-p018 (make report; do not edit) -->
-NDCG@10 **0.220**, MRR@10 0.333, Recall@50 0.833; 571 routes pass the hard filters; judged pairs by grade: 0: 36, 1: 27, 2: 9, 3: 3.
+NDCG@10 **0.204**, MRR@10 0.333, Recall@50 0.667; 571 routes pass the hard filters; judged pairs by grade: 0: 36, 1: 30, 2: 11, 3: 4.
 
 - **Intent (what the user typed):** "Could you suggest an easy, stroller-friendly walk of around 8 km with an interesting cave or rock formation and a playground for the children? Please keep the climbing gentle."
 - **Slots the system saw:** tab `hiking`, home Forchheim, radius 30.0 km, distance cap 13.3 km; questionnaire intermediate, natural-scenery, family-fun.
 - **Latent profile (only the judge sees it):** party stroller; children aged 0; fitness 0.9; comfortable 4.2–9.1 km; ascent ≤ 150 m; technical ≤ 0; wishes cave_geology 0.75, playground 0.72, lake 0.36, refreshment 0.33; dislikes alpine_terrain, steep_sections; shape any; surface paved; transport car.
-- **Known relevant routes (grade ≥ 2) by where they ended:** ranker 8, retrieval 2, shown 2; grade 3 only: ranker 3.
-- **Same request, other systems (NDCG@10):** `recsys_v1` 0.334, `recsys_v1_nocap` 0.220, `v1_filters` 0.156, `v2_bm25` 0.468, `v3_dense` 0.424, `v4_rrf` 0.624.
+- **Known relevant routes (grade ≥ 2) by where they ended:** ranker 8, retrieval 5, shown 2; grade 3 only: ranker 3, retrieval 1.
+- **Same request, other systems (NDCG@10):** `recsys_v1` 0.310, `recsys_v1_nocap` 0.204, `v1_filters` 0.145, `v2_bm25` 0.435, `v3_dense` 0.393, `v4_rrf` 0.579.
 
 Returned top 10 (stage ranks: BM25 and dense among the eligible set, fused = RRF, LTR = learned ranker, MMR before→after):
 
@@ -88,11 +88,11 @@ Best judged routes not shown, and where they were lost:
 
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
-| 3 | Thuisbrunn Rundweg "Ins Großenoher Tal" `1167950` | The route is stroller-friendly, fits the distance and climbing limits, and features both a cave, rock formations, and a playground. | 10.4 km, 164 m up, loop, 48% paved, 14.2 km from home | BM25 16 · dense 78 · fused 31 · LTR 12 · MMR 12→12 → 13 | **ranker** | `tag_hits` +0.33, `duration_h` +0.26, `tag_cover` +0.20 | recsys_v1_nocapslot, recsys_v1_nosusp, v7_mmr |
-| 3 | Rundweg um Aufseß `3388038` | This fully stroller-friendly, mostly paved loop fits the length, has caves, rock features, playgrounds, and an inn, meeting all wishes perfectly. | 5.0 km, 108 m up, loop, 85% paved, 22.0 km from home | BM25 3 · dense 7 · fused 1 · LTR 15 · MMR 15→28 → 29 | **ranker** | `tag_cover` +0.65, `length_km` -0.55, `length_band_pos` -0.40 | pool_latent, recsys_v1, recsys_v1_chat, v2_bm25, v3_dense, v4_rrf, v6_ltr_noapi |
+| 3 | Thuisbrunn Rundweg "Rund um Thuisbrunn" `543503` | Excellent fit with a cave, rock features, a playground, and stroller-friendly tracks with no busy roads, all within comfortable distance and climbing limits. | 9.5 km, 169 m up, loop, 43% paved, 14.7 km from home | BM25 118 · dense 54 · fused 88 · LTR – · MMR – → – | **retrieval** | – | recsys_serve_needs, recsys_serve_needs_promote |
+| 3 | Thuisbrunn Rundweg "Ins Großenoher Tal" `1167950` | The route is stroller-friendly, fits the distance and climbing limits, and features both a cave, rock formations, and a playground. | 10.4 km, 164 m up, loop, 48% paved, 14.2 km from home | BM25 16 · dense 78 · fused 31 · LTR 12 · MMR 12→12 → 13 | **ranker** | `tag_hits` +0.33, `duration_h` +0.26, `tag_cover` +0.20 | recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1_nocapslot, recsys_v1_nosusp, v7_mmr |
+| 3 | Rundweg um Aufseß `3388038` | This fully stroller-friendly, mostly paved loop fits the length, has caves, rock features, playgrounds, and an inn, meeting all wishes perfectly. | 5.0 km, 108 m up, loop, 85% paved, 22.0 km from home | BM25 3 · dense 7 · fused 1 · LTR 15 · MMR 15→28 → 29 | **ranker** | `tag_cover` +0.65, `length_km` -0.55, `length_band_pos` -0.40 | pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1, recsys_v1_chat, v2_bm25, v3_dense, v4_rrf, v6_ltr_noapi |
 | 3 | Rundweg Aufseß `9792171` | This route fits the length, has a cave, a playground, and a stroller-friendly surface with gentle climbing. | 6.0 km, 159 m up, loop, 43% paved, 21.8 km from home | BM25 28 · dense 43 · fused 32 · LTR 14 · MMR 14→13 → 14 | **ranker** | `intent_km_gap` +0.27, `tag_hits` +0.26, `length_km` -0.25 | v6_ltr |
 | 2 | Storchen-Lehrpfad Uehlfeld `168377` | Perfect length, flat, mostly paved, and has a playground, but completely lacks the main wish of caves or interesting rocks. | 7.6 km, 29 m up, loop, 86% paved, 24.0 km from home | BM25 370 · dense 74 · fused 113 · LTR – · MMR – → – | **retrieval** | – | pool_latent |
-| 2 | Betzenstein Rundweg ueber Huell `326088` | The route has the right length, gentle climbing, and great rock/cave features, but it lacks the requested playground for the baby/toddler. | 6.0 km, 146 m up, loop, 35% paved, 26.3 km from home | BM25 38 · dense 22 · fused 25 · LTR 13 · MMR 13→14 → 15 | **ranker** | `intent_km_gap` +0.32, `tag_hits` +0.26, `tag_cover` +0.23 | v6_ltr_noapi |
 <!-- END GENERATED failure-p018 -->
 
 **Diagnosis.** The intent asks for a stroller walk; the judge treats that as a hard requirement (steps or a
@@ -120,12 +120,12 @@ stroller intent flag, and more stroller personas in the training split.
 *Lakeside stroller walk with a café, at most about 10 km.*
 
 <!-- BEGIN GENERATED failure-p260 (make report; do not edit) -->
-NDCG@10 **0.350**, MRR@10 1.000, Recall@50 0.821; 767 routes pass the hard filters; judged pairs by grade: 0: 37, 1: 25, 2: 18, 3: 10.
+NDCG@10 **0.350**, MRR@10 1.000, Recall@50 0.742; 767 routes pass the hard filters; judged pairs by grade: 0: 37, 1: 25, 2: 19, 3: 12.
 
 - **Intent (what the user typed):** "A gentle lakeside walk with a café or inn along the way would be lovely! We’ll have a stroller, so smooth paths and no more than about 10 km, please."
 - **Slots the system saw:** tab `hiking`, home Marktbreit, radius 60.0 km, distance cap 10.9 km; questionnaire intermediate, family-fun.
 - **Latent profile (only the judge sees it):** party stroller; children aged 0, 3; fitness 1.64; comfortable 3.7–8.1 km; ascent ≤ 150 m; technical ≤ 0; wishes lake 0.92, refreshment 0.75, beer_garden 0.28, summit 0.2; dislikes alpine_terrain, steep_sections; shape any; surface paved; transport car.
-- **Known relevant routes (grade ≥ 2) by where they ended:** mmr 1, ranker 15, retrieval 5, shown 7; grade 3 only: mmr 1, ranker 6, retrieval 3.
+- **Known relevant routes (grade ≥ 2) by where they ended:** mmr 1, ranker 15, retrieval 8, shown 7; grade 3 only: mmr 1, ranker 6, retrieval 5.
 - **Same request, other systems (NDCG@10):** `recsys_v1` 0.518, `recsys_v1_nocap` 0.350, `v1_filters` 0.196, `v2_bm25` 0.613, `v3_dense` 0.470, `v4_rrf` 0.586.
 
 Returned top 10 (stage ranks: BM25 and dense among the eligible set, fused = RRF, LTR = learned ranker, MMR before→after):
@@ -175,12 +175,12 @@ in the intent (the first-named wish, or the one the user repeats) instead of cou
 *An easy, short walk with caves or rocks and an inn.*
 
 <!-- BEGIN GENERATED failure-p190 (make report; do not edit) -->
-NDCG@10 **0.388**, MRR@10 0.500, Recall@50 0.654; 883 routes pass the hard filters; judged pairs by grade: 0: 34, 1: 38, 2: 20, 3: 6.
+NDCG@10 **0.388**, MRR@10 0.500, Recall@50 0.630; 883 routes pass the hard filters; judged pairs by grade: 0: 34, 1: 39, 2: 21, 3: 6.
 
 - **Intent (what the user typed):** "Could you suggest an easy, short walk with interesting caves or rocks and an inn along the way?"
 - **Slots the system saw:** tab `hiking`, home Pottenstein, radius 40.0 km, distance cap 10.0 km; questionnaire beginner, natural-scenery.
 - **Latent profile (only the judge sees it):** party older; fitness 0.35; comfortable 3.6–7.9 km; ascent ≤ 360 m; technical ≤ 0; wishes train_access 1.0, cave_geology 0.82, refreshment 0.72, lake 0.7, culture 0.32; dislikes alpine_terrain, steep_sections; shape linear; surface any; transport train.
-- **Known relevant routes (grade ≥ 2) by where they ended:** ranker 12, retrieval 9, shown 5; grade 3 only: ranker 4, retrieval 1, shown 1.
+- **Known relevant routes (grade ≥ 2) by where they ended:** ranker 12, retrieval 10, shown 5; grade 3 only: ranker 4, retrieval 1, shown 1.
 - **Same request, other systems (NDCG@10):** `recsys_v1` 0.540, `recsys_v1_nocap` 0.388, `v1_filters` 0.295, `v2_bm25` 0.319, `v3_dense` 0.276, `v4_rrf` 0.346.
 
 Returned top 10 (stage ranks: BM25 and dense among the eligible set, fused = RRF, LTR = learned ranker, MMR before→after):
@@ -203,9 +203,9 @@ Best judged routes not shown, and where they were lost:
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
 | 3 | Neuhaus a.d. Pegnitz-Hartenstein `194647` | Perfect fit. It is a short, easy linear route starting directly at a train station, featuring caves, rocks, a castle, and multiple inns. | 5.4 km, 205 m up, one-way, 52% paved, 19.0 km from home | BM25 22 · dense 7 · fused 3 · LTR 37 · MMR 37→40 → 41 | **ranker** | `tag_cover` +0.80, `ascent_per_km` -0.67, `length_km` -0.44 | v3_dense, v4_rrf, v5_rank_api |
-| 3 | Kulturerlebnis Fränkische Schweiz - Streitberg - Muggendorf `1577077` | Perfect fit. It is a linear route of 6 km with train access, featuring caves, rocks, and an inn, matching all preferences. | 6.0 km, 253 m up, one-way, 9% paved, 14.2 km from home | BM25 93 · dense 17 · fused 31 · LTR 17 · MMR 17→15 → 16 | **ranker** | `tag_cover` +0.88, `ascent_per_km` -0.53, `paved_share` +0.42 | v5_rank_api, v6_ltr, v7_mmr |
+| 3 | Kulturerlebnis Fränkische Schweiz - Streitberg - Muggendorf `1577077` | Perfect fit. It is a linear route of 6 km with train access, featuring caves, rocks, and an inn, matching all preferences. | 6.0 km, 253 m up, one-way, 9% paved, 14.2 km from home | BM25 93 · dense 17 · fused 31 · LTR 17 · MMR 17→15 → 16 | **ranker** | `tag_cover` +0.88, `ascent_per_km` -0.53, `paved_share` +0.42 | recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, v5_rank_api, v6_ltr, v7_mmr |
 | 3 | Rundwanderweg Gößweinstein-Pavillon `2789206` | This route fits perfectly: it has train access, caves, rocks, inns, and cultural sights, though it is a loop rather than one-way. | 6.3 km, 188 m up, loop, 43% paved, 5.2 km from home | BM25 127 · dense 114 · fused – · LTR – · MMR – → – | **retrieval** | – | pool_latent |
-| 3 | Wallfahrerweg PW2 `2829991` | An easy, short walk starting near home that fully satisfies all main wishes: caves, a lake, and multiple inns. | 5.0 km, 99 m up, loop, 20% paved, 1.8 km from home | BM25 35 · dense 68 · fused 50 · LTR 14 · MMR 14→16 → 17 | **ranker** | `tag_cover` +0.89, `duration_h` -0.42, `paved_share` +0.42 | recsys_v1, recsys_v1_chat, v6_ltr, v6_ltr_noapi, v7_mmr |
+| 3 | Wallfahrerweg PW2 `2829991` | An easy, short walk starting near home that fully satisfies all main wishes: caves, a lake, and multiple inns. | 5.0 km, 99 m up, loop, 20% paved, 1.8 km from home | BM25 35 · dense 68 · fused 50 · LTR 14 · MMR 14→16 → 17 | **ranker** | `tag_cover` +0.89, `duration_h` -0.42, `paved_share` +0.42 | recsys_serve_needs_demote, recsys_v1, recsys_v1_chat, v6_ltr, v6_ltr_noapi, v7_mmr |
 | 3 | Panoramaweg im Ailsbachtal `3250297` | Perfectly fits the short distance and easy level, featuring multiple caves, impressive rock formations, a castle, and two inns along the way. | 4.3 km, 91 m up, loop, 6% paved, 6.4 km from home | BM25 9 · dense 49 · fused 10 · LTR 19 · MMR 19→21 → 22 | **ranker** | `tag_cover` +0.84, `duration_h` -0.56, `length_km` -0.37 | recsys_v1, recsys_v1_chat, recsys_v1_nocapslot, recsys_v1_qonly, v1_filters, v2_bm25, v4_rrf, v6_ltr, v6_ltr_noapi, v7_mmr |
 <!-- END GENERATED failure-p190 -->
 
@@ -256,10 +256,10 @@ Best judged routes not shown, and where they were lost:
 
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
-| 3 | Frosch `2644647` | This loop fits your comfortable distance perfectly, features S2 trails, viewpoints, and a mountain inn (Kornberghaus) in a quiet forest setting. | 38.0 km, 804 m up, loop, 15% paved, 11.7 km from home | BM25 1 · dense 7 · fused 2 · LTR 22 · MMR 22→21 → 22 | **ranker** | `technical` -1.21, `tag_cover` -0.56, `loop_match` +0.30 | pool_intent_lexical, pool_latent, v1_filters, v2_bm25, v3_dense, v4_rrf, v5_rank_api |
-| 2 | MTB-Tour 4: Rodachtal-Region Nord `974525` | This loop fits your comfortable distance, features a mountain hut (Wanderheim), but only has one viewpoint and lacks technical trails. | 45.4 km, 1212 m up, loop, 8% paved, 38.3 km from home | BM25 3 · dense 4 · fused 1 · LTR 13 · MMR 13→14 → 15 | **ranker** | `tag_cover` -0.54, `ascent_fit` -0.42, `paved_share` +0.36 | pool_intent_lexical, pool_latent, recsys_v1, recsys_v1_chat, recsys_v1_nosusp, v2_bm25, v3_dense, v4_rrf, v5_rank_api, v6_ltr, v6_ltr_noapi, v7_mmr |
+| 3 | Frosch `2644647` | This loop fits your comfortable distance perfectly, features S2 trails, viewpoints, and a mountain inn (Kornberghaus) in a quiet forest setting. | 38.0 km, 804 m up, loop, 15% paved, 11.7 km from home | BM25 1 · dense 7 · fused 2 · LTR 22 · MMR 22→21 → 22 | **ranker** | `technical` -1.21, `tag_cover` -0.56, `loop_match` +0.30 | pool_intent_lexical, pool_latent, recsys_serve_needs_demote, recsys_serve_needs_promote, v1_filters, v2_bm25, v3_dense, v4_rrf, v5_rank_api |
+| 2 | MTB-Tour 4: Rodachtal-Region Nord `974525` | This loop fits your comfortable distance, features a mountain hut (Wanderheim), but only has one viewpoint and lacks technical trails. | 45.4 km, 1212 m up, loop, 8% paved, 38.3 km from home | BM25 3 · dense 4 · fused 1 · LTR 13 · MMR 13→14 → 15 | **ranker** | `tag_cover` -0.54, `ascent_fit` -0.42, `paved_share` +0.36 | pool_intent_lexical, pool_latent, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1, recsys_v1_chat, recsys_v1_nosusp, v2_bm25, v3_dense, v4_rrf, v5_rank_api, v6_ltr, v6_ltr_noapi, v7_mmr |
 | 2 | Großer Waldstein `2533807` | This is a one-way route instead of a loop, but it fits your distance perfectly and features viewpoints and a mountain inn. | 67.1 km, 1362 m up, one-way, 24% paved, 0.7 km from home | BM25 13 · dense 2 · fused 6 · LTR 26 · MMR 26→27 → 27 | **ranker** | `tag_cover` -0.57, `length_km` +0.49, `intent_loop` -0.48 | pool_intent_lexical, pool_latent, v3_dense, v4_rrf, v5_rank_api |
-| 2 | Pumuckl `2646461` | This loop is slightly shorter than comfortable, has no mountain hut or inn mapped, but offers great viewpoints and S2 trails. | 27.5 km, 735 m up, loop, 30% paved, 7.4 km from home | BM25 4 · dense 17 · fused 10 · LTR 29 · MMR 29→31 → 31 | **ranker** | `technical` -1.16, `tag_cover` -0.59, `pois_per_km` -0.29 | pool_intent_lexical, pool_latent, recsys_v1_qonly, v1_filters, v2_bm25, v4_rrf, v5_rank_api |
+| 2 | Pumuckl `2646461` | This loop is slightly shorter than comfortable, has no mountain hut or inn mapped, but offers great viewpoints and S2 trails. | 27.5 km, 735 m up, loop, 30% paved, 7.4 km from home | BM25 4 · dense 17 · fused 10 · LTR 29 · MMR 29→31 → 31 | **ranker** | `technical` -1.16, `tag_cover` -0.59, `pois_per_km` -0.29 | pool_intent_lexical, pool_latent, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1_qonly, v1_filters, v2_bm25, v4_rrf, v5_rank_api |
 | 2 | Steinwald-Trailrunde `18007489` | This is a one-way route instead of your preferred loop, but it offers great S2 trails, viewpoints, and a forest inn. | 23.5 km, 631 m up, one-way, 2% paved, 30.7 km from home | BM25 2 · dense 9 · fused 5 · LTR 46 · MMR 46→46 → 46 | **ranker** | `technical` -1.40, `tag_cover` -0.55, `intent_loop` -0.50 | pool_intent_lexical, pool_latent, v1_filters, v2_bm25, v3_dense, v4_rrf, v5_rank_api |
 <!-- END GENERATED failure-p145 -->
 
@@ -285,7 +285,7 @@ split. Until then the ranker should not override a fused top-3 that matches an e
 *Challenging MTB ride for friends, lake and beer garden, 30-70 km.*
 
 <!-- BEGIN GENERATED failure-p003 (make report; do not edit) -->
-NDCG@10 **0.413**, MRR@10 0.333, Recall@50 0.875; 185 routes pass the hard filters; judged pairs by grade: 0: 44, 1: 17, 2: 6, 3: 2.
+NDCG@10 **0.413**, MRR@10 0.333, Recall@50 0.875; 185 routes pass the hard filters; judged pairs by grade: 0: 44, 1: 18, 2: 6, 3: 2.
 
 - **Intent (what the user typed):** "A quiet, challenging mountain bike ride with forest trails beside a lake and a beer garden along the way. For a group of friends, about 30–70 km."
 - **Slots the system saw:** tab `cycling`, home Burgkunstadt, radius 60.0 km, distance cap 95.9 km; questionnaire advanced, natural-scenery.
@@ -312,10 +312,10 @@ Best judged routes not shown, and where they were lost:
 
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
-| 2 | Pegnitz-Pottenstein Runde `1167506` | This mountain biking route is the right length and has beer gardens and viewpoints, but it lacks the requested lake. | 35.4 km, 810 m up, loop, 26% paved, 47.5 km from home | BM25 1 · dense 44 · fused 12 · LTR 37 · MMR 37→36 → 37 | **ranker** | `technical` -1.93, `bm25_rank` -0.27, `duration_h` +0.24 | pool_intent_lexical, pool_latent, v1_filters, v2_bm25 |
-| 2 | MTB 2 Altenberg - Kälberberg `1610645` | This mountain biking route is the right length and features a beer garden and viewpoint, but it lacks the requested lake. | 42.6 km, 1006 m up, loop, 41% paved, 34.3 km from home | BM25 30 · dense 47 · fused 35 · LTR 17 · MMR 17→11 → 12 | **ranker** | `duration_h` +0.46, `pois_per_km` -0.25, `fused_rank` -0.24 | pool_latent, recsys_v1_qonly, v1_filters, v7_mmr |
-| 2 | MTB-Tour 2: Rennsteig-Region West `2009495` | This mountain biking route is the perfect length and features a lake (Ölschnitzsee) in quiet nature, but it lacks a beer garden. | 42.9 km, 922 m up, loop, 20% paved, 36.7 km from home | BM25 40 · dense 1 · fused 11 · LTR 21 · MMR 21→23 → 24 | **ranker** | `tag_cover` -0.55, `duration_h` +0.39, `pois_per_km` -0.31 | pool_latent, v3_dense |
-| 2 | Schneeberg `2538698` | Fits the distance, has a lake, but exceeds comfortable climbing (1881 m vs 1550 m) and lacks a beer garden. | 70.8 km, 1881 m up, loop, 25% paved, 40.6 km from home | BM25 53 · dense 4 · fused 14 · LTR 16 · MMR 16→16 → 17 | **ranker** | `ascent_fit` -0.43, `duration_h` +0.43, `pois_per_km` -0.31 | pool_intent_lexical, v3_dense, v5_rank_api, v6_ltr, v7_mmr |
+| 2 | Pegnitz-Pottenstein Runde `1167506` | This mountain biking route is the right length and has beer gardens and viewpoints, but it lacks the requested lake. | 35.4 km, 810 m up, loop, 26% paved, 47.5 km from home | BM25 1 · dense 44 · fused 12 · LTR 37 · MMR 37→36 → 37 | **ranker** | `technical` -1.93, `bm25_rank` -0.27, `duration_h` +0.24 | pool_intent_lexical, pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, v1_filters, v2_bm25 |
+| 2 | MTB 2 Altenberg - Kälberberg `1610645` | This mountain biking route is the right length and features a beer garden and viewpoint, but it lacks the requested lake. | 42.6 km, 1006 m up, loop, 41% paved, 34.3 km from home | BM25 30 · dense 47 · fused 35 · LTR 17 · MMR 17→11 → 12 | **ranker** | `duration_h` +0.46, `pois_per_km` -0.25, `fused_rank` -0.24 | pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1_qonly, v1_filters, v7_mmr |
+| 2 | MTB-Tour 2: Rennsteig-Region West `2009495` | This mountain biking route is the perfect length and features a lake (Ölschnitzsee) in quiet nature, but it lacks a beer garden. | 42.9 km, 922 m up, loop, 20% paved, 36.7 km from home | BM25 40 · dense 1 · fused 11 · LTR 21 · MMR 21→23 → 24 | **ranker** | `tag_cover` -0.55, `duration_h` +0.39, `pois_per_km` -0.31 | pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, v3_dense |
+| 2 | Schneeberg `2538698` | Fits the distance, has a lake, but exceeds comfortable climbing (1881 m vs 1550 m) and lacks a beer garden. | 70.8 km, 1881 m up, loop, 25% paved, 40.6 km from home | BM25 53 · dense 4 · fused 14 · LTR 16 · MMR 16→16 → 17 | **ranker** | `ascent_fit` -0.43, `duration_h` +0.43, `pois_per_km` -0.31 | pool_intent_lexical, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, v3_dense, v5_rank_api, v6_ltr, v7_mmr |
 | 2 | Frosch `2644647` | A challenging mountain bike route with great trails, but it lacks the requested lake and beer garden. | 38.0 km, 804 m up, loop, 15% paved, 58.2 km from home | BM25 3 · dense 29 · fused 10 · LTR 44 · MMR 44→45 → 46 | **ranker** | `tag_cover` -1.37, `technical` -1.20, `tag_hits` -0.42 | pool_intent_lexical, pool_latent, v2_bm25, v4_rrf |
 <!-- END GENERATED failure-p003 -->
 
@@ -336,7 +336,7 @@ exploration pick to the requested style.
 *Quiet forest walk by a lake, easy for little kids, by train from Schweinfurt.*
 
 <!-- BEGIN GENERATED failure-p177 (make report; do not edit) -->
-NDCG@10 **0.427**, MRR@10 0.500, Recall@50 0.846; 994 routes pass the hard filters; judged pairs by grade: 0: 34, 1: 22, 2: 9, 3: 4.
+NDCG@10 **0.427**, MRR@10 0.500, Recall@50 0.846; 994 routes pass the hard filters; judged pairs by grade: 0: 34, 1: 29, 2: 9, 3: 4.
 
 - **Intent (what the user typed):** "A quiet forest walk by a lake, easy for little kids and reachable by train from Schweinfurt."
 - **Slots the system saw:** tab `hiking`, home Schweinfurt, radius 60.0 km, distance cap 11.3 km; questionnaire beginner, natural-scenery, family-fun.
@@ -364,10 +364,10 @@ Best judged routes not shown, and where they were lost:
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
 | 3 | Rundwanderweg Steigerwaldrunde Sander Altmain `2257448` | Fits the lake and quiet nature wishes, is easy for kids, and has public transport access, though it is slightly short. | 3.8 km, 10 m up, loop, 11% paved, 26.0 km from home | BM25 228 · dense 32 · fused 57 · LTR – · MMR – → – | **retrieval** | – | recsys_v1_qonly, v1_filters |
-| 3 | Naturerlebnisweg Baunach `3981766` | This route has train access, a lake, and is family-friendly, though it is slightly shorter than the comfortable range. | 3.3 km, 10 m up, loop, 9% paved, 44.7 km from home | BM25 11 · dense 44 · fused 16 · LTR 20 · MMR 20→20 → 21 | **ranker** | `duration_h` -1.23, `tag_cover` +0.65, `length_km` -0.38 | pool_latent |
-| 3 | Hase-Weg Sennfeld `6031763` | This route has train access, lakes, and is family-friendly, though it is slightly shorter than the comfortable range. | 3.2 km, 19 m up, loop, 34% paved, 1.2 km from home | BM25 2 · dense 5 · fused 3 · LTR 12 · MMR 12→15 → 16 | **ranker** | `duration_h` -1.17, `tag_cover` +0.58, `length_km` -0.46 | pool_intent_lexical, pool_latent, recsys_v1, recsys_v1_chat, v2_bm25, v3_dense, v4_rrf, v5_rank_api, v6_ltr, v6_ltr_noapi |
+| 3 | Naturerlebnisweg Baunach `3981766` | This route has train access, a lake, and is family-friendly, though it is slightly shorter than the comfortable range. | 3.3 km, 10 m up, loop, 9% paved, 44.7 km from home | BM25 11 · dense 44 · fused 16 · LTR 20 · MMR 20→20 → 21 | **ranker** | `duration_h` -1.23, `tag_cover` +0.65, `length_km` -0.38 | pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote |
+| 3 | Hase-Weg Sennfeld `6031763` | This route has train access, lakes, and is family-friendly, though it is slightly shorter than the comfortable range. | 3.2 km, 19 m up, loop, 34% paved, 1.2 km from home | BM25 2 · dense 5 · fused 3 · LTR 12 · MMR 12→15 → 16 | **ranker** | `duration_h` -1.17, `tag_cover` +0.58, `length_km` -0.46 | pool_intent_lexical, pool_latent, recsys_serve_needs, recsys_serve_needs_demote, recsys_serve_needs_promote, recsys_v1, recsys_v1_chat, v2_bm25, v3_dense, v4_rrf, v5_rank_api, v6_ltr, v6_ltr_noapi |
 | 2 | Rundweg "Rund um den Baumwipfelpfad" `1822600` | Excellent fit with lakes, playgrounds, and public transport, but busy road sections and popular attractions might reduce quietness. | 6.1 km, 98 m up, loop, 44% paved, 28.7 km from home | BM25 227 · dense 42 · fused 77 · LTR – · MMR – → – | **retrieval** | – | recsys_v1_qonly, v1_filters |
-| 2 | Rund um das Naturschutzgebiet Goldbergsee `3117414` | This is a one-way route rather than the preferred loop, and it ends at a different location, which is less ideal for a family. | 3.4 km, 99 m up, one-way, 40% paved, 56.9 km from home | BM25 10 · dense 165 · fused 22 · LTR 28 · MMR 28→23 → 24 | **ranker** | `duration_h` -1.23, `tag_cover` +0.80, `length_km` -0.50 | pool_latent, recsys_v1_nocapslot, v2_bm25 |
+| 2 | Rund um das Naturschutzgebiet Goldbergsee `3117414` | This is a one-way route rather than the preferred loop, and it ends at a different location, which is less ideal for a family. | 3.4 km, 99 m up, one-way, 40% paved, 56.9 km from home | BM25 10 · dense 165 · fused 22 · LTR 28 · MMR 28→23 → 24 | **ranker** | `duration_h` -1.23, `tag_cover` +0.80, `length_km` -0.50 | pool_latent, recsys_serve_needs_demote, recsys_v1_nocapslot, v2_bm25 |
 <!-- END GENERATED failure-p177 -->
 
 **Diagnosis.** Here the user did state the train, and the judge's main complaint about the returned routes is
@@ -472,7 +472,7 @@ Best judged routes not shown, and where they were lost:
 
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
-| 3 | Deutscher Limes-Radweg 6. Abschnitt Weißenburg - Regensburg `1110944` | This 143.5 km linear route fits the 4-day distance perfectly, avoids busy roads, and features castles, viewpoints, and beer gardens. | 143.5 km, 1413 m up, one-way, 66% paved, 27.4 km from home | BM25 17 · dense 144 · fused 68 · LTR – · MMR – → – | **retrieval** | – | pool_latent |
+| 3 | Deutscher Limes-Radweg 6. Abschnitt Weißenburg - Regensburg `1110944` | This 143.5 km linear route fits the 4-day distance perfectly, avoids busy roads, and features castles, viewpoints, and beer gardens. | 143.5 km, 1413 m up, one-way, 66% paved, 27.4 km from home | BM25 17 · dense 144 · fused 68 · LTR – · MMR – → – | **retrieval** | – | pool_latent, recsys_serve_needs_promote |
 | 3 | Kloster–Kirchen–Kartoffeln `19422959` | A perfect fit: a one-way route with a beer garden, castle, ruins, viewpoints, and many places to eat. | 37.8 km, 350 m up, one-way, 74% paved, 15.5 km from home | BM25 19 · dense 6 · fused 4 · LTR 11 · MMR 11→11 → 12 | **ranker** | `tag_cover` +0.62, `tag_hits` +0.29, `paved_share` -0.25 | recsys_serve_nohome, recsys_serve_noslots, recsys_v1_nocapslot, recsys_v1_nosusp, v3_dense, v4_rrf, v5_rank_api, v7_mmr |
 | 2 | Hilpoltstein 2 `233212` | A short one-way route with a castle, museum, and restaurants, but it lacks a beer garden and viewpoints. | 18.7 km, 168 m up, one-way, 80% paved, 38.8 km from home | BM25 88 · dense 7 · fused 23 · LTR 27 · MMR 27→25 → 25 | **ranker** | `duration_h` -0.79, `tag_cover` +0.65, `tag_hits` +0.30 | v3_dense |
 | 2 | Altmühlsee 4 `1518565` | A one-way route with a castle, museums, and restaurants, but it lacks a beer garden and viewpoints. | 33.1 km, 237 m up, one-way, 98% paved, 10.6 km from home | BM25 92 · dense 2 · fused 17 · LTR 21 · MMR 21→22 → 22 | **ranker** | `tag_cover` +0.63, `paved_share` -0.33, `tag_hits` +0.29 | v3_dense |
@@ -550,7 +550,7 @@ intents is the kind of judgement the owner's labels should check (EVAL.md sectio
 *An MTB route to a summit with great views and a hut stop.*
 
 <!-- BEGIN GENERATED failure-p225 (make report; do not edit) -->
-NDCG@10 **0.471**, MRR@10 0.333, Recall@50 0.800; 460 routes pass the hard filters; judged pairs by grade: 0: 35, 1: 29, 2: 5.
+NDCG@10 **0.471**, MRR@10 0.333, Recall@50 0.800; 460 routes pass the hard filters; judged pairs by grade: 0: 35, 1: 30, 2: 5.
 
 - **Intent (what the user typed):** "Could you suggest a mountain bike route to a summit with great views and a hut stop?"
 - **Slots the system saw:** tab `cycling`, home Taufkirchen (Vils), radius 78.0 km, distance cap 58.7 km; questionnaire intermediate, history-culture.
@@ -577,7 +577,7 @@ Best judged routes not shown, and where they were lost:
 
 | Grade | Route | Judge's reason | Facts | Stage ranks → final | Lost at | Largest LTR contributions | Pooled by |
 |---|---|---|---|---|---|---|---|
-| 2 | MTB Almtour `1588715` | Has train access and a hut, but lacks a summit, is a loop, and is mostly paved (75% roads) which contradicts the surface preference. | 37.3 km, 964 m up, loop, 78% paved, 72.8 km from home | BM25 14 · dense 1 · fused 3 · LTR 7 · MMR 7→10 → 11 | **exploration** | `busy_road_share` -0.66, `duration_h` +0.49, `paved_share` -0.37 | recsys_v1, recsys_v1_chat, recsys_v1_nocap, recsys_v1_nosusp, v3_dense, v4_rrf, v6_ltr, v6_ltr_noapi, v7_mmr |
+| 2 | MTB Almtour `1588715` | Has train access and a hut, but lacks a summit, is a loop, and is mostly paved (75% roads) which contradicts the surface preference. | 37.3 km, 964 m up, loop, 78% paved, 72.8 km from home | BM25 14 · dense 1 · fused 3 · LTR 7 · MMR 7→10 → 11 | **exploration** | `busy_road_share` -0.66, `duration_h` +0.49, `paved_share` -0.37 | recsys_serve_needs, recsys_serve_needs_promote, recsys_v1, recsys_v1_chat, recsys_v1_nocap, recsys_v1_nosusp, v3_dense, v4_rrf, v6_ltr, v6_ltr_noapi, v7_mmr |
 | 2 | BF 19 MTB - Megs di Schinden? `3990528` | Fits the distance, ascent, and S2 level, featuring a summit (Katzenköpfl), viewpoint, and hut, but lacks a train station at the start. | 22.4 km, 756 m up, loop, 30% paved, 64.8 km from home | BM25 18 · dense 18 · fused 14 · LTR 20 · MMR 20→19 → 20 | **ranker** | `technical` -1.96, `duration_h` +0.24, `tag_cover` +0.23 | pool_latent, v6_ltr, v7_mmr |
 | 2 | Watzmann-Hochkönig Nord-Runde: Etappe 4: Ruhpolding – Marzoll `9831514` | This linear route has train access, fits the distance and S2 technical level, but lacks a summit and mountain hut stop. | 31.6 km, 632 m up, one-way, 47% paved, 75.5 km from home | BM25 88 · dense 68 · fused 67 · LTR – · MMR – → – | **retrieval** | – | pool_latent |
 | 2 | Priener Hütte Schleching `11956357` | This linear MTB route has the right length, includes a mountain hut and a viewpoint, but lacks train access at the start. | 24.8 km, 1350 m up, one-way, 31% paved, 72.2 km from home | BM25 15 · dense 5 · fused 8 · LTR 10 · MMR 10→11 → 12 | **mmr** | `ascent_per_km` -0.59, `ascent_fit` -0.52, `duration_h` +0.36 | pool_intent_lexical, pool_latent, recsys_v1, recsys_v1_nocapslot, v3_dense, v4_rrf, v5_rank_api, v6_ltr, v6_ltr_noapi, v7_mmr |
@@ -639,3 +639,66 @@ it, and the judge reads all of it.
 4. **Evaluation fixes** (C, D): intents that state every hard requirement of the latent profile, or a judge that
    grades only against what the request expresses plus the hard constraints; the owner's labels to check the
    judge's 2-versus-3 boundary.
+
+## Iteration 2: what the stated-need stage does to these ten
+
+Iteration 2 acted on the first fix above: needs the user states and the catalogue can verify become constraints
+with a documented relaxation ([RECSYS.md](RECSYS.md) section 13). By the rule fixed in advance on dev it was not
+accepted, so `recsys_serve` is still the served system and the ten queries above are still its ten worst
+(DECISIONS.md D27). The variants were evaluated on test once, after that decision; this section reads them.
+`recsys_serve_needs_promote` was chosen for the detailed reading before the test run.
+
+<!-- BEGIN GENERATED failures-iteration2 (make report; do not edit) -->
+NDCG@10 of the ten worst test queries of `recsys_serve` under each stated-need variant (none is served; DECISIONS.md D27). Stated needs = what the stage extracted from the intent.
+
+| Persona | Class | Stated needs | `recsys_serve` | `recsys_serve_needs` | `recsys_serve_needs_promote` | `recsys_serve_needs_demote` |
+|---|---|---|---|---|---|---|
+| P018 | A | stroller, length | 0.204 | 0.758 | 0.758 | 0.639 |
+| P260 | A | stroller, max_length | 0.350 | 0.502 | 0.502 | 0.442 |
+| P190 | C | length | 0.388 | 0.505 | 0.505 | 0.651 |
+| P145 | A | mtb, loop | 0.403 | 0.403 | 0.615 | 0.615 |
+| P003 | A | mtb, length | 0.413 | 0.924 | 0.924 | 0.909 |
+| P177 | A | train | 0.427 | 0.711 | 0.711 | 0.793 |
+| P110 | B | none | 0.436 | 0.436 | 0.436 | 0.436 |
+| P218 | B | one_way, days | 0.439 | 0.439 | 0.774 | 0.666 |
+| P048 | D | none | 0.469 | 0.469 | 0.469 | 0.469 |
+| P225 | C | mtb | 0.471 | 0.528 | 0.528 | 0.471 |
+
+- `recsys_serve_needs`: 12 test queries better and 4 worse by more than 0.1 NDCG@10; worse: P108 -0.148 (mtb, length), P033 -0.142 (length), P117 -0.106 (train, length), P271 -0.104 (length).
+- `recsys_serve_needs_promote`: 14 test queries better and 7 worse by more than 0.1 NDCG@10; worse: P157 -0.271 (loop, length), P033 -0.142 (length), P019 -0.128 (train, loop, length), P280 -0.120 (stroller, train, length), P108 -0.120 (mtb, length), P117 -0.106 (train, length), P271 -0.104 (length).
+- `recsys_serve_needs_demote`: 11 test queries better and 2 worse by more than 0.1 NDCG@10; worse: P143 -0.182 (mtb, loop), P271 -0.104 (length).
+
+The ten worst test queries of `recsys_serve_needs_promote` itself (`python -m evalkit.failures --system recsys_serve_needs_promote`): P110 0.436, P048 0.469, P260 0.502, P190 0.505, P287 0.518, P248 0.524, P225 0.528, P017 0.544, P146 0.568, P280 0.577. Their relevant routes by where they were lost: exploration 4, filter 0, mmr 5, needs 24, ranker 74, retrieval 37, shown 57 (total 201).
+<!-- END GENERATED failures-iteration2 -->
+
+**Fixed, or mostly.** The four class-A queries whose need the catalogue can check directly: P018 and P260 (stroller:
+no steps, smooth surface, little climbing), P003 (a mountain-bike route instead of paved touring routes) and P177
+(a station at the start). Their best routes had been retrieved and then ranked down; the filter removes the
+competitors the ranker preferred, so the ranker's order no longer matters as much. P218 (class B, "four-day
+one-way") is fixed only when strict matches are promoted: in the plain filter the day count needs routes of at
+least 80 km, too few of which are within reach, so relaxation drops the need entirely; with promotion the few
+long routes that meet it are placed first. P145 behaves the same way with the MTB need (few MTB relations near
+Kirchenlamitz). P190 (class C) gains from "short" alone; its unstated train and lake wishes are still missed.
+
+**Not fixed.** P110 and P048 state no verifiable need ("a gentle ride by a lake"; "a quiet forest walk by a lake"),
+so the stage does nothing; they need a comfortable-distance slot and unstated-preference data, not constraints.
+P225's remaining loss is the unstated train and one-way wishes (class C). P260 is only half repaired: its
+strongest wish (a lake) is not a need the stage handles, and one grade-3 route is now *lost at the needs stage*
+because it has 16 m of steps that the judge did not count against a stroller.
+
+**New failures.** Look at the queries that got worse, not at the mean. Three patterns, each visible in the traces:
+
+- *The catalogue's check is stricter than the judge's reading.* "Reachable by train" is verified as a station
+  within 1 km of the start; the judge also accepts a station at the end of a one-way route or a bus at the start
+  (P019, P280: grade-2 and grade-3 routes with only a bus stop are filtered out). "Stroller" requires no steps at
+  all; the judge forgives a few metres (P260).
+- *Promotion trusts a need the relaxation had already given up.* For P157 ("a loop of around 30 km") too few loops
+  of 15-45 km were in reach, so both needs were dropped, and promotion then put the five that meet them on top,
+  ahead of longer loops the judge preferred. The plain filter does not do this; it is the price of the P218 fix.
+- *A length window reshuffles retrieval.* For P033, P117 and P271 the stated length was read correctly and most
+  relevant routes meet it, but filtering changes the candidate set the fusion and the ranker see, and the order
+  of the top 10 moves by a few judged routes. These losses are of the size of the ranker's ordinary noise.
+
+And the MTB need is weaker evidence than it looks: for MTB personas the judge often grades paved cycling routes 2
+(P108), so promoting mapped MTB routes can cost as much as it gains. The analysed variant's own ten worst queries
+lose two dozen relevant routes at the needs stage, which is the cost side of the same coin.

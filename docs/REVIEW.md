@@ -27,9 +27,9 @@ comparable; compare systems within a split.
 
 <!-- BEGIN GENERATED review-pooling (make report; do not edit) -->
 - Pool: top 10 of every registered system plus the pool-only contributors `pool_latent`, `pool_intent_lexical`.
-- 23,764 judged pairs over 300 personas; 9,408 (39.6%) graded 0 by rule, 14,356 by the LLM judge.
-- Known relevant (grade ≥ 2) routes per persona: median 18, min 1, max 49; personas without any: 0.
-- Reference, the latent matcher that supplies much of the relevant set: NDCG@10 0.765 [0.733, 0.794] on test (`_reference.json`).
+- 24,160 judged pairs over 300 personas; 9,408 (38.9%) graded 0 by rule, 14,752 by the LLM judge.
+- Known relevant (grade ≥ 2) routes per persona: median 19, min 1, max 49; personas without any: 0.
+- Reference, the latent matcher that supplies much of the relevant set: NDCG@10 0.761 [0.729, 0.789] on test (`_reference.json`).
 <!-- END GENERATED review-pooling -->
 
 **Evidence:** [EVAL.md](EVAL.md) section 4; RESULTS.md "Data and judgements" and "Reference: the latent
@@ -75,8 +75,8 @@ calibrated weighted sum was never run as a competitor, so "RRF is better than a 
 from robustness, not a measurement.
 
 <!-- BEGIN GENERATED review-rrf (make report; do not edit) -->
-- Test NDCG@10 / Recall@50: BM25 `v2_bm25` 0.551 [0.514, 0.589] / 0.757 [0.713, 0.799]; dense `v3_dense` 0.529 [0.493, 0.564] / 0.726 [0.680, 0.774]; RRF `v4_rrf` 0.603 [0.568, 0.641] / 0.842 [0.809, 0.871].
-- RRF − BM25 (test, paired): NDCG@10 +0.053 [+0.023, +0.083], Recall@50 +0.085 [+0.060, +0.108]. RRF − dense: NDCG@10 +0.075 [+0.049, +0.100].
+- Test NDCG@10 / Recall@50: BM25 `v2_bm25` 0.548 [0.509, 0.586] / 0.749 [0.704, 0.791]; dense `v3_dense` 0.526 [0.491, 0.561] / 0.719 [0.673, 0.765]; RRF `v4_rrf` 0.599 [0.564, 0.637] / 0.830 [0.797, 0.861].
+- RRF − BM25 (test, paired): NDCG@10 +0.052 [+0.022, +0.082], Recall@50 +0.082 [+0.058, +0.103]. RRF − dense: NDCG@10 +0.074 [+0.049, +0.100].
 - RRF constant on dev (Recall@50): k 10: 0.750 [0.712, 0.787], k 30: 0.749 [0.710, 0.783], k 60: 0.739 [0.699, 0.776], k 100: 0.730 [0.691, 0.769].
 - Cosine band of one dev persona's eligible set: min 0.585, max 0.708 (BM25 scores are unbounded and query-dependent).
 <!-- END GENERATED review-rrf -->
@@ -99,18 +99,18 @@ The ranker's dev gains are in-sample and much larger than on test.
 <!-- BEGIN GENERATED review-stages (make report; do not edit) -->
 | Step | ΔNDCG@10 (test, paired) | ΔNDCG@10 (dev, paired) |
 |---|---|---|
-| `v0_rules` − `random` | -0.001 [-0.013, +0.010] | -0.001 [-0.007, +0.004] |
-| `v1_filters` − `v0_rules` | +0.352 [+0.320, +0.383] | +0.337 [+0.312, +0.363] |
-| `v2_bm25` − `v1_filters` | +0.181 [+0.132, +0.232] | +0.149 [+0.116, +0.180] |
-| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.023] | +0.022 [-0.004, +0.049] |
-| `v4_rrf` − `v3_dense` | +0.075 [+0.049, +0.100] | +0.040 [+0.025, +0.056] |
-| `v5_rank_api` − `v4_rrf` | +0.039 [+0.009, +0.067] | +0.065 [+0.046, +0.085] |
-| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.173] | +0.286 [+0.265, +0.309] |
+| `v0_rules` − `random` | +0.000 [-0.011, +0.011] | -0.001 [-0.007, +0.005] |
+| `v1_filters` − `v0_rules` | +0.351 [+0.318, +0.382] | +0.336 [+0.311, +0.361] |
+| `v2_bm25` − `v1_filters` | +0.179 [+0.132, +0.229] | +0.148 [+0.116, +0.179] |
+| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.022] | +0.022 [-0.004, +0.049] |
+| `v4_rrf` − `v3_dense` | +0.074 [+0.049, +0.100] | +0.040 [+0.025, +0.056] |
+| `v5_rank_api` − `v4_rrf` | +0.039 [+0.008, +0.067] | +0.065 [+0.045, +0.084] |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.172] | +0.285 [+0.264, +0.308] |
 | `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | -0.005 [-0.007, -0.002] |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.016 [-0.021, -0.010] |
 | `recsys_serve` − `recsys_v1` | -0.035 [-0.053, -0.020] | -0.035 [-0.043, -0.028] |
 
-Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.122, +0.194]; `v6_ltr` − `v6_ltr_noapi` (the API score as a feature) +0.012 [+0.001, +0.024]; questionnaire only → + intent (`recsys_v1_qonly` → `recsys_v1`) +0.395 [+0.359, +0.431]; + chat instead of the raw intent (`recsys_v1_chat` − `recsys_v1`) -0.012 [-0.037, +0.009]. Dev rows of the learned ranker are in-sample.
+Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.123, +0.194]; `v6_ltr` − `v6_ltr_noapi` (the API score as a feature) +0.012 [+0.001, +0.024]; questionnaire only → + intent (`recsys_v1_qonly` → `recsys_v1`) +0.393 [+0.357, +0.429]; + chat instead of the raw intent (`recsys_v1_chat` − `recsys_v1`) -0.012 [-0.038, +0.009]. Dev rows of the learned ranker are in-sample.
 <!-- END GENERATED review-stages -->
 
 **Evidence:** RESULTS.md "Phase 3 ablation", "Other comparisons", "Phase 4 end-to-end", "Served default".
@@ -138,13 +138,16 @@ Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.12
    not; the simulation cannot tell which.
 
 Related: the feedback parameters chosen on dev disagree with test (D21), probably because the in-sample ranker
-leaves feedback less to repair on dev.
+leaves feedback less to repair on dev. Iteration 2 measured that effect directly (D27): against the in-sample
+ranker on dev every stated-need variant loses, against a cross-fitted copy of the same ranker every one wins.
+Any change that overrides the ranker is judged unfairly by system-level dev rows; a cross-fitted dev ranker is
+the fix for both D21 and D27.
 
 <!-- BEGIN GENERATED review-overfit (make report; do not edit) -->
 - `v6_ltr` on judged candidates: in-sample 0.968, grouped CV 0.808 [0.790, 0.826], test 0.828 [0.799, 0.853].
-- System level: `v6_ltr` dev (in-sample) 0.912 [0.897, 0.926] vs test 0.775 [0.746, 0.803]; `recsys_v1` dev 0.892 [0.876, 0.907] vs test 0.759 [0.733, 0.784].
-- `length_cap_ratio`: 25.1% of the gain of the Phase 3 ranker. Without it (`recsys_v1_nocap` − `recsys_v1`): test -0.024 [-0.042, -0.009], dev -0.024 [-0.030, -0.018]. Without the whole suspicious group (`recsys_v1_nosusp`): test -0.034 [-0.051, -0.018].
-- Cap slot left empty: `recsys_v1` loses -0.180 [-0.212, -0.149], the served system -0.114 [-0.142, -0.086]; served minus Phase 3 without the cap +0.031 [+0.001, +0.064].
+- System level: `v6_ltr` dev (in-sample) 0.908 [0.893, 0.923] vs test 0.771 [0.741, 0.800]; `recsys_v1` dev 0.888 [0.873, 0.904] vs test 0.755 [0.729, 0.780].
+- `length_cap_ratio`: 25.1% of the gain of the Phase 3 ranker. Without it (`recsys_v1_nocap` − `recsys_v1`): test -0.024 [-0.042, -0.009], dev -0.023 [-0.030, -0.018]. Without the whole suspicious group (`recsys_v1_nosusp`): test -0.034 [-0.051, -0.018].
+- Cap slot left empty: `recsys_v1` loses -0.179 [-0.212, -0.148], the served system -0.114 [-0.142, -0.086]; served minus Phase 3 without the cap +0.031 [+0.001, +0.063].
 - Feedback parameters: chosen on dev (`slots_only`); on the test simulation the light full loop beats the dev choice by +0.025 [+0.014, +0.036] (rounds 2-10).
 <!-- END GENERATED review-overfit -->
 
@@ -193,13 +196,28 @@ training or real feedback from such users, and intents that state every hard req
 only what the request says).
 
 <!-- BEGIN GENERATED review-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 34; shown 40 (of 154).
+Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 41; shown 40 (of 161).
 
 - Class A: 5 of 10 (P018, P260, P145, P003, P177)
 - Class B: 2 of 10 (P110, P218)
 - Class C: 2 of 10 (P190, P225)
 - Class D: 1 of 10 (P048)
 <!-- END GENERATED review-failures -->
+
+**Iteration 2 tried the first of those fixes** (stated needs as constraints, D27). By the rule fixed in advance
+on dev it is not accepted, so the served default and the failure list above are unchanged; measured afterwards,
+the dev result was the in-sample ranker's doing, and on test the stage repairs most of the class-A and class-B
+queries while filtering out some routes the judge likes (FAILURES.md "Iteration 2"):
+
+<!-- BEGIN GENERATED review-iteration2 (make report; do not edit) -->
+| Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |
+|---|---|---|---|---|---|
+| `recsys_serve_needs` (filter in front of retrieval) | -0.013 [-0.024, -0.003] | no | +0.018 [+0.006, +0.029] | +0.024 [+0.007, +0.046] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
+
+The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.853 [0.837, 0.868] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+<!-- END GENERATED review-iteration2 -->
 
 **Evidence:** [FAILURES.md](FAILURES.md) (generated traces and hand-written diagnoses); `eval/results/_failures.json`.
 **Rerun:** `make failures && make report` (replays each request from the frozen cache and checks it against the
@@ -242,3 +260,6 @@ evaluated counterfactually and an A/B test of exploration (randomised by user, m
      in the region used; switching means `global` (data leaves the EU) or waiting.
    - D21 (technical, not a decision for you): re-tune the feedback parameters once a cross-fitted dev ranker or
      real feedback exists.
+   - D27: the stated-need stage is built, measured and off by the rule fixed in advance; the post-hoc and test
+     evidence favour it. Serving it now would be your call, not the rule's (`RECSYS_SYSTEM`); the clean route is
+     a next iteration that pre-registers a cross-fitted dev comparison.

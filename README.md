@@ -10,7 +10,7 @@ with bootstrap confidence intervals, generated from the committed results files 
 credentials.
 
 <!-- BEGIN GENERATED readme-headline (make report; do not edit) -->
-On the 100 held-out test personas, the served default `recsys_serve` reaches **NDCG@10 0.724 [0.692, 0.753]**, against 0.018 [0.010, 0.026] for the course project's rule scorer and 0.018 [0.010, 0.028] for random order. The best single-request system, `recsys_v1`, reaches 0.759 [0.733, 0.784]; the served default differs from it by -0.035 [-0.053, -0.020] (paired), a cost accepted on purpose for robustness to how real users fill in the form and for an exploration slot ([D25](docs/DECISIONS.md)). In a ten-round feedback simulation the served default keeps NDCG@10 at 0.681 [0.649, 0.711] over rounds 2-10, while the same pipeline without feedback falls to 0.315 [0.291, 0.337] because it keeps showing routes the user has already done.
+On the 100 held-out test personas, the served default `recsys_serve` reaches **NDCG@10 0.720 [0.688, 0.748]**, against 0.018 [0.010, 0.026] for the course project's rule scorer and 0.017 [0.010, 0.027] for random order. The best single-request system, `recsys_v1`, reaches 0.755 [0.729, 0.780]; the served default differs from it by -0.035 [-0.053, -0.020] (paired), a cost accepted on purpose for robustness to how real users fill in the form and for an exploration slot ([D25](docs/DECISIONS.md)). In a ten-round feedback simulation the served default keeps NDCG@10 at 0.679 [0.648, 0.710] over rounds 2-10, while the same pipeline without feedback falls to 0.314 [0.291, 0.336] because it keeps showing routes the user has already done.
 
 **Caveat on every number in this README:** the users are simulated (300 personas with LLM-written requests), relevance is graded by an LLM judge (`gemini-3.5-flash`, rubric v1) that is **not yet validated against the owner's labels**, and the only agreement figure so far is LLM-vs-LLM (QWK 0.76). 95% bootstrap intervals over personas in brackets.
 <!-- END GENERATED readme-headline -->
@@ -34,7 +34,7 @@ is still there; its LLM-written texts (welcome and route summaries) are now pre-
 route facts.
 
 <!-- BEGIN GENERATED readme-data (make report; do not edit) -->
-Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 23,764 (persona, route) pairs, 40% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
+Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 24,160 (persona, route) pairs, 39% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
 <!-- END GENERATED readme-data -->
 
 The catalogue is built reproducibly from a Geofabrik extract (`make data`); route descriptions are generated
@@ -82,17 +82,17 @@ the RRF row fuses both), then the Phase 3 default and the served default. Protoc
 
 | System | What it adds | NDCG@10 | Δ NDCG@10 vs | MRR@10 | Recall@50 | Violations@10 | Cost/request |
 |---|---|---|---|---|---|---|---|
-| `random` | random | 0.018 [0.010, 0.028] | – | 0.036 [0.008, 0.073] | 0.018 [0.010, 0.025] | 93.1% [91.3%, 94.6%] | 0.000000 USD |
-| `v0_rules` | course project's rule scorer | 0.018 [0.010, 0.026] | -0.001 [-0.013, +0.010] (`random`) | 0.035 [0.011, 0.065] | 0.048 [0.033, 0.064] | 93.9% [91.7%, 95.6%] | 0.000000 USD |
-| `v1_filters` | + hard filters | 0.370 [0.335, 0.403] | +0.352 [+0.320, +0.383] (`v0_rules`) | 0.420 [0.355, 0.488] | 0.524 [0.452, 0.592] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
-| `v2_bm25` | + BM25 (replaces the rule scorer) | 0.551 [0.514, 0.589] | +0.181 [+0.132, +0.232] (`v1_filters`) | 0.703 [0.635, 0.770] | 0.757 [0.713, 0.799] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
-| `v3_dense` | dense retrieval instead of BM25 | 0.529 [0.493, 0.564] | -0.022 [-0.065, +0.023] (`v2_bm25`) | 0.688 [0.626, 0.754] | 0.726 [0.680, 0.774] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `v4_rrf` | + RRF fusion of BM25 and dense | 0.603 [0.568, 0.641] | +0.075 [+0.049, +0.100] (`v3_dense`) | 0.765 [0.705, 0.826] | 0.842 [0.809, 0.871] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `v5_rank_api` | + ranker API on the fused top 50 | 0.643 [0.602, 0.682] | +0.039 [+0.009, +0.067] (`v4_rrf`) | 0.799 [0.739, 0.856] | 0.842 [0.809, 0.871] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `v6_ltr` | + learned ranker (LambdaMART, API score as a feature) | 0.775 [0.746, 0.803] | +0.132 [+0.094, +0.173] (`v5_rank_api`) | 0.924 [0.882, 0.958] | 0.842 [0.809, 0.871] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `v7_mmr` | + MMR diversity | 0.770 [0.742, 0.798] | -0.005 [-0.011, +0.002] (`v6_ltr`) | 0.926 [0.883, 0.958] | 0.842 [0.809, 0.871] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
-| `recsys_v1` | Phase 3 default: learned ranker without the API, MMR | 0.759 [0.733, 0.784] | -0.011 [-0.025, +0.002] (`v7_mmr`) | 0.915 [0.876, 0.949] | 0.842 [0.809, 0.871] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `recsys_serve` | **served default**: ranker without the cap feature, feedback, exploration slot | 0.724 [0.692, 0.753] | -0.035 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.843 [0.810, 0.872] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `random` | random | 0.017 [0.010, 0.027] | – | 0.036 [0.008, 0.073] | 0.017 [0.010, 0.025] | 93.1% [91.3%, 94.6%] | 0.000000 USD |
+| `v0_rules` | course project's rule scorer | 0.018 [0.010, 0.026] | +0.000 [-0.011, +0.011] (`random`) | 0.035 [0.011, 0.065] | 0.048 [0.032, 0.064] | 93.9% [91.7%, 95.6%] | 0.000000 USD |
+| `v1_filters` | + hard filters | 0.368 [0.334, 0.402] | +0.351 [+0.318, +0.382] (`v0_rules`) | 0.420 [0.355, 0.488] | 0.523 [0.450, 0.592] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
+| `v2_bm25` | + BM25 (replaces the rule scorer) | 0.548 [0.509, 0.586] | +0.179 [+0.132, +0.229] (`v1_filters`) | 0.703 [0.635, 0.770] | 0.749 [0.704, 0.791] | 0.0% [0.0%, 0.0%] | 0.000000 USD |
+| `v3_dense` | dense retrieval instead of BM25 | 0.526 [0.491, 0.561] | -0.022 [-0.065, +0.022] (`v2_bm25`) | 0.688 [0.626, 0.754] | 0.719 [0.673, 0.765] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `v4_rrf` | + RRF fusion of BM25 and dense | 0.599 [0.564, 0.637] | +0.074 [+0.049, +0.100] (`v3_dense`) | 0.765 [0.705, 0.826] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `v5_rank_api` | + ranker API on the fused top 50 | 0.639 [0.598, 0.679] | +0.039 [+0.008, +0.067] (`v4_rrf`) | 0.799 [0.739, 0.856] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `v6_ltr` | + learned ranker (LambdaMART, API score as a feature) | 0.771 [0.741, 0.800] | +0.132 [+0.094, +0.172] (`v5_rank_api`) | 0.924 [0.882, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `v7_mmr` | + MMR diversity | 0.766 [0.737, 0.794] | -0.005 [-0.011, +0.002] (`v6_ltr`) | 0.926 [0.883, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
+| `recsys_v1` | Phase 3 default: learned ranker without the API, MMR | 0.755 [0.729, 0.780] | -0.011 [-0.025, +0.002] (`v7_mmr`) | 0.915 [0.876, 0.949] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `recsys_serve` | **served default**: ranker without the cap feature, feedback, exploration slot | 0.720 [0.688, 0.748] | -0.035 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.831 [0.798, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
 
 Test split, 100 personas; Δ = paired bootstrap of the per-persona difference. Every top 10 is fully judged. All systems, the dev split and every other comparison: [RESULTS.md](docs/RESULTS.md).
 <!-- END GENERATED readme-results -->
@@ -122,12 +122,12 @@ the user already did.
 |---|---|---|---|---|---|
 | `v0_rules` | course project's rule scorer with its own feedback | 0.017 [0.010, 0.026] | 0.019 [0.013, 0.027] | 0.023 [0.015, 0.031] | 8.5% |
 | `v1_filters` | hard filters + rule scorer, same feedback | 0.359 [0.324, 0.393] | 0.299 [0.276, 0.322] | 0.254 [0.226, 0.280] | 18.1% |
-| `recsys_v1` | Phase 3 default, feedback off (control) | 0.733 [0.705, 0.761] | 0.315 [0.291, 0.337] | 0.129 [0.112, 0.148] | 8.2% |
-| `recsys_v1_fb` | Phase 3 default + feedback loop | 0.733 [0.705, 0.761] | 0.701 [0.667, 0.732] | 0.690 [0.651, 0.725] | 16.7% |
-| `recsys_serve_noexplore` | served default without the exploration slot | 0.711 [0.678, 0.743] | 0.692 [0.661, 0.723] | 0.684 [0.647, 0.720] | 16.7% |
-| `recsys_serve` | **served default** | 0.700 [0.668, 0.731] | 0.681 [0.649, 0.711] | 0.680 [0.641, 0.716] | 18.7% |
+| `recsys_v1` | Phase 3 default, feedback off (control) | 0.733 [0.705, 0.760] | 0.314 [0.291, 0.336] | 0.129 [0.111, 0.147] | 8.2% |
+| `recsys_v1_fb` | Phase 3 default + feedback loop | 0.733 [0.705, 0.760] | 0.699 [0.665, 0.730] | 0.688 [0.649, 0.724] | 16.7% |
+| `recsys_serve_noexplore` | served default without the exploration slot | 0.711 [0.677, 0.742] | 0.691 [0.658, 0.722] | 0.682 [0.644, 0.717] | 16.7% |
+| `recsys_serve` | **served default** | 0.700 [0.667, 0.731] | 0.679 [0.648, 0.710] | 0.678 [0.639, 0.714] | 18.7% |
 
-Exploration slot (`recsys_serve` − `recsys_serve_noexplore`, rounds 2-10): -0.011 [-0.015, -0.008] NDCG@10. Feedback (`recsys_serve` − `recsys_v1`, rounds 2-10): +0.366 [+0.347, +0.385].
+Exploration slot (`recsys_serve` − `recsys_serve_noexplore`, rounds 2-10): -0.011 [-0.015, -0.008] NDCG@10. Feedback (`recsys_serve` − `recsys_v1`, rounds 2-10): +0.365 [+0.346, +0.384].
 <!-- END GENERATED readme-simulation -->
 
 Without feedback even the best single-request system collapses, because it shows the same list every week; with
@@ -141,7 +141,7 @@ The ten test queries with the lowest NDCG@10 of the served default, traced stage
 [FAILURES.md](docs/FAILURES.md) (`make failures`), with a diagnosis of each.
 
 <!-- BEGIN GENERATED readme-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 34; shown 40 (of 154).
+Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 41; shown 40 (of 161).
 
 - Class A: 5 of 10 (P018, P260, P145, P003, P177)
 - Class B: 2 of 10 (P110, P218)
@@ -163,15 +163,48 @@ Classes C and D are failures of the evaluation rather than of the system. The fi
 expected effect are stated needs as constraints (stroller, train, technical skill, an upper bound on length)
 mapped to catalogue fields that already exist, and ranker features that can depend on the user.
 
+## Iteration 2: stated needs as constraints
+
+The failure analysis above (test) suggested one improvement: needs a user states and the catalogue can verify
+(a stroller, arriving by train, a mountain-bike ride, a loop or a one-way route, a number of days, a length or a
+duration) should decide eligibility, with a documented relaxation, instead of being one weak signal for the
+learned ranker. That hypothesis is the only thing test contributed. The stage reads those needs from the request
+with fixed English and German rules (negation handled, no model call), checks each against a catalogue field,
+relaxes them in a fixed order when too few routes are left, and reports per route what it checked with the real
+numbers ([RECSYS.md](docs/RECSYS.md) section 13). It was built and measured on the development split only; the
+rule for accepting it was written down before any development result existed ([DECISIONS.md](docs/DECISIONS.md)
+D27), and test was run once, afterwards.
+
+<!-- BEGIN GENERATED readme-iteration2 (make report; do not edit) -->
+| Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |
+|---|---|---|---|---|---|
+| `recsys_serve_needs` (filter in front of retrieval) | -0.013 [-0.024, -0.003] | no | +0.018 [+0.006, +0.029] | +0.024 [+0.007, +0.046] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
+| `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
+
+The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.853 [0.837, 0.868] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+<!-- END GENERATED readme-iteration2 -->
+
+**The outcome is a null result by the rule, and the stage stays off.** On dev every variant loses against the
+served default, so none is accepted and `recsys_serve` remains what the API serves. Measured afterwards, that dev
+loss is an artefact of the learned ranker having been trained on the dev users: with a cross-fitted ranker (each
+dev user ranked by a copy that never saw their judgements) every variant is ahead on dev, and the single test run
+agrees. The decision is not reversed on that evidence, because the cross-fitted comparison was chosen after the
+first result was seen; the next iteration should state its rule on a cross-fitted comparison in advance. Where
+the stage hurts, the catalogue's check is stricter than the judge's reading of the same need (a station at the
+far end of a route, a bus at the start, a slightly longer walk), so routes the judge likes are filtered out; the
+exact cases are in [FAILURES.md](docs/FAILURES.md) "Iteration 2". The variants are registered and one setting
+away (`RECSYS_SYSTEM=recsys_serve_needs_promote`).
+
 ## Limitations
 
 <!-- BEGIN GENERATED readme-limits (make report; do not edit) -->
 - Test split: 100 personas; dev: 200.
 - Judge pilot (80 pairs): QWK 0.84 against a stronger LLM reference, mean grade +0.11 above it; QWK 0.86 between two batch orders of the same pairs.
 - Judge validation: owner labels: **missing** (the 150 blind pairs are in `eval/owner_labels/`); interim, **not a human check**: a second LLM judge (`anthropic/claude-sonnet-5.5`) agrees with the production judge at QWK 0.758 (exact 0.61, within one grade 0.97) on the same 150 pairs.
-- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.892 [0.876, 0.907], test 0.759 [0.733, 0.784].
-- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, the served ranker is +0.031 [+0.001, +0.064] ahead of `recsys_v1`'s.
-- For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.765 [0.733, 0.794] on test; `recsys_v1`: 0.759 [0.733, 0.784].
+- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.888 [0.873, 0.904], test 0.755 [0.729, 0.780].
+- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, the served ranker is +0.031 [+0.001, +0.063] ahead of `recsys_v1`'s.
+- For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.761 [0.729, 0.789] on test; `recsys_v1`: 0.755 [0.729, 0.780].
 <!-- END GENERATED readme-limits -->
 
 - **Simulated users.** Personas are sampled from a hand-written latent model; their requests are written by an

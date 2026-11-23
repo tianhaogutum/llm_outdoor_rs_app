@@ -27,7 +27,7 @@
   "mmr": 1,
   "needs": 0,
   "ranker": 24,
-  "retrieval": 9,
+  "retrieval": 12,
   "shown": 8
  },
  "n_best_traced": 5,
@@ -35,6 +35,51 @@
  "personas": [
   {
    "best_missed": [
+    {
+     "bm25_rank": 118,
+     "bm25_score": 9.926,
+     "dense_rank": 54,
+     "eligible": true,
+     "explore": false,
+     "facts": {
+      "ascent_m": 169,
+      "difficulty": 0,
+      "home_km": 14.7,
+      "length_km": 9.5,
+      "locality": "Hohenschwärz",
+      "loop": true,
+      "max_grade": null,
+      "paved_share": 0.427,
+      "tags": [
+       "Round trip",
+       "Refreshment stops available",
+       "Cultural/historical interest",
+       "Geological highlights",
+       "Cave",
+       "Castle",
+       "Bus access",
+       "Public transport access",
+       "Parking at start",
+       "Waymarked"
+      ],
+      "title": "Thuisbrunn Rundweg \"Rund um Thuisbrunn\""
+     },
+     "final_rank": null,
+     "fused_rank": 88,
+     "grade": 3,
+     "lost_at": "retrieval",
+     "ltr_rank": null,
+     "ltr_top": [],
+     "mmr_after": null,
+     "mmr_before": null,
+     "pooled_by": [
+      "recsys_serve_needs",
+      "recsys_serve_needs_promote"
+     ],
+     "reason": "Excellent fit with a cave, rock features, a playground, and stroller-friendly tracks with no busy roads, all within comfortable distance and climbing limits.",
+     "route_id": 543503,
+     "violations": []
+    },
     {
      "bm25_rank": 16,
      "bm25_score": 16.051,
@@ -89,6 +134,9 @@
      "mmr_after": 12,
      "mmr_before": 12,
      "pooled_by": [
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocapslot",
       "recsys_v1_nosusp",
       "v7_mmr"
@@ -158,6 +206,9 @@
      "mmr_before": 15,
      "pooled_by": [
       "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "v2_bm25",
@@ -280,68 +331,6 @@
      "reason": "Perfect length, flat, mostly paved, and has a playground, but completely lacks the main wish of caves or interesting rocks.",
      "route_id": 168377,
      "violations": []
-    },
-    {
-     "bm25_rank": 38,
-     "bm25_score": 13.022,
-     "dense_rank": 22,
-     "eligible": true,
-     "explore": false,
-     "facts": {
-      "ascent_m": 146,
-      "difficulty": 0,
-      "home_km": 26.3,
-      "length_km": 6.0,
-      "locality": "Betzenstein",
-      "loop": true,
-      "max_grade": null,
-      "paved_share": 0.354,
-      "tags": [
-       "Round trip",
-       "Refreshment stops available",
-       "Family-friendly",
-       "Cultural/historical interest",
-       "Geological highlights",
-       "Cave",
-       "Castle",
-       "Church/chapel",
-       "Bus access",
-       "Public transport access",
-       "Parking at start",
-       "Waymarked"
-      ],
-      "title": "Betzenstein Rundweg ueber Huell"
-     },
-     "final_rank": 15,
-     "fused_rank": 25,
-     "grade": 2,
-     "lost_at": "ranker",
-     "ltr_rank": 13,
-     "ltr_top": [
-      {
-       "contribution": 0.316997,
-       "name": "intent_km_gap",
-       "value": 0.251375
-      },
-      {
-       "contribution": 0.261247,
-       "name": "tag_hits",
-       "value": 3.0
-      },
-      {
-       "contribution": 0.234539,
-       "name": "tag_cover",
-       "value": 0.6
-      }
-     ],
-     "mmr_after": 14,
-     "mmr_before": 13,
-     "pooled_by": [
-      "v6_ltr_noapi"
-     ],
-     "reason": "The route has the right length, gentle climbing, and great rock/cave features, but it lacks the requested playground for the baby/toddler.",
-     "route_id": 326088,
-     "violations": []
     }
    ],
    "explore": {
@@ -357,15 +346,15 @@
     "mmr": 0,
     "needs": 0,
     "ranker": 3,
-    "retrieval": 0,
+    "retrieval": 1,
     "shown": 0
    },
    "intent": "Could you suggest an easy, stroller-friendly walk of around 8 km with an interesting cave or rock formation and a playground for the children? Please keep the climbing gentle.",
    "judged_grades": {
     "0": 36,
-    "1": 27,
-    "2": 9,
-    "3": 3
+    "1": 30,
+    "2": 11,
+    "3": 4
    },
    "latent": {
     "days": 1,
@@ -404,24 +393,24 @@
    },
    "mrr_at_10": 0.333333,
    "n_eligible": 571,
-   "ndcg_at_10": 0.220013,
+   "ndcg_at_10": 0.20414,
    "other_systems_ndcg_at_10": {
-    "recsys_v1": 0.334213,
-    "recsys_v1_nocap": 0.220013,
-    "v1_filters": 0.155882,
-    "v2_bm25": 0.468493,
-    "v3_dense": 0.423843,
-    "v4_rrf": 0.623531
+    "recsys_v1": 0.3101,
+    "recsys_v1_nocap": 0.20414,
+    "v1_filters": 0.144635,
+    "v2_bm25": 0.434692,
+    "v3_dense": 0.393263,
+    "v4_rrf": 0.578544
    },
    "persona_id": "P018",
-   "recall_at_50": 0.833333,
+   "recall_at_50": 0.666667,
    "relevant_lost_at": {
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
     "needs": 0,
     "ranker": 8,
-    "retrieval": 2,
+    "retrieval": 5,
     "shown": 2
    },
    "seen": {
@@ -652,6 +641,7 @@
      "mmr_before": 4,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs_demote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -1163,6 +1153,7 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs_demote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -1471,15 +1462,15 @@
     "mmr": 1,
     "needs": 0,
     "ranker": 6,
-    "retrieval": 3,
+    "retrieval": 5,
     "shown": 0
    },
    "intent": "A gentle lakeside walk with a café or inn along the way would be lovely! We’ll have a stroller, so smooth paths and no more than about 10 km, please.",
    "judged_grades": {
     "0": 37,
     "1": 25,
-    "2": 18,
-    "3": 10
+    "2": 19,
+    "3": 12
    },
    "latent": {
     "days": 1,
@@ -1529,14 +1520,14 @@
     "v4_rrf": 0.586316
    },
    "persona_id": "P260",
-   "recall_at_50": 0.821429,
+   "recall_at_50": 0.741935,
    "relevant_lost_at": {
     "exploration": 0,
     "filter": 0,
     "mmr": 1,
     "needs": 0,
     "ranker": 15,
-    "retrieval": 5,
+    "retrieval": 8,
     "shown": 7
    },
    "seen": {
@@ -1607,6 +1598,9 @@
      "mmr_before": 1,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -1675,6 +1669,9 @@
      "mmr_before": 3,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp",
       "v5_rank_api",
@@ -1746,6 +1743,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -1813,6 +1813,7 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs_demote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -2020,6 +2021,9 @@
      "mmr_before": 9,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "v5_rank_api"
@@ -2080,6 +2084,9 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_nocap",
@@ -2146,6 +2153,9 @@
      "mmr_before": 10,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_chat",
       "recsys_v1_nocap",
       "recsys_v1_nosusp",
@@ -2212,6 +2222,9 @@
      "mmr_before": 12,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot"
@@ -2349,6 +2362,9 @@
      "mmr_after": 15,
      "mmr_before": 17,
      "pooled_by": [
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "v5_rank_api",
       "v6_ltr",
       "v7_mmr"
@@ -2466,6 +2482,7 @@
      "mmr_after": 16,
      "mmr_before": 14,
      "pooled_by": [
+      "recsys_serve_needs_demote",
       "recsys_v1",
       "recsys_v1_chat",
       "v6_ltr",
@@ -2570,8 +2587,8 @@
    "intent": "Could you suggest an easy, short walk with interesting caves or rocks and an inn along the way?",
    "judged_grades": {
     "0": 34,
-    "1": 38,
-    "2": 20,
+    "1": 39,
+    "2": 21,
     "3": 6
    },
    "latent": {
@@ -2620,14 +2637,14 @@
     "v4_rrf": 0.345556
    },
    "persona_id": "P190",
-   "recall_at_50": 0.653846,
+   "recall_at_50": 0.62963,
    "relevant_lost_at": {
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
     "needs": 0,
     "ranker": 12,
-    "retrieval": 9,
+    "retrieval": 10,
     "shown": 5
    },
    "seen": {
@@ -2968,6 +2985,9 @@
      "mmr_before": 5,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -3036,6 +3056,9 @@
      "mmr_before": 6,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -3111,6 +3134,9 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -3175,6 +3201,9 @@
      "mmr_before": 4,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -3285,6 +3314,9 @@
      "mmr_before": null,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap"
      ],
      "reason": "The route is easy, short, and has an inn, but it completely misses the main wishes for caves, rocks, and a lake.",
@@ -3353,6 +3385,8 @@
      "pooled_by": [
       "pool_intent_lexical",
       "pool_latent",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "v1_filters",
       "v2_bm25",
       "v3_dense",
@@ -3419,6 +3453,8 @@
      "pooled_by": [
       "pool_intent_lexical",
       "pool_latent",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nosusp",
@@ -3559,6 +3595,8 @@
      "pooled_by": [
       "pool_intent_lexical",
       "pool_latent",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_qonly",
       "v1_filters",
       "v2_bm25",
@@ -3784,6 +3822,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -3863,6 +3904,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -3943,6 +3987,7 @@
      "mmr_before": 4,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -4021,6 +4066,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -4094,6 +4142,9 @@
      "mmr_before": 6,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
@@ -4153,6 +4204,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -4219,6 +4273,7 @@
      "mmr_before": 10,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -4286,6 +4341,7 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -4359,6 +4415,7 @@
      "mmr_before": 7,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
       "recsys_v1_chat",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -4423,6 +4480,9 @@
      "mmr_before": 27,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "v2_bm25"
      ],
@@ -4501,6 +4561,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "v1_filters",
       "v2_bm25"
      ],
@@ -4566,6 +4629,9 @@
      "mmr_before": 17,
      "pooled_by": [
       "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_qonly",
       "v1_filters",
       "v7_mmr"
@@ -4630,6 +4696,9 @@
      "mmr_before": 21,
      "pooled_by": [
       "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "v3_dense"
      ],
      "reason": "This mountain biking route is the perfect length and features a lake (Ölschnitzsee) in quiet nature, but it lacks a beer garden.",
@@ -4699,6 +4768,9 @@
      "mmr_before": 16,
      "pooled_by": [
       "pool_intent_lexical",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "v3_dense",
       "v5_rank_api",
       "v6_ltr",
@@ -4793,7 +4865,7 @@
    "intent": "A quiet, challenging mountain bike ride with forest trails beside a lake and a beer garden along the way. For a group of friends, about 30–70 km.",
    "judged_grades": {
     "0": 44,
-    "1": 17,
+    "1": 18,
     "2": 6,
     "3": 2
    },
@@ -5080,6 +5152,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -5240,6 +5315,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -5577,6 +5655,7 @@
      "mmr_before": null,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs_demote",
       "recsys_serve_nocap"
      ],
      "reason": "This is an easy, mostly paved cycling tour that is too short, lacks technical trails, and misses the requested lake and beer garden.",
@@ -5694,7 +5773,10 @@
      "mmr_after": 20,
      "mmr_before": 20,
      "pooled_by": [
-      "pool_latent"
+      "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote"
      ],
      "reason": "This route has train access, a lake, and is family-friendly, though it is slightly shorter than the comfortable range.",
      "route_id": 3981766,
@@ -5755,6 +5837,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "pool_latent",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "v2_bm25",
@@ -5873,6 +5958,7 @@
      "mmr_before": 28,
      "pooled_by": [
       "pool_latent",
+      "recsys_serve_needs_demote",
       "recsys_v1_nocapslot",
       "v2_bm25"
      ],
@@ -5900,7 +5986,7 @@
    "intent": "A quiet forest walk by a lake, easy for little kids and reachable by train from Schweinfurt.",
    "judged_grades": {
     "0": 34,
-    "1": 22,
+    "1": 29,
     "2": 9,
     "3": 4
    },
@@ -6176,6 +6262,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -6456,6 +6545,9 @@
      "mmr_before": 5,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
@@ -6647,7 +6739,8 @@
      "mmr_after": 29,
      "mmr_before": 29,
      "pooled_by": [
-      "recsys_serve"
+      "recsys_serve",
+      "recsys_serve_needs_demote"
      ],
      "reason": "This route has no lake, which is the user's main wish, and does not offer the requested quiet forest setting.",
      "route_id": 12528215,
@@ -7164,6 +7257,9 @@
      "mmr_before": 1,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -7240,6 +7336,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -7311,6 +7410,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -7383,6 +7485,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "v2_bm25",
       "v4_rrf"
@@ -7452,6 +7557,9 @@
      "mmr_before": 5,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
      ],
@@ -7519,6 +7627,9 @@
      "mmr_before": 10,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
      ],
@@ -7586,6 +7697,9 @@
      "mmr_before": 9,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp",
       "v7_mmr"
@@ -7655,6 +7769,9 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
      ],
@@ -7721,6 +7838,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp",
       "v2_bm25",
@@ -7787,6 +7907,9 @@
      "mmr_before": 25,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap"
      ],
      "reason": "The route is a gentle, flat ride of comfortable length with viewpoints and a lakeside cafe, but it lacks the main wish of culture.",
@@ -7847,7 +7970,8 @@
      "mmr_after": null,
      "mmr_before": null,
      "pooled_by": [
-      "pool_latent"
+      "pool_latent",
+      "recsys_serve_needs_promote"
      ],
      "reason": "This 143.5 km linear route fits the 4-day distance perfectly, avoids busy roads, and features castles, viewpoints, and beer gardens.",
      "route_id": 1110944,
@@ -8273,6 +8397,7 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8354,6 +8479,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8428,6 +8556,9 @@
      "mmr_before": 2,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8513,6 +8644,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8591,6 +8725,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8681,6 +8818,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -8760,6 +8900,9 @@
      "mmr_before": 3,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -8837,6 +8980,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8911,6 +9057,9 @@
      "mmr_before": 9,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -8987,6 +9136,9 @@
      "mmr_before": 14,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -9434,6 +9586,9 @@
      "mmr_before": 1,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -9513,6 +9668,9 @@
       "pool_intent_lexical",
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -9581,6 +9739,9 @@
      "mmr_before": 2,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -9653,6 +9814,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -9722,6 +9886,9 @@
      "mmr_before": 4,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_nocap",
       "recsys_v1_nosusp"
      ],
@@ -9781,6 +9948,9 @@
      "mmr_before": 6,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -9854,6 +10024,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -9924,6 +10097,9 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1_chat",
       "recsys_v1_nocap",
       "recsys_v1_nosusp",
@@ -9984,6 +10160,9 @@
      "mmr_before": 9,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -10034,7 +10213,10 @@
      "mmr_after": null,
      "mmr_before": null,
      "pooled_by": [
-      "recsys_serve"
+      "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote"
      ],
      "reason": "This route is too short (5.7 km) and lacks the requested lake, making it a poor fit for the user's main wishes.",
      "route_id": 9641381,
@@ -10105,6 +10287,8 @@
      "mmr_after": 10,
      "mmr_before": 7,
      "pooled_by": [
+      "recsys_serve_needs",
+      "recsys_serve_needs_promote",
       "recsys_v1",
       "recsys_v1_chat",
       "recsys_v1_nocap",
@@ -10322,7 +10506,7 @@
    "intent": "Could you suggest a mountain bike route to a summit with great views and a hut stop?",
    "judged_grades": {
     "0": 35,
-    "1": 29,
+    "1": 30,
     "2": 5
    },
    "latent": {
@@ -10450,6 +10634,9 @@
      "mmr_before": 1,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_nohome",
       "recsys_serve_noslots",
@@ -10523,6 +10710,9 @@
      "mmr_before": 2,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -10596,6 +10786,9 @@
      "pooled_by": [
       "pool_latent",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -10669,6 +10862,9 @@
      "mmr_before": 6,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -10741,6 +10937,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "recsys_v1_nocapslot",
@@ -10809,6 +11008,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_serve_noslots",
       "recsys_v1",
@@ -10885,6 +11087,9 @@
      "pooled_by": [
       "pool_intent_lexical",
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1",
       "recsys_v1_chat",
@@ -10958,6 +11163,9 @@
      "mmr_before": 8,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs",
+      "recsys_serve_needs_demote",
+      "recsys_serve_needs_promote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "v6_ltr_noapi"
@@ -11021,6 +11229,7 @@
      "mmr_before": 9,
      "pooled_by": [
       "recsys_serve",
+      "recsys_serve_needs_demote",
       "recsys_serve_nocap",
       "recsys_v1_nocap",
       "v6_ltr",
@@ -11081,7 +11290,8 @@
      "mmr_after": 41,
      "mmr_before": 41,
      "pooled_by": [
-      "recsys_serve"
+      "recsys_serve",
+      "recsys_serve_needs_demote"
      ],
      "reason": "At 12.5 km, this route is too short, lacks a summit, has no mountain hut, and is a loop instead of the preferred one-way.",
      "route_id": 1588709,
@@ -11090,14 +11300,14 @@
    ]
   }
  ],
- "qrels_sha256": "e264e6f94d1f9dd6c24c65c2b5934345fdd38d63db286a0d562a42772833a6d8",
+ "qrels_sha256": "01ab7f1f758332720f552c35c752e587a1920e8c974cc4cdf92d0015fbf45860",
  "relevant_lost_at_total": {
   "exploration": 1,
   "filter": 0,
   "mmr": 3,
   "needs": 0,
   "ranker": 76,
-  "retrieval": 34,
+  "retrieval": 41,
   "shown": 40
  },
  "results_note": "Simulated users (LLM-written intents over sampled latent profiles); relevance judged by an LLM; the judge is not yet validated against the owner's labels.",
