@@ -107,10 +107,16 @@ def build_doc_embeddings(catalog: Catalog, client, *, formulation: str, model: s
     """Embed every catalogue route through the LLM client (cached per text); returns DocEmbeddings."""
     from app.llm import run_sync
 
+    return run_sync(abuild_doc_embeddings(catalog, client, formulation=formulation, model=model, dim=dim, tag=tag))
+
+
+async def abuild_doc_embeddings(
+    catalog: Catalog, client, *, formulation: str, model: str | None, dim: int, tag: str
+) -> DocEmbeddings:
     from .text import TEXT_VERSION, embed_text
 
     texts = [embed_text(r, formulation) for r in catalog.routes]
-    res = run_sync(client.embed(texts, task="document", model=model, dim=dim, tag=tag))
+    res = await client.embed(texts, task="document", model=model, dim=dim, tag=tag)
     meta = {
         "provider": res.provider,
         "model": model or res.model,

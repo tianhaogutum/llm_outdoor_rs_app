@@ -1,0 +1,897 @@
+{
+ "candidates": "v4_rrf fused top 50",
+ "data": {
+  "candidates_judged_share": 0.694048,
+  "labels": {
+   "0": 619,
+   "1": 3539,
+   "2": 2137,
+   "3": 608
+  },
+  "personas": 200,
+  "random_sample_pairs": 1600,
+  "rows": 6903,
+  "rows_per_persona_median": 35.0,
+  "sample_per_persona": 8,
+  "split": "dev",
+  "test_rows": 2633
+ },
+ "features": [
+  "rule_difficulty",
+  "rule_distance",
+  "rule_tags",
+  "bm25",
+  "bm25_rank",
+  "dense",
+  "dense_rank",
+  "rrf",
+  "fused_rank",
+  "rank_api",
+  "home_km",
+  "home_ratio",
+  "length_km",
+  "length_cap_ratio",
+  "length_band_pos",
+  "intent_km_gap",
+  "ascent_m",
+  "ascent_per_km",
+  "ascent_fit",
+  "intent_easy",
+  "difficulty",
+  "difficulty_in_range",
+  "technical",
+  "duration_h",
+  "is_loop",
+  "intent_loop",
+  "loop_match",
+  "tag_cover",
+  "tag_hits",
+  "neg_hits",
+  "is_mtb",
+  "intent_mtb",
+  "paved_share",
+  "busy_road_share",
+  "popularity",
+  "pois_per_km",
+  "waymarked",
+  "osm_description"
+ ],
+ "folds": 5,
+ "groups": {
+  "home_distance": [
+   "home_km",
+   "home_ratio"
+  ],
+  "intent_numbers": [
+   "intent_km_gap"
+  ],
+  "rank_api": [
+   "rank_api"
+  ],
+  "retrieval": [
+   "bm25",
+   "bm25_rank",
+   "dense",
+   "dense_rank",
+   "rrf",
+   "fused_rank"
+  ],
+  "rule_subscores": [
+   "rule_difficulty",
+   "rule_distance",
+   "rule_tags"
+  ],
+  "slot_ratios": [
+   "home_ratio",
+   "length_cap_ratio"
+  ]
+ },
+ "max_rounds": 400,
+ "models": {
+  "v1": {
+   "file": "ltr_v1.json",
+   "importance": [
+    {
+     "feature": "length_cap_ratio",
+     "gain_share": 0.238493,
+     "mean_abs_contribution": 0.867314,
+     "splits": 428
+    },
+    {
+     "feature": "tag_cover",
+     "gain_share": 0.127748,
+     "mean_abs_contribution": 0.475054,
+     "splits": 198
+    },
+    {
+     "feature": "rank_api",
+     "gain_share": 0.071467,
+     "mean_abs_contribution": 0.562765,
+     "splits": 340
+    },
+    {
+     "feature": "fused_rank",
+     "gain_share": 0.042971,
+     "mean_abs_contribution": 0.096502,
+     "splits": 128
+    },
+    {
+     "feature": "rrf",
+     "gain_share": 0.037872,
+     "mean_abs_contribution": 0.088173,
+     "splits": 201
+    },
+    {
+     "feature": "paved_share",
+     "gain_share": 0.032657,
+     "mean_abs_contribution": 0.240921,
+     "splits": 275
+    },
+    {
+     "feature": "is_loop",
+     "gain_share": 0.026153,
+     "mean_abs_contribution": 0.175078,
+     "splits": 58
+    },
+    {
+     "feature": "duration_h",
+     "gain_share": 0.026041,
+     "mean_abs_contribution": 0.112766,
+     "splits": 210
+    },
+    {
+     "feature": "pois_per_km",
+     "gain_share": 0.025846,
+     "mean_abs_contribution": 0.133703,
+     "splits": 202
+    },
+    {
+     "feature": "technical",
+     "gain_share": 0.024566,
+     "mean_abs_contribution": 0.119727,
+     "splits": 131
+    },
+    {
+     "feature": "length_km",
+     "gain_share": 0.023442,
+     "mean_abs_contribution": 0.10551,
+     "splits": 189
+    },
+    {
+     "feature": "intent_km_gap",
+     "gain_share": 0.023402,
+     "mean_abs_contribution": 0.083373,
+     "splits": 188
+    },
+    {
+     "feature": "popularity",
+     "gain_share": 0.023292,
+     "mean_abs_contribution": 0.107068,
+     "splits": 235
+    },
+    {
+     "feature": "ascent_fit",
+     "gain_share": 0.02258,
+     "mean_abs_contribution": 0.097818,
+     "splits": 210
+    },
+    {
+     "feature": "ascent_per_km",
+     "gain_share": 0.021137,
+     "mean_abs_contribution": 0.068484,
+     "splits": 172
+    },
+    {
+     "feature": "bm25",
+     "gain_share": 0.020987,
+     "mean_abs_contribution": 0.104018,
+     "splits": 201
+    },
+    {
+     "feature": "dense",
+     "gain_share": 0.020307,
+     "mean_abs_contribution": 0.068279,
+     "splits": 191
+    },
+    {
+     "feature": "home_km",
+     "gain_share": 0.020101,
+     "mean_abs_contribution": 0.075331,
+     "splits": 201
+    },
+    {
+     "feature": "bm25_rank",
+     "gain_share": 0.019597,
+     "mean_abs_contribution": 0.119267,
+     "splits": 223
+    },
+    {
+     "feature": "dense_rank",
+     "gain_share": 0.017974,
+     "mean_abs_contribution": 0.083397,
+     "splits": 162
+    },
+    {
+     "feature": "ascent_m",
+     "gain_share": 0.017336,
+     "mean_abs_contribution": 0.064203,
+     "splits": 168
+    },
+    {
+     "feature": "busy_road_share",
+     "gain_share": 0.01581,
+     "mean_abs_contribution": 0.051043,
+     "splits": 102
+    },
+    {
+     "feature": "tag_hits",
+     "gain_share": 0.015156,
+     "mean_abs_contribution": 0.118717,
+     "splits": 73
+    },
+    {
+     "feature": "rule_tags",
+     "gain_share": 0.014898,
+     "mean_abs_contribution": 0.098752,
+     "splits": 144
+    },
+    {
+     "feature": "home_ratio",
+     "gain_share": 0.014296,
+     "mean_abs_contribution": 0.062715,
+     "splits": 188
+    },
+    {
+     "feature": "length_band_pos",
+     "gain_share": 0.013633,
+     "mean_abs_contribution": 0.07071,
+     "splits": 132
+    },
+    {
+     "feature": "intent_loop",
+     "gain_share": 0.011812,
+     "mean_abs_contribution": 0.100602,
+     "splits": 38
+    },
+    {
+     "feature": "loop_match",
+     "gain_share": 0.009088,
+     "mean_abs_contribution": 0.178933,
+     "splits": 76
+    },
+    {
+     "feature": "intent_mtb",
+     "gain_share": 0.007792,
+     "mean_abs_contribution": 0.044369,
+     "splits": 61
+    },
+    {
+     "feature": "rule_distance",
+     "gain_share": 0.00507,
+     "mean_abs_contribution": 0.028786,
+     "splits": 52
+    },
+    {
+     "feature": "waymarked",
+     "gain_share": 0.002598,
+     "mean_abs_contribution": 0.021533,
+     "splits": 29
+    },
+    {
+     "feature": "difficulty",
+     "gain_share": 0.00164,
+     "mean_abs_contribution": 0.013092,
+     "splits": 14
+    },
+    {
+     "feature": "rule_difficulty",
+     "gain_share": 0.001385,
+     "mean_abs_contribution": 0.023539,
+     "splits": 22
+    },
+    {
+     "feature": "is_mtb",
+     "gain_share": 0.001161,
+     "mean_abs_contribution": 0.010143,
+     "splits": 12
+    },
+    {
+     "feature": "intent_easy",
+     "gain_share": 0.000851,
+     "mean_abs_contribution": 0.009886,
+     "splits": 12
+    },
+    {
+     "feature": "osm_description",
+     "gain_share": 0.000792,
+     "mean_abs_contribution": 0.01187,
+     "splits": 11
+    },
+    {
+     "feature": "difficulty_in_range",
+     "gain_share": 4.9e-05,
+     "mean_abs_contribution": 0.001067,
+     "splits": 1
+    },
+    {
+     "feature": "neg_hits",
+     "gain_share": 0.0,
+     "mean_abs_contribution": 0.0,
+     "splits": 0
+    }
+   ],
+   "trees": 377,
+   "variant": "full"
+  },
+  "v1_noapi": {
+   "file": "ltr_v1_noapi.json",
+   "importance": [
+    {
+     "feature": "length_cap_ratio",
+     "gain_share": 0.251356,
+     "mean_abs_contribution": 0.870006,
+     "splits": 349
+    },
+    {
+     "feature": "tag_cover",
+     "gain_share": 0.13682,
+     "mean_abs_contribution": 0.539271,
+     "splits": 187
+    },
+    {
+     "feature": "fused_rank",
+     "gain_share": 0.05827,
+     "mean_abs_contribution": 0.117599,
+     "splits": 102
+    },
+    {
+     "feature": "paved_share",
+     "gain_share": 0.033859,
+     "mean_abs_contribution": 0.234335,
+     "splits": 221
+    },
+    {
+     "feature": "rrf",
+     "gain_share": 0.03344,
+     "mean_abs_contribution": 0.100059,
+     "splits": 175
+    },
+    {
+     "feature": "tag_hits",
+     "gain_share": 0.030877,
+     "mean_abs_contribution": 0.197292,
+     "splits": 83
+    },
+    {
+     "feature": "length_km",
+     "gain_share": 0.029841,
+     "mean_abs_contribution": 0.117995,
+     "splits": 149
+    },
+    {
+     "feature": "is_loop",
+     "gain_share": 0.028377,
+     "mean_abs_contribution": 0.182291,
+     "splits": 62
+    },
+    {
+     "feature": "ascent_fit",
+     "gain_share": 0.027314,
+     "mean_abs_contribution": 0.086661,
+     "splits": 189
+    },
+    {
+     "feature": "technical",
+     "gain_share": 0.026458,
+     "mean_abs_contribution": 0.118994,
+     "splits": 127
+    },
+    {
+     "feature": "duration_h",
+     "gain_share": 0.025634,
+     "mean_abs_contribution": 0.072796,
+     "splits": 142
+    },
+    {
+     "feature": "pois_per_km",
+     "gain_share": 0.025078,
+     "mean_abs_contribution": 0.131522,
+     "splits": 165
+    },
+    {
+     "feature": "popularity",
+     "gain_share": 0.023313,
+     "mean_abs_contribution": 0.102921,
+     "splits": 172
+    },
+    {
+     "feature": "intent_km_gap",
+     "gain_share": 0.023103,
+     "mean_abs_contribution": 0.112844,
+     "splits": 155
+    },
+    {
+     "feature": "dense",
+     "gain_share": 0.022839,
+     "mean_abs_contribution": 0.096408,
+     "splits": 153
+    },
+    {
+     "feature": "ascent_per_km",
+     "gain_share": 0.02204,
+     "mean_abs_contribution": 0.054572,
+     "splits": 126
+    },
+    {
+     "feature": "bm25_rank",
+     "gain_share": 0.020314,
+     "mean_abs_contribution": 0.101887,
+     "splits": 185
+    },
+    {
+     "feature": "bm25",
+     "gain_share": 0.020074,
+     "mean_abs_contribution": 0.065869,
+     "splits": 161
+    },
+    {
+     "feature": "dense_rank",
+     "gain_share": 0.019388,
+     "mean_abs_contribution": 0.089547,
+     "splits": 143
+    },
+    {
+     "feature": "ascent_m",
+     "gain_share": 0.01824,
+     "mean_abs_contribution": 0.062671,
+     "splits": 146
+    },
+    {
+     "feature": "home_km",
+     "gain_share": 0.016958,
+     "mean_abs_contribution": 0.062604,
+     "splits": 152
+    },
+    {
+     "feature": "home_ratio",
+     "gain_share": 0.015122,
+     "mean_abs_contribution": 0.051945,
+     "splits": 132
+    },
+    {
+     "feature": "intent_loop",
+     "gain_share": 0.014753,
+     "mean_abs_contribution": 0.101495,
+     "splits": 39
+    },
+    {
+     "feature": "busy_road_share",
+     "gain_share": 0.014263,
+     "mean_abs_contribution": 0.047524,
+     "splits": 94
+    },
+    {
+     "feature": "rule_tags",
+     "gain_share": 0.012578,
+     "mean_abs_contribution": 0.081343,
+     "splits": 95
+    },
+    {
+     "feature": "length_band_pos",
+     "gain_share": 0.012409,
+     "mean_abs_contribution": 0.060445,
+     "splits": 109
+    },
+    {
+     "feature": "intent_mtb",
+     "gain_share": 0.009964,
+     "mean_abs_contribution": 0.04218,
+     "splits": 49
+    },
+    {
+     "feature": "loop_match",
+     "gain_share": 0.009778,
+     "mean_abs_contribution": 0.167081,
+     "splits": 70
+    },
+    {
+     "feature": "rule_distance",
+     "gain_share": 0.008491,
+     "mean_abs_contribution": 0.029928,
+     "splits": 48
+    },
+    {
+     "feature": "waymarked",
+     "gain_share": 0.002375,
+     "mean_abs_contribution": 0.018535,
+     "splits": 19
+    },
+    {
+     "feature": "rule_difficulty",
+     "gain_share": 0.001597,
+     "mean_abs_contribution": 0.019074,
+     "splits": 19
+    },
+    {
+     "feature": "is_mtb",
+     "gain_share": 0.001586,
+     "mean_abs_contribution": 0.016302,
+     "splits": 14
+    },
+    {
+     "feature": "intent_easy",
+     "gain_share": 0.001574,
+     "mean_abs_contribution": 0.012329,
+     "splits": 13
+    },
+    {
+     "feature": "difficulty",
+     "gain_share": 0.001266,
+     "mean_abs_contribution": 0.01201,
+     "splits": 9
+    },
+    {
+     "feature": "osm_description",
+     "gain_share": 0.00057,
+     "mean_abs_contribution": 0.005578,
+     "splits": 5
+    },
+    {
+     "feature": "difficulty_in_range",
+     "gain_share": 8.1e-05,
+     "mean_abs_contribution": 0.000382,
+     "splits": 1
+    },
+    {
+     "feature": "neg_hits",
+     "gain_share": 0.0,
+     "mean_abs_contribution": 0.0,
+     "splits": 0
+    }
+   ],
+   "trees": 290,
+   "variant": "no_rank_api"
+  }
+ },
+ "params": {
+  "bagging_fraction": 0.8,
+  "bagging_freq": 1,
+  "deterministic": true,
+  "feature_fraction": 0.8,
+  "force_row_wise": true,
+  "lambda_l2": 1.0,
+  "learning_rate": 0.05,
+  "metric": "ndcg",
+  "min_data_in_leaf": 20,
+  "ndcg_eval_at": [
+   10
+  ],
+  "num_leaves": 15,
+  "num_threads": 1,
+  "objective": "lambdarank",
+  "seed": 20261122,
+  "verbosity": -1
+ },
+ "schema": "evalkit.ltr/v1",
+ "single_feature_dev": {
+  "bm25": 0.529195,
+  "dense": 0.553837,
+  "fused_rank": 0.593651,
+  "rank_api": 0.665382,
+  "rule_distance": 0.546224
+ },
+ "single_feature_test": {
+  "bm25": 0.591435,
+  "dense": 0.568291,
+  "fused_rank": 0.64766,
+  "rank_api": 0.688121,
+  "rule_distance": 0.598535
+ },
+ "train_labels": {
+  "file": "ltr_train_v1.jsonl",
+  "pairs": 18380,
+  "sha256": "f1dcfa157ccf70d841f724939ac98276fa5eebb63c84857ce8ee483bbc86c293"
+ },
+ "variants": {
+  "full": {
+   "best_rounds": 377,
+   "cv_fold_means": [
+    0.789588,
+    0.779757,
+    0.820048,
+    0.80665,
+    0.845206
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.826081,
+    "lo": 0.789829,
+    "mean": 0.80825,
+    "n": 200
+   },
+   "dropped": [],
+   "lgb_curve_at": {
+    "10": 0.762558,
+    "100": 0.800987,
+    "200": 0.803133,
+    "377": 0.80825,
+    "50": 0.786519
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.852948,
+    "lo": 0.799135,
+    "mean": 0.82835,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.968393
+  },
+  "no_home_distance": {
+   "best_rounds": 241,
+   "cv_fold_means": [
+    0.784636,
+    0.782293,
+    0.814079,
+    0.806336,
+    0.84393
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.822749,
+    "lo": 0.786212,
+    "mean": 0.806255,
+    "n": 200
+   },
+   "dropped": [
+    "home_km",
+    "home_ratio"
+   ],
+   "lgb_curve_at": {
+    "10": 0.764261,
+    "100": 0.800629,
+    "200": 0.803458,
+    "241": 0.806255,
+    "50": 0.786337
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.849148,
+    "lo": 0.793743,
+    "mean": 0.822313,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.944276
+  },
+  "no_intent_numbers": {
+   "best_rounds": 258,
+   "cv_fold_means": [
+    0.800826,
+    0.78746,
+    0.819811,
+    0.804775,
+    0.845658
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.828576,
+    "lo": 0.79364,
+    "mean": 0.811706,
+    "n": 200
+   },
+   "dropped": [
+    "intent_km_gap"
+   ],
+   "lgb_curve_at": {
+    "10": 0.761831,
+    "100": 0.804038,
+    "200": 0.808564,
+    "258": 0.811706,
+    "50": 0.787663
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.844866,
+    "lo": 0.790551,
+    "mean": 0.819768,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.950292
+  },
+  "no_rank_api": {
+   "best_rounds": 290,
+   "cv_fold_means": [
+    0.780672,
+    0.772363,
+    0.819344,
+    0.798653,
+    0.831577
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.819334,
+    "lo": 0.779837,
+    "mean": 0.800522,
+    "n": 200
+   },
+   "dropped": [
+    "rank_api"
+   ],
+   "lgb_curve_at": {
+    "10": 0.753092,
+    "100": 0.792947,
+    "200": 0.799098,
+    "290": 0.800522,
+    "50": 0.77963
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.841287,
+    "lo": 0.791768,
+    "mean": 0.817569,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.952821
+  },
+  "no_rule_subscores": {
+   "best_rounds": 182,
+   "cv_fold_means": [
+    0.783398,
+    0.787208,
+    0.818833,
+    0.818553,
+    0.840459
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.827259,
+    "lo": 0.790001,
+    "mean": 0.80969,
+    "n": 200
+   },
+   "dropped": [
+    "rule_difficulty",
+    "rule_distance",
+    "rule_tags"
+   ],
+   "lgb_curve_at": {
+    "10": 0.768559,
+    "100": 0.799118,
+    "182": 0.80969,
+    "200": 0.804684,
+    "50": 0.790028
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.846177,
+    "lo": 0.792532,
+    "mean": 0.820975,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.93636
+  },
+  "no_slot_ratios": {
+   "best_rounds": 322,
+   "cv_fold_means": [
+    0.769874,
+    0.758346,
+    0.789823,
+    0.797431,
+    0.827281
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.807787,
+    "lo": 0.769127,
+    "mean": 0.788551,
+    "n": 200
+   },
+   "dropped": [
+    "home_ratio",
+    "length_cap_ratio"
+   ],
+   "lgb_curve_at": {
+    "10": 0.725728,
+    "100": 0.770896,
+    "200": 0.782726,
+    "322": 0.788551,
+    "50": 0.759217
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.833106,
+    "lo": 0.775186,
+    "mean": 0.80528,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.958373
+  },
+  "no_suspicious": {
+   "best_rounds": 188,
+   "cv_fold_means": [
+    0.741327,
+    0.743723,
+    0.805887,
+    0.781607,
+    0.818965
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.797848,
+    "lo": 0.756914,
+    "mean": 0.778302,
+    "n": 200
+   },
+   "dropped": [
+    "home_ratio",
+    "length_cap_ratio",
+    "home_km",
+    "home_ratio",
+    "intent_km_gap"
+   ],
+   "lgb_curve_at": {
+    "10": 0.723357,
+    "100": 0.770008,
+    "188": 0.778302,
+    "200": 0.774985,
+    "50": 0.753686
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.822658,
+    "lo": 0.761926,
+    "mean": 0.792758,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.916818
+  },
+  "retrieval_and_api_only": {
+   "best_rounds": 24,
+   "cv_fold_means": [
+    0.625445,
+    0.622563,
+    0.615667,
+    0.669489,
+    0.674609
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.665608,
+    "lo": 0.614608,
+    "mean": 0.641555,
+    "n": 200
+   },
+   "dropped": [
+    "rule_difficulty",
+    "rule_distance",
+    "rule_tags",
+    "home_km",
+    "home_ratio",
+    "length_km",
+    "length_cap_ratio",
+    "length_band_pos",
+    "intent_km_gap",
+    "ascent_m",
+    "ascent_per_km",
+    "ascent_fit",
+    "intent_easy",
+    "difficulty",
+    "difficulty_in_range",
+    "technical",
+    "duration_h",
+    "is_loop",
+    "intent_loop",
+    "loop_match",
+    "tag_cover",
+    "tag_hits",
+    "neg_hits",
+    "is_mtb",
+    "intent_mtb",
+    "paved_share",
+    "busy_road_share",
+    "popularity",
+    "pois_per_km",
+    "waymarked",
+    "osm_description"
+   ],
+   "lgb_curve_at": {
+    "10": 0.632539,
+    "100": 0.641123,
+    "200": 0.631839,
+    "24": 0.641555,
+    "50": 0.636686
+   },
+   "test_ndcg_at_10": {
+    "hi": 0.731866,
+    "lo": 0.660138,
+    "mean": 0.696989,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.718606
+  }
+ }
+}

@@ -35,7 +35,7 @@ import numpy as np
 from .bm25 import BM25Config, get_index, matched_terms
 from .catalog import Catalog
 from .constraints import CATEGORY_TABS, HardConstraints
-from .dense import DOC_EMBEDDINGS_FILE, DocEmbeddings, build_doc_embeddings
+from .dense import DOC_EMBEDDINGS_FILE, DocEmbeddings, abuild_doc_embeddings, build_doc_embeddings
 from .features import FEATURES, build_features, parse_intent, stage_arrays
 from .filters import FilterConfig, FilterResult, apply_filters
 from .fusion import rrf
@@ -205,6 +205,22 @@ class Pipeline:
             raise ValueError(f"document embeddings have dim {d.dim}, config says {self.cfg.embed_dim}")
         return d
 
+    async def _adoc_embeddings(self) -> DocEmbeddings:
+        """Async variant for use inside the event loop (the mock matrix is built with an awaited embed call)."""
+        if self._docs is None and self._provider("embed") == "mock":
+            key = "dense:mock-doc-embeddings"
+            if not self.catalog.has_memo(key):
+                d = await abuild_doc_embeddings(
+                    self.catalog,
+                    self.llm,
+                    formulation="title_desc",
+                    model=None,
+                    dim=self.cfg.embed_dim,
+                    tag="doc-embed",
+                )
+                self.catalog.memo(key, lambda: d)
+        return self.doc_embeddings()
+
     def config(self) -> dict[str, Any]:
         c = self.cfg.describe()
         models = []
@@ -297,7 +313,7 @@ class Pipeline:
         if embed_task is not None:
             qv, up_lat, up_cost = await embed_task
             t0 = time.perf_counter()
-            docs = self.doc_embeddings()
+            docs = await self._adoc_embeddings()
             sims = docs.cosine(qv, elig)
             stage["dense"], stage["dense_rank"] = sims.astype(float), _ranks(sims).astype(float)
             lists["dense"] = list(np.argsort(-sims, kind="stable")[: cfg.gen_depth])
@@ -479,7 +495,7 @@ class Pipeline:
         mmr_contrib: dict[int, Any] = {}
         if cfg.mmr_lambda is not None and len(cand) > 1:
             t0 = time.perf_counter()
-            docs = self.doc_embeddings()
+            docs = await self._adoc_embeddings()
             E = docs.matrix[elig[np.array(cand, dtype=np.int64)]]
             picks, det = mmr_select(final_scores, E @ E.T, cfg.mmr_lambda)
             for after, (p, d) in enumerate(zip(picks, det, strict=True), start=1):

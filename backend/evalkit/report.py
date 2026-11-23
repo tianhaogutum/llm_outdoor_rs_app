@@ -266,6 +266,119 @@ def _rank_pilot() -> list[str]:
     return L
 
 
+VARIANT_TEXT = {
+    "full": "all features (model `v1`, system `v6_ltr`)",
+    "no_rank_api": "without the ranker-API score (model `v1_noapi`, system `v6_ltr_noapi`)",
+    "no_slot_ratios": "without length / cap and distance / radius ratios",
+    "no_home_distance": "without distance from home (km and ratio)",
+    "no_intent_numbers": "without the intent's km figure",
+    "no_rule_subscores": "without the three v0 rule sub-scores",
+    "no_suspicious": "without slot ratios, home distance and intent km",
+    "retrieval_and_api_only": "BM25, dense, RRF and ranker-API scores only",
+}
+
+
+def _ltr(docs: list[dict[str, Any]]) -> list[str]:
+    d = _load("_ltr.json")
+    if not d:
+        return []
+    dt = d["data"]
+    L = [
+        "## Learned ranker (Phase 3c ii)",
+        "",
+        f"LambdaMART (LightGBM, lambdarank) over {len(d['features'])} features of the "
+        f"{d['candidates']}; trained on **dev personas only** (`eval/results/_ltr.json`, `make ltr`). Training rows: "
+        f"{dt['rows']} judged candidates of {dt['personas']} dev personas (median {dt['rows_per_persona_median']:.0f} "
+        f"per persona; {100 * dt['candidates_judged_share']:.0f}% of all candidates), of which "
+        f"{dt['random_sample_pairs']} come from a seeded uniform sample of {dt['sample_per_persona']} previously "
+        "unjudged candidates per persona (judged for training; unjudged candidates are left out, never treated as "
+        "negatives). Labels: " + ", ".join(f"{g}: {c}" for g, c in dt["labels"].items()) + ".",
+        "",
+        "NDCG@10 here is computed over each persona's *judged candidates* (the rows the model can be scored on), "
+        "so it is not the system NDCG@10 of the tables above. Cross-validation: "
+        f"{d['folds']} folds grouped by persona on dev; the number of rounds is the best mean fold score. *Train* = "
+        "in-sample on all dev rows. *Test* = the frozen model on test personas' judged candidates (reporting only; "
+        "never used for a choice).",
+        "",
+        "| Variant | Rounds | Train (dev, in-sample) | CV (dev, grouped) | Test |",
+        "|---|---|---|---|---|",
+    ]
+    for name, v in d["variants"].items():
+        L.append(
+            f"| {VARIANT_TEXT.get(name, name)} | {v['best_rounds']} | {v['train_ndcg_at_10']:.3f} | "
+            f"{_ci(v['cv_ndcg_at_10'])} | {_ci(v['test_ndcg_at_10'])} |"
+        )
+    full, noapi = d["variants"]["full"], d["variants"]["no_rank_api"]
+    diffs = [a - b for a, b in zip(full["cv_fold_means"], noapi["cv_fold_means"], strict=True)]
+    L += [
+        "",
+        "Ranker-API feature, per CV fold (full − without): "
+        + ", ".join(f"{x:+.3f}" for x in diffs)
+        + f" (mean {sum(diffs) / len(diffs):+.3f}).",
+        "",
+        "Single-feature orderings of the same judged candidates (dev / test): "
+        + ", ".join(
+            f"`{f}` {d['single_feature_dev'][f]:.3f} / {d['single_feature_test'][f]:.3f}"
+            for f in d["single_feature_dev"]
+        )
+        + ".",
+        "",
+    ]
+    for mname, m in d["models"].items():
+        L += [
+            f"Feature importance, model `{mname}` ({m['trees']} trees; gain share and mean |Saabas contribution| on "
+            "dev rows), top 12:",
+            "",
+            "| Feature | Gain share | Splits | Mean abs contribution |",
+            "|---|---|---|---|",
+        ]
+        for imp in m["importance"][:12]:
+            L.append(
+                f"| `{imp['feature']}` | {100 * imp['gain_share']:.1f}% | {imp['splits']} | "
+                f"{imp['mean_abs_contribution']:.3f} |"
+            )
+        L.append("")
+    by = {x["system"]: x for x in docs}
+    if "v6_ltr" in by:
+        L.append(
+            "System NDCG@10 of the learned ranker on dev is in-sample (the dev judgements are its training labels): "
+            + ", ".join(
+                f"`{n}` dev {by[n]['metrics']['dev']['ndcg_at_10']['mean']:.3f} vs test "
+                f"{by[n]['metrics']['test']['ndcg_at_10']['mean']:.3f}"
+                for n in ("v6_ltr", "v6_ltr_noapi")
+                if n in by
+            )
+            + ". Only the test split measures it."
+        )
+        L.append("")
+    return L
+
+
+def _mmr_sweep() -> list[str]:
+    d = _load("_mmr_sweep.json")
+    if not d:
+        return []
+    L = [
+        "## Diversity: MMR sweep (Phase 3d, dev)",
+        "",
+        f"`{d['base']}` + MMR ({d['similarity']}) for each lambda on {d['n_personas']} dev personas; every top 10 "
+        f"judged. Diversity: {d['diversity_metric']}. Dev NDCG of a dev-trained ranker is optimistic; the trade-off's "
+        "shape is what is used. Figure: [mmr_tradeoff.png](mmr_tradeoff.png). `eval/results/_mmr_sweep.json`.",
+        "",
+        "| lambda | NDCG@10 (dev) | ΔNDCG vs lambda 1 | ILD@10 (dev) | Coverage@10 (dev) |",
+        "|---|---|---|---|---|",
+    ]
+    for r in d["rows"]:
+        v = r.get("ndcg_vs_lambda_1")
+        dc = f"{v['diff']:+.3f} [{v['lo']:+.3f}, {v['hi']:+.3f}]" if v else "–"
+        L.append(
+            f"| {r['lambda']} | {_ci(r['ndcg_at_10'])} | {dc} | {_ci(r['ild_at_10'])} | "
+            f"{100 * r['coverage_at_10']:.1f}% |"
+        )
+    L.append("")
+    return L
+
+
 def render() -> str:
     docs = _systems()
     q = _load("_qrels.json")
@@ -290,6 +403,8 @@ def render() -> str:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
     L += _candidate_generation(docs, cap)
     L += _rank_pilot()
+    L += _ltr(docs)
+    L += _mmr_sweep()
     L += [
         "## Latency (locally measured, varies run to run)",
         "",

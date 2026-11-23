@@ -28,7 +28,16 @@ CONFIGS: dict[str, PipelineConfig] = {
     "v3_dense": PipelineConfig(generators=("dense",), ranker="none", bm25=BM25_DEFAULT),
     "v4_rrf": PipelineConfig(generators=("bm25", "dense"), ranker="none", bm25=BM25_DEFAULT),
     "v5_rank_api": PipelineConfig(generators=("bm25", "dense"), ranker="api", bm25=BM25_DEFAULT),
+    "v6_ltr": PipelineConfig(generators=("bm25", "dense"), ranker="ltr", ltr_model="v1", bm25=BM25_DEFAULT),
+    "v6_ltr_noapi": PipelineConfig(generators=("bm25", "dense"), ranker="ltr", ltr_model="v1_noapi", bm25=BM25_DEFAULT),
 }
+# MMR lambda chosen on dev (eval/results/_mmr_sweep.json; docs/RECSYS.md section "Diversity")
+MMR_LAMBDA = 0.8
+CONFIGS["v7_mmr"] = CONFIGS["v6_ltr"].with_(mmr_lambda=MMR_LAMBDA)
+# The default system the API serves (docs/RECSYS.md section "Default system"): the learned ranker without
+# the ranker-API feature (the API's gain on dev CV does not pay for its latency and cost), then MMR.
+DEFAULT_SYSTEM = "recsys_v1"
+CONFIGS[DEFAULT_SYSTEM] = CONFIGS["v6_ltr_noapi"].with_(mmr_lambda=MMR_LAMBDA)
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -36,6 +45,10 @@ DESCRIPTIONS: dict[str, str] = {
     "v3_dense": "filters + dense retrieval (exact cosine), ranked by similarity",
     "v4_rrf": "filters + BM25 and dense fused by reciprocal rank, ranked by RRF",
     "v5_rank_api": "v4_rrf top-50 re-ranked by the semantic ranker API",
+    "v6_ltr": "v4_rrf top-50 re-ranked by the learned ranker (LambdaMART) with the ranker-API score as a feature",
+    "v6_ltr_noapi": "v4_rrf top-50 re-ranked by the learned ranker without the ranker-API feature (no API call)",
+    "v7_mmr": "v6_ltr followed by MMR diversification",
+    "recsys_v1": "DEFAULT: filters, BM25 + dense fused by RRF, learned ranker without the ranker API, MMR",
 }
 
 

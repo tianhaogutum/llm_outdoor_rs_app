@@ -148,6 +148,10 @@ class Catalog:
                 self._memo[key] = build()
             return self._memo[key]
 
+    def has_memo(self, key: str) -> bool:
+        with self._lock:
+            return key in self._memo
+
     # ------------------------------------------------------------ loading
     @classmethod
     def load(cls, catalog_dir: Path | str | None = None) -> Catalog:

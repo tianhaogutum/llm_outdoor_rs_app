@@ -25,6 +25,7 @@ import numpy as np
 from .dense import ARTIFACTS_DIR
 
 FORMAT = "recsys.tree_ensemble/v1"
+MODELS_COMMITTED = ("v1", "v1_noapi")  # artefacts trained by ``python -m evalkit.ltr train``
 MISSING_NONE, MISSING_ZERO, MISSING_NAN = 0, 1, 2
 _MISSING = {"None": MISSING_NONE, "Zero": MISSING_ZERO, "NaN": MISSING_NAN}
 K_ZERO = 1e-35

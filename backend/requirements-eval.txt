@@ -1,6 +1,11 @@
-# Evaluation harness (backend/evalkit). The harness needs nothing beyond the runtime requirements
-# (numpy, pydantic, the LLM client); the test suite reaches it through requirements-dev.txt.
+# Evaluation harness (backend/evalkit). Running systems and the evaluation needs only the runtime
+# requirements (numpy, pydantic, the LLM client); the test suite reaches it through requirements-dev.txt.
+# Training the learned ranker (make ltr) and drawing the MMR figure need these as well. Serving does not:
+# the trained model is evaluated in numpy (app/recsys/ltr.py).
 -r requirements.txt
+lightgbm==4.7.0
+scikit-learn>=1.5  # only for its bundled libomp on macOS (see LGBM_ENV in the Makefile)
+matplotlib>=3.9
 # Only `python -m evalkit.towns` (rebuilding eval/personas/towns.json from the OSM extract) needs the
 # data-pipeline libraries:
 #   -r requirements-data.txt

@@ -18,6 +18,12 @@
 #   make judge-pilot   judge pilot (candidates vs reference; cached)
 #   make owner-set     blind 150-pair labelling set + interim second judge (eval/owner_labels/)
 #   make kappa         owner labels vs judge (reports "owner labels missing" until the file exists)
+#   make cg-tune       Phase 3b dev experiments (BM25 variants, embedded document texts, RRF k, precision)
+#   make rank-pilot    Phase 3c ranker-API pilot on dev (which reranker, which document text)
+#   make ltr-sample    judge a deeper random sample of dev candidates for the learned ranker (costs money)
+#   make ltr           train the learned ranker on dev (LightGBM), write the model artefacts and _ltr.json
+#   make mmr-sweep     Phase 3d MMR lambda sweep on dev (+ docs/mmr_tradeoff.png)
+#   make latency       warm end-to-end latency benchmark of the default system (live calls, cents)
 #   make freeze        export every touched LLM cache entry to eval/cache/
 #   make replay-check  clean cache + cache-only + no credentials: reproduce personas, judgements, results
 #
@@ -42,8 +48,17 @@ CATALOG_DIR ?= $(abspath $(BACKEND)/data/catalog)
 
 SYSTEM ?= v0_rules
 
+# LightGBM needs an OpenMP runtime. On macOS Homebrew's libomp is not assumed; scikit-learn's wheel ships
+# libomp.dylib. DYLD_* variables are stripped when make starts /bin/sh, so the variable is set inline in
+# the recipe (LGBM_ENV) rather than exported. On Linux (CI) it is empty.
+ifeq ($(shell uname -s),Darwin)
+LGBM_ENV := DYLD_FALLBACK_LIBRARY_PATH=$(shell $(PYTHON) -c "import sklearn, os; print(os.path.join(os.path.dirname(sklearn.__file__), '.dylibs'))" 2>/dev/null)
+else
+LGBM_ENV :=
+endif
+
 .PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
-	kappa freeze replay-check
+	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency
 
 setup:
 	@if [ ! -x $(VENV)/bin/python ]; then \
@@ -105,6 +120,24 @@ owner-set:
 
 kappa:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.owner kappa
+
+cg-tune:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.cg tune
+
+rank-pilot:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.rank_pilot
+
+ltr-sample:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.ltr sample
+
+ltr:
+	cd $(BACKEND) && $(LGBM_ENV) $(PYTHON) -m evalkit.ltr train
+
+mmr-sweep:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.mmr_sweep
+
+latency:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.latency
 
 freeze:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.freeze export
