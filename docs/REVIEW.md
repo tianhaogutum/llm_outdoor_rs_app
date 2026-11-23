@@ -182,10 +182,11 @@ cent):** `cd backend && .venv/bin/python -m evalkit.latency --systems recsys_ser
 ## 7. Which failure cases remain, and what data would fix them?
 
 **Answer.** On the ten worst test queries of the served default, most relevant routes were retrieved and then
-ranked down by the learned ranker. Half of the ten are the ranker overriding retrieval for a stated minority need
-(mountain bikers who want a challenge, strollers, small children, an upper bound on length read as a target); two
-are length it cannot read (a vague request, a four-day tour); about a third are the evaluation's fault (the judge
-penalises wishes the user never stated, such as arriving by train). The data that would fix them: slots for
+ranked down by the learned ranker. The largest class (A) is the ranker overriding retrieval for a stated
+minority need (mountain bikers who want a challenge, strollers, small children, an upper bound on length read as a
+target); class B is length the served pipeline cannot read (a vague request, a four-day tour); classes C and D are
+the evaluation's fault rather than the system's (the judge penalises wishes the user never stated, such as
+arriving by train). Counts per class are in the block below. The data that would fix them: slots for
 stroller, train arrival, technical skill and shape mapped to catalogue fields that already exist (steps,
 `Train access`, technical grade, loop), a comfortable-distance slot and day parsing, more minority personas in
 training or real feedback from such users, and intents that state every hard requirement (or a judge that grades

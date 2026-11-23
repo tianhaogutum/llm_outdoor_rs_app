@@ -30,7 +30,8 @@ one-line reason and a "Why this?" view that shows what every stage contributed: 
 which words matched, how close in meaning it was, which ranker features lifted or held it back, and whether it
 is the exploration pick. Completed routes and four kinds of rejection ("too hard", "too easy", "too far",
 "not interested") feed back into the next list. The course project's gamification (stories, quests, souvenirs)
-is still there; its texts are now pre-generated and grounded in the route facts.
+is still there; its LLM-written texts (welcome and route summaries) are now pre-generated and checked against the
+route facts.
 
 <!-- BEGIN GENERATED readme-data (make report; do not edit) -->
 Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 23,764 (persona, route) pairs, 40% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
@@ -158,7 +159,7 @@ Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serv
   train, a one-way route, a lake), which the latent profile has and the written request does not.
 - **D. Not a ranking failure:** many good routes, and the line between grade 2 and 3 is drawn by unstated detail.
 
-About a third of the ten are the evaluation's fault rather than the system's. The fixes with the largest
+Classes C and D are failures of the evaluation rather than of the system. The fixes with the largest
 expected effect are stated needs as constraints (stroller, train, technical skill, an upper bound on length)
 mapped to catalogue fields that already exist, and ranker features that can depend on the user.
 
