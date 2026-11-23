@@ -73,6 +73,8 @@ SIM_SYSTEMS: dict[str, tuple[str, dict[str, Any]]] = {
     "recsys_v1_fb": ("recsys_v1_fb", {}),
     "recsys_v1_fb_light": ("recsys_v1_fb_light", {}),
     "recsys_v1_fb_explore": ("recsys_v1_fb_explore", {}),
+    "recsys_serve_noexplore": ("recsys_serve_noexplore", {}),
+    "recsys_serve": ("recsys_serve", {}),
 }
 SIM_LABELS = {
     "v0_rules": "baseline rule scorer, its own feedback (negative reasons only)",
@@ -82,6 +84,8 @@ SIM_LABELS = {
     "recsys_v1_fb": "default + feedback loop as chosen on dev (route effects + slot steps)",
     "recsys_v1_fb_light": "default + full light loop (slots, Rocchio, re-scoring, near-duplicates)",
     "recsys_v1_fb_explore": "default + feedback loop + exploration slot",
+    "recsys_serve_noexplore": "served ranker (no length_cap_ratio) + feedback loop, no exploration",
+    "recsys_serve": "SERVED DEFAULT: served ranker + feedback loop + exploration slot (D25)",
 }
 
 # Dev tuning grid (feedback parameters; half-life and route effects fixed, see EVAL.md section 10)
@@ -401,6 +405,9 @@ PAIRS = [
     ("recsys_v1_fb_route", "recsys_v1_fb"),
     ("recsys_v1_fb", "recsys_v1_fb_light"),
     ("recsys_v1_fb", "recsys_v1_fb_explore"),
+    ("recsys_serve_noexplore", "recsys_serve"),
+    ("recsys_v1", "recsys_serve"),
+    ("recsys_v1_fb", "recsys_serve_noexplore"),
     ("v1_filters", "recsys_v1_fb"),
     ("v0_rules", "recsys_v1_fb"),
 ]
@@ -434,17 +441,23 @@ def run(mode: str = "judge") -> dict[str, Any]:
     return {"doc": doc, "out": out, "counts": G.counts}
 
 
+EXPLORE_PAIRS = [("recsys_v1_fb", "recsys_v1_fb_explore"), ("recsys_serve_noexplore", "recsys_serve")]
+
+
 def _exploration(out: dict[str, Any], n_cat: int) -> dict[str, Any]:
-    a, b = "recsys_v1_fb", "recsys_v1_fb_explore"
-    if a not in out or b not in out:
-        return {}
-    pids = sorted(out[a])
-    rows = []
-    for t in range(ROUNDS):
-        la = [out[a][pid][t]["ids"] for pid in pids]
-        lb = [out[b][pid][t]["ids"] for pid in pids]
-        rows.append({"round": t + 1, "coverage_gain": M.coverage(lb, n_cat, K) - M.coverage(la, n_cat, K)})
-    return {"per_round_coverage_gain": rows}
+    """Coverage gain of the exploration slot per round, for each (without, with) pair that was simulated."""
+    res: dict[str, Any] = {}
+    for a, b in EXPLORE_PAIRS:
+        if a not in out or b not in out:
+            continue
+        pids = sorted(out[a])
+        rows = []
+        for t in range(ROUNDS):
+            la = [out[a][pid][t]["ids"] for pid in pids]
+            lb = [out[b][pid][t]["ids"] for pid in pids]
+            rows.append({"round": t + 1, "coverage_gain": M.coverage(lb, n_cat, K) - M.coverage(la, n_cat, K)})
+        res[f"{b} - {a}"] = {"a": a, "b": b, "per_round_coverage_gain": rows}
+    return res
 
 
 def write_runs(out: dict[str, Any]) -> None:
@@ -497,6 +510,7 @@ def figure(doc: dict[str, Any]) -> None:
 
     colours = {"v0_rules": "#9e9e9e", "v1_filters": "#6d6875", "recsys_v1": "#2a6f97",
                "recsys_v1_fb_route": "#8ecae6", "recsys_v1_fb": "#e76f51", "recsys_v1_fb_light": "#9b5de5",
+               "recsys_serve_noexplore": "#f4a261", "recsys_serve": "#d00000",
                "recsys_v1_fb_explore": "#2a9d8f"}
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=120)
     ax = axes[0]

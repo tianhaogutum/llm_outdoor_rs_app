@@ -57,6 +57,11 @@ CONFIGS["recsys_v1_fb"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=FEEDBACK)
 CONFIGS["recsys_v1_fb_explore"] = CONFIGS["recsys_v1_fb"].with_(explore=ExploreConfig())
 CONFIGS["recsys_v1_fb_route"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=ROUTE_EFFECTS_ONLY)
 CONFIGS["recsys_v1_fb_light"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=LIGHT_LOOP)
+# The system the API serves (docs/DECISIONS.md D25): ranker without length_cap_ratio (D19), the feedback loop as
+# chosen on dev (D21), exploration slot on (D22). A composition of registered parts; nothing new is trained.
+SERVED_SYSTEM = "recsys_serve"
+CONFIGS["recsys_serve_noexplore"] = CONFIGS["recsys_v1_nocap"].with_(feedback=FEEDBACK)
+CONFIGS[SERVED_SYSTEM] = CONFIGS["recsys_serve_noexplore"].with_(explore=ExploreConfig())
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -74,6 +79,8 @@ DESCRIPTIONS: dict[str, str] = {
     "recsys_v1_fb": "recsys_v1 + feedback loop as chosen on dev (route effects, slot adjustments)",
     "recsys_v1_fb_light": "recsys_v1 + full light feedback loop (slots, Rocchio, re-scoring, near-duplicates)",
     "recsys_v1_fb_explore": "recsys_v1_fb + one exploration slot (Thompson sampling over tag clusters)",
+    "recsys_serve": "SERVED: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot (D25)",
+    "recsys_serve_noexplore": "recsys_serve without the exploration slot (its feedback-on, no-exploration twin)",
     "recsys_v1_fb_route": "recsys_v1 + route effects only (recent completions and rejections not shown again)",
 }
 

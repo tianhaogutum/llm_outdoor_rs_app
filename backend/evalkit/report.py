@@ -654,7 +654,117 @@ def _chat_eval() -> list[str]:
 
 GRID_KEYS = ("beta", "gamma", "eta_emb", "eta_tag", "nu_dup", "difficulty_step", "cap_step", "radius_step")
 SIM_ORDER = ["v0_rules", "v1_filters", "recsys_v1", "recsys_v1_fb_route", "recsys_v1_fb", "recsys_v1_fb_light",
-             "recsys_v1_fb_explore"]
+             "recsys_v1_fb_explore", "recsys_serve_noexplore", "recsys_serve"]
+
+SERVED = "recsys_serve"
+
+
+def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    """Headline: the system the API serves (D25), single-request and in the simulation."""
+    by = {d["system"]: d for d in docs}
+    if SERVED not in by or "recsys_v1" not in by:
+        return []
+    L = [
+        "## Served default: `recsys_serve` (D25)",
+        "",
+        cap,
+        "",
+        "**The system the API serves**: the ranker trained without `length_cap_ratio` (`recsys_v1_nocap`, D19), the "
+        "feedback loop as chosen on dev (`recsys_v1_fb`'s settings, D21) and the exploration slot at rank 10 (D22). "
+        "A judgement call made without real users (DECISIONS.md D25). In a single request there is no feedback, so "
+        "it differs from `recsys_v1_nocap` only by the exploration pick at rank 10. Every top 10 is 100% judged.",
+        "",
+        "| System | NDCG@10 test | MRR@10 test | Recall@50 test | Violations@10 test | NDCG@10 dev (in-sample) | "
+        "Cost/request |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for n in ("recsys_v1", "recsys_v1_nocap", SERVED):
+        if n not in by:
+            continue
+        m = by[n]["metrics"]
+        lab = f"**`{n}` (served default)**" if n == SERVED else f"`{n}`"
+        L.append(
+            f"| {lab} | {_ci(m['test']['ndcg_at_10'])} | {_ci(m['test']['mrr_at_10'])} | "
+            f"{_ci(m['test']['recall_at_50'])} | {_ci(m['test']['violation_at_10'], pct=True)} | "
+            f"{_ci(m['dev']['ndcg_at_10'])} | {m['test']['cost_usd']['mean']:.5f} USD |"
+        )
+    for split in ("test", "dev"):
+        L += ["", f"Paired differences ({split}):", ""]
+        L += _paired_rows(by, [("recsys_v1", SERVED), ("recsys_v1_nocap", SERVED)], split)
+    sim = _load("_simulation.json")
+    if sim and SERVED in sim["metrics"]:
+        met = sim["metrics"]
+        L += [
+            "",
+            "In the 10-round feedback simulation (test; simulated users *and* a simulated behaviour model, section "
+            "\"Feedback loop\"):",
+            "",
+            "| System | NDCG@10, mean of rounds 2-10 | NDCG@10, round 10 | Cumulative coverage, round 10 |",
+            "|---|---|---|---|",
+        ]
+        for n in ("recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore", SERVED):
+            if n in met:
+                lab = f"**`{n}` (served default)**" if n == SERVED else f"`{n}`"
+                L.append(
+                    f"| {lab} | {_ci(met[n]['ndcg_rounds_2_10'])} | {_ci(met[n]['rounds'][-1]['ndcg_at_10'])} | "
+                    f"{100 * met[n]['rounds'][-1]['cumulative_coverage']:.1f}% |"
+                )
+        L += ["", "| Comparison | ΔNDCG@10, rounds 2-10 [95% CI] | ΔNDCG@10, round 10 |", "|---|---|---|"]
+        for pr_ in sim["paired"]:
+            if pr_["b"] in (SERVED, "recsys_serve_noexplore") and pr_["a"] in (
+                "recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore"
+            ):
+                L.append(
+                    f"| `{pr_['b']}` − `{pr_['a']}` | {_pair_cell(pr_['rounds_2_10'])} | "
+                    f"{_pair_cell(pr_['per_round'][-1])} |"
+                )
+    L.append("")
+    return L
+
+
+EMPTY = [
+    ("recsys_serve", "all slots (home, radius, cap)"),
+    ("recsys_serve_nocap", "no distance cap"),
+    ("recsys_serve_nohome", "no home (so no radius filter)"),
+    ("recsys_serve_noslots", "no home and no cap"),
+    ("recsys_v1", "all slots"),
+    ("recsys_v1_nocapslot", "no distance cap"),
+]
+
+
+def _empty_slots(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    by = {d["system"]: d for d in docs}
+    if not all(n in by for n, _ in EMPTY):
+        return []
+    L = [
+        "## Empty profile slots: what the served system does when a user skips them (test)",
+        "",
+        cap,
+        "",
+        "The same requests with slots removed before the pipeline sees them (`app/recsys/systems/empty_slots.py`); "
+        "relevance is still judged against the persona's real limits, so a route beyond the persona's own radius or "
+        "cap is graded 0 by rule. Every top 10 is 100% judged. `recsys_v1_nocapslot` removes the cap from "
+        "`recsys_v1`, whose ranker uses `length_cap_ratio` and never saw it missing in training (D19).",
+        "",
+        "| System | Slots given | NDCG@10 | MRR@10 | Violations@10 | Judged@10 |",
+        "|---|---|---|---|---|---|",
+    ]
+    for n, label in EMPTY:
+        m = by[n]["metrics"]["test"]
+        L.append(
+            f"| `{n}` | {label} | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | "
+            f"{_ci(m['violation_at_10'], pct=True)} | {100 * m['judged_share_at_10']:.0f}% |"
+        )
+    L += ["", "Paired differences (test):", ""]
+    L += _paired_rows(
+        by,
+        [("recsys_serve", "recsys_serve_nocap"), ("recsys_serve", "recsys_serve_nohome"),
+         ("recsys_serve", "recsys_serve_noslots"), ("recsys_v1", "recsys_v1_nocapslot"),
+         ("recsys_v1_nocapslot", "recsys_serve_nocap")],
+        "test",
+    )
+    L.append("")
+    return L
 
 
 def _simulation() -> list[str]:
@@ -730,25 +840,27 @@ def _simulation() -> list[str]:
             f"| `{pr_['b']}` − `{pr_['a']}` | {_pair_cell(r)} | {r['p_le_0']:.3f} | "
             f"{_pair_cell(pr_['per_round'][-1])} | {r['n']} |"
         )
-    ex = d.get("exploration") or {}
-    p_ex = next((p for p in d["paired"] if p["a"] == "recsys_v1_fb" and p["b"] == "recsys_v1_fb_explore"), None)
-    if ex and p_ex:
+    for ex in (d.get("exploration") or {}).values():
+        a, b = ex["a"], ex["b"]
+        p_ex = next((p for p in d["paired"] if p["a"] == a and p["b"] == b), None)
+        if not p_ex:
+            continue
         L += [
             "",
-            "Exploration: NDCG@10 cost (`recsys_v1_fb_explore` − `recsys_v1_fb`, paired) next to the coverage@10 "
-            "gain, per round:",
+            f"Exploration on `{a}`: NDCG@10 cost (`{b}` − `{a}`, paired) next to the coverage@10 gain, per round:",
             "",
             "| Round | ΔNDCG@10 [95% CI] | Δcoverage@10 (points) |",
             "|---|---|---|",
         ]
         for t, row in enumerate(ex["per_round_coverage_gain"]):
             L.append(f"| {t + 1} | {_pair_cell(p_ex['per_round'][t])} | {100 * row['coverage_gain']:+.2f} |")
-        cm = met["recsys_v1_fb_explore"]["rounds"][-1]["cumulative_coverage"]
-        cb = met["recsys_v1_fb"]["rounds"][-1]["cumulative_coverage"]
-        L.append("")
-        L.append(
-            f"Cumulative coverage after 10 rounds: {100 * cb:.1f}% without, {100 * cm:.1f}% with the exploration slot."
-        )
+        cm = met[b]["rounds"][-1]["cumulative_coverage"]
+        cb = met[a]["rounds"][-1]["cumulative_coverage"]
+        L += [
+            "",
+            f"Mean ΔNDCG@10 over rounds 2-10: {_pair_cell(p_ex['rounds_2_10'])}. Cumulative coverage after 10 rounds: "
+            f"{100 * cb:.1f}% without, {100 * cm:.1f}% with the exploration slot.",
+        ]
     L.append("")
     tu = _load("_sim_tuning.json")
     if tu:
@@ -797,6 +909,7 @@ def render() -> str:
         L.append("No results yet: run `make eval SYSTEM=<name>`.")
         return "\n".join(L) + "\n"
     cap = _caption(docs[0])
+    L += _served(docs, cap)
     L += _ablation(docs, cap)
     L += _default_system(docs)
     L += _reference(cap)
@@ -806,6 +919,7 @@ def render() -> str:
         if paired:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
     L += _robustness(docs, cap)
+    L += _empty_slots(docs, cap)
     L += _simulation()
     L += _e2e(docs, cap)
     L += _chat_eval()

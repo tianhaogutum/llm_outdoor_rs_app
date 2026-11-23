@@ -75,3 +75,21 @@ def _chat(sysm, q):
     from app.llm import run_sync
 
     return run_sync(sysm.chat_query(q))
+
+
+def test_served_system_composition_and_empty_slot_checks(cat, llm):
+    from app.recsys.systems.pipelines import CONFIGS, SERVED_SYSTEM
+
+    cfg = CONFIGS[SERVED_SYSTEM]
+    assert SERVED_SYSTEM == "recsys_serve" and cfg.ltr_model == "v1_noapi_nocap"
+    assert cfg.feedback == CONFIGS["recsys_v1_fb"].feedback and cfg.explore is not None
+    assert CONFIGS["recsys_v1"].ltr_model == "v1_noapi" and CONFIGS["recsys_v1"].feedback is None  # unchanged
+    q = _q()
+    checks = (("recsys_serve_nocap", ("max_distance_km",)), ("recsys_serve_nohome", ("home",)),
+              ("recsys_serve_noslots", ("max_distance_km", "home")), ("recsys_v1_nocapslot", ("max_distance_km",)))
+    for name, gone in checks:
+        sysm = build_system(name, cat, llm=llm)
+        rec = sysm.recommend(q, 10)
+        f = rec.trace[0]
+        assert rec.system == name and f.stage == "filter" and rec.route_ids
+        assert set(gone) <= set(sysm.config()["slots_removed"])

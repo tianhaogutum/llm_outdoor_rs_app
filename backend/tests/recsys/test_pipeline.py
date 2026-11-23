@@ -33,6 +33,8 @@ EXPECTED_STAGES = {
     "recsys_v1_fb_route": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
     "recsys_v1_fb_light": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
     "recsys_v1_fb_explore": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
+    "recsys_serve_noexplore": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_serve": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
 }
 
 
