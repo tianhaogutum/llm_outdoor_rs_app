@@ -305,7 +305,7 @@ def replay(check: bool) -> tuple[list[str], list[str]]:
         return [], []
     from evalkit import evaluate as E
     from evalkit import intents
-    from evalkit.judge import JUDGES, client_for, replay_batches
+    from evalkit.judge import replay_problems
     from evalkit.qrels import Qrels
 
     keys: list[str] = []
@@ -325,16 +325,9 @@ def replay(check: bool) -> tuple[list[str], list[str]]:
             break
     pmap = dict(committed)
     recs = list(Qrels.load(E.HOLDOUT.qrels_file).records.values())
-    for name in sorted({r["judge"] for r in recs if r["source"] == "llm"}):
-        cfg = JUDGES[name]
-        jc = client_for(cfg)
-        out = replay_batches(cfg, catalog, pmap, recs, client=jc)
-        keys += jc.touched_keys()
-        got = {(r["persona_id"], r["route_id"]): r["grade"] for r in out.records}
-        for r in recs:
-            if r["source"] == "llm" and r["judge"] == name and got.get((r["persona_id"], r["route_id"])) != r["grade"]:
-                probs.append(f"holdout judge replay differs for {(r['persona_id'], r['route_id'])}")
-                break
+    k, pr = replay_problems(catalog, pmap, recs, E.HOLDOUT.qrels_file.name)
+    keys += k
+    probs += pr[:1]
     client = E.system_client()
     for name in E.stored_systems(E.HOLDOUT):
         client.reset_touched()

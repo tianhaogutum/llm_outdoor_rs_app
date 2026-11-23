@@ -1,6 +1,7 @@
 """Owner checkpoint: blind labelling set, interim second judge, and kappa.
 
     cd backend && python -m evalkit.owner build      # blind set: eval/owner_labels/{pairs.jsonl, sheet.csv, label.html}
+    cd backend && python -m evalkit.owner sheet      # re-render sheet.csv and label.html for the existing pairs
     cd backend && python -m evalkit.owner second     # second judge (other vendor) on the same 150 pairs
     cd backend && python -m evalkit.owner kappa      # make kappa
 
@@ -25,7 +26,7 @@ import numpy as np
 
 from app.recsys import get_catalog
 from evalkit import paths
-from evalkit.cards import persona_card, route_card
+from evalkit.cards import CARD_V1, persona_card, route_card
 from evalkit.evaluate import dumps
 from evalkit.judge import JUDGES, PRODUCTION_JUDGE, judge_pairs, rubric_text
 from evalkit.metrics import confusion_matrix, weighted_kappa
@@ -136,6 +137,19 @@ def build() -> None:
     pairs = sample_pairs(qrels, personas)
     paths.OWNER_DIR.mkdir(parents=True, exist_ok=True)
     _f("pairs.jsonl").write_text("".join(json.dumps(p, sort_keys=True) + "\n" for p in pairs), encoding="utf-8")
+    render_sheet(pairs, catalog, personas)
+    grades = Counter(qrels.records[(p["persona_id"], p["route_id"])]["grade"] for p in pairs)
+    splits = Counter(personas[p["persona_id"]].split for p in pairs)
+    print(
+        f"{len(pairs)} pairs -> {paths.OWNER_DIR} (judge grades {dict(sorted(grades.items()))}, splits {dict(splits)})"
+    )
+
+
+def render_sheet(pairs: list[dict[str, Any]], catalog=None, personas=None) -> None:
+    """Write ``sheet.csv`` and ``label.html`` for ``pairs`` with the current card version (no judge grades).
+    Re-rendering keeps the pair ids, so labels already saved in the browser stay attached to their pairs."""
+    catalog = catalog or get_catalog()
+    personas = personas or {p.persona_id: p for p in load_personas()}
     buf = io.StringIO()
     w = csv.writer(buf, lineterminator="\n")
     w.writerow(["pair_id", "persona_card", "route_card", "label"])
@@ -165,11 +179,6 @@ def build() -> None:
         )
     parts.append(HTML_JS)
     _f("label.html").write_text("\n".join(parts), encoding="utf-8")
-    grades = Counter(qrels.records[(p["persona_id"], p["route_id"])]["grade"] for p in pairs)
-    splits = Counter(personas[p["persona_id"]].split for p in pairs)
-    print(
-        f"{len(pairs)} pairs -> {paths.OWNER_DIR} (judge grades {dict(sorted(grades.items()))}, splits {dict(splits)})"
-    )
 
 
 def load_pairs() -> list[dict[str, Any]]:
@@ -182,7 +191,13 @@ def second() -> None:
     pairs = load_pairs()
     cfg = JUDGES[SECOND_JUDGE]
     out = judge_pairs(
-        cfg, catalog, personas, [(p["persona_id"], p["route_id"]) for p in pairs], seed=SEED, tag="second-judge"
+        cfg,
+        catalog,
+        personas,
+        [(p["persona_id"], p["route_id"]) for p in pairs],
+        seed=SEED,
+        tag="second-judge",
+        card=CARD_V1,  # recorded with the v1 card before D29; replayed as recorded (the sheet shows v2)
     )
     by = {(r["persona_id"], r["route_id"]): r for r in out.records}
     with _f("second_judge.jsonl").open("w", encoding="utf-8") as fh:
@@ -275,10 +290,12 @@ def kappa() -> dict[str, Any]:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("cmd", choices=["build", "second", "kappa"])
+    ap.add_argument("cmd", choices=["build", "sheet", "second", "kappa"])
     args = ap.parse_args(argv)
     if args.cmd == "build":
         build()
+    elif args.cmd == "sheet":
+        render_sheet(load_pairs())
     elif args.cmd == "second":
         second()
     else:

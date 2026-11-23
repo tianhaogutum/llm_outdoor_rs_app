@@ -1,6 +1,16 @@
 """Plain-text cards: the persona as the judge (and the owner) sees it, and a factual route card.
 
 Both are deterministic functions of the data, so prompts and cache keys are stable.
+
+Card versions (docs/DECISIONS.md D29). ``card/v1`` printed the persona's travel radius, comfortable distance band
+and distance cap rounded to whole kilometres and the route's distance from home to whole kilometres, while the
+rule-grader and the behaviour model use the exact values: a route of 6.3 km under a 6.4 km cap was shown against
+"no more than 6 km". ``card/v2`` prints those numbers exactly as stored (one decimal at most) and the distance from
+home to 0.1 km, so a comparison the judge makes on the printed numbers can only disagree with the exact comparison
+for a route within 0.05 km of a soft edge (the comfortable band), never for a hard limit: a route the rule lets
+through (length <= cap, distance <= radius) is never printed above it. Everything else is identical. ``card/v1``
+stays available, unchanged, because the recorded judgements, the persona intents (the intent writer saw v1 lines)
+and the second judge replay from prompts built with it.
 """
 
 from __future__ import annotations
@@ -43,6 +53,22 @@ DISLIKE_TEXT = {
 }
 FITNESS_WORDS = [(0.75, "low"), (1.5, "moderate"), (2.25, "good"), (9.0, "very fit")]
 
+CARD_V1 = "card/v1"  # whole-km radius, band, cap and home distance (the bug; recorded judgements before D29)
+CARD_V2 = "card/v2"  # exact radius, band and cap, home distance to 0.1 km (D29)
+CARD_VERSION = CARD_V2  # what new judgements use
+CARD_VERSIONS = (CARD_V1, CARD_V2)
+
+
+def _check(card: str) -> None:
+    if card not in CARD_VERSIONS:
+        raise ValueError(f"unknown card version {card!r}")
+
+
+def km(x: float, card: str = CARD_VERSION) -> str:
+    """A persona's km limit as printed on the card: whole km in v1, the stored value (at most one decimal) in v2."""
+    _check(card)
+    return f"{x:.0f}" if card == CARD_V1 else f"{round(float(x), 1):g}"
+
 
 def fitness_word(f: float) -> str:
     return next(w for lim, w in FITNESS_WORDS if f < lim)
@@ -60,12 +86,13 @@ def party_text(party: dict[str, Any]) -> str:
     return f"{s} ({'; '.join(extra)})"
 
 
-def latent_lines(p: Persona, *, canonical: bool = False) -> list[str]:
+def latent_lines(p: Persona, *, canonical: bool = False, card: str = CARD_V1) -> list[str]:
     """The persona's full latent profile as short factual lines (judge card, intent writer, owner sheet).
 
     ``canonical=True`` lists the wishes in key order, which is the order they have after a round trip
     through ``personas.jsonl`` (written with sorted keys); the judge and owner cards use it so their text
-    does not depend on in-memory dict order. The intent writer saw the generator's order (by weight)."""
+    does not depend on in-memory dict order. The intent writer saw the generator's order (by weight).
+    ``card`` defaults to v1 here because the intent writer's prompts (cached, replayed) were built with it."""
     x = p.latent
     desires = dict(sorted(x["desires"].items())) if canonical else x["desires"]
     style = x["style"]
@@ -77,19 +104,20 @@ def latent_lines(p: Persona, *, canonical: bool = False) -> list[str]:
     lines = [
         f"Activity: {act}",
         f"Home: {x['home']['town']} ({x['home']['region']}, Bavaria); travels by {x['transport']} "
-        f"at most {x['max_travel_km']:.0f} km (straight line) to the start",
+        f"at most {km(x['max_travel_km'], card)} km (straight line) to the start",
         f"Party: {party_text(x['party'])}",
         f"Fitness: {fitness_word(x['fitness'])}",
     ]
     lo, hi = x["distance_band_km"]
     if x["multi_day"]:
         lines.append(
-            f"Trip: multi-day tour over about {x['days']} days; comfortable total {lo:.0f}-{hi:.0f} km, "
-            f"absolutely no more than {x['max_distance_km']:.0f} km"
+            f"Trip: multi-day tour over about {x['days']} days; comfortable total {km(lo, card)}-{km(hi, card)} km, "
+            f"absolutely no more than {km(x['max_distance_km'], card)} km"
         )
     else:
         lines.append(
-            f"Distance: comfortable {lo:.0f}-{hi:.0f} km, absolutely no more than {x['max_distance_km']:.0f} km"
+            f"Distance: comfortable {km(lo, card)}-{km(hi, card)} km, absolutely no more than "
+            f"{km(x['max_distance_km'], card)} km"
         )
     lines.append(f"Climbing: comfortable with up to about {x['max_ascent_m']} m of total ascent")
     lines.append(f"Technical level: {TECH_TEXT[style][x['technical_max']]}")
@@ -109,8 +137,8 @@ def latent_lines(p: Persona, *, canonical: bool = False) -> list[str]:
     return lines
 
 
-def persona_card(p: Persona, *, include_intent: bool = True, canonical: bool = True) -> str:
-    lines = latent_lines(p, canonical=canonical)
+def persona_card(p: Persona, *, include_intent: bool = True, canonical: bool = True, card: str = CARD_VERSION) -> str:
+    lines = latent_lines(p, canonical=canonical, card=card)
     if include_intent and p.intent:
         lines.append(f'What they typed into the app: "{p.intent}"')
     return "\n".join(lines)
@@ -153,7 +181,10 @@ def _names(items: list[dict], n: int = 3) -> str:
     return ", ".join(out[:n])
 
 
-def route_card(r: RouteRecord, home: tuple[float, float] | None = None, *, osm_desc_chars: int = 280) -> str:
+def route_card(
+    r: RouteRecord, home: tuple[float, float] | None = None, *, osm_desc_chars: int = 280, card: str = CARD_VERSION
+) -> str:
+    _check(card)
     f = r.features or {}
     prof = f.get("profile") or {}
     lines = [f"Title: {r.title}"]
@@ -161,8 +192,9 @@ def route_card(r: RouteRecord, home: tuple[float, float] | None = None, *, osm_d
     lines.append(f"Type: {r.category_name} ({r.activity}); {shape}")
     start = f"Start: near {r.locality or '?'} ({r.admin_district or '?'}, {r.admin_region or '?'})"
     if home is not None:
-        km = haversine_km(home[0], home[1], r.start_lat, r.start_lon)
-        start += f"; {km:.0f} km from the person's home (straight line)"
+        d_km = haversine_km(home[0], home[1], r.start_lat, r.start_lon)
+        start += f"; {d_km:.0f}" if card == CARD_V1 else f"; {d_km:.1f}"
+        start += " km from the person's home (straight line)"
     lines.append(start)
     dur_h = r.duration_min / 60
     days = f", about {r.est_days} days" if r.est_days > 1 else ""

@@ -5,6 +5,9 @@
   catalogue text go through ``wrap_untrusted``.
 - Several routes of the same persona are graded per call, in a seeded order; structured output,
   temperature 0. Every call goes through ``app.llm`` (cache, budget, ledger).
+- Card version (``evalkit.cards``, D29): new judgements use ``card/v2`` and record ``"card": "card/v2"``; records
+  without the key were graded with ``card/v1``. A pair re-graded because of the v1 rounding keeps its earlier
+  judgement under ``"previous"``; :func:`replay_records` yields both, so a replay re-issues and checks both.
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ from pydantic import BaseModel, Field
 from app.llm import UNTRUSTED_DATA_RULE, LLMClient, LLMConfig, SchemaValidationError, wrap_untrusted
 from app.recsys import Catalog
 from evalkit import paths
-from evalkit.cards import persona_card, route_card
+from evalkit.cards import CARD_V1, CARD_VERSION, persona_card, route_card
 from evalkit.personas import Persona
 
 RUBRIC_VERSION = "rubric/v1"
@@ -171,12 +174,14 @@ def system_prompt() -> str:
     )
 
 
-def judge_prompt(p: Persona, catalog: Catalog, route_ids: list[int]) -> tuple[str, list[str]]:
+def judge_prompt(
+    p: Persona, catalog: Catalog, route_ids: list[int], card: str = CARD_VERSION
+) -> tuple[str, list[str]]:
     home = tuple(p.profile["home"])
     labels = [f"R{i + 1}" for i in range(len(route_ids))]
     parts = [
         "PERSON (profile):",
-        wrap_untrusted(persona_card(p, include_intent=False), "person-profile"),
+        wrap_untrusted(persona_card(p, include_intent=False, card=card), "person-profile"),
         "",
         "What the person typed into the app:",
         wrap_untrusted(p.intent or "(nothing)", "person-request"),
@@ -185,7 +190,7 @@ def judge_prompt(p: Persona, catalog: Catalog, route_ids: list[int]) -> tuple[st
     ]
     for lab, rid in zip(labels, route_ids, strict=True):
         parts.append(f"{lab}:")
-        parts.append(wrap_untrusted(route_card(catalog.get(rid), home), f"route-{lab}"))
+        parts.append(wrap_untrusted(route_card(catalog.get(rid), home, card=card), f"route-{lab}"))
     parts.append("")
     parts.append(
         f"Grade every route ({', '.join(labels)}) for this person. Reply with JSON "
@@ -204,10 +209,22 @@ class JudgeOutcome:
     nominal_latency_ms: float = 0.0
 
 
+def card_of(rec: dict[str, Any]) -> str:
+    """The card version a recorded LLM judgement was made with (records before D29 carry no key: v1)."""
+    return rec.get("card", CARD_V1)
+
+
 async def _judge_one_batch(
-    cfg: JudgeConfig, client: LLMClient, p: Persona, catalog: Catalog, route_ids: list[int], tag: str, out: JudgeOutcome
+    cfg: JudgeConfig,
+    client: LLMClient,
+    p: Persona,
+    catalog: Catalog,
+    route_ids: list[int],
+    tag: str,
+    out: JudgeOutcome,
+    card: str = CARD_VERSION,
 ) -> list[dict[str, Any]]:
-    prompt, labels = judge_prompt(p, catalog, route_ids)
+    prompt, labels = judge_prompt(p, catalog, route_ids, card)
     try:
         res = await client.generate(
             prompt,
@@ -223,8 +240,8 @@ async def _judge_one_batch(
         if len(route_ids) == 1:
             raise
         half = len(route_ids) // 2
-        a = await _judge_one_batch(cfg, client, p, catalog, route_ids[:half], tag, out)
-        b = await _judge_one_batch(cfg, client, p, catalog, route_ids[half:], tag, out)
+        a = await _judge_one_batch(cfg, client, p, catalog, route_ids[:half], tag, out, card)
+        b = await _judge_one_batch(cfg, client, p, catalog, route_ids[half:], tag, out, card)
         return a + b
     out.calls += 1
     out.nominal_cost_usd += res.nominal_cost_usd
@@ -235,6 +252,8 @@ async def _judge_one_batch(
         if key in labels and key not in by_label:
             by_label[key] = g
     bid = batch_id(cfg.name, p.persona_id, route_ids)
+    if card != CARD_V1:  # v1 batch ids stay as recorded; a v2 batch of the same routes is a different call
+        bid = batch_id(f"{cfg.name}|{card}", p.persona_id, route_ids)
     recs, missing = [], []
     for pos, (lab, rid) in enumerate(zip(labels, route_ids, strict=True)):
         g = by_label.get(lab)
@@ -256,6 +275,7 @@ async def _judge_one_batch(
                 "batch_pos": pos,
                 "batch_size": len(route_ids),
                 "batch_ids": list(map(int, route_ids)),
+                **({"card": card} if card != CARD_V1 else {}),
             }
         )
     if missing:  # the model skipped labels: grade those one at a time
@@ -265,20 +285,28 @@ async def _judge_one_batch(
                 f"judge {cfg.name} returned no grade for route {route_ids[0]}", attempts=1, last_text=""
             )
         for rid in missing:
-            recs += await _judge_one_batch(cfg, client, p, catalog, [rid], tag, out)
+            recs += await _judge_one_batch(cfg, client, p, catalog, [rid], tag, out, card)
     return recs
 
 
 async def judge_batches_async(
-    cfg: JudgeConfig, client: LLMClient, catalog: Catalog, batches: list[tuple[Persona, list[int]]], tag: str = "judge"
+    cfg: JudgeConfig,
+    client: LLMClient,
+    catalog: Catalog,
+    batches: list[tuple[Persona, list[int]] | tuple[Persona, list[int], str]],
+    tag: str = "judge",
+    card: str = CARD_VERSION,
 ) -> JudgeOutcome:
+    """Judge (persona, route ids[, card]) batches; a batch without its own card version uses ``card``."""
     out = JudgeOutcome(records=[])
     # de-duplicate identical batches (the client does not de-duplicate in-flight calls)
-    uniq: dict[tuple[str, tuple[int, ...]], tuple[Persona, list[int]]] = {}
-    for p, ids in batches:
-        uniq.setdefault((p.persona_id, tuple(ids)), (p, ids))
+    uniq: dict[tuple[str, tuple[int, ...], str], tuple[Persona, list[int], str]] = {}
+    for b in batches:
+        p, ids = b[0], b[1]
+        c = b[2] if len(b) > 2 else card
+        uniq.setdefault((p.persona_id, tuple(ids), c), (p, ids, c))
     results = await asyncio.gather(
-        *(_judge_one_batch(cfg, client, p, catalog, ids, tag, out) for p, ids in uniq.values())
+        *(_judge_one_batch(cfg, client, p, catalog, ids, tag, out, c) for p, ids, c in uniq.values())
     )
     for r in results:
         out.records.extend(r)
@@ -294,6 +322,7 @@ def judge_pairs(
     client: Optional[LLMClient] = None,
     seed: int = 0,
     tag: str = "judge",
+    card: str = CARD_VERSION,
 ) -> JudgeOutcome:
     """Grade (persona_id, route_id) pairs with ``cfg`` (batched per persona, seeded order)."""
     from app.llm import run_sync
@@ -303,7 +332,47 @@ def judge_pairs(
     for pid, rid in pairs:
         by_p.setdefault(pid, []).append(int(rid))
     batches = [(personas[pid], b) for pid in sorted(by_p) for b in make_batches(pid, by_p[pid], cfg.batch_size, seed)]
-    return run_sync(judge_batches_async(cfg, client, catalog, batches, tag=tag))
+    return run_sync(judge_batches_async(cfg, client, catalog, batches, tag=tag, card=card))
+
+
+def replay_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Every recorded LLM judgement in ``records``: the current ones and, for pairs re-graded with a newer card,
+    the superseded judgement kept under ``"previous"`` (with its persona and route filled in)."""
+    out = []
+    for r in records:
+        if r.get("source") != "llm":
+            continue
+        out.append(r)
+        prev = r.get("previous")
+        if prev and prev.get("source") == "llm":
+            out.append({**prev, "persona_id": r["persona_id"], "route_id": r["route_id"]})
+    return out
+
+
+def replay_problems(
+    catalog: Catalog,
+    personas: dict[str, Persona],
+    records: list[dict[str, Any]],
+    label: str,
+) -> tuple[list[str], list[str]]:
+    """Replay every recorded batch (current and superseded) and compare the grades. Returns (touched keys,
+    problems)."""
+    keys: list[str] = []
+    problems: list[str] = []
+    recs = replay_records(records)
+    for name in sorted({r["judge"] for r in recs}):
+        cfg = JUDGES[name]
+        c = client_for(cfg)
+        out = replay_batches(cfg, catalog, personas, recs, client=c)
+        keys += c.touched_keys()
+        got = {(r["persona_id"], r["route_id"], card_of(r)): r["grade"] for r in out.records}
+        for r in recs:
+            if r["judge"] != name:
+                continue
+            k = (r["persona_id"], r["route_id"], card_of(r))
+            if got.get(k) != r["grade"]:
+                problems.append(f"judge replay differs for {k} ({label}): {got.get(k)} vs {r['grade']}")
+    return keys, problems
 
 
 def replay_batches(
@@ -315,13 +384,14 @@ def replay_batches(
     client: Optional[LLMClient] = None,
     tag: str = "judge",
 ) -> JudgeOutcome:
-    """Re-issue exactly the recorded batches (from ``batch_ids``) - used to verify a frozen replay."""
+    """Re-issue exactly the recorded batches (from ``batch_ids``, each with its card version) - used to verify a
+    frozen replay. Superseded judgements are replayed only if ``records`` contains them (:func:`replay_records`)."""
     from app.llm import run_sync
 
     client = client or client_for(cfg)
-    seen: dict[tuple[str, tuple[int, ...]], None] = {}
+    seen: dict[tuple[str, tuple[int, ...], str], None] = {}
     for r in records:
         if r.get("source") == "llm" and r.get("judge") == cfg.name:
-            seen.setdefault((r["persona_id"], tuple(r["batch_ids"])), None)
-    batches = [(personas[pid], list(ids)) for pid, ids in seen]
+            seen.setdefault((r["persona_id"], tuple(r["batch_ids"]), card_of(r)), None)
+    batches = [(personas[pid], list(ids), card) for pid, ids, card in seen]
     return run_sync(judge_batches_async(cfg, client, catalog, batches, tag=tag))

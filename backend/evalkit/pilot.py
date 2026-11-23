@@ -25,6 +25,7 @@ import numpy as np
 from app.llm import run_sync
 from app.recsys import build_system, get_catalog
 from evalkit import paths
+from evalkit.cards import CARD_V1  # the pilot ran before D29; its prompts are replayed as recorded
 from evalkit.judge import JUDGES, _seed, client_for, judge_batches_async
 from evalkit.metrics import confusion_matrix, weighted_kappa
 from evalkit.personas import load_personas
@@ -110,7 +111,7 @@ def run(args) -> dict[str, Any]:
         if args.limit:
             batches = batches[: args.limit]
         client = client_for(cfg)
-        out = run_sync(judge_batches_async(cfg, client, catalog, batches, tag=f"pilot:{label}"))
+        out = run_sync(judge_batches_async(cfg, client, catalog, batches, tag=f"pilot:{label}", card=CARD_V1))
         grades = {(r["persona_id"], r["route_id"]): r["grade"] for r in out.records}
         runs[label] = {k: v for k, v in grades.items() if k in set(pilot_pairs)}
         n_calls = max(out.calls, 1)
