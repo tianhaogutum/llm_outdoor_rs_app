@@ -1,0 +1,2437 @@
+{
+ "schema": "narratives.demo_routes/v1",
+ "how": "routes in the top 10 of the served pipeline for a grid of demo profiles (scripts/narratives.py select): questionnaire vectors x tabs x homes without an intent (configured system, rule path), plus demo intents through the no-LLM path; ranked by number of appearances, then best rank.",
+ "system": "recsys_v1",
+ "no_llm_system": "v2_bm25",
+ "homes": [
+  "München",
+  "Garmisch-Partenkirchen",
+  "Tegernsee",
+  "Rosenheim",
+  "Nürnberg",
+  "Regensburg"
+ ],
+ "radius_km": 50.0,
+ "intents": {
+  "hiking": [
+   "easy loop near Tegernsee with a hut, max 12 km",
+   "a quiet lake loop with a hut stop, fine for a seven-year-old",
+   "summit hike with a great view",
+   "castle ruins and a beer garden"
+  ],
+  "cycling": [
+   "family bike ride along a river",
+   "long cycle tour with beer gardens"
+  ],
+  "running": [
+   "flat run along the river",
+   "short forest run"
+  ]
+ },
+ "queries": 648,
+ "distinct_routes_seen": 1173,
+ "max_routes": 400,
+ "catalogue_sha256": "064fd0b25c717e862c1e174633a1327c8be8299c30be568c1460fdb98d26a9aa",
+ "routes": [
+  {
+   "route_id": 11571,
+   "title": "Berglwald Parcours",
+   "appearances": 132,
+   "best_rank": 1
+  },
+  {
+   "route_id": 15830646,
+   "title": "Marktlauf-Runde",
+   "appearances": 131,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1125839,
+   "title": "Wald-Sport-Pfad",
+   "appearances": 124,
+   "best_rank": 1
+  },
+  {
+   "route_id": 15807510,
+   "title": "Erlkam Runde",
+   "appearances": 124,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1026759,
+   "title": "Drimm-dich-Pfad Fürstenfeldburck",
+   "appearances": 120,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3030795,
+   "title": "Fitness Eisweiher",
+   "appearances": 115,
+   "best_rank": 2
+  },
+  {
+   "route_id": 454355,
+   "title": "Trimm-dich-Pfad",
+   "appearances": 104,
+   "best_rank": 1
+  },
+  {
+   "route_id": 6423300,
+   "title": "Trimm-Dich-Parcours",
+   "appearances": 100,
+   "best_rank": 3
+  },
+  {
+   "route_id": 423042,
+   "title": "Laufparcours Wöhrder See (schwarz)",
+   "appearances": 80,
+   "best_rank": 1
+  },
+  {
+   "route_id": 4590281,
+   "title": "Vita Parcours / Trimm-Dich-Pfad",
+   "appearances": 80,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2384406,
+   "title": "Vitaparcours",
+   "appearances": 72,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2092491,
+   "title": "Trimm-Dich-Pfad",
+   "appearances": 72,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11602731,
+   "title": "Stadtlauf Trainingsstrecke Neumarkt - Berg",
+   "appearances": 68,
+   "best_rank": 2
+  },
+  {
+   "route_id": 14169214,
+   "title": "Trimm-Dich-Pfad",
+   "appearances": 67,
+   "best_rank": 1
+  },
+  {
+   "route_id": 423031,
+   "title": "Laufparcours Wöhrder See (orange)",
+   "appearances": 46,
+   "best_rank": 1
+  },
+  {
+   "route_id": 446622,
+   "title": "Schweißtropfenbahn",
+   "appearances": 42,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13454700,
+   "title": "Trimm dich Pfad",
+   "appearances": 42,
+   "best_rank": 2
+  },
+  {
+   "route_id": 12220615,
+   "title": "Fitness- und Gesundheitspark Eckental",
+   "appearances": 38,
+   "best_rank": 4
+  },
+  {
+   "route_id": 12162702,
+   "title": "Cadolzburger Activparcours - Trimm-Dich-Parcours",
+   "appearances": 36,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2834599,
+   "title": "Bichl - Zwiesel - Blomberg",
+   "appearances": 34,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11859887,
+   "title": "Staffen Runde",
+   "appearances": 31,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17434323,
+   "title": "Englmarer Fitness Runde",
+   "appearances": 31,
+   "best_rank": 1
+  },
+  {
+   "route_id": 423022,
+   "title": "Laufparcours Wöhrder See (blau)",
+   "appearances": 30,
+   "best_rank": 1
+  },
+  {
+   "route_id": 12279173,
+   "title": "Trimmdichpfad Landshut",
+   "appearances": 30,
+   "best_rank": 2
+  },
+  {
+   "route_id": 12559078,
+   "title": "Trimm-Dich-Pfad",
+   "appearances": 30,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17358307,
+   "title": "Trimm-Dich-Pfad Kaufbeuren Nord",
+   "appearances": 30,
+   "best_rank": 2
+  },
+  {
+   "route_id": 18350986,
+   "title": "Trimm-Dich-Pfad Stadt Friedberg",
+   "appearances": 30,
+   "best_rank": 2
+  },
+  {
+   "route_id": 12372446,
+   "title": "Trimm-dich-Pfad",
+   "appearances": 30,
+   "best_rank": 4
+  },
+  {
+   "route_id": 18024624,
+   "title": "Vita Parcours „Mönchswald“",
+   "appearances": 29,
+   "best_rank": 3
+  },
+  {
+   "route_id": 12536400,
+   "title": "Tutzinger Runde",
+   "appearances": 28,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14969808,
+   "title": "TrimmDich-Pfad Petershöhe",
+   "appearances": 28,
+   "best_rank": 5
+  },
+  {
+   "route_id": 387634,
+   "title": "Europäischer Fernwanderweg E4 - Teil Deutschland (Region Tegernsee)",
+   "appearances": 26,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14706344,
+   "title": "Outdoor Fitness- und Bewegungspfad",
+   "appearances": 26,
+   "best_rank": 2
+  },
+  {
+   "route_id": 12748342,
+   "title": "Trimm-Dich-Pfad Schleuseninsel",
+   "appearances": 26,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3295238,
+   "title": "Walderlebnispfad Grünwald",
+   "appearances": 25,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3330267,
+   "title": "Obst- und Kulturweg (OKW)",
+   "appearances": 23,
+   "best_rank": 1
+  },
+  {
+   "route_id": 12408070,
+   "title": "Tutzing - Bernried",
+   "appearances": 23,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1588720,
+   "title": "MTB Prinzenweg-Rundtour",
+   "appearances": 22,
+   "best_rank": 1
+  },
+  {
+   "route_id": 6562854,
+   "title": "Mitterkopfrunde",
+   "appearances": 22,
+   "best_rank": 2
+  },
+  {
+   "route_id": 10099497,
+   "title": "Wörnbrunn - Walderlebniszentrum",
+   "appearances": 21,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1590881,
+   "title": "Bichlersee",
+   "appearances": 20,
+   "best_rank": 1
+  },
+  {
+   "route_id": 9923997,
+   "title": "Next-Level-Runde",
+   "appearances": 20,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11602732,
+   "title": "Stadtlauf Trainingsstrecke Neumarkt - Sengenthal",
+   "appearances": 20,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1578602,
+   "title": "Tatzlwurm-Runde",
+   "appearances": 19,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2839825,
+   "title": "Geißach - Richtung Marienstein - Aueralm",
+   "appearances": 19,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13259633,
+   "title": "Priener-Hütte Runde",
+   "appearances": 19,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2084477,
+   "title": "Wanderweg Kapellen und Kirchen Sauerlach",
+   "appearances": 19,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11679751,
+   "title": "Hochplatten Runde",
+   "appearances": 19,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1746319,
+   "title": "Würmsee-Inntal-Weitwanderweg (weiß auf gelb)",
+   "appearances": 19,
+   "best_rank": 4
+  },
+  {
+   "route_id": 1587980,
+   "title": "MTB Rund um die Schliersbergalm",
+   "appearances": 18,
+   "best_rank": 1
+  },
+  {
+   "route_id": 16035305,
+   "title": "Ellbach - Isar",
+   "appearances": 18,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17352399,
+   "title": "Naturbiken Weiher- und Burgenrunde",
+   "appearances": 18,
+   "best_rank": 1
+  },
+  {
+   "route_id": 21371903,
+   "title": "Trails of Kelheim (UrTrails Altmühltal)",
+   "appearances": 18,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3299771,
+   "title": "Tour 51 - Zellerhöhe–Zierling",
+   "appearances": 18,
+   "best_rank": 2
+  },
+  {
+   "route_id": 19288192,
+   "title": "Trimm-Dich-Pfad im Bahnhofswald Emskirchen",
+   "appearances": 18,
+   "best_rank": 2
+  },
+  {
+   "route_id": 9923924,
+   "title": "Harmonie-Runde",
+   "appearances": 18,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1736548,
+   "title": "Fischbachalm",
+   "appearances": 17,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11199559,
+   "title": "Krün - Vorderriß",
+   "appearances": 17,
+   "best_rank": 1
+  },
+  {
+   "route_id": 18649159,
+   "title": "Wasserläufer-Route Etappe 7 / Himmelsstürmer-Route Etappe 4",
+   "appearances": 17,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1595793,
+   "title": "Panoramaweg",
+   "appearances": 16,
+   "best_rank": 1
+  },
+  {
+   "route_id": 21361900,
+   "title": "Goldrush (UrTrails Altmühltal)",
+   "appearances": 16,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17349569,
+   "title": "Naturbiken Hopferwald-Senkele-Runde",
+   "appearances": 16,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3586876,
+   "title": "BF6 - Über Stock und Stein",
+   "appearances": 16,
+   "best_rank": 3
+  },
+  {
+   "route_id": 17409226,
+   "title": "Naturbiken Grüntenseerunde",
+   "appearances": 16,
+   "best_rank": 4
+  },
+  {
+   "route_id": 20601824,
+   "title": "LafDischFit",
+   "appearances": 16,
+   "best_rank": 5
+  },
+  {
+   "route_id": 962456,
+   "title": "Eschenlainetal",
+   "appearances": 15,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1084607,
+   "title": "FO10 Radrundweg",
+   "appearances": 15,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3983681,
+   "title": "Wanderweg 267",
+   "appearances": 15,
+   "best_rank": 1
+  },
+  {
+   "route_id": 5729722,
+   "title": "Zu Besuch im Kloster Andechs",
+   "appearances": 15,
+   "best_rank": 1
+  },
+  {
+   "route_id": 21115180,
+   "title": "Brünnstein Speed",
+   "appearances": 15,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2084475,
+   "title": "Natur-Wanderweg Sauerlach",
+   "appearances": 15,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11199529,
+   "title": "Gerold - Wallgau",
+   "appearances": 15,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1535809,
+   "title": "Schwarzenberg-Runde",
+   "appearances": 14,
+   "best_rank": 1
+  },
+  {
+   "route_id": 7648043,
+   "title": "Landshuter Höhenwanderweg",
+   "appearances": 14,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14370364,
+   "title": "Weitwanderweg Ursprungweg",
+   "appearances": 14,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1621070,
+   "title": "European Long distance path E 4 - part Germany (region Chiemgau)",
+   "appearances": 14,
+   "best_rank": 2
+  },
+  {
+   "route_id": 151111,
+   "title": "Münchner Jakobsweg (Zubringer Vötting - Ammersee)",
+   "appearances": 14,
+   "best_rank": 7
+  },
+  {
+   "route_id": 186233,
+   "title": "Sempt-Mangfall-Radweg",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2222409,
+   "title": "Heuberg",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 5118763,
+   "title": "SalzAlpenWeg - Traunstein - Zwing",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 6562762,
+   "title": "mtb",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11957206,
+   "title": "Wanderweg 4",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 15937484,
+   "title": "Berbling - Heinrichsdorf",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17426772,
+   "title": "Emmentaler Radweg (Querachse Schwaltenweiher–Seeg)",
+   "appearances": 13,
+   "best_rank": 1
+  },
+  {
+   "route_id": 6173363,
+   "title": "Maxhof - Eichelgarten",
+   "appearances": 13,
+   "best_rank": 2
+  },
+  {
+   "route_id": 20446955,
+   "title": "ADFC Ebersberg Tour 05 - In den Ebersberg Forst",
+   "appearances": 13,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2839977,
+   "title": "Lenggries - Röhlmoos - Schwarzentenn - Aueralm",
+   "appearances": 13,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1424912,
+   "title": "Prälatenweg",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1556740,
+   "title": "Rund um den Schliersberg",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2354374,
+   "title": "Rund um den Samerberg (Variante)",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 4141107,
+   "title": "SalzAlpenWeg Rosenheim-Chiemsee",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 12411382,
+   "title": "Wackersberg - Zwieselberg",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14551447,
+   "title": "Alpiner Premiumwanderweg Spitzing Panorama",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 20705521,
+   "title": "Weiherradweg",
+   "appearances": 12,
+   "best_rank": 1
+  },
+  {
+   "route_id": 178423,
+   "title": "Rundweg 12 Nord",
+   "appearances": 12,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1926395,
+   "title": "Wanderweg 40 - Samerberg",
+   "appearances": 12,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3990528,
+   "title": "BF 19 MTB - Megs di Schinden?",
+   "appearances": 12,
+   "best_rank": 2
+  },
+  {
+   "route_id": 8849560,
+   "title": "Bayerische Staatsforsten Bike Trail Langenau",
+   "appearances": 12,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17408676,
+   "title": "Von Hütte zu Hütte rund um den Edelsberg",
+   "appearances": 12,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11683487,
+   "title": "Wanderweg 355",
+   "appearances": 12,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1167506,
+   "title": "Pegnitz-Pottenstein Runde",
+   "appearances": 11,
+   "best_rank": 1
+  },
+  {
+   "route_id": 10099483,
+   "title": "Wadelsberg - Baierbrunn",
+   "appearances": 11,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1074524,
+   "title": "MTB Marathon Pfronten",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2910599,
+   "title": "Paartalwanderweg",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3495892,
+   "title": "Via Alpina Purple A56",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 6243373,
+   "title": "Trimmdichpfad",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 8974727,
+   "title": "Via Julia",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 10099200,
+   "title": "Hohenschäftlarn- Buchenhain",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 21362346,
+   "title": "Pure Pleasure (UrTrails Altmühltal)",
+   "appearances": 11,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1765669,
+   "title": "Münchner Jakobsweg - Variante Leoni",
+   "appearances": 11,
+   "best_rank": 3
+  },
+  {
+   "route_id": 21361924,
+   "title": "Pure Pleasure (Kurzvariante, UrTrails Altmühltal)",
+   "appearances": 11,
+   "best_rank": 3
+  },
+  {
+   "route_id": 20046387,
+   "title": "Meditationsweg beWEGgründe",
+   "appearances": 11,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2093794,
+   "title": "Jakobsweg Böhmen-Bayern-Tirol Variante/Prien",
+   "appearances": 11,
+   "best_rank": 9
+  },
+  {
+   "route_id": 279900,
+   "title": "Rund um den Trauchberg",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1191968,
+   "title": "Graf-Gebhard-Weg",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1610645,
+   "title": "MTB 2 Altenberg - Kälberberg",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1920172,
+   "title": "Altmühl Panoramaweg Schlaufe 24 Schambachtal Wanderweg",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2946692,
+   "title": "Wanderweg 13 - Über den Schachenberg nach Huben",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11703321,
+   "title": "Wanderweg 361",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14071751,
+   "title": "Erzweg, Etappe 10: Theuern - Heimhof",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14373437,
+   "title": "Bauernhof Roas",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17664499,
+   "title": "MTB 92 Inzell Dorfrunde",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 18224144,
+   "title": "MTB 67 Kloster-Runde",
+   "appearances": 10,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1588702,
+   "title": "MTB Schwarzenberg Reib'n",
+   "appearances": 10,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2389929,
+   "title": "Reichswald - Brombachsee",
+   "appearances": 10,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11046632,
+   "title": "Zum schiefen Turm von Sensau",
+   "appearances": 10,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17442944,
+   "title": "Pfronten - Staatsgrenze",
+   "appearances": 10,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11030102,
+   "title": "Vier",
+   "appearances": 10,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1746320,
+   "title": "Würmsee-Inntal-Weitwanderweg (weiß auf rot)",
+   "appearances": 10,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2066699,
+   "title": "Wanderweg 28 - Neubeuern",
+   "appearances": 10,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2613703,
+   "title": "Hirschweg (Rundweg)",
+   "appearances": 10,
+   "best_rank": 4
+  },
+  {
+   "route_id": 4114074,
+   "title": "Wanderweg 549 - Gmund am Tegernsee Richtung Miesbach",
+   "appearances": 10,
+   "best_rank": 4
+  },
+  {
+   "route_id": 20978279,
+   "title": "Bodensee-Königssee-Radweg: Naturpark Ammergauer Alpen & Das Blaue Land",
+   "appearances": 10,
+   "best_rank": 4
+  },
+  {
+   "route_id": 8886939,
+   "title": "Wanderweg 566 - Seerundweg",
+   "appearances": 10,
+   "best_rank": 5
+  },
+  {
+   "route_id": 26937,
+   "title": "Staffelsee-Rundweg",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 178422,
+   "title": "Radweg R1 Rund um Penzberg",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1559683,
+   "title": "MTB Alpbachtal Rundtour",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1872193,
+   "title": "Ascholdinger Rundweg",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2084840,
+   "title": "Steinberg am See - Bruck i.d.Opf. - Nittenau",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2524389,
+   "title": "\"R 5\" Pfalzgraf-Johann-Radweg",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3695548,
+   "title": "Wanderweg 545 - Agatharied/Gmund am Tegernsee",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11514567,
+   "title": "Schwaberwegen - Kirchseeon",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13304704,
+   "title": "Tutzing - Kerschlach - Andechs",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13702838,
+   "title": "Gräfenberger Ritter Ritt",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13978150,
+   "title": "Großer Rundwanderweg Gmund",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 15548412,
+   "title": "Betzengravel light",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17349397,
+   "title": "Waldhaus - Rieder",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 19284256,
+   "title": "Wanderweg 251",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 21364418,
+   "title": "Nibelungen Ride (UrTrails Altmühltal)",
+   "appearances": 9,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1877774,
+   "title": "Riederstein",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2842477,
+   "title": "Wanderradweg Bodenwöhr-Neubäu",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2922746,
+   "title": "Genial Vital 5",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3341578,
+   "title": "Wanderweg 5 - Bad Aibling",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 9624077,
+   "title": "München - Venezia - Teil Deutschland 2b",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 12845006,
+   "title": "Walderlebnispfad Velburg",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17099929,
+   "title": "Bayerniederhofen - Trauchgau (über Buching)",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 18009809,
+   "title": "Wanderweg 545",
+   "appearances": 9,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1166167,
+   "title": "Verbindungsradweg Regental-Falkenstein",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1588010,
+   "title": "MTB Leitzachtal-Jenbachtal-Leitzachtal",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1847265,
+   "title": "Rundweg um Lehenhammer",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2155118,
+   "title": "[D11] Ostsee-Oberbayern 16 [Oberbayern Mitte]",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 7339769,
+   "title": "Wanderweg 681 - Bayrische Voralpen",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 8052354,
+   "title": "Wanderweg 451 - Isarwinkel",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 20632908,
+   "title": "Schneeflocke 01",
+   "appearances": 9,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1640948,
+   "title": "Radeln rund um Rosenheim (Bad Aibling)",
+   "appearances": 9,
+   "best_rank": 4
+  },
+  {
+   "route_id": 9623717,
+   "title": "München - Venezia - Teil Deutschland 2a",
+   "appearances": 9,
+   "best_rank": 4
+  },
+  {
+   "route_id": 10109715,
+   "title": "Kramersteig",
+   "appearances": 9,
+   "best_rank": 4
+  },
+  {
+   "route_id": 11683489,
+   "title": "Wanderweg 351",
+   "appearances": 9,
+   "best_rank": 4
+  },
+  {
+   "route_id": 21785428,
+   "title": "Moosrundweg 3",
+   "appearances": 9,
+   "best_rank": 4
+  },
+  {
+   "route_id": 1666727,
+   "title": "Wanderweg 270",
+   "appearances": 9,
+   "best_rank": 5
+  },
+  {
+   "route_id": 4114075,
+   "title": "Wanderweg 549a - Gmund am Tegernsee Richtung Miesbach",
+   "appearances": 9,
+   "best_rank": 5
+  },
+  {
+   "route_id": 7339773,
+   "title": "Wanderweg 685 - Bayrische Voralpen",
+   "appearances": 9,
+   "best_rank": 6
+  },
+  {
+   "route_id": 19230114,
+   "title": "Räuber- und Ritter-Tour",
+   "appearances": 9,
+   "best_rank": 6
+  },
+  {
+   "route_id": 6594280,
+   "title": "Durchs Eschenlainetal",
+   "appearances": 9,
+   "best_rank": 7
+  },
+  {
+   "route_id": 14386191,
+   "title": "Bike2Hike",
+   "appearances": 9,
+   "best_rank": 7
+  },
+  {
+   "route_id": 19628914,
+   "title": "Wanderweg 686a - Bayrische Voralpen",
+   "appearances": 9,
+   "best_rank": 7
+  },
+  {
+   "route_id": 17954125,
+   "title": "AV-Weg 604",
+   "appearances": 9,
+   "best_rank": 8
+  },
+  {
+   "route_id": 178421,
+   "title": "Rundweg 15",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 377319,
+   "title": "Städtedreieck-Rundweg 2 \"Wittelsbacher Burgensteig\" (Blau)",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 722013,
+   "title": "Zubringer Laber-Abens-Radweg",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1811701,
+   "title": "Osterseen-Wanderweg 6",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3825717,
+   "title": "Nordic Walking Rot \"Eckersberg\"",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 12991161,
+   "title": "Donauradweg - Fähre Weltenburg-Kelheim",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 13178292,
+   "title": "Obstlerrunde",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 18035413,
+   "title": "Kultour im Naturpark Hirschwald",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 19521603,
+   "title": "MTB 66 Bründlingalm Runde (von Siegsdorf)",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 20989902,
+   "title": "Münchsteinach - Mittelsteinach",
+   "appearances": 8,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2086310,
+   "title": "Wanderweg 6 - Von Sachrang zum Spitzstein",
+   "appearances": 8,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3496137,
+   "title": "Via Alpina Purple A63",
+   "appearances": 8,
+   "best_rank": 2
+  },
+  {
+   "route_id": 18224074,
+   "title": "MTB 76 Zinnkopf-Umrundung",
+   "appearances": 8,
+   "best_rank": 2
+  },
+  {
+   "route_id": 21289262,
+   "title": "Salzschleife - Wasser-Radlwege Oberbayern - Querverbindung 2",
+   "appearances": 8,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1314932,
+   "title": "Fahrradhauptroute Münchner Freiheit",
+   "appearances": 8,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1388683,
+   "title": "Via Alpina Purple A53",
+   "appearances": 8,
+   "best_rank": 3
+  },
+  {
+   "route_id": 8631418,
+   "title": "Poinger Runde - Wohnen, Grün, Wasser (BUGA 2005-Themen Radweg)",
+   "appearances": 8,
+   "best_rank": 3
+  },
+  {
+   "route_id": 14861958,
+   "title": "Trans Bayerwald Südroute Etappe 1",
+   "appearances": 8,
+   "best_rank": 3
+  },
+  {
+   "route_id": 18221717,
+   "title": "MTB 88 Zinnkopf-Runde",
+   "appearances": 8,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3496074,
+   "title": "Via Alpina Purple A62",
+   "appearances": 8,
+   "best_rank": 4
+  },
+  {
+   "route_id": 8505776,
+   "title": "Weg der Begegnung",
+   "appearances": 8,
+   "best_rank": 4
+  },
+  {
+   "route_id": 17680389,
+   "title": "Fränkischer WasserRadweg - Etappe 7",
+   "appearances": 8,
+   "best_rank": 4
+  },
+  {
+   "route_id": 21039982,
+   "title": "Radverkehrsnetz Landkreis Neumarkt i.d. OPf.",
+   "appearances": 8,
+   "best_rank": 4
+  },
+  {
+   "route_id": 21371934,
+   "title": "Icecream Deluxe (UrTrails Altmühltal)",
+   "appearances": 8,
+   "best_rank": 4
+  },
+  {
+   "route_id": 1993595,
+   "title": "Wanderweg 611 - Bayerische Voralpen",
+   "appearances": 8,
+   "best_rank": 5
+  },
+  {
+   "route_id": 3856590,
+   "title": "Verbindung R9 Donauradweg",
+   "appearances": 8,
+   "best_rank": 5
+  },
+  {
+   "route_id": 19598348,
+   "title": "Hallertauer Hopfentour Spange 1",
+   "appearances": 8,
+   "best_rank": 7
+  },
+  {
+   "route_id": 17147576,
+   "title": "Auerbergland",
+   "appearances": 8,
+   "best_rank": 9
+  },
+  {
+   "route_id": 17172,
+   "title": "Simsseewanderweg",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 61530,
+   "title": "Kreuzhaus-Rundweg",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 400067,
+   "title": "Wanderweg Jakobsweg III",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 572139,
+   "title": "Rothenberg Bike Marathon 2010",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1806587,
+   "title": "Wanderweg 24 - Rund um den Bärnsee",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2739309,
+   "title": "Frankenalb 10: Radwanderweg",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3341577,
+   "title": "Wanderweg 4 - Bad Aibling",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 9971131,
+   "title": "Reichertshausener Wege (4 / rot-lang)",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 11682663,
+   "title": "Wanderweg 276",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 14861980,
+   "title": "Trans Bayerwald Südroute Etappe 2",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 20983546,
+   "title": "Adelsdorf - Markt Erlbach",
+   "appearances": 7,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1588043,
+   "title": "MTB Große Leitzachtalrunde",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2415554,
+   "title": "Natur-Erlebnis-Pfad Eschenlohe",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 5191318,
+   "title": "Schlechinger Wanderweg 84",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11249733,
+   "title": "Rundweg 2",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 11265196,
+   "title": "Bikewald Route 37 – Mittelsinn",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 15861422,
+   "title": "Kidsrunde Buchwald",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 16108287,
+   "title": "Der Passamani Rundwanderweg auf dem Karwendel",
+   "appearances": 7,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3712451,
+   "title": "BF 18 - Panoramarunde",
+   "appearances": 7,
+   "best_rank": 3
+  },
+  {
+   "route_id": 12120910,
+   "title": "MTB-Tour 8 Rötzer-Schwarzwihrberg-Tour",
+   "appearances": 7,
+   "best_rank": 3
+  },
+  {
+   "route_id": 12219726,
+   "title": "Altbayerische Herzogstädte",
+   "appearances": 7,
+   "best_rank": 3
+  },
+  {
+   "route_id": 14373688,
+   "title": "Tour de Taubenberg",
+   "appearances": 7,
+   "best_rank": 3
+  },
+  {
+   "route_id": 180474,
+   "title": "Höhlmühle-Rundweg",
+   "appearances": 7,
+   "best_rank": 4
+  },
+  {
+   "route_id": 1107358,
+   "title": "Europäischer Fernwanderweg E4 - Teil Deutschland (Region Wendelstein)",
+   "appearances": 7,
+   "best_rank": 4
+  },
+  {
+   "route_id": 20961288,
+   "title": "Zenngründer Museumsrunde",
+   "appearances": 7,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2349143,
+   "title": "AV-Weg 612",
+   "appearances": 7,
+   "best_rank": 5
+  },
+  {
+   "route_id": 20964509,
+   "title": "TeichKulturRunde",
+   "appearances": 7,
+   "best_rank": 5
+  },
+  {
+   "route_id": 1811699,
+   "title": "Jakobsweg im Pfaffenwinkel",
+   "appearances": 7,
+   "best_rank": 6
+  },
+  {
+   "route_id": 2897580,
+   "title": "Radlring Holzkirchen",
+   "appearances": 7,
+   "best_rank": 6
+  },
+  {
+   "route_id": 5685150,
+   "title": "Großer Lauterbacher Waldweg 21",
+   "appearances": 7,
+   "best_rank": 7
+  },
+  {
+   "route_id": 1853217,
+   "title": "Jurasteig Schlaufe 9 König-Otto-Schlaufe",
+   "appearances": 7,
+   "best_rank": 8
+  },
+  {
+   "route_id": 56409,
+   "title": "5-Seen-Runde",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 59983,
+   "title": "Vita Parcours Höllohe",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 106780,
+   "title": "R15 Kelheim-Weltenburg",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1182640,
+   "title": "Radroute Naab-Regen",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1348168,
+   "title": "10",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2155120,
+   "title": "[D11] Ostsee-Oberbayern 17 [Oberbayern Süd]",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3715063,
+   "title": "Wanderweg 8, Glonn",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 8052353,
+   "title": "Wanderweg 456 - Isarwinkel",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 8386433,
+   "title": "Via Sancti Martini HW-34-x2 Marktoberdorf - Obergünzburg",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 9379281,
+   "title": "Valepper-Almen-Rundweg",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 10048421,
+   "title": "Via Sancti Martini HW-33-05 Langengeisling - Oberding",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17270027,
+   "title": "Sulzschneider Forst - Roßhaupten",
+   "appearances": 6,
+   "best_rank": 1
+  },
+  {
+   "route_id": 150010,
+   "title": "Europäischer Fernwanderweg E8, Bayerischer Wald-Verein",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 915349,
+   "title": "Wanderweg 5c - Oberaudorf",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2077194,
+   "title": "Wanderweg 637a - Spitzingsee",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2907933,
+   "title": "König-Ludwig-Weg",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3108211,
+   "title": "Gauting - Starnberg",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3390230,
+   "title": "Wanderweg 7 - Bad Aibling",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 5988363,
+   "title": "Panoramaweg Pfaffenhofen Ost",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 9514718,
+   "title": "Wanderweg 33 (Laubau - Kaitlalm)",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 14364672,
+   "title": "DAV-Rundweg (Grünring)",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17055043,
+   "title": "Rund um die Reuterwanne",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 17410557,
+   "title": "Etappe 1 der Wiesengänger Route der Wandertrilogie Allgäu",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 19230507,
+   "title": "Wanderweg Eber 2",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 20704346,
+   "title": "Rundwanderweg 11",
+   "appearances": 6,
+   "best_rank": 2
+  },
+  {
+   "route_id": 216430,
+   "title": "Radrundweg Bayreuth BT13",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2066697,
+   "title": "Wanderweg 26 - Neubeuern",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2140344,
+   "title": "Vilstalradweg",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3967883,
+   "title": "Wanderweg 445 (blau)",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 9378947,
+   "title": "Wanderweg 649 Forsthaus Valepp - Spitzingsee",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 10121248,
+   "title": "Hohenbrunn - Putzbrunn",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 11683488,
+   "title": "Wanderweg 357",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 13076216,
+   "title": "Klöster- und Kirchen Schmankerl Süd",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 13713087,
+   "title": "Hildpolds Höhenflug",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 17134019,
+   "title": "Rieden - Wanderparkplatz Wildstand",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 19223273,
+   "title": "Werr'n-Sie-Fit-Pfad",
+   "appearances": 6,
+   "best_rank": 3
+  },
+  {
+   "route_id": 5648,
+   "title": "Gräfenberg Schnaittachtal Radweg",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 301009,
+   "title": "Naab-Altmühl-Radweg",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2078778,
+   "title": "Bockerlbahn-Weg",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2167118,
+   "title": "Wanderweg weiß-rot",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 2349144,
+   "title": "AV-Weg 613",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3323967,
+   "title": "Wanderweg 634 - Spitzingsee",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3345270,
+   "title": "Radl-Achter - Nordschleife",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3834282,
+   "title": "Donau-Panoramaweg",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 4235882,
+   "title": "Simssee Rundweg",
+   "appearances": 6,
+   "best_rank": 4
+  },
+  {
+   "route_id": 30141,
+   "title": "Innerer Radlring",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 164332,
+   "title": "Kreuzbergrundweg",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 1847536,
+   "title": "Rundweg Vorra – Artelshofen",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 3969888,
+   "title": "S 12 Verbindung vom Weg S14 (Hanselberg) zum Weg S11 (Bad Abbach)",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 9623718,
+   "title": "Munich-Venice - part Germany 1",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 11004773,
+   "title": "Rotes Viereck",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 11956359,
+   "title": "Rauhe Nadel Runde",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 19145503,
+   "title": "GeoRadweg Altmühltal Bahnzubringer",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 19352044,
+   "title": "Zielwanderweg 8",
+   "appearances": 6,
+   "best_rank": 5
+  },
+  {
+   "route_id": 2212488,
+   "title": "Resen Runde",
+   "appearances": 6,
+   "best_rank": 6
+  },
+  {
+   "route_id": 8782164,
+   "title": "Wanderweg 618 - Wallberg",
+   "appearances": 6,
+   "best_rank": 6
+  },
+  {
+   "route_id": 10099563,
+   "title": "Unterhaching - Furth",
+   "appearances": 6,
+   "best_rank": 6
+  },
+  {
+   "route_id": 17399847,
+   "title": "Rund um die Schweppermannsburg",
+   "appearances": 6,
+   "best_rank": 6
+  },
+  {
+   "route_id": 18823371,
+   "title": "Münchner JakobsKirchenWeg - Radroute",
+   "appearances": 6,
+   "best_rank": 6
+  },
+  {
+   "route_id": 191581,
+   "title": "Lauterachtal-Radweg",
+   "appearances": 6,
+   "best_rank": 7
+  },
+  {
+   "route_id": 1993597,
+   "title": "Wanderweg 621 - Bayerische Voralpen",
+   "appearances": 6,
+   "best_rank": 7
+  },
+  {
+   "route_id": 3495890,
+   "title": "Via Alpina Purple A54",
+   "appearances": 6,
+   "best_rank": 7
+  },
+  {
+   "route_id": 6479879,
+   "title": "Goldsteig Rundweg Nr.27A Haibach",
+   "appearances": 6,
+   "best_rank": 7
+  },
+  {
+   "route_id": 13637149,
+   "title": "Dorfen - Aßling",
+   "appearances": 6,
+   "best_rank": 7
+  },
+  {
+   "route_id": 1107369,
+   "title": "Wanderweg 9 - Brannenburg",
+   "appearances": 6,
+   "best_rank": 8
+  },
+  {
+   "route_id": 1312659,
+   "title": "Fahrradhauptroute Arena via Englischer Garten",
+   "appearances": 6,
+   "best_rank": 8
+  },
+  {
+   "route_id": 18102322,
+   "title": "Freudenbergtour",
+   "appearances": 6,
+   "best_rank": 8
+  },
+  {
+   "route_id": 21069483,
+   "title": "Skulp Tour II",
+   "appearances": 6,
+   "best_rank": 8
+  },
+  {
+   "route_id": 4713831,
+   "title": "Prientalradweg",
+   "appearances": 6,
+   "best_rank": 9
+  },
+  {
+   "route_id": 2156170,
+   "title": "Benediktweg",
+   "appearances": 6,
+   "best_rank": 10
+  },
+  {
+   "route_id": 50121,
+   "title": "Wülzburgweg",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 146446,
+   "title": "RRM Etappe 7 (Alternative)",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1029795,
+   "title": "Erzweg (4) Wegvarinate in Sulzbach-Rosenberg",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1192098,
+   "title": "Rotpunkt",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1272213,
+   "title": "Klobunzeleweg und Terra Nostra",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1385660,
+   "title": "Gelbpunkt",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1587947,
+   "title": "Audorfer Rundweg (Sommervariante)",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1663523,
+   "title": "Reichhartschacht",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1851415,
+   "title": "Jurasteig Schlaufe 3 Burg Lengenfeld-Schlaufe",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2675821,
+   "title": "nahTourBand",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3246612,
+   "title": "O 54 Tannerl - Höllbachtal / Dosmühle (Grünes Rechteck)",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 9971006,
+   "title": "3-Gemeinden-Wege (1 / blau-kurz)",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 10797352,
+   "title": "Ge(h)zeiten",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 17619083,
+   "title": "Brennatsteig",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 19170187,
+   "title": "Panorama Runde",
+   "appearances": 5,
+   "best_rank": 1
+  },
+  {
+   "route_id": 377317,
+   "title": "Städtedreieck-Rundweg 5 (Grün)",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 917160,
+   "title": "Wanderweg 10 - Brannenburg",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2910214,
+   "title": "Hirschbergweg",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 6435579,
+   "title": "Goldsteig S15: Konzell – Sankt Englmar",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 9831514,
+   "title": "Watzmann-Hochkönig Nord-Runde: Etappe 4: Ruhpolding – Marzoll",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 20989461,
+   "title": "Neustadt a.d. Aisch - Diespeck",
+   "appearances": 5,
+   "best_rank": 2
+  },
+  {
+   "route_id": 20610,
+   "title": "FO6 Radrundweg",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1861687,
+   "title": "Wanderweg 6 - Nußdorf",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3860742,
+   "title": "MTB Tour 2: Höfats-Traum",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 5369817,
+   "title": "Einsiedl - Wallgau",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 10109153,
+   "title": "Oberammergau - Ettal",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 11683484,
+   "title": "Wanderweg 310",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 16278449,
+   "title": "520 Gmund - Bad Wiessee",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 17408464,
+   "title": "Lachen - Dederles",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 20984224,
+   "title": "Markt Erlbach - Kotzenaurach",
+   "appearances": 5,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3006675,
+   "title": "Genial Vital 2",
+   "appearances": 5,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3348241,
+   "title": "Höhenrundweg Hammerbachtal",
+   "appearances": 5,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3698811,
+   "title": "BF 20 MTB - Guad duads?!",
+   "appearances": 5,
+   "best_rank": 4
+  },
+  {
+   "route_id": 4236469,
+   "title": "Wanderweg 12 - Bad Endorf",
+   "appearances": 5,
+   "best_rank": 4
+  },
+  {
+   "route_id": 9381926,
+   "title": "Neuhaus - Auracher Köpferl - Aurach",
+   "appearances": 5,
+   "best_rank": 4
+  },
+  {
+   "route_id": 3692656,
+   "title": "Um den Schliersberg über Miesbach",
+   "appearances": 5,
+   "best_rank": 5
+  },
+  {
+   "route_id": 3712458,
+   "title": "Leitzachtal - Jenbachtal - Auerberg",
+   "appearances": 5,
+   "best_rank": 5
+  },
+  {
+   "route_id": 2773183,
+   "title": "Kulturerlebnis Fränkische Schweiz - Pretzfeld - Schaifhausen",
+   "appearances": 5,
+   "best_rank": 6
+  },
+  {
+   "route_id": 3895008,
+   "title": "Goldsteig N8-Teilabschnitt: Abzweigung Nord-Südroute - Rötz",
+   "appearances": 5,
+   "best_rank": 6
+  },
+  {
+   "route_id": 8256843,
+   "title": "Ostbayerischer Jakobsweg: nördliche Variante (Eschlkam > Donauwörth)",
+   "appearances": 5,
+   "best_rank": 6
+  },
+  {
+   "route_id": 18194956,
+   "title": "Wasserläufer-Route Etappe 6 / Himmelsstürmer-Route Etappe 3",
+   "appearances": 5,
+   "best_rank": 6
+  },
+  {
+   "route_id": 1345856,
+   "title": "Königlich-bayerische Radltour",
+   "appearances": 5,
+   "best_rank": 7
+  },
+  {
+   "route_id": 2696508,
+   "title": "Via Alpina Purple A48",
+   "appearances": 5,
+   "best_rank": 7
+  },
+  {
+   "route_id": 11859886,
+   "title": "Kampenwand Um. StAlm",
+   "appearances": 5,
+   "best_rank": 7
+  },
+  {
+   "route_id": 18209753,
+   "title": "MTB 81 Brander Alm",
+   "appearances": 5,
+   "best_rank": 7
+  },
+  {
+   "route_id": 9530005,
+   "title": "Stadtwerke-Runde",
+   "appearances": 5,
+   "best_rank": 8
+  },
+  {
+   "route_id": 286314,
+   "title": "Hersbrucker Rundweg Nr. 2",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 387319,
+   "title": "Wanderweg 601 - Bayerische Voralpen",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1104186,
+   "title": "Rothsee Rundweg No.4",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1291708,
+   "title": "Rund um den Wendelstein",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1385610,
+   "title": "Karpfenweiherweg",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1514530,
+   "title": "Rundweg 2 \"Karlheinz-Bink-Weg\"",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1522673,
+   "title": "Radrundweg Bayreuth BT21",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1662121,
+   "title": "Radrundweg Bayreuth BT 29",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1713211,
+   "title": "Frankenalb 9: Radwanderweg",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1751887,
+   "title": "Burgenkundlicher Rundweg Haßberge",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 1851401,
+   "title": "Jurasteig Schlaufe 5 Hirschwald-Schlaufe",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2178674,
+   "title": "Buchenbühl",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 2454262,
+   "title": "5-Täler-Wanderweg",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3146113,
+   "title": "Grünzug Goldbach",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3308098,
+   "title": "Vor- und Frühgeschichte erleben",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3556184,
+   "title": "Keltenweg",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3579115,
+   "title": "Coburg-Tambach-Wanderweg",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 3860741,
+   "title": "MTB Tour 3: Berghoibat",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 6086658,
+   "title": "Nordic Walking Gelb Heimbuchenthal",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 16149897,
+   "title": "Bienen-Erlebnispfad",
+   "appearances": 4,
+   "best_rank": 1
+  },
+  {
+   "route_id": 8260,
+   "title": "Teufelsweg",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 164032,
+   "title": "Rundweg 2 - Felsgebiet Schwarzer Brand",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 280969,
+   "title": "Naturpfad Ahornreitweg",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1354961,
+   "title": "KulturGeschichtsPfad 3 Maxvorstadt - Erster Spaziergang",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 1854442,
+   "title": "Jurasteig Schlaufe 15 Tillyland-Schlaufe",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2444380,
+   "title": "Radrundweg Lkr. TIR 8",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 2775906,
+   "title": "Wanderweg Kulturerlebnis Fränkische Schweiz - Weingarts-Neunkirchen",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3107724,
+   "title": "Heidepfad - Gesamtweg",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3254220,
+   "title": "Wilder Mann 105 »Mühlenweg«, Naturpark Vorderer Bayerischer Wald",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3354891,
+   "title": "Die Rothsee-Tour",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3495991,
+   "title": "Via Alpina Purple A59",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3495992,
+   "title": "Via Alpina Purple A60",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3749083,
+   "title": "Windparkrunde",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 3969912,
+   "title": "Wanderweg 415 (blau)",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 7117405,
+   "title": "BT 2 Scheinbergspitz",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 15436514,
+   "title": "Kienbergl-Runde",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 16262453,
+   "title": "Abenteuer-Familien-Rundweg",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 18165852,
+   "title": "Hauptradroute rr05",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 19349964,
+   "title": "Wanderweg 466 - Isarwinkel",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 20982968,
+   "title": "Marktbergel - Oberdachstetten",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 21384659,
+   "title": "Grenzenlos Wanderweg (Bad Endorf-Prien a. Chiemsee)",
+   "appearances": 4,
+   "best_rank": 2
+  },
+  {
+   "route_id": 229845,
+   "title": "Radrundweg Bayreuth BT17",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 953318,
+   "title": "Radroute Feucht-Röthenbach",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1567722,
+   "title": "MTB 1 Geisberg",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 1652200,
+   "title": "Westernbergweg",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2370085,
+   "title": "Altmühl-Mönchswald 9",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 2775598,
+   "title": "Kulturerlebnis Fränkische Schweiz - Ermreuth - Hammermühle",
+   "appearances": 4,
+   "best_rank": 3
+  },
+  {
+   "route_id": 3712453,
+   "title": "BF14 - Panoramaweg",
+   "appearances": 4,
+   "best_rank": 3
+  }
+ ]
+}

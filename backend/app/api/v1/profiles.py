@@ -28,10 +28,10 @@ from app.logger import get_logger, log_business_logic, log_database_operation, l
 from app.models.entities import DemoProfile, ProfileAchievement, ProfileFeedback, Route, Souvenir
 from app.services.demo_guard import llm_narrative_allowed
 from app.services.genai_service import generate_welcome_summary
+from app.services.narratives import SOURCE_LLM, live_narratives_enabled, offline_welcome
 from app.services.user_profile_service import (
     SLOT_FIELDS,
     UnknownPlaceError,
-    generate_fallback_welcome,
     profile_slot_columns,
     translate_questionnaire_to_vector,
 )
@@ -115,29 +115,22 @@ async def submit_questionnaire(
     except UnknownPlaceError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
 
-    # 2. Generate welcome summary with GenAI (with fallback)
+    # 2. Welcome summary: live LLM (if enabled, configured and allowed by the demo guard), else the
+    #    pre-generated text for these answers, else the template (docs/DEPLOY.md)
     logger.debug("🤖 Generating welcome summary...")
-    try:
-        if not llm_narrative_allowed(request):  # rate limit / daily budget: template text, no spend
-            raise HTTPException(status_code=503, detail="narrative limited (rate limit or daily budget)")
-        welcome_summary = await generate_welcome_summary(questionnaire)
-        logger.info("✅ GenAI welcome summary generated successfully")
-    except HTTPException as e:
-        # Log HTTP errors from Ollama (e.g., 503 Service Unavailable)
-        logger.warning(
-            f"⚠️ GenAI service unavailable (status {e.status_code}), using fallback: {e.detail}",
-            exc_info=True
-        )
-        welcome_summary = generate_fallback_welcome(questionnaire)
-        logger.info("✅ Fallback welcome summary used")
-    except Exception as e:
-        # Log other unexpected errors
-        logger.warning(
-            f"⚠️ GenAI generation failed, using fallback: {type(e).__name__}: {str(e)}",
-            exc_info=True
-        )
-        welcome_summary = generate_fallback_welcome(questionnaire)
-        logger.info("✅ Fallback welcome summary used")
+    welcome_summary, welcome_source = None, None
+    if live_narratives_enabled() and llm_narrative_allowed(request):  # rate limit / daily budget: no spend
+        try:
+            welcome_summary = await generate_welcome_summary(questionnaire)
+            welcome_source = SOURCE_LLM
+            logger.info("✅ GenAI welcome summary generated successfully")
+        except HTTPException as e:
+            logger.warning(f"⚠️ GenAI service unavailable (status {e.status_code}), using the offline text: {e.detail}")
+        except Exception as e:
+            logger.warning(f"⚠️ GenAI generation failed, using the offline text: {type(e).__name__}: {str(e)}")
+    if welcome_summary is None:
+        welcome_summary, welcome_source = offline_welcome(questionnaire)
+        logger.info(f"✅ Offline welcome summary used ({welcome_source})")
 
     # 3. Create database record
     logger.debug("💾 Creating user profile record...")
@@ -190,6 +183,7 @@ async def submit_questionnaire(
         welcome_summary=welcome_summary,
         user_vector=user_vector,
         profile=ProfileResponse.model_validate(new_profile),
+        welcome_summary_source=welcome_source,
     )
 
 

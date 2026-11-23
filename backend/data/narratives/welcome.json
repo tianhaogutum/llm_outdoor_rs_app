@@ -1,0 +1,1566 @@
+{
+ "schema": "narratives/v1",
+ "kind": "welcome",
+ "llm_generated": true,
+ "notice": "LLM-generated text, produced offline by backend/scripts/narratives.py and served when no live LLM is used. Route texts may only use facts from the catalogue record (OpenStreetMap contributors, ODbL); each passed the automatic grounding checks in app/services/narratives.py.",
+ "provenance": {
+  "provider": "vertex",
+  "model": "gemini-2.5-flash",
+  "prompt_version": "welcome/pregen-v1",
+  "system_prompt_sha256": "02cb0e5f12fed67e",
+  "params": {
+   "temperature": 0.7,
+   "max_tokens": 400,
+   "thinking": 0
+  },
+  "generator": "backend/scripts/narratives.py generate"
+ },
+ "scope": "all questionnaire combinations (3 fitness x 8 type sets x 3 styles)",
+ "counts": {
+  "requested": 72,
+  "stored": 72,
+  "rejected_by_checks": 0,
+  "errors": 0
+ },
+ "items": [
+  {
+   "key": "beginner|-|adventure",
+   "fitness": "beginner",
+   "types": [],
+   "narrative": "adventure",
+   "text": "Welcome, Aspiring Explorer! Your Bavarian journey begins now, a grand adventure tailored just for you. We see you're ready to embrace the outdoors, open to discovering all the region has to offer. Prepare to be inspired as each route unfolds like an epic tale, guiding you through breathtaking landscapes. Get ready to embark on a story where you are the hero, forging your own path with every step, pedal, or stride.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "5655352c8603d1606a8dc8d5c36383ab6d508086c3232517955390d9d4c8bd7f",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 71
+   }
+  },
+  {
+   "key": "beginner|-|mystery",
+   "fitness": "beginner",
+   "types": [],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Novice Wayfinder! Your journey through Bavaria is just beginning, open to every path and possibility. You've embraced the unknown, ready for any adventure that unfolds. Prepare to uncover the subtle secrets of the landscape, where each turn reveals a piece of a larger, intriguing narrative. Let curiosity be your compass as you explore.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "ca924d08365a81d8266f4b20b546c0910d867d764a5b1f4f3320d05afadcbcdc",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 55
+   }
+  },
+  {
+   "key": "beginner|-|playful",
+   "fitness": "beginner",
+   "types": [],
+   "narrative": "playful",
+   "text": "Welcome, Curious Wanderer! We see you're ready to dip your toes into Bavarian adventures, and we love that you're open to anything! You're clearly someone who enjoys a good laugh, and we're excited to craft some playful, beginner-friendly journeys just for you. Get ready for some lighthearted fun as you discover the joy of movement, one delightful step or pedal at a time!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "27aba5e67bf266b50ac8b973e77a65bfa6907467dfa9d9784ab5a48721b8afc7",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 63
+   }
+  },
+  {
+   "key": "beginner|history-culture|adventure",
+   "fitness": "beginner",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Storyseeker! Your journey into the heart of Bavaria's past begins now. Prepare to uncover layers of history and culture, embarking on adventures perfectly suited for a budding explorer like you. Each route is a chapter waiting to be written, a tale of discovery unfolding beneath your feet. Get ready to step into an epic narrative and become the hero of your own Bavarian adventure!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "334230112bfbc3c73952ca68654b69e5d027d7a096c79ec9f901509e5ed9bd6a",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 66
+   }
+  },
+  {
+   "key": "beginner|history-culture|mystery",
+   "fitness": "beginner",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Chronicle Seeker! Your journey begins with a gentle pace, perfect for uncovering the hidden tales woven into Bavaria’s landscapes. We sense your curiosity for the past, eager to trace the echoes of bygone eras. Prepare to unravel intriguing mysteries as you explore, letting the land whisper its ancient secrets and cultural narratives directly to you.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "2cd833689704ecc1b5b71ff29a799a90d1f9fe9169b8253efd22522de22f08c2",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "beginner|history-culture|playful",
+   "fitness": "beginner",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Culture Scout! Looks like you're ready to gently meander through Bavaria's rich past. We'll find you some lovely, light-hearted adventures that are perfect for a relaxed pace, full of playful tales and fascinating historical tidbits. Get ready to uncover some charming stories without breaking a sweat!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "986b3fec90186ac3c25706d1ecfab6d32eec5113a751c9f8e0706f180346debc",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 48
+   }
+  },
+  {
+   "key": "beginner|natural-scenery|adventure",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Budding Wilderness Wanderer! Your journey into Bavaria's natural beauty begins now. We're thrilled to see you're ready to embrace the adventure, even as you're starting your exploration. Get ready to discover breathtaking natural scenery, crafted into exciting tales for you to experience firsthand. Prepare to step into your own outdoor epic, one magnificent vista at a time.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "27ef116963493b19aad28b1110dfe27630c2279b3b3a525597e1c453c5bc7b62",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "beginner|natural-scenery|mystery",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Budding Bavarian Seeker! Your journey into Bavaria's natural beauty begins now. You've expressed a desire for gentle exploration, a perfect pace to uncover the quiet wonders of the landscape. As you venture forth, a touch of mystery will accompany your path, inviting you to observe closely and ponder the secrets held within the scenery. Prepare to embark on an adventure where every turn reveals a new question, waiting for your curious gaze.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "bb50acd4dbacf2a529cc2696128bf0ffbdc66fa200d1ddf4a48727e657beab3a",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 73
+   }
+  },
+  {
+   "key": "beginner|natural-scenery|playful",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Budding Bavarian Botanist! We're thrilled to have you join our outdoor crew. It sounds like you're ready to amble through Bavaria's stunning natural scenery at a comfortable pace, enjoying every playful step. We'll help you find those perfect, gentle trails where the views are grand and the effort is light. Let's get you exploring!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "f640aa4f0c1530fb40d562e664f393fc2b97cbc4ab7b90cb8cad98e7461da3b1",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 55
+   }
+  },
+  {
+   "key": "beginner|family-fun|adventure",
+   "fitness": "beginner",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Explorer! Your journey into the heart of Bavaria begins now. We understand you're eager for family fun, ready to embark on gentle adventures that create lasting memories. Prepare to discover enchanting routes, perfect for those starting their outdoor story. Each path promises an adventure, transforming every step into a chapter of your family's epic tale. Get ready to explore!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "c8dc066d60bc53c8372ec01c65887a8d44e7fa99318dd3f98395dfac24d480f0",
+   "temperature": 0.8,
+   "attempt": 2,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 61
+   }
+  },
+  {
+   "key": "beginner|family-fun|mystery",
+   "fitness": "beginner",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Budding Bavarian Trailblazer! We see you're ready for gentle journeys, perfect for family fun. Your curiosity for mystery suggests you'll enjoy uncovering the subtle secrets hidden along the path. Prepare to discover the quiet wonders of Bavaria, where every step with your loved ones holds a hint of something more to explore. Your adventure awaits, ready to unfold its gentle enigmas.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "a8abcf767f3b5e819947981e9a1d4fa47fbaac86fca3ac69e820299621ab98a4",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 62
+   }
+  },
+  {
+   "key": "beginner|family-fun|playful",
+   "fitness": "beginner",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Little Wanderer! Looks like you're a beginner, ready to embark on some family fun! Get ready for playful adventures that will have everyone giggling and exploring. We're excited to help you discover routes perfect for those just starting out, where every step is a new discovery and every trail tells a lighthearted tale. Let's get those little legs moving and those imaginations soaring!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "a5b8687cc6fcec89efa5f29dcf8d436bbe9e246476fe95383b8d614c36d47f49",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 64
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery|adventure",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey begins now. We understand you're eager to explore Bavaria's wonders, blending historical narratives with breathtaking natural scenery. Get ready for an epic adventure tailored to your beginner-friendly fitness level. Each step you take will unfold a new chapter in your personal tale of discovery.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "92fa643ab8cf380b5e241b8497aa435a408d6957cf339ce464f6d479c6f50a6c",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 49
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery|mystery",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian History Seeker! Your journey into Bavaria's captivating past and stunning landscapes begins. We understand you're ready to uncover secrets at a comfortable pace, delving into the rich tapestry of history and the breathtaking beauty of nature. Prepare to unravel intriguing tales as you explore, letting the land itself whisper its mysteries. We're excited for you to discover the adventures that await.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "195bd4719830345de7402a97ba02c58d598e515d3477a96f2e823a341a0b15a3",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 63
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery|playful",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Curious Cultural Wanderer! It's fantastic to have you on board. We see you're ready to dip your toes into the world of outdoor fun, eager to discover the rich tapestry of history and the breathtaking beauty of nature. And you want to do it all with a playful skip in your step! We're excited to help you uncover those gently winding paths and charming historical nooks.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "d2ccf03560a36630cde79e6edca5aaa727355cd5ba3ff903c3756c0e4bdd36e1",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 67
+   }
+  },
+  {
+   "key": "beginner|history-culture+family-fun|adventure",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Time Traveler! Your journey begins now. We're thrilled to have you join our community. Your beginner's spirit, coupled with a love for historical and cultural family adventures, sets the stage for exciting explorations. Get ready to embark on captivating tales, where every step unfolds a new chapter in your Bavarian saga.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "d4b3d59e2e6e8808fb6cfb9b6d4d42c36b89008d28b57ad3bb704d430c0f2db0",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 53
+   }
+  },
+  {
+   "key": "beginner|history-culture+family-fun|mystery",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Storyseeker! Your journey into Bavaria's open-air tales begins now. We understand you're just starting out, and that's perfectly fine. Get ready to uncover hidden histories and cultural curiosities, all while enjoying adventures that are fun for the whole family. Each route promises a gentle mystery, waiting for you to piece together its secrets.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "26f9452acc78458d708e60ac80049e49e95a24ebf2173a7ad5e3c51e68e1d760",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 55
+   }
+  },
+  {
+   "key": "beginner|history-culture+family-fun|playful",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Curious Culture Cruiser! So glad you've joined us! We see you're ready to dive into some playful adventures, perfect for a beginner's pace. Get ready to uncover fascinating history and soak up local culture with a dash of family fun. We'll help you explore Bavaria's charming trails at a comfortable rhythm, ensuring every step is as enjoyable as it is enlightening. Let's get out there and make some memories!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "95249b909fd6054a3c0a2760400bf046afeba158336b362b94510d5098e897dd",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 70
+   }
+  },
+  {
+   "key": "beginner|natural-scenery+family-fun|adventure",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey into the heart of Bavaria begins now. As a beginner, you're perfectly poised to discover gentle paths and natural wonders. Get ready for adventures brimming with family fun, where every step unfolds a new chapter in your epic story. Embrace the outdoors; your Bavarian quest awaits!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "d95eb4cd35041f4b1a1ab0617642f7afcc4d7de640960e0f49cf067c0efbe258",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "beginner|natural-scenery+family-fun|mystery",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trail Seeker! Your journey into the heart of Bavaria begins. We understand you're ready for gentle adventures, perfect for exploring natural beauty with a touch of family fun. Get ready to unravel the subtle mysteries woven into the landscape as you discover routes perfectly suited for your curious spirit.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "3e73bf08bdbd9b1cf416c966b6419170d33b1a3e9e5989af7b00383174fe09b3",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "beginner|natural-scenery+family-fun|playful",
+   "fitness": "beginner",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Happy-Go-Lucky Explorer! Get ready for some gentle Bavarian fun. We see you're keen on lighthearted adventures amidst beautiful natural scenery, perfect for enjoying with your loved ones. Our playful stories will guide you through delightful routes, ensuring smiles and laughter every step of the way. Let's find your next joyful outdoor escapade!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "23a27f9326c4286b8baf8375d126d2f92620d9e30e30c2d82e894b89ad22b255",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 53
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery+family-fun|adventure",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Explorer! Your journey into the heart of Bavaria begins now. We're thrilled to see your beginner's spirit, ready to uncover the region's rich history, vibrant culture, and breathtaking natural beauty. Prepare for adventures that promise family fun and thrilling tales, where every step is a discovery waiting to unfold. Get ready to forge your own epic story!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "56da19dd8d3a9f333d5b8f268c458a42766594bf7fbf1a5a79b87bcb5b20c86d",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 59
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery+family-fun|mystery",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trail Seeker! Your journey begins with gentle steps, blending the whispers of the past with the serene beauty of nature. You've chosen adventures that unfold like a good book, perfect for discovering with loved ones. Prepare to unravel the subtle secrets of the landscape, where every turn holds a quiet intrigue. We're excited to help you explore the stories hidden in plain sight.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "10d32ff9aa3ab78915cfa8df0bc746fd388d3f3ad11e74eaf4d7a033616b0fba",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 65
+   }
+  },
+  {
+   "key": "beginner|history-culture+natural-scenery+family-fun|playful",
+   "fitness": "beginner",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Explorer Extraordinaire! Ready to sprinkle some playful charm on your outdoor adventures? We see you're keen to discover Bavaria's natural beauty, rich history, and cultural gems, all while keeping things light and fun for the whole family. No need for superhuman feats – we'll help you uncover delightful routes that perfectly match your beginner's enthusiasm. Get ready for some giggle-inducing journeys and memory-making moments!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "ac6af869dbab6df8c0accecbb45b564f1cc71f918754371f226e74baf60b8e2f",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 66
+   }
+  },
+  {
+   "key": "intermediate|-|adventure",
+   "fitness": "intermediate",
+   "types": [],
+   "narrative": "adventure",
+   "text": "Welcome, Versatile Adventurer! Your journey through Bavaria promises to be one of discovery and excitement. With your intermediate fitness, you're ready to embrace a wide range of thrilling outdoor experiences. We'll craft an epic narrative for you, where every step, pedal, or stride unfolds like a grand adventure. Prepare to explore the diverse landscapes of Bavaria, as you write your own legend with each outing. Your next great story awaits!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "d002045d6205334991b377af9d9105020b99b72915b2fc946dbff24905cf01f4",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 70
+   }
+  },
+  {
+   "key": "intermediate|-|mystery",
+   "fitness": "intermediate",
+   "types": [],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Wayfinder! Your intermediate fitness opens up a world of possibilities across Bavaria's varied terrain. With a spirit open to any adventure, you're perfectly poised to uncover the secrets hidden within each path. Prepare to embark on journeys where every turn holds a new enigma, and the landscape itself whispers tales waiting to be unraveled. Let's see what mysteries await you.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "05393ff8e2542a2002f9061c6fe5f35d0a6f90769d3da7dda8e30168c9c23e54",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 62
+   }
+  },
+  {
+   "key": "intermediate|-|playful",
+   "fitness": "intermediate",
+   "types": [],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Explorer Extraordinaire! Ready for some fun in the great outdoors? We see you're an intermediate adventurer, open to all sorts of escapades, and you appreciate a good playful story to go along with your journey. Get ready for some delightful routes that match your stride, whether you're hoofing it, pedaling along, or just enjoying a scenic trot. We're excited to help you discover new paths with a smile on your face and a spring in your step!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "c915f1fec1c185a659460935da795b74331e950a12a541c4521bd3b22969807c",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 79
+   }
+  },
+  {
+   "key": "intermediate|history-culture|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian History Seeker! Your intermediate fitness is the perfect foundation for the incredible adventures ahead. Prepare to journey through time and uncover the rich history and vibrant culture of this stunning region. Each route is a chapter in an epic story, waiting for you to live it. Get ready to embark on your next grand escapade!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "ded2daf90030b9059cf1e122c1acb910ad960afaedd048aacc372b3255214346",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "intermediate|history-culture|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Chronicle Seeker! Your intermediate fitness level is perfectly suited for uncovering the historical and cultural layers of Bavaria. You've chosen to journey through stories that whisper of the past, with a preference for narratives that unfold like a well-kept secret. Prepare to delve into the intriguing mysteries embedded within the landscape, where every turn might reveal another piece of an ancient puzzle.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "9af226756c378fecc7cda08ad47738a9e8978ade42e551363c364d5b656045a4",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 64
+   }
+  },
+  {
+   "key": "intermediate|history-culture|playful",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Culture Scout! We're thrilled to have you join our band of explorers. Your intermediate fitness level means you're ready for some engaging journeys, and it's fantastic that you're keen to uncover Bavaria's history and culture. Get ready for adventures filled with playful tales and intriguing insights – we think you'll find them quite delightful!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "e322482453c3722c4933ac7f81142c9c99ea027faabb22d4d69693146c43a257",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 56
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey through Bavaria begins now. We've noted your intermediate fitness and your desire to immerse yourself in stunning natural scenery. Prepare to embark on grand adventures, where every turn of the path reveals a new chapter in your personal epic. Get ready to explore, discover, and write your own story amidst the breathtaking landscapes.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "3cc3581d186a20eff94706cb476e26234fed3b5914fc28326a404b835aa43fba",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trail Enquirer! Your intermediate fitness will be perfectly suited to the natural wonders awaiting discovery. You've expressed a desire for adventures steeped in the beauty of the outdoors, where every turn reveals a fresh vista. Get ready to peel back the layers of the landscape, as we guide you through routes with a touch of the unknown, inviting you to unravel their quiet mysteries.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "a4a51682569841f0c464160ee100fb4945cc5a01593eec51227e391b78eb40a3",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 66
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery|playful",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Nature Enthusiast! Looks like you're ready to dive into the heart of Bavaria with an intermediate spring in your step. You've got a keen eye for natural beauty, so get ready to explore some truly stunning landscapes. And with a playful spirit like yours, every turn will bring a smile to your face. Let the adventure begin!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "9eea5d192bda0e7435dadc37887d601ccd40a072d727dad23631df82628347a7",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 59
+   }
+  },
+  {
+   "key": "intermediate|family-fun|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey through Bavaria promises to be an epic adventure, perfectly suited for an intermediate explorer like you. Prepare to uncover thrilling routes that are not only exciting but also ideal for family fun, creating unforgettable memories with every step, pedal, or stride. Your personal quest awaits!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "1938094115f47f282303e4fd54847c102dc06eb2b23869506c958c82fa41632e",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 50
+   }
+  },
+  {
+   "key": "intermediate|family-fun|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trail Sleuth! Your intermediate fitness will serve you well as you uncover the secrets of the Bavarian outdoors. Prepare for adventures perfect for some family fun, where every turn holds a piece of a larger puzzle. We're excited for you to explore the hidden narratives woven into the landscape, waiting for you to decipher their mysteries.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "1c451847396c01ab3a021a192670274ee73920f703e3bd0e31927b2adf676817",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "intermediate|family-fun|playful",
+   "fitness": "intermediate",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Adventurer! Looks like you're ready for some delightful family fun, with just enough pep in your step to keep things exciting. No sweat, no tears, just pure, unadulterated outdoor joy. Your chosen playful story style means every outing will be a lighthearted escapade, perfect for creating smiles and memories. Get ready to explore Bavaria's routes with a spring in your step and a giggle in your heart!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "7907321e7fc721122fdcd3a676bae4226abfea1df1db07fda65d92879093fe57",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 69
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey through Bavaria begins now. You’re ready for an intermediate challenge, eager to discover routes that weave together the rich tapestry of history and breathtaking natural beauty. Prepare to embark on epic adventures, where every path tells a story and every turn reveals a new wonder. Let's explore the trails that await!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "a16866ac2f6a3e3f976bfae3a24f9aa2a5f2c2e42639ba29879aff37ee30eed9",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 56
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian History Seeker! Your intermediate fitness is a perfect match for trails that weave through the region's rich past and breathtaking natural beauty. Prepare for journeys where every turn holds a clue, and the landscapes themselves whisper ancient tales. We're excited for you to uncover the secrets hidden within Bavaria's storied routes.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "e127dcec62a00b5e2f2814363cd2fca6afefabe9672b836c4882f9dde528c331",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 53
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery|playful",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Culture Scout! We're thrilled to have you join our band of outdoor enthusiasts. Get ready to dive into routes that perfectly match your intermediate fitness, blending captivating history and stunning natural beauty. Your journeys will be spiced with a playful narrative, making every step an adventure. Let's explore the wonders of Bavaria together!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "549417f98ded8cda965d7cde3441c8dccebf685986c2aab69141eda6a50dd298",
+   "temperature": 0.8,
+   "attempt": 2,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 55
+   }
+  },
+  {
+   "key": "intermediate|history-culture+family-fun|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Culture Seeker! Your intermediate fitness level is perfect for uncovering the rich tapestry of Bavaria. Prepare for an epic journey filled with historical wonders and cultural delights, crafted for unforgettable family fun. Each route is a chapter in your grand adventure, waiting to be explored. Let's embark on this exciting quest together!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "6bc3267a1c433ba665d64ee974a33613129b19289b5843cf26780293fb354e97",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "intermediate|history-culture+family-fun|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Storyseeker! Your intermediate fitness opens doors to many paths. You're drawn to the whispers of history and the joy of discovery with your family. Each route promises a touch of mystery, waiting for you to uncover its secrets. Prepare to explore, connect, and wonder as you step into Bavaria's captivating outdoor stories. Your adventure begins now.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "626129fc40b9f943b303adc148ff1e838731722a64194c6384095224e2ff0149",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "intermediate|history-culture+family-fun|playful",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Storyseeker! It’s great to have you with us. We see you're an intermediate explorer, ready for some playful adventures that combine history, culture, and family fun. Get ready to uncover Bavaria's fascinating past and create new memories with your loved ones. We're excited to help you find your next outdoor escapade!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "2e4bdb964d22e109aa60f8943b670022c4d44e99ad702654138622778ad316a6",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 53
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery+family-fun|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your journey through Bavaria promises to be an epic one. You're ready to embrace the challenge of intermediate trails, seeking out the most captivating natural scenery. Every outing will be a thrilling adventure, perfect for creating lasting memories with your loved ones. Get ready to explore!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "4d52260a7ae63d97d2173bdaf9b1a9641380e1f8ea1d37fd0bb9211ef424d555",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 49
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery+family-fun|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your intermediate fitness is a perfect match for the natural wonders and family adventures awaiting you. Prepare to uncover the secrets of Bavaria's paths, where every turn holds a piece of a larger, unfolding mystery. Your journey into the heart of discovery begins now.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "9743780dd6ef47bb38ac7c1614b729a78275070880a0832a80fe3f84b200ad95",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 47
+   }
+  },
+  {
+   "key": "intermediate|natural-scenery+family-fun|playful",
+   "fitness": "intermediate",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Explorer! It's great to have you here! Ready for some playful adventures amidst Bavaria's natural beauty? We'll help you discover routes perfect for an intermediate pace, ensuring everyone in the family has a blast. Get set for some delightful meanders and cheerful trails – your next outdoor escapade awaits!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "0bc2bba28aa312a56d4f307072fcacad9e577d83f8079525e139dd9c93cb005a",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery+family-fun|adventure",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Journeyer! Your path through Bavaria promises a rich tapestry of experiences. With an intermediate fitness level, you're perfectly poised to explore the captivating blend of history, culture, and natural beauty. Prepare for adventures that embrace the whole family, each step a discovery, each turn a new chapter in your epic outdoor story. Get ready to embark on memorable excursions!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "8a18af7160e1115d26fe81a635991d3200ab23490bf22a1e7297e8953bc85c56",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 61
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery+family-fun|mystery",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Storyseeker! Your intermediate fitness will be perfect for uncovering the layers of history and culture woven into Bavaria's natural beauty. We're excited to help you embark on family-friendly journeys, where each turn hints at a hidden tale. Prepare to unravel mysteries as you explore, letting the landscape whisper its secrets to those who listen closely. What adventures await your curious spirit?",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "b84acccd0a4c636b3384aa514260ee85bb13d4e707d297bfe3eac0c7e7ff4c6d",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 63
+   }
+  },
+  {
+   "key": "intermediate|history-culture+natural-scenery+family-fun|playful",
+   "fitness": "intermediate",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Story-Seeker! Great to have you on board! It sounds like you're ready for some delightful adventures. With your intermediate fitness, you're perfectly poised to explore the stunning natural scenery and soak in some rich history and culture. And with a playful story style, we'll make sure every step is packed with fun for the whole family. Get ready to discover some fantastic routes that will put a smile on everyone's face!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "da8330015559615297bfb94beae039f149490e5c8ac0866f861518814d01bcf7",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 73
+   }
+  },
+  {
+   "key": "advanced|-|adventure",
+   "fitness": "advanced",
+   "types": [],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Legend! Your advanced fitness and open spirit for adventure are a perfect match for the epic journeys that await. Prepare to challenge your limits with routes designed for true explorers. Every path you choose will unfold like a grand saga, with you at the heart of the adventure. Get ready to forge your own legend!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "7c5f458ae92f3644c2601908559801e60cb7eff096f18328114b0067af7caa33",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "advanced|-|mystery",
+   "fitness": "advanced",
+   "types": [],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Enigma! Your advanced fitness suggests you're ready for whatever Bavarian paths unveil. You've embraced the unknown, allowing us to guide you through any kind of adventure. Prepare to explore routes where each turn deepens the intrigue, and every journey is a puzzle waiting to be solved. Let the mystery of the landscape unfold before you.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "cec584dba5fbd08c4c645d21372b683f0dd3591101d40d56a50cf7b7659e7e8d",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "advanced|-|playful",
+   "fitness": "advanced",
+   "types": [],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Trailblazer! We're thrilled to have you join us. Your advanced fitness means you're ready for anything Bavaria throws your way, and your adventurous spirit tells us you're up for any challenge we suggest. Get ready to explore, because with your playful side, every outing will be a delightful escapade! Let's find some fantastic routes for you.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "c96ed516520dc36148208beef21e28fc35afdbc2893679b8103f1484e054ce7a",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "advanced|history-culture|adventure",
+   "fitness": "advanced",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Legend! Your advanced fitness and love for history and culture have set you on a truly epic journey. Prepare to push your limits as you delve into the captivating stories woven into Bavaria's landscapes. Each adventure will unfold with a thrilling narrative, making every step a discovery. Get ready to conquer trails and uncover the past!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "129ccf1942e5b785a1255559ef25ad3f19af57d7b7269fe178960d083b732420",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "advanced|history-culture|mystery",
+   "fitness": "advanced",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Legend Seeker! Your advanced fitness and thirst for historical and cultural adventures, wrapped in a shroud of mystery, promise an extraordinary journey. Prepare to delve into the untold stories of Bavaria, where every path holds a secret waiting to be uncovered by your curious spirit. Your next adventure awaits, just beyond the veil of the unknown.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "845e416a2c778ec27142b0132faeebea76b6de826fe9147bed2fd0e0418e64e9",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "advanced|history-culture|playful",
+   "fitness": "advanced",
+   "types": [
+    "history-culture"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Lore Seeker! Ready to dive deep into Bavaria's past? We see you're an advanced adventurer, so we'll craft some serious challenges for your historical and cultural explorations. Get set for journeys that unveil fascinating tales with a playful twist, because who said learning couldn't be a riot? Your next grand adventure awaits!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "91caa4aa83be518b7d68e9fb8a77a57c9322ba574c458ba1a89c0899e8ca83aa",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "advanced|natural-scenery|adventure",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Wilderness Conqueror! Your advanced fitness and love for raw, untamed landscapes are a perfect match for the epic adventures that await. Prepare to dive deep into the heart of Bavaria's natural scenery, where every path is a challenge and every vista a reward. Your journey of discovery begins now, fueled by the spirit of adventure that guides you.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "65cc58a407b03375599f762aeb14e40576114ad308a6b2d3b6b5d89e36f089a7",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 60
+   }
+  },
+  {
+   "key": "advanced|natural-scenery|mystery",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness and love for natural scenery promise grand adventures. Prepare to uncover the secrets of the Bavarian wilds, where every path holds a hidden story waiting to be unveiled. We're excited to see what mysteries you'll unravel on your journey.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "189d3d952ac8b6b711b5ced5e8af305a9324485eda31fd6a3bc0217c0e2abd15",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 45
+   }
+  },
+  {
+   "key": "advanced|natural-scenery|playful",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Bounding Beast! It’s fantastic to have you aboard. We see you're ready to tackle some serious terrain with your advanced fitness, and your playful spirit will perfectly complement the natural scenery you love to explore. Get ready for some high-energy fun as you discover the wild side of Bavaria!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "c318435ff8af5454d5c8d1e7fb57a7473760cfb2aeb85efb1bb5506f7d0b1952",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "advanced|family-fun|adventure",
+   "fitness": "advanced",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Mighty Family Voyager! Your advanced fitness level is perfect for leading epic family adventures. You're ready to embrace the thrill of the journey, transforming every outing into a grand tale. Prepare to discover the wonders of Bavaria, where each path is a new chapter waiting to be written. Let's embark on your next great adventure!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "b73e95965cc9579801ec2a414412a52684e9968351db91fb133f27383cd0c226",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 56
+   }
+  },
+  {
+   "key": "advanced|family-fun|mystery",
+   "fitness": "advanced",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness and desire for family fun have set you on a path of intriguing discovery. Prepare to uncover the secrets of Bavaria's trails, where every turn holds a piece of a larger mystery waiting to be solved. We’re excited for you to explore the stories woven into the landscape.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "e185512eaac2cd10495ad9bff8463a4b1a46f88d727bfd4eb12d2d3ec3d2aec4",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "advanced|family-fun|playful",
+   "fitness": "advanced",
+   "types": [
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Mighty Family Funster! We're thrilled to have you aboard. It sounds like you're a seasoned adventurer, ready to tackle anything with your crew, and you're all about those playful jaunts! Get ready for some fantastic Bavarian escapades where the journey is as joyful as the destination, full of giggles and good times. Let's make some memories!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "681bc18028410fd4bbd07efae9469d1500f1f8e4760209fc77618036c6f25c3f",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery|adventure",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Prepare for epic journeys across Bavaria. Your advanced fitness level means you're ready for ambitious adventures, perfectly suited to exploring both the rich tapestry of history and culture and the breathtaking natural scenery. Get ready to embark on thrilling expeditions where every path tells a story, and every vista ignites your spirit of discovery.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "325ff8b6ffec79d630b6900d84d8bd00afba68b9f30f955c735c85b87acc4db3",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 57
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery|mystery",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Explorer of Ancient Paths! Your advanced fitness will serve you well as you uncover the secrets woven into Bavaria's natural beauty and rich history. Prepare to delve into tales of old, where every turn reveals a piece of the puzzle, inviting you to look closer and discover what lies beneath the surface.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "94fc796edce10f7492a040493a32ba5836efffcfc6ed510726e065e7b24b0d19",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery|playful",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Culture-Vulture! Ready to conquer some trails? We see you're an advanced explorer with a keen eye for both history and the breathtaking beauty of nature. Get set for some playful adventures that will have you grinning from ear to ear as you uncover the stories and stunning landscapes of Bavaria. Let's get you moving!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "317469fcfa0913430034486b3a740d8cbbbe10092cd41ff82fea348ba68730f0",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 56
+   }
+  },
+  {
+   "key": "advanced|history-culture+family-fun|adventure",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Culture Crusader! Your advanced fitness and love for historical and cultural adventures, spiced with family fun, paint the picture of a true explorer. Get ready to embark on an epic journey, where every path tells a story and every turn reveals a new chapter in your grand Bavarian adventure.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "2c99461b09d2320825d3af7341db37b7cce3ddf90a17836b80232e173f90d875",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "advanced|history-culture+family-fun|mystery",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness and love for family adventures with a historical twist are a perfect match. Get ready to uncover the hidden stories of Bavaria, where every path holds a secret waiting to be revealed. Your journey into the unknown begins now.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "0e64f43b86f835ff76efe19b160bafbc51568a9d8aee7986e0907869f2902cb3",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 45
+   }
+  },
+  {
+   "key": "advanced|history-culture+family-fun|playful",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Culture-Vulture! Ready to hit the trails? With your advanced fitness, you'll be zipping through our routes in no time. We've got a fantastic selection of history and culture adventures, perfect for family fun. And with a playful story style, every journey will be an absolute blast. Let's get exploring!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "a809d2cbb20d0fd7df27f1c346c064e33f1e08363b81059f4a64bf2954d0a5fb",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 51
+   }
+  },
+  {
+   "key": "advanced|natural-scenery+family-fun|adventure",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness and desire for both natural beauty and family fun set the stage for epic journeys. Get ready to conquer challenging paths and discover breathtaking vistas, crafting unforgettable adventures with every step. Your story of exploration in Bavaria is about to begin, filled with excitement and discovery for everyone.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "19b55462e740da920af7a5d2a9817c5a47b6ce76edbfe65912993aa765ab8c86",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "advanced|natural-scenery+family-fun|mystery",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness and desire for both natural beauty and family adventures promise exciting journeys. It seems you appreciate a good puzzle, too. Get ready to uncover the secrets of Bavaria's outdoor world, where every turn holds a new discovery. Your path is waiting to be unveiled.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "2d96f1afacc9bd5d9944028b5a9060cc6c55cc772d11a436d5c11590af69e3f8",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 50
+   }
+  },
+  {
+   "key": "advanced|natural-scenery+family-fun|playful",
+   "fitness": "advanced",
+   "types": [
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Trailblazer! It sounds like you're a seasoned adventurer ready to tackle some serious outdoor fun. Get ready to explore breathtaking natural scenery and discover routes perfect for playful family escapades. We're excited to help you find your next great story, full of laughs and memorable moments!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "e7e7f90f087f1ca3e7bd8350d576d73501189e5604a46093981516acf3e12bea",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 48
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery+family-fun|adventure",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "adventure",
+   "text": "Welcome, Fearless Bavarian Explorer! Your advanced fitness level is perfect for the grand adventures ahead. You've chosen a fantastic mix of history, culture, natural beauty, and family fun, ensuring every outing is a rich experience. Get ready to embark on epic journeys where every path tells a story, and you are the protagonist of your own Bavarian saga.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "bcc164160d45f6bb625788a9b4a6b482f6962dd4b4c147f837e1c4135ddfca9c",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 58
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery+family-fun|mystery",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "mystery",
+   "text": "Welcome, Bavarian Trailblazer! Your advanced fitness level suggests you're ready for grand adventures. We see you're drawn to the rich tapestry of history, the splendor of nature, and shared family moments. Get ready to unveil the secrets of Bavaria, as each journey promises a curious mystery to unravel, hidden within the paths you choose.",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "200e89893bad90773fcf857ec7c03dd9a7b52e939ec2aaf9736fdbea47867739",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 54
+   }
+  },
+  {
+   "key": "advanced|history-culture+natural-scenery+family-fun|playful",
+   "fitness": "advanced",
+   "types": [
+    "history-culture",
+    "natural-scenery",
+    "family-fun"
+   ],
+   "narrative": "playful",
+   "text": "Welcome, Bavarian Trailblazer! It sounds like you're a seasoned adventurer, ready to conquer any challenge. We're thrilled to have you! Get ready to explore the stunning natural beauty and rich history of Bavaria, all with a playful twist. Whether you're seeking cultural gems, breathtaking vistas, or family-friendly escapades, we've got you covered. Let's get out there and make some memories!",
+   "llm_generated": true,
+   "model": "gemini-2.5-flash",
+   "prompt_version": "welcome/pregen-v1",
+   "generated_at": "2026-11-23",
+   "cache_key": "990f48291e2c3db7055763ba322f6697acc01de183abe86e626e32dd0e0159fb",
+   "temperature": 0.7,
+   "attempt": 1,
+   "checks": {
+    "numbers": [],
+    "banned_terms": [],
+    "words": 60
+   }
+  }
+ ]
+}

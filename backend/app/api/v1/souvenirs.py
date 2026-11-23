@@ -32,6 +32,7 @@ from app.services.genai_service import generate_pixel_art_svg, generate_post_run
 from app.services.level_system import (
     calculate_level_from_xp,
 )
+from app.services.narratives import SOURCE_LLM, live_narratives_enabled, offline_post_run
 from app.services.xp_calculator import calculate_route_completion_xp
 
 logger = logging.getLogger(__name__)
@@ -103,25 +104,25 @@ async def create_souvenir(
         # or load breakpoints separately if needed
         total_quests = len(request.completed_quest_ids)  # Use completed count as estimate
 
-        # 5. Generate AI summary
-        try:
-            if not llm_narrative_allowed(http_request):  # rate limit / daily budget: template text
-                raise RuntimeError("narrative limited (rate limit or daily budget)")
-            route_length_km = (route.length_meters / 1000) if route.length_meters else 0
-            genai_summary = await generate_post_run_summary(
-                route_title=route.title,
-                route_length_km=route_length_km,
-                quests_completed=len(request.completed_quest_ids),
-                total_quests=total_quests,
-                user_level=profile.level
-            )
-        except Exception as e:
-            logger.warning(f"AI summary generation failed: {e}", exc_info=True)
-            # Fallback summary
-            genai_summary = (
-                f"Congratulations on completing {route.title}! "
-                f"You earned {xp_breakdown['total']} XP. "
-                f"Keep exploring to discover more adventures!"
+        # 5. Summary: live LLM (if enabled, configured and allowed by the demo guard), else the route's
+        #    pre-generated text plus the user's numbers, else the template (docs/DEPLOY.md)
+        genai_summary, summary_source = None, None
+        if live_narratives_enabled() and llm_narrative_allowed(http_request):  # rate limit / daily budget
+            try:
+                route_length_km = (route.length_meters / 1000) if route.length_meters else 0
+                genai_summary = await generate_post_run_summary(
+                    route_title=route.title,
+                    route_length_km=route_length_km,
+                    quests_completed=len(request.completed_quest_ids),
+                    total_quests=total_quests,
+                    user_level=profile.level
+                )
+                summary_source = SOURCE_LLM
+            except Exception as e:
+                logger.warning(f"AI summary generation failed, using the offline text: {type(e).__name__}: {e}")
+        if genai_summary is None:
+            genai_summary, summary_source = offline_post_run(
+                route.id, route.title, xp_breakdown['total'], len(request.completed_quest_ids)
             )
 
         # 5.5. Generate pixel art SVG image
@@ -239,7 +240,8 @@ async def create_souvenir(
             total_xp_gained=xp_breakdown['total'],
             new_total_xp=profile.total_xp,  # Return the new total XP after update
             new_level=new_level,
-            newly_unlocked_achievements=unlocked_achievements_list
+            newly_unlocked_achievements=unlocked_achievements_list,
+            summary_source=summary_source,
         )
     except HTTPException as e:
         # Re-raise HTTP exceptions (like 404) with logging

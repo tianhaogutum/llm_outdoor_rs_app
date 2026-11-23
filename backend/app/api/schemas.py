@@ -350,6 +350,9 @@ class ProfileCreateResponse(BaseModel):
     welcome_summary: str
     user_vector: dict  # For debugging, shows translated user preferences
     profile: Optional[ProfileResponse] = None  # stored profile incl. the optional slots
+    # Where welcome_summary came from: "llm" (live), "pregenerated" (LLM-generated offline,
+    # backend/data/narratives) or "template" (docs/DEPLOY.md)
+    welcome_summary_source: Optional[str] = None
 
 
 class WelcomeSummaryRequest(BaseModel):
@@ -513,6 +516,9 @@ class RouteCompleteResponse(BaseModel):
     new_total_xp: int  # New total XP after this completion
     new_level: int
     newly_unlocked_achievements: Optional[list[dict]] = []  # Newly unlocked achievements
+    # Where souvenir.genai_summary came from: "llm" (live), "pregenerated" (LLM-generated offline,
+    # backend/data/narratives) or "template" (docs/DEPLOY.md)
+    summary_source: Optional[str] = None
 
 
 # ============================================================================

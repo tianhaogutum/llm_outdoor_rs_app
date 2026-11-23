@@ -63,6 +63,10 @@ def slots_from_profile(profile: DemoProfile, state: ChatState, vector: dict[str,
 
 
 def load_session(profile: DemoProfile, db: Any, *, extractor=None) -> ChatSession:
+    """``extractor`` None: the LLM extractor, or the keyword rules when no chat provider is configured
+    (no credentials) or the provider turns out to be unusable (:func:`llm_or_rules_extractor`)."""
+    if extractor is None:
+        extractor = llm_or_rules_extractor()
     state = _state(profile)
     vector = _vector(profile)
     slots = slots_from_profile(profile, state, vector)
@@ -112,5 +116,36 @@ def rules_extractor():
         update, dropped = sanitize(wire)
         return Extraction(update=update, dropped=dropped, raw=wire.model_dump(), model="keyword-rules",
                           provider="none")
+
+    return run
+
+
+def llm_or_rules_extractor():
+    """The LLM extractor with the keyword rules as the offline fallback (docs/DEPLOY.md).
+
+    - No chat provider configured (no OpenRouter key, no Vertex project): the keyword rules answer
+      straight away, without attempting a call.
+    - Configured, but the client reports a configuration error at call time (e.g. Vertex without
+      Application Default Credentials): the keyword rules answer this turn.
+    - Transient provider errors (5xx, timeouts), schema failures and the chat budget still surface as
+      503/504/502 from the endpoint, as before: they say something about the provider, not about the setup.
+    """
+    from app.chat.engine import default_extractor
+    from app.llm import ConfigError
+    from app.services.provider_status import chat_configured
+
+    rules = rules_extractor()
+    if not chat_configured():
+        return rules
+    llm = default_extractor()
+
+    async def run(message: str, current: ChatSlots, pending: Optional[str]):
+        try:
+            return await llm(message, current, pending)
+        except ConfigError as e:
+            from app.logger import get_logger
+
+            get_logger(__name__).warning("chat provider not usable (%s); keyword rules answer", type(e).__name__)
+            return await rules(message, current, pending)
 
     return run

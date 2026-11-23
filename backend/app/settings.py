@@ -175,6 +175,17 @@ class Settings(BaseSettings):
         "paths (recommendations without embeddings, keyword chat extraction, template narratives). 0 = off.",
     )
 
+    # Narratives (welcome text, post-route summary; docs/DEPLOY.md). Order: live LLM (only when this is on
+    # and LLM_PROVIDER has credentials) -> pre-generated text (backend/data/narratives) -> template.
+    narratives_live: bool = Field(
+        default=True,
+        description="Call the LLM for narratives. false: pre-generated text or template only (no spend). "
+        "The Docker image sets false.",
+    )
+    narratives_dir: Optional[Path] = Field(
+        default=None, description="Pre-generated narrative store (unset: backend/data/narratives)."
+    )
+
     # Logging configuration
     log_level: str = Field(
         default="INFO",
