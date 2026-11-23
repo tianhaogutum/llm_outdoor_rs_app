@@ -122,6 +122,25 @@ class Settings(BaseSettings):
         default=2, description="Extra attempts after a structured-output schema violation."
     )
 
+    # Chat preference elicitation (app/chat, docs/CHAT.md). Its own client (model, location, budget),
+    # so the chat model can differ from the narrative model. With LLM_PROVIDER=mock the chat is always
+    # mock (tests and CI never reach the network, whatever CHAT_LLM_PROVIDER says).
+    chat_llm_provider: Optional[LLMProviderName] = Field(
+        default=None, description="Provider for chat slot extraction. Unset: LLM_PROVIDER."
+    )
+    chat_llm_model: Optional[str] = Field(
+        default=None, description="Model id for chat extraction. Unset: the chat default for the provider."
+    )
+    chat_vertex_location: Optional[str] = Field(
+        default=None, description="Vertex location for the chat model. Unset: the chat default's location."
+    )
+    chat_thinking: Optional[str] = Field(
+        default=None,
+        description="Thinking for chat calls: an int budget ('0' = off) or a level ('minimal', 'low'). "
+        "Unset: the chat default.",
+    )
+    chat_budget_usd: float = Field(default=1.0, description="Hard stop: real USD per process for chat calls.")
+
     # Logging configuration
     log_level: str = Field(
         default="INFO",
