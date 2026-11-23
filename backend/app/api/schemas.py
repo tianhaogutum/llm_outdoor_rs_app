@@ -279,6 +279,7 @@ class ProfileResponse(BaseModel):
     travel_radius_km: Optional[float] = None
     distance_cap_km: Optional[float] = None
     intent: Optional[str] = None
+    activity: Optional[str] = None  # set by the chat (hiking | cycling | mtb | running)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -291,6 +292,7 @@ class ProfileResponse(BaseModel):
             "id", "total_xp", "level", "user_vector_json", "genai_welcome_summary", "unlocked_routes_json",
             "travel_radius_km", "distance_cap_km",
         )}
+        out["activity"] = getattr(data, "activity", None)
         out["intent"] = data.intent_text
         if data.home_name is not None and data.home_lat is not None and data.home_lon is not None:
             out["home"] = {"name": data.home_name, "lat": data.home_lat, "lon": data.home_lon}

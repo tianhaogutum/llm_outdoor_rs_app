@@ -13,7 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.types import Scope
 
-from .api.v1 import achievements, logs, places, profiles, routes, souvenirs
+from .api.v1 import achievements, chat, logs, places, profiles, routes, souvenirs
 from .database import close_db, get_db, init_db
 from .llm_logger import _llm_messages, get_recent_messages
 from .logger import get_logger, init_logging_from_settings
@@ -218,6 +218,7 @@ def create_app() -> FastAPI:
     app.include_router(achievements.router, prefix="/api")
     app.include_router(logs.router, prefix="/api")
     app.include_router(places.router, prefix="/api")
+    app.include_router(chat.router, prefix="/api")
 
     dist = frontend_dist_dir()
     if (dist / "index.html").is_file():
