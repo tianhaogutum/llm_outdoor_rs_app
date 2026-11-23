@@ -161,7 +161,7 @@ def test_mmr_lambda_one_keeps_order_and_zero_diversifies():
     S = np.array([[1.0, 0.95, 0.1], [0.95, 1.0, 0.2], [0.1, 0.2, 1.0]])
     order, det = mmr(rel, S, 1.0)
     assert order == [0, 1, 2] and all(d["penalty"] == 0 for d in det)
-    order, det = mmr(rel, S, 0.5)
+    order, det = mmr(rel, S, 0.5, normalise_sim=False)
     # step 2: route 1 -> 0.5*0.5 - 0.5*0.95 = -0.225 ; route 2 -> 0 - 0.5*0.1 = -0.05 -> route 2 first
     assert order == [0, 2, 1]
     assert det[1]["mmr_score"] == pytest.approx(-0.05) and det[1]["max_similarity"] == pytest.approx(0.1)
@@ -173,5 +173,17 @@ def test_mmr_lambda_one_keeps_order_and_zero_diversifies():
 
 def test_mmr_negative_similarity_is_clipped_and_ties_keep_input_order():
     S = np.array([[1.0, -0.5, -0.5], [-0.5, 1.0, 0.0], [-0.5, 0.0, 1.0]])
-    order, _ = mmr([1.0, 0.5, 0.5], S, 0.3)
+    order, _ = mmr([1.0, 0.5, 0.5], S, 0.3, normalise_sim=False)
     assert order == [0, 1, 2]
+
+
+def test_mmr_normalises_similarity_over_the_candidates():
+    # all pairs alike (0.80-0.90): raw cosines barely separate them, normalised ones do
+    rel = [1.0, 0.9, 0.8]
+    S = np.array([[1.0, 0.90, 0.80], [0.90, 1.0, 0.85], [0.80, 0.85, 1.0]])
+    assert mmr(rel, S, 0.7, normalise_sim=False)[0] == [0, 1, 2]
+    order, det = mmr(rel, S, 0.7)
+    # normalised: sim(0,1) = 1, sim(0,2) = 0 -> step 2: route 1 0.7*0.5 - 0.3*1 = 0.05 ; route 2 0 - 0 = 0.0
+    assert order == [0, 1, 2] and det[1]["mmr_score"] == pytest.approx(0.05)
+    order, _ = mmr(rel, S, 0.5)
+    assert order == [0, 2, 1]

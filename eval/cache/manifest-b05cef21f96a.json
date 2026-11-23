@@ -2,17 +2,17 @@
   "format": "app.llm.frozen-cache",
   "format_version": 1,
   "key_version": 1,
-  "entries": 4285,
+  "entries": 4512,
   "by_capability": {
     "embed": 300,
-    "generate": 3365,
+    "generate": 3592,
     "rank": 620
   },
   "vector_dims": [
     768
   ],
   "files": [
-    "entries-d33271d01703.jsonl.gz",
-    "vectors-d33271d01703.npz"
+    "entries-b05cef21f96a.jsonl.gz",
+    "vectors-b05cef21f96a.npz"
   ]
 }

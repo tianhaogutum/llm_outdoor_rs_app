@@ -5,7 +5,10 @@ Greedy: at each step pick the candidate maximising
     lambda * rel(d) - (1 - lambda) * max_{s in selected} sim(d, s)
 
 with ``rel`` the ranker score min-max normalised to [0, 1] over the candidate list and ``sim`` the
-cosine similarity of the routes' document embeddings, clipped at 0. lambda = 1 keeps the ranker's
+cosine similarity of the routes' document embeddings, also min-max normalised over the candidate pairs
+(``normalise_sim``). Without that second normalisation lambda barely acts: route embeddings are all
+alike (pairwise cosines of a candidate list sit in a band of about 0.75-0.95), so the penalty is nearly
+the same constant for every candidate (measured on dev: lambda 0.3 moved ILD@10 by 0.02). lambda = 1 keeps the ranker's
 order. The diversity metric ILD@10 is computed on catalogue tag sets, not on embeddings, so MMR does
 not optimise the reported metric directly. Ties are broken by the input order.
 """
@@ -19,7 +22,7 @@ import numpy as np
 
 
 def mmr(
-    relevance: Sequence[float], sim: np.ndarray, lam: float, k: int | None = None
+    relevance: Sequence[float], sim: np.ndarray, lam: float, k: int | None = None, normalise_sim: bool = True
 ) -> tuple[list[int], list[dict[str, Any]]]:
     """Returns (selected positions in input order indices, per-pick details)."""
     n = len(relevance)
@@ -31,7 +34,12 @@ def mmr(
     rel = np.asarray(relevance, dtype=np.float64)
     lo, hi = float(rel.min()), float(rel.max())
     reln = (rel - lo) / (hi - lo) if hi > lo else np.ones(n)
-    S = np.clip(np.asarray(sim, dtype=np.float64), 0.0, None)
+    S = np.asarray(sim, dtype=np.float64)
+    if normalise_sim and n > 1:
+        off = S[~np.eye(n, dtype=bool)]
+        lo_s, hi_s = float(off.min()), float(off.max())
+        S = (S - lo_s) / (hi_s - lo_s) if hi_s > lo_s else np.zeros_like(S)
+    S = np.clip(S, 0.0, 1.0)
     chosen: list[int] = []
     details: list[dict[str, Any]] = []
     maxsim = np.zeros(n)
