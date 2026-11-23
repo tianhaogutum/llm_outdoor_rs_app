@@ -179,3 +179,22 @@ A network outage killed `python -m evalkit.ltr sample` mid-run, so that process 
 row. Its judge batches were in the local cache; the real cost recorded on those cache entries was
 appended to the local spend log as one "recovered" row, and the sample was rerun from cache. Total
 spend: `python -m evalkit.llm`.
+
+## D18. Chat slot extraction: Claude Haiku 5.5 via OpenRouter, reasoning off (2026-11-23)
+
+Chosen on the scripted chat set (`backend/chat_eval/`, [CHAT.md](CHAT.md) section 8; 72 cases, 84 calls per candidate; numbers in `backend/chat_eval/results/summary.json`):
+
+| Candidate | Slot P / R / F1 | Clarify accuracy | Schema violations | p50 / p95 latency | USD per turn |
+|---|---|---|---|---|---|
+| `gemini-2.5-flash`, europe-west4, thinking off | 0.984 / 0.977 / 0.980 | 1.000 | 0 | 0.85 / 1.39 s | 0.0013 |
+| `gemini-3.5-flash`, global, thinking minimal | 0.985 / 1.000 / 0.992 | 0.972 | 0 | 1.50 / 3.02 s | 0.0077 |
+| `gemini-3.5-flash-lite`, global, thinking minimal | 0.961 / 0.961 / 0.961 | 0.986 | 0 | 1.01 / 1.76 s | 0.0017 |
+| `anthropic/claude-haiku-5.5` (OpenRouter), reasoning off | 0.970 / 1.000 / 0.985 | 1.000 | 0 | 1.12 / 2.08 s | 0.0007 |
+
+- The LLMs differ by 1–4 errors on 72 cases; the set cannot separate them. It was written by the same agent that wrote the extractor, so all figures are optimistic.
+- Haiku costs about a tenth of `gemini-3.5-flash` per turn and is faster; `gemini-2.5-flash` is past its retirement date (D2), so it is not a default even though it scores well; Flash-Lite was the weakest.
+- Fallback when no OpenRouter key is configured: Vertex `gemini-3.5-flash` on `global`, thinking minimal. Overrides: `CHAT_LLM_PROVIDER`, `CHAT_LLM_MODEL`, `CHAT_VERTEX_LOCATION`, `CHAT_THINKING`, `CHAT_BUDGET_USD` (default 1 USD per process). `LLM_PROVIDER=mock` forces the offline keyword extractor.
+- Accepted cost: chat messages (which may name a home town) leave the EU region with every candidate except the retired one, and OpenRouter is an additional processor. **Pending owner** if EU-only processing is required.
+- No model grades its own output: the relevance judge stays Google (D9); chat extraction is Anthropic.
+- Required slots are activity and place (the hard filters need them); one clarifying question each, at most two turns, then defaults (hiking; no radius filter).
+- Spend for this comparison and the live checks: about 1.0 USD.
