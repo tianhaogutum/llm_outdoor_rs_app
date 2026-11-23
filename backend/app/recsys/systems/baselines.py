@@ -93,6 +93,7 @@ class V0RulesSystem:
         feedback = [
             {"route_id": f.route_id, "reason": f.reason, "created_at": REFERENCE_NOW - timedelta(days=f.age_days)}
             for f in query.feedback
+            if f.reason in ("too-hard", "too-easy", "too-far", "not-interested")  # v0 has no completion signal
         ]
         ranked = rank_routes_v0(query.user_vector, routes, feedback, now=REFERENCE_NOW, limit=k)
         contrib = {

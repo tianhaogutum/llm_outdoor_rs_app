@@ -28,6 +28,11 @@ EXPECTED_STAGES = {
     "recsys_v1": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
     "recsys_v1_nocap": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
     "recsys_v1_nosusp": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    # Phase 5: without feedback events the feedback stage does not run; exploration always reports
+    "recsys_v1_fb": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_v1_fb_route": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_v1_fb_light": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_v1_fb_explore": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
 }
 
 
@@ -74,7 +79,10 @@ def test_pipeline_end_to_end_with_explanations(name, cat, llm):
         st = r["stages"]
         assert st["filter"]["verdict"] == "pass"
         assert st["filter"]["radius"]["distance_km"] <= 40.0 and st["filter"]["radius"]["limit_km"] == 40.0
-        for s in EXPECTED_STAGES[name] - {"filter"}:
+        if st.get("explore") is not None:  # the explored route: marked, and only stages that saw it
+            assert st["explore"]["reason"] == "shown to learn your taste" and r["rank"] == 10
+            continue
+        for s in EXPECTED_STAGES[name] - {"filter", "explore"}:
             assert st[s] is not None, (name, s)
         if "bm25" in EXPECTED_STAGES[name]:
             assert all(t["contribution"] > 0 for t in st["bm25"]["matched_terms"])

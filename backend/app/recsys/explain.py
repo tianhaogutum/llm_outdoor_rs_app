@@ -115,6 +115,27 @@ class MMRContribution(_M):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
+class FeedbackContribution(_M):
+    relevance: float = Field(description="ranker score min-max normalised over the candidates")
+    embedding_affinity: float = Field(description="cosine to the Rocchio feedback direction, centred and scaled")
+    tag_affinity: float = Field(description="mean net decayed preference of the route's content tags")
+    near_duplicate_of: Optional[int] = Field(description="the rejected or completed route this nearly repeats")
+    duplicate_penalty: float
+    score: float
+    rank_before: int
+    rank_after: int
+
+
+class ExploreContribution(_M):
+    cluster: int
+    label: str = Field(description="the tag cluster's three heaviest tags")
+    theta: float = Field(description="Thompson draw for the cluster")
+    posterior: list[float] = Field(description="Beta(a, b) of the cluster for this user")
+    source: str
+    position: int
+    reason: Literal["shown to learn your taste"]
+
+
 class StageContributions(_M):
     filter: Optional[FilterContribution] = None
     v0_rules: Optional[RuleContribution] = None
@@ -124,6 +145,8 @@ class StageContributions(_M):
     rank_api: Optional[RankApiContribution] = None
     ltr: Optional[LTRContribution] = None
     mmr: Optional[MMRContribution] = None
+    feedback: Optional[FeedbackContribution] = None
+    explore: Optional[ExploreContribution] = None
 
 
 class RouteExplanation(_M):

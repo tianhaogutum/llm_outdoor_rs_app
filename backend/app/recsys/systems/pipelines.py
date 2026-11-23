@@ -16,6 +16,8 @@ from typing import Any
 
 from ..bm25 import BM25Config
 from ..catalog import Catalog
+from ..explore import ExploreConfig
+from ..feedback import FeedbackConfig
 from ..pipeline import Pipeline, PipelineConfig
 from .base import register_system
 
@@ -42,6 +44,19 @@ CONFIGS[DEFAULT_SYSTEM] = CONFIGS["v6_ltr_noapi"].with_(mmr_lambda=MMR_LAMBDA)
 # encode how the simulator draws distance caps (``length_cap_ratio``) or the whole suspicious group.
 CONFIGS["recsys_v1_nocap"] = CONFIGS[DEFAULT_SYSTEM].with_(ltr_model="v1_noapi_nocap")
 CONFIGS["recsys_v1_nosusp"] = CONFIGS[DEFAULT_SYSTEM].with_(ltr_model="v1_noapi_nosusp")
+# Phase 5 (docs/RECSYS.md section "Feedback and exploration"). Without feedback events and without
+# exploration each of these returns exactly what recsys_v1 returns.
+FEEDBACK = FeedbackConfig()  # chosen on dev personas (D21): route effects + light slot steps
+# the full loop at the dev grid's light setting (Rocchio, re-scoring, near-duplicates, slots): no better than
+# FEEDBACK on dev; kept as a registered system so the simulation reports it on test too
+LIGHT_LOOP = FeedbackConfig(beta=0.25, gamma=0.1, eta_emb=0.1, eta_tag=0.1, nu_dup=0.15)
+ROUTE_EFFECTS_ONLY = FeedbackConfig(
+    beta=0.0, gamma=0.0, eta_emb=0.0, eta_tag=0.0, nu_dup=0.0, difficulty_step=0.0, cap_step=0.0, radius_step=0.0
+)
+CONFIGS["recsys_v1_fb"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=FEEDBACK)
+CONFIGS["recsys_v1_fb_explore"] = CONFIGS["recsys_v1_fb"].with_(explore=ExploreConfig())
+CONFIGS["recsys_v1_fb_route"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=ROUTE_EFFECTS_ONLY)
+CONFIGS["recsys_v1_fb_light"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=LIGHT_LOOP)
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -56,6 +71,10 @@ DESCRIPTIONS: dict[str, str] = {
     "recsys_v1_nocap": "recsys_v1 with a ranker trained without length_cap_ratio (robustness row)",
     "recsys_v1_nosusp": "recsys_v1 with a ranker trained without slot ratios, home distance and intent km "
     "(robustness row)",
+    "recsys_v1_fb": "recsys_v1 + feedback loop as chosen on dev (route effects, slot adjustments)",
+    "recsys_v1_fb_light": "recsys_v1 + full light feedback loop (slots, Rocchio, re-scoring, near-duplicates)",
+    "recsys_v1_fb_explore": "recsys_v1_fb + one exploration slot (Thompson sampling over tag clusters)",
+    "recsys_v1_fb_route": "recsys_v1 + route effects only (recent completions and rejections not shown again)",
 }
 
 

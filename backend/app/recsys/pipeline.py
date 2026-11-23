@@ -16,7 +16,13 @@ Stages, in order:
    Without generators the candidates are the whole eligible set (``ranker="v0"``: the baseline scorer).
 3. ranking: ``none`` (keep the candidate order), ``v0`` (rule scorer), ``api`` (semantic ranker through
    the LLM client) or ``ltr`` (learned ranker; it calls the ranker API only if its model uses that feature).
-4. ``mmr`` re-ranking if ``mmr_lambda`` is set.
+4. ``feedback`` (Phase 5, if ``feedback`` is configured and the query carries events): the slots are
+   adjusted once from the original query before stage 1, the intent embedding moves by Rocchio before
+   dense retrieval, and this stage removes recently completed / rejected routes and re-scores the rest
+   (``feedback.py``).
+5. ``mmr`` re-ranking if ``mmr_lambda`` is set.
+6. ``explore`` (Phase 5, if ``explore`` is configured): one reserved slot filled by Thompson sampling over
+   tag clusters while the user has little feedback (``explore.py``).
 
 **No intent** (questionnaire-only request): BM25, dense, fusion, the ranker API and the learned ranker
 need a text query, so they are skipped and the candidates are the eligible set ordered by the rule
@@ -36,7 +42,10 @@ from .bm25 import BM25Config, get_index, matched_terms
 from .catalog import Catalog
 from .constraints import CATEGORY_TABS, HardConstraints
 from .dense import DOC_EMBEDDINGS_FILE, DocEmbeddings, abuild_doc_embeddings, build_doc_embeddings
+from .explore import ExploreConfig, tag_clusters
+from .explore import pick as explore_pick
 from .features import FEATURES, build_features, parse_intent, stage_arrays
+from .feedback import NEGATIVE_REASONS, FeedbackConfig, FeedbackState, adjust_query, rescore, rocchio
 from .filters import FilterConfig, FilterResult, apply_filters
 from .fusion import rrf
 from .ltr import TreeEnsemble, load_model
@@ -65,6 +74,8 @@ class PipelineConfig:
     rank_doc: str = "facts_desc"
     ltr_model: Optional[str] = None
     mmr_lambda: Optional[float] = None
+    feedback: Optional[FeedbackConfig] = None  # None = feedback ignored (v0 ranker: its own mechanism)
+    explore: Optional[ExploreConfig] = None
 
     def __post_init__(self) -> None:
         if self.ranker not in RANKERS:
@@ -85,6 +96,8 @@ class PipelineConfig:
         d = asdict(self)
         d["generators"] = list(self.generators)
         d["bm25"] = self.bm25.describe()
+        d["feedback"] = self.feedback.describe() if self.feedback else None
+        d["explore"] = self.explore.describe() if self.explore else None
         return d
 
 
@@ -261,7 +274,7 @@ class Pipeline:
 
         return run_sync(self.arecommend(query, k))
 
-    async def _retrieve(self, query: UserQuery) -> _Retrieval:
+    async def _retrieve(self, query: UserQuery, fb: Optional[FeedbackState] = None) -> _Retrieval:
         """Stages 1-2: filter, generators, fusion. ``cand`` = eligible-set positions, or None (rule fallback)."""
         cfg = self.cfg
         cat = self.catalog
@@ -314,6 +327,9 @@ class Pipeline:
             qv, up_lat, up_cost = await embed_task
             t0 = time.perf_counter()
             docs = await self._adoc_embeddings()
+            rocchio_info = None
+            if fb is not None:
+                qv, rocchio_info = rocchio(qv, docs.matrix, fb)
             sims = docs.cosine(qv, elig)
             stage["dense"], stage["dense_rank"] = sims.astype(float), _ranks(sims).astype(float)
             lists["dense"] = list(np.argsort(-sims, kind="stable")[: cfg.gen_depth])
@@ -325,7 +341,12 @@ class Pipeline:
                     (time.perf_counter() - t0) * 1000,
                     up_lat,
                     up_cost,
-                    info={"exact": True, "dim": docs.dim, "formulation": docs.meta.get("formulation")},
+                    info={
+                        "exact": True,
+                        "dim": docs.dim,
+                        "formulation": docs.meta.get("formulation"),
+                        **({"rocchio": rocchio_info} if rocchio_info else {}),
+                    },
                 )
             )
 
@@ -362,7 +383,13 @@ class Pipeline:
         cfg = self.cfg
         cat = self.catalog
         contrib: dict[str, dict[int, Any]] = {}
-        r = await self._retrieve(query)
+        fb: Optional[FeedbackState] = None
+        if cfg.feedback is not None and query.feedback:
+            t0 = time.perf_counter()
+            fb = adjust_query(cat, query, cfg.feedback)  # once, from the original query
+            query = fb.query
+            fb_ms = (time.perf_counter() - t0) * 1000
+        r = await self._retrieve(query, fb)
         hc, fr, elig, intent, traces = r.hc, r.fr, r.elig, r.intent, r.traces
         stage, per_term, lists, fused_inputs, cand, fallback = (
             r.stage,
@@ -379,7 +406,7 @@ class Pipeline:
         if cand is None or ranker == "v0":
             t0 = time.perf_counter()
             pool = elig if cand is None else elig[np.array(cand, dtype=np.int64)]
-            depth = max(k, cfg.cand_depth) if cfg.mmr_lambda is not None else k
+            depth = max(k, cfg.cand_depth) if (cfg.mmr_lambda is not None or fb is not None or cfg.explore) else k
             ranked = self._v0(query, pool, limit=depth if cand is None else None)
             pos_of = {int(cat.ids[i]): j for j, i in enumerate(elig)}
             cand = [pos_of[e.route_id] for e in ranked]
@@ -491,7 +518,29 @@ class Pipeline:
             if ltr_info:
                 contrib["ltr"] = ltr_info
 
-        # 4. MMR ---------------------------------------------------------
+        # 4. feedback ----------------------------------------------------
+        fb_contrib: dict[int, Any] = {}
+        if fb is not None and cand:
+            t0 = time.perf_counter()
+            docs = await self._adoc_embeddings()
+            n_before = len(cand)
+            kept, final_scores, c_by_idx, fb_info = rescore(
+                cat, [int(elig[j]) for j in cand], final_scores, fb, docs.matrix
+            )
+            pos_of = {int(i): j for j, i in enumerate(elig)}
+            cand = [pos_of[i] for i in kept]
+            fb_contrib = {pos_of[i]: c for i, c in c_by_idx.items()}
+            traces.append(
+                StageTrace(
+                    "feedback",
+                    n_before,
+                    len(cand),
+                    (time.perf_counter() - t0) * 1000 + fb_ms,
+                    info={**fb.info(), **fb_info},
+                )
+            )
+
+        # 5. MMR ---------------------------------------------------------
         mmr_contrib: dict[int, Any] = {}
         if cfg.mmr_lambda is not None and len(cand) > 1:
             t0 = time.perf_counter()
@@ -511,6 +560,44 @@ class Pipeline:
                     info={"lambda": cfg.mmr_lambda, "similarity": "document-embedding cosine"},
                 )
             )
+
+        # 6. exploration -------------------------------------------------
+        explore_contrib: dict[int, Any] = {}
+        if cfg.explore is not None and cand and k >= cfg.explore.position:
+            t0 = time.perf_counter()
+            events = fb.events if fb is not None else []
+            if cfg.feedback is None and query.feedback:  # posteriors still need the events' weights
+                from .feedback import weigh
+
+                events = weigh(cat, query.feedback, FeedbackConfig())
+            sim = stage["dense"] if not np.all(np.isnan(stage["dense"])) else None
+            choice = explore_pick(
+                cat,
+                tag_clusters(cat, cfg.explore),
+                cfg.explore,
+                request_id=query.request_id,
+                events=events,
+                ranked_idx=[int(elig[j]) for j in cand],
+                eligible_idx=elig,
+                excluded_ids=set(fb.excluded) if fb is not None else set(),
+                similarity=sim,
+            )
+            info: dict[str, Any] = {"active": choice is not None, "events": len(events)}
+            if choice is not None:
+                pos_of = {int(i): j for j, i in enumerate(elig)}
+                j = pos_of[choice.pop("index")]
+                p = cfg.explore.position - 1
+                scores_l = list(np.asarray(final_scores, dtype=float))
+                own = scores_l[cand.index(j)] if j in cand else float(min(scores_l[:p] or [0.0]))
+                if j in cand:
+                    del scores_l[cand.index(j)]
+                    cand.remove(j)
+                cand.insert(p, j)
+                scores_l.insert(p, own)
+                final_scores = np.array(scores_l)
+                explore_contrib[j] = choice
+                info.update({"cluster": choice["cluster"], "label": choice["label"], "position": p + 1})
+            traces.append(StageTrace("explore", len(cand), len(cand), (time.perf_counter() - t0) * 1000, info=info))
 
         # output + per-route contributions -------------------------------
         cand = cand[:k]
@@ -532,7 +619,7 @@ class Pipeline:
                     "similarity": round(float(stage["dense"][j]), 6),
                     "rank": int(stage["dense_rank"][j]),
                 }
-            if "fusion" in by_stage:
+            if "fusion" in by_stage and not np.isnan(stage["rrf"][j]):  # an explored route may not be fused
                 by_stage["fusion"][rid] = {
                     "rrf_score": round(float(stage["rrf"][j]), 6),
                     "rank": int(stage["fused_rank"][j]),
@@ -546,6 +633,10 @@ class Pipeline:
                     by_stage[sname][rid] = contrib[sname][j]
             if j in mmr_contrib:
                 by_stage["mmr"][rid] = mmr_contrib[j]
+            if j in fb_contrib:
+                by_stage["feedback"][rid] = fb_contrib[j]
+            if j in explore_contrib:
+                by_stage["explore"][rid] = explore_contrib[j]
         for t in traces:
             t.contrib = by_stage.get(t.stage, {})
         if fallback:
@@ -576,9 +667,11 @@ class Pipeline:
         from .systems.baselines import REFERENCE_NOW
 
         routes = [{"id": int(self.catalog.ids[i]), **self.catalog.routes[int(i)].v0_vector()} for i in pool]
+        # v0's own mechanism knows only the four negative reasons (completions are not v0 feedback)
         fb = [
             {"route_id": f.route_id, "reason": f.reason, "created_at": REFERENCE_NOW - timedelta(days=f.age_days)}
             for f in query.feedback
+            if f.reason in NEGATIVE_REASONS
         ]
         return rank_routes_v0(query.user_vector, routes, fb, now=REFERENCE_NOW, limit=limit)
 
