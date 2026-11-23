@@ -46,6 +46,7 @@ NEGATIVE_REASONS = ("too-hard", "too-easy", "too-far", "not-interested")
 # the user rejected or completed is hidden from the list for this many days (two 30-day half-lives of the
 # baseline's decay, i.e. while the feedback still weighs at least a quarter).
 HIDE_WINDOW_DAYS = 60.0
+SCHEMA_VERSION = "recsys.explanation/v1.1"  # app.recsys.explain.SCHEMA_VERSION (v1 + the optional needs stage)
 CHAT_VECTOR_SLOTS = ("activity", "difficulty", "distance_band", "duration_hours", "distance_cap_km",
                      "tags_preferred", "tags_avoided")
 
@@ -290,6 +291,17 @@ async def feedback_events(db: AsyncSession, profile_id: int, now: Optional[datet
     return tuple(events)
 
 
+def slot_needs(profile: DemoProfile) -> tuple[str, ...]:
+    """Needs the profile states as structured chat slots (activity mtb, stroller / train / loop tags, a
+    duration), as ``UserQuery.needs`` codes; only systems with a stated-need stage read them."""
+    from app.chat.projection import needs_from_slots
+    from app.services.chat_service import _state
+
+    state = _state(profile)
+    activity = profile.activity if profile.activity in ("hiking", "cycling", "mtb", "running") else None
+    return needs_from_slots(activity, list(state.tags_preferred), state.duration_hours)
+
+
 def build_user_query(profile: DemoProfile, *, category: Optional[str], feedback: tuple = (),
                      request_id: Optional[str] = None):
     """The ``UserQuery`` for a stored profile. Missing home -> no radius filter; missing intent -> the
@@ -309,6 +321,7 @@ def build_user_query(profile: DemoProfile, *, category: Optional[str], feedback:
         max_distance_km=float(profile.distance_cap_km) if profile.distance_cap_km else None,
         intent=(profile.intent_text or "").strip() or None,
         feedback=tuple(feedback),
+        needs=slot_needs(profile),
     )
     return q, source
 
@@ -338,7 +351,7 @@ def route_explanation(rec, rank: int, route_id: int, score: float, *, events: tu
     rule = stages.get("v0_rules") or {}
     on_route = [{"reason": e.reason, "age_days": round(e.age_days, 2)} for e in events if e.route_id == route_id]
     return {
-        "schema_version": "recsys.explanation/v1",
+        "schema_version": SCHEMA_VERSION,
         "rank": rank,
         "score": float(score),
         "stages": stages,
@@ -406,6 +419,15 @@ def reason_sentence(route: Any, expl: dict[str, Any], home_name: Optional[str],
     cap = flt.get("distance_cap") or {}
     if cap.get("applied") and cap.get("ok") and cap.get("limit_km"):
         parts.append(f"within your {_km(cap['limit_km'])} km limit")
+    needs = st.get("needs") or {}
+    met = [c for c in needs.get("checks") or [] if c.get("ok")]
+    unmet = [c for c in needs.get("checks") or [] if not c.get("ok")]
+    if met:  # what the user asked for, with the catalogue's numbers
+        parts.append("; ".join(f"you asked for {c['label']}: {c['fact']}" for c in met[:2]))
+    if unmet:
+        c = unmet[0]
+        why = " (too few routes met it)" if not c.get("applied") else ""
+        parts.append(f"not {c['label']}: {c['fact']}{why}")
     terms = list(dict.fromkeys(display_term(t["term"], intent)
                                for t in ((st.get("bm25") or {}).get("matched_terms") or [])))[:3]
     if terms:
@@ -578,6 +600,8 @@ async def recommend(db: AsyncSession, *, res: Optional[ServingResources], profil
     else:
         n_hidden = len(hidden)
     n_eligible = by_stage["filter"].n_out if "filter" in by_stage else None
+    if "needs" in by_stage and by_stage["needs"].info.get("mode") != "demote":
+        n_eligible = by_stage["needs"].n_out  # routes past the hard filter and the stated needs
     ranker = by_stage.get("ltr") or by_stage.get("rank_api") or by_stage.get("v0_rules")
     n_candidates = ranker.n_in if ranker is not None else None
     score_of = dict(zip(rec.route_ids, rec.scores, strict=True))
@@ -598,7 +622,7 @@ async def recommend(db: AsyncSession, *, res: Optional[ServingResources], profil
         "reason": reason or fallback,
         "degraded": degraded,
         "request_id": query.request_id,
-        "explanation_schema": "recsys.explanation/v1",
+        "explanation_schema": SCHEMA_VERSION,
         "query": {
             "category": query.category,
             "home_name": profile.home_name if query.home else None,
@@ -610,6 +634,7 @@ async def recommend(db: AsyncSession, *, res: Optional[ServingResources], profil
             "feedback_events": len(events),
             "suppressed_route_ids": sorted(hidden),
             "feedback_handled_by": "pipeline" if pipeline_feedback else "serving_interim_rule",
+            "slot_needs": list(query.needs),
         },
         "stages": _stage_summaries(rec),
         "latency_ms": round((time.perf_counter() - t0) * 1000, 1),

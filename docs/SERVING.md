@@ -17,7 +17,9 @@ of one machine and one network, not as results.
 `v7_mmr`, `v4_rrf`, ...) or `v0_rules`. The measurements and the example payload below were taken with
 `recsys_v1`, which runs the same stages up to the ranker; `recsys_serve` adds the feedback and exploration stages.
 `v0_rules` runs the original DB path (`recommendation_service.get_recommended_routes`) unchanged, so its
-golden test still holds. An unknown name, or a pipeline that fails to load, is logged at start-up and
+golden test still holds. The stated-need variants of iteration 2 (`recsys_serve_needs`,
+`recsys_serve_needs_promote`, `recsys_serve_needs_demote`; RECSYS.md section 13, DECISIONS.md D27) are servable
+the same way; by D27 none is the default. An unknown name, or a pipeline that fails to load, is logged at start-up and
 falls back to the baseline (`reason: pipeline_not_loaded`).
 
 ## 2. From the stored profile to a `UserQuery`
@@ -30,6 +32,7 @@ falls back to the baseline (`reason: pipeline_not_loaded`).
 | `max_distance_km` | `distance_cap_km` |
 | `intent` | `intent_text` (from onboarding or chat) |
 | `feedback` | every `profile_feedback` row (`too-hard`, `too-easy`, `too-far`, `not-interested`) and every souvenir (`completed`) as `FeedbackEvent(route_id, reason, age_days)`, with real ages from `created_at` / `completed_at` |
+| `needs` | needs the chat's slots state (`app.chat.projection.needs_from_slots`): activity `mtb`; wanted tags `Suitable for strollers`, `Accessibility`, `Train access`, `Public transport access`, `Round trip`, `Linear route`, `Multi-stage route`; a stated duration. Read only by a system with a stated-need stage; echoed as `served_by.query.slot_needs` |
 
 **Original vector.** The baseline's feedback endpoint rewrites `user_vector_json` after every feedback, so
 feedback compounds (DECISIONS.md D7.1). That behaviour is kept for `v0_rules`. The pipeline never reads
@@ -175,15 +178,22 @@ rule only applies when a system without a feedback stage is configured.
 
 Each route on a pipeline path carries `explanation` (`RouteExplanationResponse`) and `reason`:
 
-- `stages`: `app.recsys.explain.StageContributions` (`recsys.explanation/v1`). These are the trace's
+- `stages`: `app.recsys.explain.StageContributions` (`recsys.explanation/v1.1`: v1 plus the optional stage
+  `needs`; nothing in v1 changed, so a v1 reader that ignores unknown stages keeps working). These are the trace's
   per-route contributions, typed. A stage that did not run is `null`.
+- `stages.needs` (only with a stated-need system and a stated need): one check per need with the catalogue's
+  numbers (`fact`, `values`), the rule (`threshold`), whether it was enforced (`applied`, `applied_level`) and met
+  (`ok`, `met_level`). `n_eligible` then counts the routes past the hard filter *and* the needs.
 - `feedback`: events considered, events about this route, rule penalty, routes hidden, the pipeline's
   feedback-stage contribution if any.
 - `exploration`: `is_exploration` plus the exploration stage's contribution. It is always false until a
   configured system has an exploration slot. The UI then labels the card "Exploration pick".
 - `n_candidates` (routes the ranker ordered) and `n_eligible` (routes past the filter).
 - `reason`: one line built by a template from those fields and the catalogue record only (no LLM, no
-  waiting). Stemmed BM25 terms are shown as the user's own word ("hik" → "hiking").
+  waiting). Stemmed BM25 terms are shown as the user's own word ("hik" → "hiking"). With a stated-need stage it
+  names up to two met needs with their numbers ("you asked for stroller-friendly: no steps, 94% of the route on
+  stroller-suitable surface, 120 m of climbing") and the first unmet one ("not reachable by train: no train
+  station or stop mapped near the start (too few routes met it)").
 
 The baseline path keeps `recommendation_score` / `recommendation_score_breakdown` and gets a template
 `reason` from that breakdown.
@@ -248,6 +258,9 @@ stage; "Show the numbers" expands the raw values under each line:
 - *Keeping the list varied*: "Stayed 1st." Otherwise "Moved up/down from 3rd to 1st …".
 - *Your feedback*, when there is any: "1 route you rejected or completed recently is left out of this
   list."
+- *What you asked for*, with a stated-need system: "You asked for stroller-friendly: no steps, 94% of the route on
+  stroller-suitable surface, 120 m of climbing." A relaxed need says so ("too few routes nearby meet it, so it was
+  relaxed"); "Show the numbers" lists the rule, the level met and enforced, and the raw values.
 
 A degraded list gets a one-line note above the tabs, for example "routes are matched by your words only".
 Baseline routes keep the old percentage badge and the CBF breakdown modal.

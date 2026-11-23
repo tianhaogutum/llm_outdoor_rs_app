@@ -79,7 +79,7 @@ async def get_route_recommendations(
       come back; the no-intent and baseline paths can return more.
 
     ``served_by`` says which system and path produced the list and why (docs/SERVING.md). Pipeline paths
-    carry a per-route ``explanation`` (per-stage contributions, ``recsys.explanation/v1``) and a one-line
+    carry a per-route ``explanation`` (per-stage contributions, ``recsys.explanation/v1.1``) and a one-line
     ``reason``; the baseline path keeps ``recommendation_score`` / ``recommendation_score_breakdown``.
     """
     start_time = time.time()

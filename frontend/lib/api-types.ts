@@ -181,7 +181,8 @@ export interface ApiHomeLocation {
 
 /**
  * Per-stage explanation of one recommended route (backend RouteExplanationResponse; stages follow
- * app/recsys/explain.py "recsys.explanation/v1"). A stage that did not run is null.
+ * app/recsys/explain.py "recsys.explanation/v1.1" = v1 plus the optional stage `needs`). A stage that did not
+ * run is null.
  */
 export interface ApiFilterExplanation {
   verdict: "pass" | "pass_relaxed" | "fail";
@@ -229,6 +230,33 @@ export interface ApiStageContributions {
   // Phase 5 stages (present once the pipeline has them)
   feedback?: Record<string, unknown> | null;
   explore?: Record<string, unknown> | null;
+  // v1.1 (iteration 2): needs the user stated, checked against the catalogue
+  needs?: ApiNeedsExplanation | null;
+}
+
+export interface ApiNeedCheck {
+  need: string; // stroller | no_steps | train | public_transport | mtb | loop | one_way | days | length | max_length | duration
+  label: string; // "stroller-friendly"
+  phrase: string; // the words that stated it, or "slot: ..."
+  source: "intent" | "slot";
+  applied: boolean; // enforced for this request (false = dropped because too few routes met it)
+  applied_level: number | null;
+  met_level: number | null;
+  ok: boolean;
+  strict: boolean;
+  fact: string; // "no steps, 94% of the route on stroller-suitable surface, 120 m of climbing"
+  threshold: string;
+  values: Record<string, unknown>;
+}
+
+export interface ApiNeedsExplanation {
+  mode: "filter" | "filter_promote" | "demote";
+  met: number;
+  unmet: number;
+  checks: ApiNeedCheck[];
+  rank_before?: number | null;
+  rank_after?: number | null;
+  demotion?: number | null;
 }
 
 export interface ApiRouteExplanation {
@@ -269,6 +297,7 @@ export interface ApiServedBy {
     feedback_events: number;
     suppressed_route_ids: number[];
     feedback_handled_by?: string | null;
+    slot_needs?: string[];
   } | null;
   stages: { stage: string; n_in: number; n_out: number; local_ms: number; upstream_latency_ms: number }[];
   latency_ms: number | null;

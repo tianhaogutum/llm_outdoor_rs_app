@@ -68,6 +68,33 @@ def project_vector(
     return v
 
 
+# chat tags / activity that state a verifiable need (app.recsys.needs, docs/RECSYS.md section 13)
+TAG_NEEDS: dict[str, str] = {
+    "Suitable for strollers": "stroller",
+    "Accessibility": "no_steps",
+    "Train access": "train",
+    "Public transport access": "public_transport",
+    "Round trip": "loop",
+    "Linear route": "one_way",
+    "Multi-stage route": "days:2",
+}
+
+
+def needs_from_slots(
+    activity: Optional[str], tags_preferred: list[str], duration_hours: Optional[float] = None
+) -> tuple[str, ...]:
+    """Structured needs (``UserQuery.needs`` codes) from the chat's slots: the activity ``mtb``, the wanted tags
+    that are verifiable needs, a stated duration. Read only by systems with a stated-need stage."""
+    out: list[str] = []
+    if activity == "mtb":
+        out.append("mtb")
+    fold = {t.casefold() for t in tags_preferred or []}
+    out += [code for tag, code in TAG_NEEDS.items() if tag.casefold() in fold]
+    if duration_hours:
+        out.append(f"duration_h:{float(duration_hours):g}")
+    return tuple(dict.fromkeys(out))
+
+
 def category_for(slots: ChatSlots) -> Optional[str]:
     return ACTIVITY_TAB.get(slots.activity) if slots.activity else None
 
@@ -94,4 +121,5 @@ def user_query_from_slots(
         max_distance_km=slots.distance_cap_km,
         intent=slots.intent,
         feedback=tuple(feedback),
+        needs=needs_from_slots(slots.activity, slots.tags_preferred, slots.duration_hours),
     )

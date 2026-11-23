@@ -72,7 +72,7 @@ def test_default_system_serves_the_pipeline_with_explanations(serving):
     sb = body["served_by"]
     assert sb["configured_system"] == sb["system"] == "recsys_serve"
     assert sb["path"] == "pipeline" and sb["degraded"] is False and sb["reason"] is None
-    assert sb["explanation_schema"] == "recsys.explanation/v1"
+    assert sb["explanation_schema"] == "recsys.explanation/v1.1"
     assert sb["query"]["home_name"] == "Grainau" and sb["query"]["intent"] == "easy lake loop with a hut"
     assert sb["query"]["vector_source"] == "questionnaire"
     assert [s["stage"] for s in sb["stages"]][:5] == ["filter", "bm25", "dense", "fusion", "ltr"]
@@ -477,3 +477,82 @@ def test_pipeline_with_its_own_feedback_and_exploration_stages(serving):
         RouteExplanationResponse.model_validate(route["explanation"])
         if route["is_exploration"]:
             assert route["explanation"]["stages"]["explore"] and "exploration pick" in route["reason"]
+
+
+# ------------------------------------------------------------------------------- stated needs (iteration 2)
+def test_served_default_has_no_needs_stage_and_v1_fields_are_unchanged(serving):
+    api = serving()
+    pid = new_profile(api, home=HOME, travel_radius_km=40, intent="an easy walk with our stroller, around 6 km")
+    body = recs(api, pid, category="hiking")
+    assert "needs" not in [s["stage"] for s in body["served_by"]["stages"]]
+    for route in body["routes"]:
+        e = route["explanation"]
+        assert e["schema_version"] == "recsys.explanation/v1.1" and e["stages"]["needs"] is None
+        assert "you asked for" not in route["reason"]
+
+
+def test_needs_system_checks_and_explains_what_the_user_asked_for(serving):
+    api = serving(recsys_system="recsys_serve_needs")
+    pid = new_profile(api, home={"name": "Erlangen"}, travel_radius_km=40,
+                      intent="An easy walk with our stroller, around 6 km")
+    body = recs(api, pid, category="hiking")
+    sb = body["served_by"]
+    assert sb["system"] == "recsys_serve_needs" and sb["path"] == "pipeline"
+    stage = next(s for s in sb["stages"] if s["stage"] == "needs")
+    info = stage["info"]
+    assert {n["need"] for n in info["extracted"]["needs"]} == {"stroller", "length"}
+    assert stage["n_out"] >= min(20, stage["n_in"])  # never below the floor
+    cat = get_catalog()
+    for route in body["routes"]:
+        expl = RouteExplanationResponse.model_validate(route["explanation"])
+        checks = {c.need: c for c in expl.stages.needs.checks}
+        assert set(checks) == {"stroller", "length"}
+        st = checks["stroller"]
+        rec = cat.get(route["id"])
+        steps = rec.features["profile"].get("steps_m", 0) or 0
+        assert st.values["steps_m"] == steps  # the real catalogue number
+        assert ("no steps" in st.fact) == (steps <= 0)
+        if expl.stages.explore is None and st.applied:
+            assert st.ok and st.met_level is not None and st.met_level <= st.applied_level
+        if st.ok:
+            assert "you asked for stroller-friendly: " in route["reason"]
+    # n_eligible counts the routes past the hard filter and the needs
+    assert body["routes"][0]["explanation"]["n_eligible"] == stage["n_out"]
+
+
+def test_chat_slots_feed_the_needs_stage(serving):
+    api = serving(recsys_system="recsys_serve_needs")
+    pid = new_profile(api, home={"name": "Erlangen"}, travel_radius_km=40, intent="a quiet walk")
+    resp = api.patch(f"/api/profiles/{pid}/chat/slots", json={"tags_add": ["Train access", "Round trip"]})
+    assert resp.status_code == 200, resp.text
+    body = recs(api, pid, category="hiking")
+    assert body["served_by"]["query"]["slot_needs"] == ["train", "loop"]
+    stage = next(s for s in body["served_by"]["stages"] if s["stage"] == "needs")
+    assert {n["need"]: n["source"] for n in stage["info"]["extracted"]["needs"]} == {"train": "slot", "loop": "slot"}
+    for route in body["routes"]:
+        for c in route["explanation"]["stages"]["needs"]["checks"]:
+            assert c["phrase"].startswith("slot: ")
+
+
+def test_needs_from_slots_maps_only_verifiable_tags():
+    from app.chat.projection import needs_from_slots
+
+    assert needs_from_slots("mtb", ["Lake", "Train access"], 2.5) == ("mtb", "train", "duration_h:2.5")
+    assert needs_from_slots("hiking", ["suitable for strollers", "Multi-stage route"]) == ("stroller", "days:2")
+    assert needs_from_slots(None, []) == ()
+
+
+def test_reason_names_met_and_unmet_needs():
+    class R:
+        length_meters, is_loop = 6000, True
+
+    expl = {"stages": {"needs": {"checks": [
+        {"need": "stroller", "label": "stroller-friendly", "ok": True, "applied": True,
+         "fact": "no steps, 94% of the route on stroller-suitable surface, 120 m of climbing"},
+        {"need": "train", "label": "reachable by train", "ok": False, "applied": False,
+         "fact": "no train station or stop mapped near the start"},
+    ]}}}
+    line = recsys_service.reason_sentence(R(), expl, None)
+    assert "you asked for stroller-friendly: no steps, 94% of the route on stroller-suitable surface" in line
+    assert "not reachable by train: no train station or stop mapped near the start (too few routes met it)" in line
+

@@ -54,7 +54,7 @@ function StageRow({ line, showNumbers }: { line: ExplanationLine; showNumbers: b
   );
 }
 
-/** Stage-by-stage explanation of a pipeline recommendation (recsys.explanation/v1). */
+/** Stage-by-stage explanation of a pipeline recommendation (recsys.explanation/v1 / v1.1). */
 function PipelineExplanation({
   explanation,
   reason,

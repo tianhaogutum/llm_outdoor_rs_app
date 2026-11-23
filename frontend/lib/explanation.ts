@@ -1,6 +1,7 @@
 /**
  * Plain-language lines for the per-stage explanation of a recommended route
- * (backend: recsys.explanation/v1, docs/SERVING.md "Explanations").
+ * (backend: recsys.explanation/v1 and v1.1, which adds the optional `needs` stage; docs/SERVING.md
+ * "Explanations").
  *
  * Every sentence is built from a field of the explanation; `numbers` holds the raw values for the
  * "show the numbers" view, so the modal is readable without being a wall of figures.
@@ -155,6 +156,34 @@ export function explanationLines(
       text: parts.join(" "),
       tone: f.verdict === "pass" ? "good" : "warn",
       numbers: nums,
+    });
+  }
+
+  if (st.needs && st.needs.checks.length) {
+    const n = st.needs;
+    const parts = n.checks.map((c) => {
+      const asked = c.source === "slot" ? `Your profile asks for ${c.label}` : `You asked for ${c.label}`;
+      if (c.ok) return `${asked}: ${c.fact}.`;
+      if (!c.applied) return `${asked}, but too few routes nearby meet it, so it was relaxed: ${c.fact}.`;
+      return `${asked}; this route meets it only partly: ${c.fact}.`;
+    });
+    const moved =
+      n.rank_before != null && n.rank_after != null && n.rank_before !== n.rank_after
+        ? ` Moved from ${ordinal(n.rank_before)} to ${ordinal(n.rank_after)} by how well it meets these.`
+        : "";
+    lines.push({
+      key: "needs",
+      title: "What you asked for",
+      text: parts.join(" ") + moved,
+      tone: n.unmet === 0 ? "good" : "warn",
+      numbers: n.checks.flatMap((c) => [
+        [`${c.need}: rule`, c.threshold] as [string, string],
+        [`${c.need}: level met / enforced`, `${c.met_level ?? "none"} / ${c.applied ? c.applied_level : "relaxed away"}`] as [
+          string,
+          string,
+        ],
+        ...Object.entries(c.values).map(([k, v]) => [`${c.need}: ${k}`, JSON.stringify(v)] as [string, string]),
+      ]),
     });
   }
 

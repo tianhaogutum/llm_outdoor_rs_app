@@ -132,14 +132,14 @@ class ExplorationFlag(BaseModel):
 class RouteExplanationResponse(BaseModel):
     """Per-route explanation on pipeline paths (stages: ``app.recsys.explain.StageContributions``)."""
 
-    schema_version: str = "recsys.explanation/v1"
+    schema_version: str = "recsys.explanation/v1.1"  # v1 + the optional stage ``needs`` (iteration 2)
     rank: int
     score: float  # final pipeline score (MMR score, else ranker score); not a percentage
     stages: StageContributions
     feedback: FeedbackEffect = FeedbackEffect()
     exploration: ExplorationFlag = ExplorationFlag()
     n_candidates: Optional[int] = None  # routes the ranker ordered (for "ranked 3rd of 50")
-    n_eligible: Optional[int] = None  # routes that passed the hard filter
+    n_eligible: Optional[int] = None  # routes that passed the hard filter (and the stated needs, if filtered)
     other_stages: Optional[dict] = None  # trace stages this API version does not know yet (kept, untyped)
 
 
@@ -469,6 +469,7 @@ class ServedQuery(BaseModel):
     feedback_events: int = 0  # negative feedback rows + completions passed to the pipeline
     suppressed_route_ids: list[int] = []  # hidden by the interim serving rule (docs/SERVING.md)
     feedback_handled_by: Optional[str] = None  # pipeline (its feedback stage) | serving_interim_rule
+    slot_needs: list[str] = []  # needs stated as chat / profile slots (UserQuery.needs; iteration 2)
 
 
 class ServedBy(BaseModel):
@@ -480,7 +481,7 @@ class ServedBy(BaseModel):
     reason: Optional[str] = None  # why this path (no_intent, embedding_unavailable, timeout, budget, ...)
     degraded: bool = False  # True if a fallback replaced the configured system
     request_id: Optional[str] = None
-    explanation_schema: Optional[str] = None  # recsys.explanation/v1 on pipeline paths
+    explanation_schema: Optional[str] = None  # recsys.explanation/v1.1 on pipeline paths
     query: Optional[ServedQuery] = None
     stages: list[dict] = []  # StageSummary per stage (n_in, n_out, local_ms, upstream ms / USD, info)
     latency_ms: Optional[float] = None
