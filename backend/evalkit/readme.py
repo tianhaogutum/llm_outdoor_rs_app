@@ -13,7 +13,8 @@ from typing import Any, Optional
 from evalkit import blocks, paths
 from evalkit.metrics import paired_bootstrap
 
-SERVED = "recsys_serve"
+SERVED = "recsys_serve_v2"  # since D28
+PREV = "recsys_serve"  # the served default from D25 to D28
 PHASE3 = "recsys_v1"
 CHAIN = ["random", "v0_rules", "v1_filters", "v2_bm25", "v3_dense", "v4_rrf", "v5_rank_api", "v6_ltr", "v7_mmr"]
 LABELS = {
@@ -27,7 +28,8 @@ LABELS = {
     "v6_ltr": "+ learned ranker (LambdaMART, API score as a feature)",
     "v7_mmr": "+ MMR diversity",
     PHASE3: "Phase 3 default: learned ranker without the API, MMR",
-    SERVED: "**served default**: ranker without the cap feature, feedback, exploration slot",
+    PREV: "served default D25-D28: ranker without the cap feature, feedback, exploration slot",
+    SERVED: "**served default** (D28): + stated needs as constraints in front of retrieval",
 }
 # what each row is compared with in the "Δ vs" column
 DELTA_BASE = {
@@ -40,7 +42,8 @@ DELTA_BASE = {
     "v6_ltr": "v5_rank_api",
     "v7_mmr": "v6_ltr",
     PHASE3: "v7_mmr",
-    SERVED: PHASE3,
+    PREV: PHASE3,
+    SERVED: PREV,
 }
 
 
@@ -84,6 +87,34 @@ def _diff(a: str, b: str, split: str = "test", key: str = "ndcg_at_10") -> str:
         seed=da["protocol"]["bootstrap"]["seed"],
     )
     return "n/a" if r["diff"] is None else f"{r['diff']:+.3f} [{r['lo']:+.3f}, {r['hi']:+.3f}]"
+
+
+def _holdout(name: str) -> dict[str, Any]:
+    p = paths.RESULTS_DIR / "holdout" / f"{name}.json"
+    if not p.exists():
+        raise FileNotFoundError(f"{p} (run make eval SYSTEM={name} HOLDOUT=1)")
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def _hm(name: str, key: str = "ndcg_at_10", pct: bool = False) -> str:
+    return _ci(_holdout(name)["metrics"]["holdout"][key], pct=pct)
+
+
+def _hdiff(a: str, b: str) -> str:
+    da, db = _holdout(a), _holdout(b)
+    pids = sorted(da["per_persona"])
+    r = paired_bootstrap(
+        [da["per_persona"][p]["ndcg_at_10"] for p in pids],
+        [db["per_persona"][p]["ndcg_at_10"] for p in pids],
+        n_boot=da["protocol"]["bootstrap"]["n"],
+        seed=da["protocol"]["bootstrap"]["seed"],
+    )
+    return f"{r['diff']:+.3f} [{r['lo']:+.3f}, {r['hi']:+.3f}]"
+
+
+def _cf(name: str) -> str:
+    p = paths.RESULTS_DIR / "crossfit" / f"{name}.json"
+    return _ci(json.loads(p.read_text(encoding="utf-8"))["metrics"]["dev"]["ndcg_at_10"])
 
 
 def _caption() -> str:
@@ -149,18 +180,20 @@ def headline() -> str:
         else "that is **not yet validated against the owner's labels**, and the only agreement figure so far is "
         f"LLM-vs-LLM (QWK {q:.2f})"
     )
+    hn = _holdout(SERVED)["data"]["split_sizes"]["holdout"]
     return (
-        f"On the {_n()} held-out test personas, the served default `{SERVED}` reaches **NDCG@10 {_m(SERVED)}**, "
-        f"against {_m('v0_rules')} for the course project's rule scorer and {_m('random')} for random order. The "
-        f"best single-request system, `{PHASE3}`, reaches {_m(PHASE3)}; the served default differs from it by "
-        f"{_diff(PHASE3, SERVED)} (paired), a cost accepted on purpose for robustness to how real users fill in the "
-        f"form and for an exploration slot ([D25](docs/DECISIONS.md)). In a ten-round feedback simulation the "
-        "served default "
-        f"keeps NDCG@10 at {_ci(sim[SERVED]['ndcg_rounds_2_10'])} over rounds 2-10, while the same pipeline "
-        f"without feedback falls to {_ci(sim[PHASE3]['ndcg_rounds_2_10'])} because it keeps showing routes the "
-        "user has already done.\n\n"
+        f"On {hn} holdout personas generated after the decision rule was written down and used for nothing else, the "
+        f"served default `{SERVED}` reaches **NDCG@10 {_hm(SERVED)}**, against {_hm(PREV)} for the previous default "
+        f"`{PREV}` (paired difference {_hdiff(PREV, SERVED)}; [D28](docs/DECISIONS.md)). On the {_n()} test "
+        f"personas it reaches {_m(SERVED)}, against {_m('v0_rules')} for the course project's rule scorer and "
+        f"{_m('random')} for random order; the best single-request system without stated needs, `{PHASE3}`, "
+        f"reaches {_m(PHASE3)} there, and the served default differs from it by {_diff(PHASE3, SERVED)} (paired). "
+        f"In a ten-round feedback simulation the previous default `{PREV}` keeps NDCG@10 at "
+        f"{_ci(sim[PREV]['ndcg_rounds_2_10'])} over rounds 2-10, while the same pipeline without feedback falls to "
+        f"{_ci(sim[PHASE3]['ndcg_rounds_2_10'])} because it keeps showing routes the user has already done (the "
+        "simulation has not been rerun with the stated-need stage).\n\n"
         f"**Caveat on every number in this README:** the users are simulated ({_sys(SERVED)['data']['n_personas']} "
-        "personas with LLM-written requests), relevance is graded by an LLM judge "
+        f"personas plus {hn} holdout personas, all with LLM-written requests), relevance is graded by an LLM judge "
         f"(`{', '.join(sorted(j['models']))}`, rubric v1) {judge_status}. 95% bootstrap intervals over personas "
         "in brackets."
     )
@@ -169,16 +202,20 @@ def headline() -> str:
 def data_line() -> str:
     d = _sys(SERVED)["data"]
     q = _load("_qrels.json")
+    h = _holdout(SERVED)["data"]
     return (
         f"Catalogue: {d['catalogue_routes']:,} routes. Simulated users: {d['n_personas']} personas "
-        f"({d['split_sizes']['dev']} dev for every choice and all training, {d['split_sizes']['test']} test for "
-        f"reporting only). Judgements: {q['pairs']:,} (persona, route) pairs, {100 * q['rule_share']:.0f}% graded 0 "
-        f"by rule (hard-constraint violations), the rest by the LLM judge."
+        f"({d['split_sizes']['dev']} dev for every choice and all training, {d['split_sizes']['test']} test, read "
+        f"for reporting and, in iteration 2, to find a failure pattern) plus {h['n_personas']} holdout personas "
+        "drawn after the iteration-3 rule was registered (D28). Judgements: "
+        f"{q['pairs'] + h['qrels_pairs']:,} (persona, route) pairs ({h['qrels_pairs']:,} of them on the holdout, in "
+        f"their own file), {100 * q['rule_share']:.0f}% of the main pairs graded 0 by rule (hard-constraint "
+        "violations), the rest by the LLM judge."
     )
 
 
 def results_table() -> str:
-    rows = [*CHAIN, PHASE3, SERVED]
+    rows = [*CHAIN, PHASE3, PREV, SERVED]
     L = [
         _caption(),
         "",
@@ -206,8 +243,8 @@ SIM_ROWS = [
     ("v1_filters", "hard filters + rule scorer, same feedback"),
     (PHASE3, "Phase 3 default, feedback off (control)"),
     ("recsys_v1_fb", "Phase 3 default + feedback loop"),
-    ("recsys_serve_noexplore", "served default without the exploration slot"),
-    (SERVED, "**served default**"),
+    ("recsys_serve_noexplore", f"`{PREV}` without the exploration slot"),
+    (PREV, "served default D25-D28 (not rerun for the stated-need stage)"),
 ]
 
 
@@ -232,9 +269,9 @@ def simulation_table() -> str:
         )
     L += [
         "",
-        f"Exploration slot (`{SERVED}` − `recsys_serve_noexplore`, rounds 2-10): "
-        f"{_sim_pair('recsys_serve_noexplore', SERVED)} "
-        f"NDCG@10. Feedback (`{SERVED}` − `{PHASE3}`, rounds 2-10): {_sim_pair(PHASE3, SERVED)}.",
+        f"Exploration slot (`{PREV}` − `recsys_serve_noexplore`, rounds 2-10): "
+        f"{_sim_pair('recsys_serve_noexplore', PREV)} "
+        f"NDCG@10. Feedback (`{PREV}` − `{PHASE3}`, rounds 2-10): {_sim_pair(PHASE3, PREV)}.",
     ]
     return "\n".join(L)
 
@@ -242,11 +279,12 @@ def simulation_table() -> str:
 def failures_summary() -> str:
     from evalkit import failures
 
-    doc = _load(failures.OUT)
+    doc = _load(failures.HOLDOUT_OUT)
     prose = blocks.strip_blocks((paths.DOCS_DIR / "FAILURES.md").read_text(encoding="utf-8"))
     tot = doc["relevant_lost_at_total"]
     return (
-        f"Known-relevant routes (grade ≥ 2) of the {doc['n_worst']} worst test queries of `{doc['system']}`, by where "
+        f"Known-relevant routes (grade ≥ 2) of the {doc['n_worst']} worst {doc['split']} queries of `{doc['system']}`, "
+        "by where "
         "they dropped out of the top 10: "
         + ", ".join(f"{k} {v}" for k, v in tot.items() if k != "shown")
         + f"; shown {tot['shown']} (of {sum(tot.values())}).\n\n"
@@ -286,7 +324,8 @@ def limits() -> str:
     order = next(s for s in _load("_judge_pilot.json")["batch_order_sensitivity"] if s["config"] == pj["run"])
     return "\n".join(
         [
-            f"- Test split: {_n()} personas; dev: {_n('dev')}.",
+            f"- Test split: {_n()} personas; dev: {_n('dev')}; holdout: "
+            f"{_holdout(SERVED)['data']['split_sizes']['holdout']} (D28).",
             f"- Judge pilot ({pj['n']} pairs): QWK {pj['qwk_vs_reference']:.2f} against a stronger LLM reference, "
             f"mean grade {pj['mean_grade_minus_reference']:+.2f} above it; QWK {order['qwk_between_orders']:.2f} "
             "between two batch orders of the same pairs.",
@@ -297,7 +336,7 @@ def limits() -> str:
             f"- Largest feature of the Phase 3 ranker: `{imp['feature']}` "
             f"({100 * imp['gain_share']:.0f}% of the gain), "
             f"which encodes how the persona generator draws distance caps. Dropping it costs "
-            f"{_diff(PHASE3, 'recsys_v1_nocap')} on test; with the cap slot left empty, the served ranker is "
+            f"{_diff(PHASE3, 'recsys_v1_nocap')} on test; with the cap slot left empty, `{PREV}`'s ranker is "
             f"{_diff('recsys_v1_nocapslot', 'recsys_serve_nocap')} ahead of `{PHASE3}`'s.",
             f"- For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): "
             f"{_ci(ref)} on test; `{PHASE3}`: {_m(PHASE3)}.",
@@ -318,19 +357,19 @@ def iteration2() -> str:
     nd = _load("_needs_dev.json")
     cf = nd["dev_crossfit"]["paired_vs_baseline"]
     fa = _load("_failures.json")
-    s = _sys(SERVED)
+    s = _sys(PREV)
     L = [
         "| Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | "
         "Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |",
         "|---|---|---|---|---|---|",
     ]
     for n in NEEDS:
-        dev = _diff(SERVED, n, split="dev")
+        dev = _diff(PREV, n, split="dev")
         lo = float(dev.split("[")[1].split(",")[0])
         c = cf[n + "@crossfit"]["ndcg_at_10"]
         L.append(
             f"| `{n}` ({NEEDS_TEXT[n]}) | {dev} | {'yes' if lo > 0 else 'no'} | "
-            f"{c['diff']:+.3f} [{c['lo']:+.3f}, {c['hi']:+.3f}] | {_diff(SERVED, n)} | "
+            f"{c['diff']:+.3f} [{c['lo']:+.3f}, {c['hi']:+.3f}] | {_diff(PREV, n)} | "
             f"{_m(n, 'violation_at_10', pct=True)} |"
         )
     best = "recsys_serve_needs_promote"
@@ -342,9 +381,51 @@ def iteration2() -> str:
         rows.append(f"{pid} {old:.2f}→{new:.2f}")
     L += [
         "",
-        f"The served default is unchanged: `{SERVED}` {_m(SERVED)} on test, {_m(SERVED, split='dev')} on dev "
-        "(in-sample ranker). Its ten worst test queries (FAILURES.md) under "
-        f"`{best}`, which is not served (NDCG@10 before→after): " + ", ".join(rows) + ".",
+        f"Iteration 2 left the served default unchanged: `{PREV}` {_m(PREV)} on test, {_m(PREV, split='dev')} on dev "
+        "(in-sample ranker). Its ten worst test queries (FAILURES.md, test analysis) under "
+        f"`{best}` (NDCG@10 before→after): " + ", ".join(rows) + ".",
+    ]
+    return "\n".join(L)
+
+
+def iteration3() -> str:
+    """Iteration 3 (D28): the cross-fitted dev gate, the holdout comparison and the decision (``_holdout.json``)."""
+    from evalkit import holdout as H
+
+    d = _load(H.OUT)
+    ps = d["personas"]
+    sim = d["simultaneous"]
+    styles = ", ".join(f"{k.split('/')[-1]} {v}" for k, v in ps["activity_style"].items())
+    party = ", ".join(f"{k} {v}" for k, v in sorted(ps["party"].items(), key=lambda kv: -kv[1]))
+    L = [
+        f"*Holdout: {ps['n']} simulated users (seed {ps['seed']}; {styles}; parties {party}), every top 10 judged by "
+        "the same LLM judge, which is not yet validated against the owner's labels.*",
+        "",
+        "| System | Dev, cross-fitted: Δ NDCG@10 (gate) | Holdout NDCG@10 | Holdout Δ vs `recsys_serve` (95% CI) | "
+        f"Simultaneous lower bound (c = {sim['c']:.2f}) | Holdout violations@10 | Eligible |",
+        "|---|---|---|---|---|---|---|",
+        f"| `{H.BASELINE}` | – | {_ci(d['systems'][H.BASELINE]['ndcg_at_10'])} | – | – | "
+        f"{_ci(d['systems'][H.BASELINE]['violation_at_10'], pct=True)} | – |",
+    ]
+    for v in H.CANDIDATES:
+        g, pr, ver = d["gate_dev_crossfit"][v], d["paired_95"][v], d["verdict"][v]
+        lb = "not tested" if ver["simultaneous_lower"] is None else f"{ver['simultaneous_lower']:+.3f}"
+        win = " **(chosen)**" if d["decision"].get("winner") == v else ""
+        L.append(
+            f"| `{v}` ({NEEDS_TEXT[v]}){win} | {g['diff']:+.3f} [{g['lo']:+.3f}, {g['hi']:+.3f}] | "
+            f"{_ci(d['systems'][v]['ndcg_at_10'])} | {pr['diff']:+.3f} [{pr['lo']:+.3f}, {pr['hi']:+.3f}] | {lb} | "
+            f"{_ci(d['systems'][v]['violation_at_10'], pct=True)} | {'yes' if ver['eligible'] else 'no'} |"
+        )
+    dec = d["decision"]
+    out = (
+        f"Decision by the rule registered before the holdout existed: `{dec['winner']}` is served as `{dec['serve']}`."
+        if dec["outcome"] == "switch"
+        else f"Decision by the rule registered before the holdout existed: null result, `{dec['serve']}` stays."
+    )
+    L += [
+        "",
+        out + " Simultaneous bound: one-sided 95% for the three variants together (max-T over a joint paired "
+        f"bootstrap, {sim['n_boot']:,} resamples); the 95% CIs beside it are per variant and decide nothing.",
     ]
     return "\n".join(L)
 
@@ -357,6 +438,7 @@ def readme_blocks() -> dict[str, str]:
         "readme-simulation": simulation_table(),
         "readme-failures": failures_summary(),
         "readme-iteration2": iteration2(),
+        "readme-iteration3": iteration3(),
         "readme-limits": limits(),
         "readme-cost-latency": cost_latency(),
     }
@@ -378,6 +460,8 @@ def review_pooling() -> str:
             f"{rel['max']}; personas without any: {rel['personas_without_relevant']}.",
             f"- Reference, the latent matcher that supplies much of the relevant set: NDCG@10 "
             f"{_ci(_load('_reference.json')['metrics']['test']['ndcg_at_10'])} on test (`_reference.json`).",
+            f"- Holdout (D28): its own qrels file, {_holdout(SERVED)['data']['qrels_pairs']:,} judged pairs; pool = "
+            "the top 10 of the four D28 candidates plus the same two contributors.",
         ]
     )
 
@@ -421,7 +505,7 @@ def review_stages() -> str:
         "| Step | ΔNDCG@10 (test, paired) | ΔNDCG@10 (dev, paired) |",
         "|---|---|---|",
     ]
-    for n in [*CHAIN[1:], PHASE3, SERVED]:
+    for n in [*CHAIN[1:], PHASE3, PREV, SERVED]:
         b = DELTA_BASE[n]
         L.append(f"| `{n}` − `{b}` | {_diff(b, n)} | {_diff(b, n, split='dev')} |")
     L += [
@@ -449,9 +533,12 @@ def review_overfit() -> str:
             f"(`recsys_v1_nocap` − `{PHASE3}`): test {_diff(PHASE3, 'recsys_v1_nocap')}, dev "
             f"{_diff(PHASE3, 'recsys_v1_nocap', split='dev')}. Without the whole suspicious group "
             f"(`recsys_v1_nosusp`): test {_diff(PHASE3, 'recsys_v1_nosusp')}.",
-            f"- Cap slot left empty: `{PHASE3}` loses {_diff(PHASE3, 'recsys_v1_nocapslot')}, the served system "
-            f"{_diff(SERVED, 'recsys_serve_nocap')}; served minus Phase 3 without the cap "
+            f"- Cap slot left empty: `{PHASE3}` loses {_diff(PHASE3, 'recsys_v1_nocapslot')}, `{PREV}` "
+            f"{_diff(PREV, 'recsys_serve_nocap')}; `{PREV}` minus Phase 3 without the cap "
             f"{_diff('recsys_v1_nocapslot', 'recsys_serve_nocap')}.",
+            f"- Cross-fitted dev (each dev persona ranked by a ranker copy that never saw it, EVAL.md section 13): "
+            f"`{PREV}` in-sample {_m(PREV, split='dev')}, cross-fitted {_cf(PREV)}, test {_m(PREV)}; `{PHASE3}` "
+            f"in-sample {_m(PHASE3, split='dev')}, cross-fitted {_cf(PHASE3)}, test {_m(PHASE3)}.",
             f"- Feedback parameters: chosen on dev (`slots_only`); on the test simulation the light full loop "
             f"beats the dev choice by {_sim_pair('recsys_v1_fb', 'recsys_v1_fb_light')} (rounds 2-10).",
         ]
@@ -481,4 +568,5 @@ def review_blocks() -> dict[str, str]:
         "review-cost": review_cost(),
         "review-failures": failures_summary(),
         "review-iteration2": iteration2(),
+        "review-iteration3": iteration3(),
     }

@@ -764,6 +764,81 @@ def _crossfit_section(docs: list[dict[str, Any]], cap: str) -> list[str]:
     return L
 
 
+def _holdout_section(cap: str) -> list[str]:
+    """Iteration 3 (D28): the holdout as its own table, the cross-fitted dev gate and the decision."""
+    from evalkit import holdout as H
+
+    d = _load(H.OUT)
+    if not d or d.get("status") != "complete":
+        return []
+    ps = d["personas"]
+    sim = d["simultaneous"]
+    hdir = paths.RESULTS_DIR / "holdout"
+    hdocs = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in sorted(hdir.glob("*.json"))}
+    any_doc = hdocs[H.BASELINE]
+    L = [
+        "## Iteration 3: the holdout and the pre-registered decision (D28)",
+        "",
+        cap.replace("300 personas", f"{ps['n']} holdout personas"),
+        "",
+        f"**Holdout**: {ps['n']} simulated users from the same generator and parameters as the main 300, seed "
+        f"{ps['seed']}, drawn after the decision rule was committed (DECISIONS.md D28) and used for nothing else; "
+        "intents by the same writer; its own qrels file. Mix: "
+        + ", ".join(f"{k} {v}" for k, v in ps["activity_style"].items())
+        + "; parties "
+        + ", ".join(f"{k} {v}" for k, v in sorted(ps["party"].items()))
+        + f"; train travellers {ps['transport'].get('train', 0)}, multi-day {ps['multi_day']}. Duplicate check: "
+        f"{len(ps['dedup']['skipped'])} draws skipped; {len(ps['dedup']['identical_intent_texts'])} intent text(s) "
+        "identical to a main persona's (kept). Pool: the top 10 of the four candidates plus the two pool-only "
+        f"contributors; {any_doc['data']['qrels_pairs']:,} judged pairs, every top 10 judged.",
+        "",
+        "| System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | Judged@10 |",
+        "|---|---|---|---|---|---|",
+    ]
+    for n, doc in sorted(hdocs.items(), key=lambda kv: (kv[0] != H.BASELINE, kv[0])):
+        m = doc["metrics"]["holdout"]
+        L.append(
+            f"| `{n}` | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | {_ci(m['recall_at_50'])} | "
+            f"{_ci(m['violation_at_10'], pct=True)} | {100 * m['judged_share_at_10']:.0f}% |"
+        )
+    L += [
+        "",
+        f"`{SERVED_NOW}` is `recsys_serve_needs` registered under the served name after the decision (identical "
+        "lists); it was not a separate candidate.",
+        "",
+        "**The decision**, by the rule in D28 (`evalkit/holdout.py`): a variant is tested only if its cross-fitted dev "
+        "difference has a 95% CI above zero; then one-sided simultaneous 95% lower bounds for the tested variants "
+        f"together (single-step max-T over a joint paired bootstrap, {sim['n_boot']:,} resamples, critical value "
+        f"c = {sim['c']:.3f}); eligible if the bound is above zero and violations do not rise; the largest bound wins.",
+        "",
+        "| Variant | Dev Δ, cross-fitted (gate) | Holdout Δ NDCG@10, 95% CI | Better / worse by > 0.1 | Simultaneous "
+        "lower bound | Violations ok | Eligible |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for v in H.CANDIDATES:
+        g, pr, ver = d["gate_dev_crossfit"][v], d["paired_95"][v], d["verdict"][v]
+        lb = "not tested" if ver["simultaneous_lower"] is None else f"{ver['simultaneous_lower']:+.4f}"
+        L.append(
+            f"| `{v}` | {_pb_cell(g)} {'(passes)' if g['passed'] else '(fails)'} | {_pb_cell(pr)} | "
+            f"{pr['better_by_0_1']} / {pr['worse_by_0_1']} | {lb} | {'yes' if ver['violations_ok'] else 'no'} | "
+            f"{'**yes**' if ver['eligible'] else 'no'} |"
+        )
+    dec = d["decision"]
+    L += ["", f"**Outcome: {dec['text']}.** Holdout qrels sha256 `{any_doc['data']['qrels_sha256'][:12]}`.", ""]
+    fh = _load("_failures_holdout.json")
+    if fh:
+        tot = fh["relevant_lost_at_total"]
+        L += [
+            f"The ten worst holdout queries of `{fh['system']}` (FAILURES.md, holdout analysis): "
+            + ", ".join(f"{f['persona_id']} {f['ndcg_at_10']:.3f}" for f in fh["personas"])
+            + ". Their relevant routes by where they were lost: "
+            + ", ".join(f"{k} {v}" for k, v in tot.items())
+            + ".",
+            "",
+        ]
+    return L
+
+
 def _failure_classes() -> dict[str, str]:
     import re
 
@@ -1014,7 +1089,8 @@ GRID_KEYS = ("beta", "gamma", "eta_emb", "eta_tag", "nu_dup", "difficulty_step",
 SIM_ORDER = ["v0_rules", "v1_filters", "recsys_v1", "recsys_v1_fb_route", "recsys_v1_fb", "recsys_v1_fb_light",
              "recsys_v1_fb_explore", "recsys_serve_noexplore", "recsys_serve"]
 
-SERVED = "recsys_serve"
+SERVED = "recsys_serve"  # the served default from D25 to D28; the sections on iteration 2, empty slots and feedback
+SERVED_NOW = "recsys_serve_v2"  # the served default since D28 (= recsys_serve_needs)
 # iteration 2: the served system plus the stated-need stage (docs/RECSYS.md section 13, DECISIONS.md D27)
 NEEDS = ["recsys_serve_needs", "recsys_serve_needs_promote", "recsys_serve_needs_demote"]
 NEEDS_LABELS = {
@@ -1029,27 +1105,33 @@ def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
     by = {d["system"]: d for d in docs}
     if SERVED not in by or "recsys_v1" not in by:
         return []
+    now = SERVED_NOW if SERVED_NOW in by else SERVED
     L = [
-        "## Served default: `recsys_serve` (D25)",
+        f"## Served default: `{now}` (D28)",
         "",
         cap,
         "",
-        "**The system the API serves**: the ranker trained without `length_cap_ratio` (`recsys_v1_nocap`, D19), the "
+        f"**The system the API serves since D28**: `{now}` = `recsys_serve_needs`, i.e. `{SERVED}` plus the stated-"
+        "need stage as a filter in front of retrieval (RECSYS.md section 13), chosen by the rule registered before "
+        "the holdout existed (section \"Iteration 3\" below). "
+        f"`{SERVED}` (D25-D28) is the ranker trained without `length_cap_ratio` (`recsys_v1_nocap`, D19), the "
         "feedback loop as chosen on dev (`recsys_v1_fb`'s settings, D21) and the exploration slot at rank 10 (D22). "
-        "A judgement call made without real users (DECISIONS.md D25). In a single request there is no feedback, so "
-        "it differs from `recsys_v1_nocap` only by the exploration pick at rank 10. Every top 10 is 100% judged.",
+        "In a single request there is no feedback, so it differs from `recsys_v1_nocap` only by the exploration pick "
+        "at rank 10. Every top 10 is 100% judged.",
         "",
         "| System | NDCG@10 test | MRR@10 test | Recall@50 test | Violations@10 test | NDCG@10 dev (in-sample) | "
         "Cost/request |",
         "|---|---|---|---|---|---|---|",
     ]
-    for n in ("recsys_v1", "recsys_v1_nocap", SERVED, *NEEDS):
+    for n in ("recsys_v1", "recsys_v1_nocap", SERVED, *NEEDS, SERVED_NOW):
         if n not in by:
             continue
         m = by[n]["metrics"]
-        lab = f"**`{n}` (served default)**" if n == SERVED else f"`{n}`"
+        lab = f"**`{n}` (served default)**" if n == now else f"`{n}`"
+        if n == SERVED and now != SERVED:
+            lab += " (served D25-D28)"
         if n in NEEDS:
-            lab += " (iteration 2, not served: D27)"
+            lab += " (iteration 2)"
         L.append(
             f"| {lab} | {_ci(m['test']['ndcg_at_10'])} | {_ci(m['test']['mrr_at_10'])} | "
             f"{_ci(m['test']['recall_at_50'])} | {_ci(m['test']['violation_at_10'], pct=True)} | "
@@ -1058,21 +1140,23 @@ def _served(docs: list[dict[str, Any]], cap: str) -> list[str]:
     for split in ("test", "dev"):
         L += ["", f"Paired differences ({split}):", ""]
         pairs = [("recsys_v1", SERVED), ("recsys_v1_nocap", SERVED)] + [(SERVED, n) for n in NEEDS]
+        if now != SERVED:
+            pairs += [(SERVED, now), ("recsys_v1", now)]
         L += _paired_rows(by, pairs, split)
     sim = _load("_simulation.json")
     if sim and SERVED in sim["metrics"]:
         met = sim["metrics"]
         L += [
             "",
-            "In the 10-round feedback simulation (test; simulated users *and* a simulated behaviour model, section "
-            "\"Feedback loop\"):",
+            f"In the 10-round feedback simulation (test; simulated users *and* a simulated behaviour model, section "
+            f"\"Feedback loop\"; run before D28, so with `{SERVED}`, not `{now}`):",
             "",
             "| System | NDCG@10, mean of rounds 2-10 | NDCG@10, round 10 | Cumulative coverage, round 10 |",
             "|---|---|---|---|",
         ]
         for n in ("recsys_v1", "recsys_v1_fb", "recsys_serve_noexplore", SERVED):
             if n in met:
-                lab = f"**`{n}` (served default)**" if n == SERVED else f"`{n}`"
+                lab = f"`{n}` (served D25-D28)" if n == SERVED else f"`{n}`"
                 L.append(
                     f"| {lab} | {_ci(met[n]['ndcg_rounds_2_10'])} | {_ci(met[n]['rounds'][-1]['ndcg_at_10'])} | "
                     f"{100 * met[n]['rounds'][-1]['cumulative_coverage']:.1f}% |"
@@ -1278,6 +1362,7 @@ def render() -> str:
         return "\n".join(L) + "\n"
     cap = _caption(docs[0])
     L += _served(docs, cap)
+    L += _holdout_section(cap)
     L += _needs_section(docs, cap)
     L += _ablation(docs, cap)
     L += _crossfit_section(docs, cap)

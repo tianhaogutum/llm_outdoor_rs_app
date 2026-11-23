@@ -30,6 +30,7 @@ comparable; compare systems within a split.
 - 24,759 judged pairs over 300 personas; 9,931 (40.1%) graded 0 by rule, 14,828 by the LLM judge.
 - Known relevant (grade ≥ 2) routes per persona: median 19, min 1, max 49; personas without any: 0.
 - Reference, the latent matcher that supplies much of the relevant set: NDCG@10 0.761 [0.729, 0.789] on test (`_reference.json`).
+- Holdout (D28): its own qrels file, 3,684 judged pairs; pool = the top 10 of the four D28 candidates plus the same two contributors.
 <!-- END GENERATED review-pooling -->
 
 **Evidence:** [EVAL.md](EVAL.md) section 4; RESULTS.md "Data and judgements" and "Reference: the latent
@@ -92,9 +93,10 @@ where the user lives, so most of its top 10 is out of reach and graded 0 by rule
 Among the stages that rank feasible routes, BM25 (replacing the rule scorer) and the learned ranker give the
 two largest steps, of similar size; fusing BM25 with dense retrieval adds a smaller one. Nothing measurable: dense retrieval on its own versus BM25, MMR, and routing the
 request through the chat instead of using the typed text. The ranker API adds a little as a feature of the
-learned ranker and costs a per-request call (D14), so the default does not use it. The served default's two
-additions cost NDCG on the simulator on purpose: the ranker without the cap feature and the exploration slot.
-The ranker's dev gains are in-sample and much larger than on test.
+learned ranker and costs a per-request call (D14), so the default does not use it. The D25 default's two
+additions cost NDCG on the simulator on purpose: the ranker without the cap feature and the exploration slot. The
+current default (D28) adds the stated-need filter, which wins part of that back. The ranker's in-sample dev gains
+are much larger than on test; its cross-fitted dev gains (EVAL.md section 13) are close to test.
 
 <!-- BEGIN GENERATED review-stages (make report; do not edit) -->
 | Step | ΔNDCG@10 (test, paired) | ΔNDCG@10 (dev, paired) |
@@ -109,6 +111,7 @@ The ranker's dev gains are in-sample and much larger than on test.
 | `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | -0.005 [-0.007, -0.002] |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.016 [-0.021, -0.010] |
 | `recsys_serve` − `recsys_v1` | -0.035 [-0.053, -0.020] | -0.035 [-0.043, -0.028] |
+| `recsys_serve_v2` − `recsys_serve` | +0.024 [+0.007, +0.046] | -0.013 [-0.024, -0.003] |
 
 Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.123, +0.194]; `v6_ltr` − `v6_ltr_noapi` (the API score as a feature) +0.012 [+0.001, +0.024]; questionnaire only → + intent (`recsys_v1_qonly` → `recsys_v1`) +0.393 [+0.357, +0.429]; + chat instead of the raw intent (`recsys_v1_chat` − `recsys_v1`) -0.012 [-0.038, +0.009]. Dev rows of the learned ranker are in-sample.
 <!-- END GENERATED review-stages -->
@@ -122,7 +125,9 @@ Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.12
 **Answer.** In four places, and the uncomfortable part is that only the first is fully measured.
 
 1. **It memorises personas.** Its in-sample NDCG on dev is far above grouped cross-validation, and its
-   system-level dev rows are in-sample; only grouped CV and test are honest.
+   system-level dev rows are in-sample. Since iteration 3 every system with a learned ranker also has a
+   cross-fitted dev row (each dev persona ranked by a copy trained without it), and that is the dev number used
+   for decisions; it lands close to test (block below).
 2. **Its largest Phase 3 feature, `length_cap_ratio`, encodes the persona generator.** Personas' distance caps
    are their comfortable band times a random factor, and the judge reads the band, so "about two thirds of the
    cap" is a fact about the simulator. Removing it costs NDCG on the simulator, and the ranker without it is
@@ -140,14 +145,16 @@ Also: `v6_ltr_noapi` − `v4_rrf` (learned ranker without the API) +0.159 [+0.12
 Related: the feedback parameters chosen on dev disagree with test (D21), probably because the in-sample ranker
 leaves feedback less to repair on dev. Iteration 2 measured that effect directly (D27): against the in-sample
 ranker on dev every stated-need variant loses, against a cross-fitted copy of the same ranker every one wins.
-Any change that overrides the ranker is judged unfairly by system-level dev rows; a cross-fitted dev ranker is
-the fix for both D21 and D27.
+Any change that overrides the ranker is judged unfairly by in-sample dev rows. Cross-fitting is now the dev
+standard (EVAL.md section 13); the D27 question was then decided on a fresh holdout under a rule registered in
+advance (D28). Re-tuning the feedback parameters (D21) on cross-fitted dev is still to do.
 
 <!-- BEGIN GENERATED review-overfit (make report; do not edit) -->
 - `v6_ltr` on judged candidates: in-sample 0.968, grouped CV 0.808 [0.790, 0.826], test 0.828 [0.799, 0.853].
 - System level: `v6_ltr` dev (in-sample) 0.907 [0.892, 0.922] vs test 0.771 [0.741, 0.800]; `recsys_v1` dev 0.886 [0.872, 0.901] vs test 0.755 [0.729, 0.780].
 - `length_cap_ratio`: 25.1% of the gain of the Phase 3 ranker. Without it (`recsys_v1_nocap` − `recsys_v1`): test -0.024 [-0.042, -0.009], dev -0.023 [-0.030, -0.018]. Without the whole suspicious group (`recsys_v1_nosusp`): test -0.034 [-0.051, -0.018].
-- Cap slot left empty: `recsys_v1` loses -0.179 [-0.212, -0.148], the served system -0.114 [-0.142, -0.086]; served minus Phase 3 without the cap +0.031 [+0.001, +0.063].
+- Cap slot left empty: `recsys_v1` loses -0.179 [-0.212, -0.148], `recsys_serve` -0.114 [-0.142, -0.086]; `recsys_serve` minus Phase 3 without the cap +0.031 [+0.001, +0.063].
+- Cross-fitted dev (each dev persona ranked by a ranker copy that never saw it, EVAL.md section 13): `recsys_serve` in-sample 0.851 [0.835, 0.866], cross-fitted 0.701 [0.678, 0.724], test 0.720 [0.688, 0.748]; `recsys_v1` in-sample 0.886 [0.872, 0.901], cross-fitted 0.740 [0.717, 0.762], test 0.755 [0.729, 0.780].
 - Feedback parameters: chosen on dev (`slots_only`); on the test simulation the light full loop beats the dev choice by +0.025 [+0.014, +0.036] (rounds 2-10).
 <!-- END GENERATED review-overfit -->
 
@@ -172,10 +179,11 @@ Warm benchmark (`make latency`: 60 sequential requests after 5 warm-up requests,
 | System | Ranker API | p50 ms | p95 ms | max ms | Largest stage (p95, upstream) | Local compute p95 ms | Cost/request | p95 budget |
 |---|---|---|---|---|---|---|---|---|
 | `recsys_serve` | no | 100 | 203 | 4933 | dense 197 ms | 11.1 | 0.000005 USD | 500 ms (within) |
+| `recsys_serve_v2` | no | 126 | 293 | 61256 | dense 242 ms | 13.8 | 0.000005 USD | 500 ms (within) |
 | `recsys_v1` | no | 104 | 239 | 4055 | dense 220 ms | 20.0 | 0.000005 USD | 500 ms (within) |
 | `v7_mmr` | yes | 510 | 759 | 2101 | rank_api 563 ms | 24.3 | 0.000782 USD | 1500 ms (within) |
 
-Median time per stage of `recsys_serve` (local + upstream): dense 89.3 ms, ltr 5.1 ms, filter 0.7 ms, mmr 0.3 ms, explore 0.2 ms, bm25 0.2 ms, fusion 0.1 ms. Ranker API on (`v7_mmr`) − `recsys_v1`: NDCG@10 +0.011 [-0.002, +0.025] on test.
+Median time per stage of `recsys_serve_v2` (local + upstream): dense 117.2 ms, ltr 4.6 ms, filter 0.6 ms, mmr 0.3 ms, bm25 0.2 ms, explore 0.2 ms, needs 0.1 ms, fusion 0.1 ms. Ranker API on (`v7_mmr`) − `recsys_v1`: NDCG@10 +0.011 [-0.002, +0.025] on test.
 <!-- END GENERATED review-cost -->
 
 **Evidence:** RESULTS.md "Latency and cost against the budget" and "Latency"; [SERVING.md](SERVING.md)
@@ -184,30 +192,32 @@ cent):** `cd backend && .venv/bin/python -m evalkit.latency --systems recsys_ser
 
 ## 7. Which failure cases remain, and what data would fix them?
 
-**Answer.** On the ten worst test queries of the served default, most relevant routes were retrieved and then
-ranked down by the learned ranker. The largest class (A) is the ranker overriding retrieval for a stated
-minority need (mountain bikers who want a challenge, strollers, small children, an upper bound on length read as a
-target); class B is length the served pipeline cannot read (a vague request, a four-day tour); classes C and D are
-the evaluation's fault rather than the system's (the judge penalises wishes the user never stated, such as
-arriving by train). Counts per class are in the block below. The data that would fix them: slots for
-stroller, train arrival, technical skill and shape mapped to catalogue fields that already exist (steps,
-`Train access`, technical grade, loop), a comfortable-distance slot and day parsing, more minority personas in
-training or real feedback from such users, and intents that state every hard requirement (or a judge that grades
-only what the request says).
+**Answer.** The analysis of record is now the ten worst **holdout** queries of the served default
+`recsys_serve_v2` (test was read to develop iteration 2). The largest class there is C, the evaluation's fault:
+the judge penalises wishes the request never stated (a mountain-bike style, arriving by train, a lake), and in one
+case the judge's card rounds the persona's distance cap so that routes the hard filter admits are graded 0, a bug
+to fix before your labels are used. Class E is new and is the system's: the stated-need stage drops a stated
+mountain-bike need before the train need, its stroller check is stricter than the judge, and it enforces a stated
+loop the judge would trade for a hut. Class A (the ranker overriding a stated need) is down to a need the stage
+does not read (an effort limit), and class B (length not read) no longer appears. Counts per class are in the
+block below. The data and changes that would fix them: the stage's relaxation order for cyclists and a looser
+stroller level, developed on cross-fitted dev; an effort need; one decimal for the cap on the judge's card; real
+users' feedback, especially from minority parties; and intents that state every hard requirement (or a judge that
+grades only what the request says). The earlier test analysis of `recsys_serve` (classes A-D, A largest) is kept
+in FAILURES.md.
 
 <!-- BEGIN GENERATED review-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 41; shown 40 (of 161).
+Known-relevant routes (grade ≥ 2) of the 10 worst holdout queries of `recsys_serve_v2`, by where they dropped out of the top 10: exploration 0, filter 0, mmr 0, needs 12, ranker 22, retrieval 29; shown 29 (of 92).
 
-- Class A: 5 of 10 (P018, P260, P145, P003, P177)
-- Class B: 2 of 10 (P110, P218)
-- Class C: 2 of 10 (P190, P225)
-- Class D: 1 of 10 (P048)
+- Class A: 1 of 10 (H021)
+- Class C: 6 of 10 (H089, H121, H030, H136, H148, H149)
+- Class E: 3 of 10 (H042, H104, H101)
 <!-- END GENERATED review-failures -->
 
-**Iteration 2 tried the first of those fixes** (stated needs as constraints, D27). By the rule fixed in advance
-on dev it is not accepted, so the served default and the failure list above are unchanged; measured afterwards,
-the dev result was the in-sample ranker's doing, and on test the stage repairs most of the class-A and class-B
-queries while filtering out some routes the judge likes (FAILURES.md "Iteration 2"):
+**Iteration 2 tried the first fix of the test analysis** (stated needs as constraints, D27). By its rule, fixed in
+advance on in-sample dev, it was not accepted; measured afterwards, that dev result was the in-sample ranker's
+doing, and on test the stage repaired most of the class-A and class-B queries while filtering out some routes the
+judge likes (FAILURES.md "Iteration 2"):
 
 <!-- BEGIN GENERATED review-iteration2 (make report; do not edit) -->
 | Variant (on top of the served default) | Dev, pre-registered rule: Δ NDCG@10 | Accepted | Dev, cross-fitted ranker (post hoc): Δ | Test, reported once: Δ | Test violations@10 |
@@ -216,12 +226,29 @@ queries while filtering out some routes the judge likes (FAILURES.md "Iteration 
 | `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
 | `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
 
-The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+Iteration 2 left the served default unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md, test analysis) under `recsys_serve_needs_promote` (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
 <!-- END GENERATED review-iteration2 -->
 
-**Evidence:** [FAILURES.md](FAILURES.md) (generated traces and hand-written diagnoses); `eval/results/_failures.json`.
+**Iteration 3 decided it cleanly** (D28): a cross-fitted dev gate and a fresh holdout of simulated users, with the
+rule committed before the holdout existed. The filter variant won and is served as `recsys_serve_v2`:
+
+<!-- BEGIN GENERATED review-iteration3 (make report; do not edit) -->
+*Holdout: 150 simulated users (seed 20261128; mtb 13, touring 29, hiking 108; parties solo 32, couple 29, friends 21, older 19, family_school 16, family_young 13, with_dog 11, stroller 8, family_teen 1), every top 10 judged by the same LLM judge, which is not yet validated against the owner's labels.*
+
+| System | Dev, cross-fitted: Δ NDCG@10 (gate) | Holdout NDCG@10 | Holdout Δ vs `recsys_serve` (95% CI) | Simultaneous lower bound (c = 2.00) | Holdout violations@10 | Eligible |
+|---|---|---|---|---|---|---|
+| `recsys_serve` | – | 0.771 [0.744, 0.796] | – | – | 0.0% [0.0%, 0.0%] | – |
+| `recsys_serve_needs` (filter in front of retrieval) **(chosen)** | +0.018 [+0.006, +0.029] | 0.792 [0.765, 0.817] | +0.021 [+0.010, +0.034] | +0.009 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | +0.021 [+0.007, +0.036] | 0.790 [0.764, 0.814] | +0.019 [+0.003, +0.034] | +0.003 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_demote` (post-ranker demotion) | +0.011 [+0.001, +0.021] | 0.777 [0.750, 0.800] | +0.006 [-0.007, +0.020] | -0.008 | 0.0% [0.0%, 0.0%] | no |
+
+Decision by the rule registered before the holdout existed: `recsys_serve_needs` is served as `recsys_serve_v2`. Simultaneous bound: one-sided 95% for the three variants together (max-T over a joint paired bootstrap, 10,000 resamples); the 95% CIs beside it are per variant and decide nothing.
+<!-- END GENERATED review-iteration3 -->
+
+**Evidence:** [FAILURES.md](FAILURES.md) (generated traces and hand-written diagnoses);
+`eval/results/_failures_holdout.json`, `eval/results/_failures.json` (test, iteration 1), `eval/results/_holdout.json`.
 **Rerun:** `make failures && make report` (replays each request from the frozen cache and checks it against the
-stored run).
+stored run); `make holdout-decision` re-applies the D28 rule to the stored results.
 
 ## 8. What would I measure first if this had real users?
 
@@ -229,8 +256,9 @@ stored run).
 home, a radius or a cap, and what they type. The empty-slot rows show the served system losing most of its
 quality without a home, and the whole case for the served ranker (D19) rests on users leaving the cap empty or
 meaning it differently; that is a cheap log query, not an experiment. (2) **An interleaving test of
-`recsys_serve` against `recsys_v1`**, the decision with the least offline support, on clicks and route-detail
-opens; interleaving needs far less traffic than an A/B test. (3) **Whether the judge predicts behaviour:**
+`recsys_serve_v2` against `recsys_v1`**: they differ in the two decisions with the least support from real people
+(the cap feature, and catalogue checks of stated needs that may be stricter than users are), on clicks and
+route-detail opens; interleaving needs far less traffic than an A/B test. (3) **Whether the judge predicts behaviour:**
 completion rate by judged grade on the routes users were shown. Log, from day one, the full per-stage trace of
 every list, impressions, and the exploration pick's propensity, so that the exploration slot can later be
 evaluated counterfactually and an A/B test of exploration (randomised by user, measured over weeks) can follow.
@@ -254,12 +282,12 @@ evaluated counterfactually and an A/B test of exploration (randomised by user, m
    - D3: whether Outdooractive's terms allowed the course project's 111 route texts in the public `app.db`
      history (the file is no longer tracked, but it is in `main`'s history).
    - D18: whether chat messages must stay in the EU (every chat candidate except a retired model leaves it).
-   - D25: the served default was chosen by the coordinator, not by you; the alternatives are registered and one
-     setting away (`RECSYS_SYSTEM`).
+   - D25 / D28: the served default is now `recsys_serve_v2`, chosen by a rule registered before the holdout
+     existed, on simulated users and an unvalidated judge; `recsys_serve` and the alternatives are registered and
+     one setting away (`RECSYS_SYSTEM`).
    - [LLM_CLIENT.md](LLM_CLIENT.md): the narrative generation model `gemini-2.5-flash` is past its retirement date
      in the region used; switching means `global` (data leaves the EU) or waiting.
-   - D21 (technical, not a decision for you): re-tune the feedback parameters once a cross-fitted dev ranker or
-     real feedback exists.
-   - D27: the stated-need stage is built, measured and off by the rule fixed in advance; the post-hoc and test
-     evidence favour it. Serving it now would be your call, not the rule's (`RECSYS_SYSTEM`); the clean route is
-     a next iteration that pre-registers a cross-fitted dev comparison.
+   - D21 (technical, not a decision for you): re-tune the feedback parameters on cross-fitted dev (which now
+     exists, EVAL.md section 13) or real feedback; rerun the feedback simulation with the stated-need stage.
+   - D28 (technical): the stage's class-E fixes (relaxation order for cyclists, stroller level) and the judge
+     card's cap rounding (FAILURES.md, holdout synthesis), each to be developed on dev, not on the holdout.

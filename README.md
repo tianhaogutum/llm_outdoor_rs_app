@@ -7,12 +7,13 @@ BM25 and dense retrieval fused by reciprocal rank propose candidates, a learned 
 exploration slot shape the final list, and every stage of every recommendation is explained. There are no real
 users yet, so every result comes from simulated users and an LLM judge, and is reported with that caveat and
 with bootstrap confidence intervals, generated from the committed results files and replayable without
-credentials.
+credentials. The served default was last changed by a rule written down before the users it was decided on
+existed.
 
 <!-- BEGIN GENERATED readme-headline (make report; do not edit) -->
-On the 100 held-out test personas, the served default `recsys_serve` reaches **NDCG@10 0.720 [0.688, 0.748]**, against 0.018 [0.010, 0.026] for the course project's rule scorer and 0.017 [0.010, 0.027] for random order. The best single-request system, `recsys_v1`, reaches 0.755 [0.729, 0.780]; the served default differs from it by -0.035 [-0.053, -0.020] (paired), a cost accepted on purpose for robustness to how real users fill in the form and for an exploration slot ([D25](docs/DECISIONS.md)). In a ten-round feedback simulation the served default keeps NDCG@10 at 0.679 [0.648, 0.710] over rounds 2-10, while the same pipeline without feedback falls to 0.314 [0.291, 0.336] because it keeps showing routes the user has already done.
+On 150 holdout personas generated after the decision rule was written down and used for nothing else, the served default `recsys_serve_v2` reaches **NDCG@10 0.792 [0.765, 0.817]**, against 0.771 [0.744, 0.796] for the previous default `recsys_serve` (paired difference +0.021 [+0.010, +0.034]; [D28](docs/DECISIONS.md)). On the 100 test personas it reaches 0.744 [0.718, 0.770], against 0.018 [0.010, 0.026] for the course project's rule scorer and 0.017 [0.010, 0.027] for random order; the best single-request system without stated needs, `recsys_v1`, reaches 0.755 [0.729, 0.780] there, and the served default differs from it by -0.011 [-0.034, +0.013] (paired). In a ten-round feedback simulation the previous default `recsys_serve` keeps NDCG@10 at 0.679 [0.648, 0.710] over rounds 2-10, while the same pipeline without feedback falls to 0.314 [0.291, 0.336] because it keeps showing routes the user has already done (the simulation has not been rerun with the stated-need stage).
 
-**Caveat on every number in this README:** the users are simulated (300 personas with LLM-written requests), relevance is graded by an LLM judge (`gemini-3.5-flash`, rubric v1) that is **not yet validated against the owner's labels**, and the only agreement figure so far is LLM-vs-LLM (QWK 0.76). 95% bootstrap intervals over personas in brackets.
+**Caveat on every number in this README:** the users are simulated (300 personas plus 150 holdout personas, all with LLM-written requests), relevance is graded by an LLM judge (`gemini-3.5-flash`, rubric v1) that is **not yet validated against the owner's labels**, and the only agreement figure so far is LLM-vs-LLM (QWK 0.76). 95% bootstrap intervals over personas in brackets.
 <!-- END GENERATED readme-headline -->
 
 **Contents:** [What it does](#what-it-does) · [Architecture](#architecture) · [Results](#results) ·
@@ -34,7 +35,7 @@ is still there; its LLM-written texts (welcome and route summaries) are now pre-
 route facts.
 
 <!-- BEGIN GENERATED readme-data (make report; do not edit) -->
-Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 24,759 (persona, route) pairs, 40% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
+Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test, read for reporting and, in iteration 2, to find a failure pattern) plus 150 holdout personas drawn after the iteration-3 rule was registered (D28). Judgements: 28,443 (persona, route) pairs (3,684 of them on the holdout, in their own file), 40% of the main pairs graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
 <!-- END GENERATED readme-data -->
 
 The catalogue is built reproducibly from a Geofabrik extract (`make data`); route descriptions are generated
@@ -42,7 +43,8 @@ from OSM facts and labelled as generated ([DATA.md](docs/DATA.md)).
 
 ## Architecture
 
-What the API serves (`recsys_serve`, [DECISIONS.md](docs/DECISIONS.md) D25); stage design in
+What the API serves (`recsys_serve_v2`, [DECISIONS.md](docs/DECISIONS.md) D28: the D25 pipeline plus stated needs
+as constraints); stage design in
 [RECSYS.md](docs/RECSYS.md), serving and fallbacks in [SERVING.md](docs/SERVING.md).
 
 ```mermaid
@@ -52,8 +54,9 @@ flowchart TD
     FB["Feedback events: completions, four rejection reasons, decayed by age"] --> P
     P["Profile: questionnaire vector, slots (tab, home, radius, distance cap), free-text intent"] --> A
     A["Feedback adjustment, applied once: slot and tag steps"] --> H
-    H["Hard filter: tab, radius from home, distance cap"] --> B
-    H --> D
+    H["Hard filter: tab, radius from home, distance cap"] --> SN
+    SN["Stated needs read from the request (stroller, train, MTB, loop, days, length...) filter the eligible set, relaxed in a fixed order below a floor"] --> B
+    SN --> D
     B["BM25F over title, description, tags"] --> R
     D["Dense: intent embedding, exact cosine over the eligible routes"] --> R
     R["Reciprocal-rank fusion: top 50 candidates"] --> L
@@ -92,7 +95,8 @@ the RRF row fuses both), then the Phase 3 default and the served default. Protoc
 | `v6_ltr` | + learned ranker (LambdaMART, API score as a feature) | 0.771 [0.741, 0.800] | +0.132 [+0.094, +0.172] (`v5_rank_api`) | 0.924 [0.882, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
 | `v7_mmr` | + MMR diversity | 0.766 [0.737, 0.794] | -0.005 [-0.011, +0.002] (`v6_ltr`) | 0.926 [0.883, 0.958] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000782 USD |
 | `recsys_v1` | Phase 3 default: learned ranker without the API, MMR | 0.755 [0.729, 0.780] | -0.011 [-0.025, +0.002] (`v7_mmr`) | 0.915 [0.876, 0.949] | 0.830 [0.797, 0.861] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
-| `recsys_serve` | **served default**: ranker without the cap feature, feedback, exploration slot | 0.720 [0.688, 0.748] | -0.035 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.831 [0.798, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `recsys_serve` | served default D25-D28: ranker without the cap feature, feedback, exploration slot | 0.720 [0.688, 0.748] | -0.035 [-0.053, -0.020] (`recsys_v1`) | 0.882 [0.838, 0.923] | 0.831 [0.798, 0.862] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
+| `recsys_serve_v2` | **served default** (D28): + stated needs as constraints in front of retrieval | 0.744 [0.718, 0.770] | +0.024 [+0.007, +0.046] (`recsys_serve`) | 0.926 [0.889, 0.959] | 0.763 [0.727, 0.797] | 0.0% [0.0%, 0.0%] | 0.000005 USD |
 
 Test split, 100 personas; Δ = paired bootstrap of the per-persona difference. Every top 10 is fully judged. All systems, the dev split and every other comparison: [RESULTS.md](docs/RESULTS.md).
 <!-- END GENERATED readme-results -->
@@ -101,9 +105,10 @@ How to read it. The hard filter, BM25 and the learned ranker carry almost all of
 is not better than BM25 but fusing the two is; the ranker API helps as a ranker on its own but adds little once
 the learned ranker has the other features, and MMR adds nothing measurable at this test size.
 The rule scorer of the course project is no better than random here, mainly because it never sees where the user
-lives (most of its top 10 is out of reach). The served default deliberately trades some single-request NDCG for
+lives (most of its top 10 is out of reach). The D25 default deliberately trades some single-request NDCG for
 robustness: its ranker does not use the feature that encodes how the simulator draws distance caps, which hurts
-on the simulator and helps when a user leaves the cap empty ([Limitations](#limitations), D19, D25). Per-stage
+on the simulator and helps when a user leaves the cap empty ([Limitations](#limitations), D19, D25). The stated-need
+stage of the current default wins part of that back ([Iteration 3](#iteration-3-a-clean-decision-on-a-fresh-holdout)). Per-stage
 answers, with the commands to rerun each experiment: [REVIEW.md](docs/REVIEW.md).
 
 ## Feedback simulation
@@ -111,7 +116,8 @@ answers, with the commands to rerun each experiment: [REVIEW.md](docs/REVIEW.md)
 Ten weekly rounds per test persona: each system shows a top 10, a behaviour model written for this project
 completes at most one route and rejects a few with a reason, and the next round sees that feedback
 ([EVAL.md](docs/EVAL.md) section 10, `make simulate`). Per-round NDCG@10 gives no credit for re-showing what
-the user already did.
+the user already did. The simulation was run with the D25 default `recsys_serve`; it has not been rerun with the
+stated-need stage of the current default.
 
 ![NDCG@10 by feedback round](docs/convergence.png)
 
@@ -124,8 +130,8 @@ the user already did.
 | `v1_filters` | hard filters + rule scorer, same feedback | 0.359 [0.324, 0.393] | 0.299 [0.276, 0.322] | 0.254 [0.226, 0.280] | 18.1% |
 | `recsys_v1` | Phase 3 default, feedback off (control) | 0.733 [0.705, 0.760] | 0.314 [0.291, 0.336] | 0.129 [0.111, 0.147] | 8.2% |
 | `recsys_v1_fb` | Phase 3 default + feedback loop | 0.733 [0.705, 0.760] | 0.699 [0.665, 0.730] | 0.688 [0.649, 0.724] | 16.7% |
-| `recsys_serve_noexplore` | served default without the exploration slot | 0.711 [0.677, 0.742] | 0.691 [0.658, 0.722] | 0.682 [0.644, 0.717] | 16.7% |
-| `recsys_serve` | **served default** | 0.700 [0.667, 0.731] | 0.679 [0.648, 0.710] | 0.678 [0.639, 0.714] | 18.7% |
+| `recsys_serve_noexplore` | `recsys_serve` without the exploration slot | 0.711 [0.677, 0.742] | 0.691 [0.658, 0.722] | 0.682 [0.644, 0.717] | 16.7% |
+| `recsys_serve` | served default D25-D28 (not rerun for the stated-need stage) | 0.700 [0.667, 0.731] | 0.679 [0.648, 0.710] | 0.678 [0.639, 0.714] | 18.7% |
 
 Exploration slot (`recsys_serve` − `recsys_serve_noexplore`, rounds 2-10): -0.011 [-0.015, -0.008] NDCG@10. Feedback (`recsys_serve` − `recsys_v1`, rounds 2-10): +0.365 [+0.346, +0.384].
 <!-- END GENERATED readme-simulation -->
@@ -137,31 +143,35 @@ users whose preferences are fixed and fully known to the judge.
 
 ## Failure analysis
 
-The ten test queries with the lowest NDCG@10 of the served default, traced stage by stage, are in
-[FAILURES.md](docs/FAILURES.md) (`make failures`), with a diagnosis of each.
+The ten **holdout** queries with the lowest NDCG@10 of the served default, traced stage by stage, are in
+[FAILURES.md](docs/FAILURES.md) (`make failures`), with a diagnosis of each. The holdout replaced test for this in
+iteration 3, because test had been read to develop iteration 2; the earlier test analysis of `recsys_serve` is
+kept below it in the same document.
 
 <!-- BEGIN GENERATED readme-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 41; shown 40 (of 161).
+Known-relevant routes (grade ≥ 2) of the 10 worst holdout queries of `recsys_serve_v2`, by where they dropped out of the top 10: exploration 0, filter 0, mmr 0, needs 12, ranker 22, retrieval 29; shown 29 (of 92).
 
-- Class A: 5 of 10 (P018, P260, P145, P003, P177)
-- Class B: 2 of 10 (P110, P218)
-- Class C: 2 of 10 (P190, P225)
-- Class D: 1 of 10 (P048)
+- Class A: 1 of 10 (H021)
+- Class C: 6 of 10 (H089, H121, H030, H136, H148, H149)
+- Class E: 3 of 10 (H042, H104, H101)
 <!-- END GENERATED readme-failures -->
 
-- **A. The learned ranker overrides retrieval for a stated minority need.** Retrieval found the right routes; the
-  ranker applied a prior learned from the majority of training personas (a higher technical grade is bad, short
-  is bad, every requested concept counts the same) to a mountain biker asking for a challenge, a family with a
-  stroller or small children. No feature lets the stated need win, and few such personas were in training.
-- **B. Length the served pipeline cannot read:** a vague request with no distance, or "a four-day tour". The
-  served ranker gave up the cap-ratio feature and has no other length signal.
-- **C. The evaluation's fault:** the judge marks routes down for wishes the user never stated (arriving by
-  train, a one-way route, a lake), which the latent profile has and the written request does not.
+- **A. The learned ranker overrides a stated need.** On test this was the largest class (a mountain biker asking
+  for a challenge, a stroller, small children). With the stated-need stage it remains only for a need the stage
+  does not read, such as an effort limit ("without much climbing").
+- **B. Length the pipeline cannot read** (a vague request, "a four-day tour"): frequent on test, absent from the
+  holdout list now that stated lengths and day counts are read.
+- **C. The evaluation's fault:** the judge marks routes down for wishes the user never stated (a mountain-bike
+  style, arriving by train, a lake), which the latent profile has and the written request does not. The largest
+  class on the holdout. One case is a plain bug: the judge's card rounds the persona's distance cap, so routes the
+  hard filter admits can be graded 0 for exceeding it.
 - **D. Not a ranking failure:** many good routes, and the line between grade 2 and 3 is drawn by unstated detail.
+- **E. The stated-need stage's own choices** (new on the holdout): its relaxation drops a stated mountain-bike need
+  before the train need, its stroller check is stricter than the judge, and it enforces a stated loop the judge
+  would trade for a mountain hut.
 
-Classes C and D are failures of the evaluation rather than of the system. The fixes with the largest
-expected effect are stated needs as constraints (stroller, train, technical skill, an upper bound on length)
-mapped to catalogue fields that already exist, and ranker features that can depend on the user.
+The next fixes are inside the stage (relaxation order for cyclists, the stroller level), an effort need, and the
+judge card's rounding; each is to be developed on dev with the cross-fitted ranker, not on the holdout.
 
 ## Iteration 2: stated needs as constraints
 
@@ -182,10 +192,11 @@ D27), and test was run once, afterwards.
 | `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
 | `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
 
-The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+Iteration 2 left the served default unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md, test analysis) under `recsys_serve_needs_promote` (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
 <!-- END GENERATED readme-iteration2 -->
 
-**The outcome is a null result by the rule, and the stage stays off.** On dev every variant loses against the
+**The outcome was a null result by the rule, and the stage stayed off** (iteration 3 then decided it cleanly,
+below). On dev every variant loses against the
 served default, so none is accepted and `recsys_serve` remains what the API serves. Measured afterwards, that dev
 loss is an artefact of the learned ranker having been trained on the dev users: with a cross-fitted ranker (each
 dev user ranked by a copy that never saw their judgements) every variant is ahead on dev, and the single test run
@@ -193,17 +204,49 @@ agrees. The decision is not reversed on that evidence, because the cross-fitted 
 first result was seen; the next iteration should state its rule on a cross-fitted comparison in advance. Where
 the stage hurts, the catalogue's check is stricter than the judge's reading of the same need (a station at the
 far end of a route, a bus at the start, a slightly longer walk), so routes the judge likes are filtered out; the
-exact cases are in [FAILURES.md](docs/FAILURES.md) "Iteration 2". The variants are registered and one setting
-away (`RECSYS_SYSTEM=recsys_serve_needs_promote`).
+exact cases are in [FAILURES.md](docs/FAILURES.md) "Iteration 2".
+
+## Iteration 3: a clean decision on a fresh holdout
+
+Iteration 2 left two problems: its dev rule was biased by a ranker trained on the dev users, and test had been
+looked at for the variants, so neither could decide between them. Iteration 3 fixed the first and avoided the
+second. **Cross-fitted dev** is now a harness feature for every system with a learned ranker
+(`make eval SYSTEM=<name> CROSSFIT=1`): each dev user is ranked by a copy of the ranker trained without them, and
+that, not the in-sample row, is the dev number used for decisions ([EVAL.md](docs/EVAL.md) section 13). It
+reproduces iteration 2's post-hoc check exactly. Then, **before any new user existed**, the candidates, the metric,
+the rule (a cross-fitted dev gate, one-sided lower bounds corrected for testing three variants at once, no rise
+in violations), the size and seed of a new holdout and the action on a null result were committed as
+[DECISIONS.md](docs/DECISIONS.md) D28; the holdout personas were generated in a later commit, judged, and the
+rule applied as written.
+
+<!-- BEGIN GENERATED readme-iteration3 (make report; do not edit) -->
+*Holdout: 150 simulated users (seed 20261128; mtb 13, touring 29, hiking 108; parties solo 32, couple 29, friends 21, older 19, family_school 16, family_young 13, with_dog 11, stroller 8, family_teen 1), every top 10 judged by the same LLM judge, which is not yet validated against the owner's labels.*
+
+| System | Dev, cross-fitted: Δ NDCG@10 (gate) | Holdout NDCG@10 | Holdout Δ vs `recsys_serve` (95% CI) | Simultaneous lower bound (c = 2.00) | Holdout violations@10 | Eligible |
+|---|---|---|---|---|---|---|
+| `recsys_serve` | – | 0.771 [0.744, 0.796] | – | – | 0.0% [0.0%, 0.0%] | – |
+| `recsys_serve_needs` (filter in front of retrieval) **(chosen)** | +0.018 [+0.006, +0.029] | 0.792 [0.765, 0.817] | +0.021 [+0.010, +0.034] | +0.009 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_promote` (filter, strict matches promoted) | +0.021 [+0.007, +0.036] | 0.790 [0.764, 0.814] | +0.019 [+0.003, +0.034] | +0.003 | 0.0% [0.0%, 0.0%] | yes |
+| `recsys_serve_needs_demote` (post-ranker demotion) | +0.011 [+0.001, +0.021] | 0.777 [0.750, 0.800] | +0.006 [-0.007, +0.020] | -0.008 | 0.0% [0.0%, 0.0%] | no |
+
+Decision by the rule registered before the holdout existed: `recsys_serve_needs` is served as `recsys_serve_v2`. Simultaneous bound: one-sided 95% for the three variants together (max-T over a joint paired bootstrap, 10,000 resamples); the 95% CIs beside it are per variant and decide nothing.
+<!-- END GENERATED readme-iteration3 -->
+
+**The filter variant won by the pre-registered rule and is now the served default, as `recsys_serve_v2`;
+`recsys_serve` stays registered and unchanged.** The promote variant was also eligible with a smaller bound, and
+the demotion variant was not. The gain is modest and its lower bound is close to zero, it rests on simulated users
+and an unvalidated judge, and the holdout's own failure analysis shows where the stage still costs quality
+([FAILURES.md](docs/FAILURES.md) class E). The feedback simulation was not rerun with the stage. The holdout is now
+a reporting split only.
 
 ## Limitations
 
 <!-- BEGIN GENERATED readme-limits (make report; do not edit) -->
-- Test split: 100 personas; dev: 200.
+- Test split: 100 personas; dev: 200; holdout: 150 (D28).
 - Judge pilot (80 pairs): QWK 0.84 against a stronger LLM reference, mean grade +0.11 above it; QWK 0.86 between two batch orders of the same pairs.
 - Judge validation: owner labels: **missing** (the 150 blind pairs are in `eval/owner_labels/`); interim, **not a human check**: a second LLM judge (`anthropic/claude-sonnet-5.5`) agrees with the production judge at QWK 0.758 (exact 0.61, within one grade 0.97) on the same 150 pairs.
 - Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.886 [0.872, 0.901], test 0.755 [0.729, 0.780].
-- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, the served ranker is +0.031 [+0.001, +0.063] ahead of `recsys_v1`'s.
+- Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, `recsys_serve`'s ranker is +0.031 [+0.001, +0.063] ahead of `recsys_v1`'s.
 - For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.761 [0.729, 0.789] on test; `recsys_v1`: 0.755 [0.729, 0.780].
 <!-- END GENERATED readme-limits -->
 
@@ -241,8 +284,9 @@ measurement. Concretely, for this system:
   rejections with their reason and timestamp. Add the **propensity** of the exploration pick (the probability
   that Thompson sampling picks that cluster, estimated by repeated draws from the same posteriors), because it is
   the only randomised decision in the list.
-- **First comparison: interleaving `recsys_serve` against `recsys_v1`** (team-draft, per request). The two differ
-  mainly in the cap-ratio feature, the decision with the least offline support (D19, D25), and interleaving
+- **First comparison: interleaving `recsys_serve_v2` against `recsys_v1`** (team-draft, per request). The two differ
+  in the cap-ratio feature, the decision with the least offline support (D19, D25), and in the stated-need stage,
+  whose catalogue checks are stricter than a person may be (D28); interleaving
   needs far less traffic than an A/B test to detect a preference in clicks and detail opens.
 - **Then an A/B test of the exploration slot** randomised by user, not request, measured on completions and
   return visits over weeks, since exploration exists to change future lists.
@@ -263,6 +307,7 @@ Warm benchmark (`make latency`: 60 sequential requests after 5 warm-up requests,
 | System | Ranker API | p50 ms | p95 ms | max ms | Largest stage (p95, upstream) | Local compute p95 ms | Cost/request | p95 budget |
 |---|---|---|---|---|---|---|---|---|
 | `recsys_serve` | no | 100 | 203 | 4933 | dense 197 ms | 11.1 | 0.000005 USD | 500 ms (within) |
+| `recsys_serve_v2` | no | 126 | 293 | 61256 | dense 242 ms | 13.8 | 0.000005 USD | 500 ms (within) |
 | `recsys_v1` | no | 104 | 239 | 4055 | dense 220 ms | 20.0 | 0.000005 USD | 500 ms (within) |
 | `v7_mmr` | yes | 510 | 759 | 2101 | rank_api 563 ms | 24.3 | 0.000782 USD | 1500 ms (within) |
 <!-- END GENERATED readme-cost-latency -->
@@ -288,7 +333,9 @@ make setup        # backend/.venv with Python 3.12 and backend/requirements-dev.
 make seed         # backend/data/app.db from the committed OSM catalogue (CATALOG=legacy: the course project's routes)
 make test         # backend test suite, LLM_PROVIDER=mock, no network
 make eval         # evaluate v0_rules: replays from the committed frozen cache eval/cache/, no credentials
-make eval SYSTEM=recsys_serve   # the served default; its query embeddings also replay from eval/cache/
+make eval SYSTEM=recsys_serve_v2   # the served default; its query embeddings also replay from eval/cache/
+make eval SYSTEM=recsys_serve_v2 CROSSFIT=1   # dev with the learned ranker cross-fitted (EVAL.md section 13)
+make eval SYSTEM=recsys_serve_v2 HOLDOUT=1    # the holdout (D28); make holdout-decision re-applies the rule
 make report       # docs/RESULTS.md and the generated blocks of README.md, docs/FAILURES.md, docs/REVIEW.md
 make replay-check # everything from an empty cache, cache-only, credentials blanked: personas, judgements, results
 ```
@@ -318,7 +365,7 @@ make replay-check # everything from an empty cache, cache-only, credentials blan
 |---|---|
 | [docs/REVIEW.md](docs/REVIEW.md) | The owner's eight review questions, answered with pointers to the evidence; what is still open |
 | [docs/RESULTS.md](docs/RESULTS.md) | Every result table (generated) |
-| [docs/FAILURES.md](docs/FAILURES.md) | The ten worst test queries of the served default, traced and diagnosed |
+| [docs/FAILURES.md](docs/FAILURES.md) | The ten worst holdout (and, earlier, test) queries of the served default, traced and diagnosed |
 | [docs/EVAL.md](docs/EVAL.md) | Evaluation protocol: personas, pooling, judge, metrics, simulation, limitations |
 | [docs/RECSYS.md](docs/RECSYS.md) | The pipeline stage by stage, the explanation schema, feedback and exploration |
 | [docs/SERVING.md](docs/SERVING.md) | How the API serves it: fallbacks, latency, demo protections |
@@ -326,7 +373,7 @@ make replay-check # everything from an empty cache, cache-only, credentials blan
 | [docs/DATA.md](docs/DATA.md) | The OSM catalogue: source, licence, counts, known weaknesses |
 | [docs/LLM_CLIENT.md](docs/LLM_CLIENT.md) | The single LLM / embedding / ranking client: providers, cache, budget |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Docker image, pre-generated narratives, the owner's deployment checklist |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | Decision log (D1-D26), including what is pending |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Decision log (D1-D28), including what is pending |
 | [docs/BUILD_SPEC.md](docs/BUILD_SPEC.md) | The spec this extension executed |
 
 ## Project history
@@ -359,6 +406,9 @@ no evaluation, not deployed.
 - *2026-11-23, iteration 2.* One evaluation-driven improvement: stated, verifiable needs as constraints
   (D27). Built, tested and evaluated on both splits; not accepted by its pre-registered dev rule, so it is off by
   default and the served system is unchanged ([Iteration 2](#iteration-2-stated-needs-as-constraints)).
+- *2026-11-23, iteration 3.* Cross-fitted dev evaluation as the dev standard, a pre-registered rule, a fresh
+  holdout of simulated users, and the stated-need filter promoted to the served default by that rule (D28,
+  [Iteration 3](#iteration-3-a-clean-decision-on-a-fresh-holdout)).
 
 **Open owner checkpoints:** the 150 blind relevance labels that would validate the judge
 (`eval/owner_labels/label.html`, then `make kappa`), and every deployment decision (target, URL, spend, live

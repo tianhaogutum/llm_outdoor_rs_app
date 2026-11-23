@@ -29,6 +29,8 @@ make report  ->  docs/RESULTS.md
 | `make personas` | regenerate `eval/personas/personas.jsonl` (byte-identical from cache) |
 | `make eval SYSTEM=<name>` | run the system on all 300 personas, judge pool holes, write results |
 | `make eval SYSTEM=<name> CROSSFIT=1` | dev personas, learned ranker cross-fitted (section 13): the dev standard for systems with a learned ranker |
+| `make eval SYSTEM=<name> HOLDOUT=1` | the 150 holdout personas (section 14), own qrels; reporting only since the D28 decision |
+| `make holdout-personas` / `make holdout-decision` | draw the holdout (done once) / re-apply the D28 rule to the stored results |
 | `make eval-all` | rescore every stored run against the current qrels (tables stay mutually consistent) |
 | `make report` | render `docs/RESULTS.md` from `eval/results/*.json` |
 | `make judge-pilot` | judge pilot (cached) |
@@ -107,7 +109,9 @@ catalogue tag names and not invent wishes. The writer is a different vendor from
 (section 5). Cached at temperature 0.9, so the file is deterministic from cache. Median 27 words
 (p10 7, max 51).
 
-**Split.** 200 dev / 100 test, by persona, fixed by the seed. Phase 3 trains only on dev.
+**Split.** 200 dev / 100 test, by persona, fixed by the seed. Phase 3 trains only on dev. A third set, the
+**holdout** (150 personas, same generator, another seed), was drawn in iteration 3 after its use was registered
+(section 14).
 
 Examples (test split unless noted; latent → intent):
 
@@ -583,3 +587,41 @@ dev personas, so each copy inherits a choice that saw its held-out fold (probabl
 tuned on dev; cross-fitting removes only the ranker's memory of the dev users. (3) The copies are trained on four
 fifths of the data, so cross-fitted dev is slightly pessimistic for the ranker itself. (4) It is not a substitute
 for a split nobody has looked at, which is why iteration 3 decides on a fresh holdout (D28).
+
+## 14. The holdout (iteration 3)
+
+**Why.** By iteration 3 both splits had been used for development: dev for every choice and all training, test to
+find the failure pattern behind iteration 2 and to report its variants. Neither could decide cleanly between the
+served default and those variants. A fresh set of simulated users, drawn after the decision rule was committed,
+can (DECISIONS.md D28; the commit order in `git log` is the evidence).
+
+**Generation** (`python -m evalkit.holdout generate`, `make holdout-personas`; refuses to run if the file exists):
+the generator of section 2 with exactly the same parameters (`evalkit.personas.PARAMS`) and seed 20261128, all
+personas in split `holdout`, ids `H001`... = draw index. A draw whose latent profile or whose visible profile slots
+(questionnaire vector, tab, home, radius, cap) equal those of a main persona or an earlier draw is skipped (none
+were); identical intent texts are reported, not removed (one, a short MTB request, equals a dev persona's).
+Intents by the same writer, prompt and temperature (section 2). Files: `eval/personas/holdout.jsonl`,
+`holdout_params.json` (seed, parameters, duplicate report), `holdout_stats.json`.
+
+**Judging.** Its own qrels file `eval/qrels/holdout_qrels.jsonl`, so the main tables and the ranker's training
+data are untouched. Pool: the top 10 of the four D28 candidates plus the two pool-only contributors; every top 10
+judged by the production judge; hard-constraint violations graded 0 by rule. Runs and results:
+`eval/runs/holdout/`, `eval/results/holdout/`; the decision: `eval/results/_holdout.json`
+(`evalkit/holdout.py: decide`, rewritten by `make eval-all`, checked by `make replay-check`, which also
+regenerates the holdout personas and replays its judge batches from the frozen cache).
+
+**The rule** (D28, committed before the personas existed): a cross-fitted dev gate (section 13), then one-sided
+simultaneous 95% lower bounds of the paired holdout NDCG@10 differences for the gated variants together
+(single-step max-T over a joint paired bootstrap, `metrics.simultaneous_lower_bounds`), a violations guard, the
+largest eligible bound wins. Outcome and numbers: RESULTS.md "Iteration 3", D28.
+
+**Use from now on.** Reporting only: the holdout table in RESULTS.md and the failure analysis of the served
+system (`make failures`, FAILURES.md). Nothing is to be tuned or chosen on it; a system added to it later pools
+new holes into its qrels, which shifts the ideal DCG of the other rows (rescore with `make eval-all`; the D28
+decision is recorded in DECISIONS.md with the qrels digest it was taken on).
+
+**Limits.** The same simulator and judge as everything else, so the holdout guards against overfitting to the dev
+and test *users*, not against the simulator's or the judge's assumptions. 150 personas give a standard error of
+under one point of NDCG@10 for a paired difference; small true effects can be missed. The judge's card rounds the
+distance cap to whole kilometres while the rule-grader uses the exact cap (found in the holdout failure analysis,
+FAILURES.md H149); this affects every split equally and is still to be fixed.
