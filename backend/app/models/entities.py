@@ -36,6 +36,10 @@ class DemoProfile(Base):
     travel_radius_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     distance_cap_km: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     intent_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Phase 4 chat: activity slot (hiking|cycling|mtb|running) and the server-side conversation state
+    # (app/chat/schema.py ChatState as JSON). Both null until the first chat turn.
+    activity: Mapped[Optional[str]] = mapped_column(String(16), nullable=True)
+    chat_state_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     souvenirs: Mapped[list[Souvenir]] = relationship(
         "Souvenir",
