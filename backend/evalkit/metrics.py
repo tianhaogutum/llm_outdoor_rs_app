@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Callable, Mapping, Sequence
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 
@@ -170,4 +170,48 @@ def paired_bootstrap(
         "hi": float(np.quantile(boots, 1 - alpha / 2)),
         "n": int(len(d)),
         "p_le_0": float((boots <= 0).mean()),
+    }
+
+
+def simultaneous_lower_bounds(
+    diffs: dict[str, Sequence[float]],
+    *,
+    n_boot: int = 10000,
+    seed: int = 0,
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """One-sided simultaneous (1 - alpha) lower bounds for the means of several paired differences (single-step
+    max-T over a joint bootstrap).
+
+    ``diffs[name]`` holds the per-unit differences (variant - baseline) over the **same** units in the same order
+    for every name. Units are resampled jointly (one index draw per resample, shared by all names), so the bound
+    accounts for the correlation between the variants. For each name: d = mean, s = bootstrap SD of the mean;
+    T_b = max over names of (d*_b - d) / s; c = the (1 - alpha) quantile of T; lower bound = d - c * s. With one
+    name this is a studentised one-sided bootstrap bound; with several it controls the family-wise error rate of
+    "the mean difference is above the bound" at alpha for all names together (asymptotically), and is never
+    looser than Bonferroni's adjustment when the variants are positively correlated."""
+    names = list(diffs)
+    X = np.array([np.asarray(diffs[n], dtype=float) for n in names])  # (m, n)
+    if X.ndim != 2 or X.shape[1] == 0:
+        raise ValueError("need at least one unit")
+    m, n = X.shape
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, n, size=(n_boot, n))
+    boots = np.stack([X[j][idx].mean(axis=1) for j in range(m)], axis=1)  # (n_boot, m)
+    d = X.mean(axis=1)
+    s = boots.std(axis=0, ddof=1)
+    s = np.where(s > 0, s, np.inf)  # a constant difference has no sampling spread: its bound is its mean
+    T = np.max((boots - d) / s, axis=1)
+    c = float(np.quantile(T, 1 - alpha))
+    lb = np.where(np.isfinite(s), d - c * s, d)
+    return {
+        "c": c,
+        "alpha": alpha,
+        "n_boot": n_boot,
+        "seed": seed,
+        "n": n,
+        "by_name": {
+            nm: {"diff": float(d[j]), "se": float(s[j]) if np.isfinite(s[j]) else 0.0, "lower": float(lb[j])}
+            for j, nm in enumerate(names)
+        },
     }

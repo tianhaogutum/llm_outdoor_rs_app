@@ -17,6 +17,7 @@
 #   make eval SYSTEM=v0_rules  run one system on all personas, judge pool holes, write eval/results/<name>.json
 #   make eval SYSTEM=recsys_serve CROSSFIT=1  dev personas, each ranked by a copy of the system's learned ranker
 #                      trained without it (eval/results/crossfit/<name>.json; the dev standard, docs/EVAL.md 13)
+#   make eval SYSTEM=recsys_serve HOLDOUT=1   the holdout personas (eval/results/holdout/; DECISIONS.md D28)
 #   make eval-all      recompute every stored run against the current qrels (tables stay consistent)
 #   make report        render docs/RESULTS.md and the generated blocks of README.md, docs/FAILURES.md and
 #                      docs/REVIEW.md from eval/results/*.json (tests/evalkit/test_docs_fresh.py checks they are fresh)
@@ -35,6 +36,8 @@
 #   make simulate      Phase 5 feedback simulation: 10 rounds per test persona (+ docs/convergence.png)
 #   make sim-tune      Phase 5 feedback-parameter grid on a dev subset (judges holes: costs money)
 #   make chat-eval     scripted chat slot evaluation, replayed from eval/chat/cache (no provider call)
+#   make holdout-personas  draw the iteration-3 holdout (150 personas, seed in DECISIONS.md D28; intents live once)
+#   make holdout-decision  apply the pre-registered D28 rule to the stored results (eval/results/_holdout.json)
 #   make freeze        export every touched LLM cache entry to eval/cache/
 #   make replay-check  clean cache + cache-only + no credentials: reproduce personas, judgements, results
 #
@@ -71,7 +74,7 @@ endif
 
 .PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
 	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency ltr-robust simulate sim-tune \
-	chat-eval failures
+	chat-eval failures holdout-personas holdout-decision
 .PHONY: narratives narratives-live narratives-check
 
 setup:
@@ -168,6 +171,12 @@ sim-tune:
 
 chat-eval:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.chat.run --all --cache-only
+
+holdout-personas:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.holdout generate
+
+holdout-decision:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.holdout decide
 
 freeze:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.freeze export

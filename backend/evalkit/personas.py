@@ -547,8 +547,14 @@ def generate(
     towns: Optional[list[dict]] = None,
     n: Optional[int] = None,
     seed: Optional[int] = None,
+    *,
+    id_prefix: str = "P",
+    split: Optional[str] = None,
 ) -> list[Persona]:
-    """Deterministic for a given seed, town list and catalogue (no LLM: intents are added separately)."""
+    """Deterministic for a given seed, town list and catalogue (no LLM: intents are added separately).
+
+    ``split`` puts every persona in that split instead of drawing dev / test (the holdout, D28); ``id_prefix``
+    names them (``H001``...). Neither changes any random draw, so the main 300 are unaffected."""
     catalog = catalog or get_catalog()
     towns = towns if towns is not None else load_towns()
     n = n or PARAMS["n_personas"]
@@ -568,10 +574,10 @@ def generate(
         style = _choice(style_rng, PARAMS["intent_styles"])
         mention_home = bool(style_rng.random() < PARAMS["intent_mentions_home"])
         voice = _choice(style_rng, PARAMS["intent_voices"])
-        pid = f"P{i + 1:03d}"
+        pid = f"{id_prefix}{i + 1:03d}"
         p = Persona(
             persona_id=pid,
-            split="test" if i in test_idx else "dev",
+            split=split or ("test" if i in test_idx else "dev"),
             latent=latent,
             questionnaire={k: v for k, v in q.items() if k != "fitness_misjudged"},
             user_vector=questionnaire_vector(q),

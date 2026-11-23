@@ -141,7 +141,7 @@ def _extra_replays() -> list:
     """Further recorded experiments to replay: ranker pilot, MMR sweep, the feedback simulation and its dev
     tuning, the scripted chat evaluation, the cross-fitted dev runs, the holdout (personas, judgements, runs),
     the failure analyses (each returns (keys, problems))."""
-    from evalkit import crossfit, failures, mmr_sweep, rank_pilot, simulate
+    from evalkit import crossfit, failures, holdout, mmr_sweep, rank_pilot, simulate
 
     return [
         rank_pilot.replay,
@@ -149,6 +149,7 @@ def _extra_replays() -> list:
         simulate.replay,
         _chat_eval_replay,
         crossfit.replay,
+        holdout.replay,
         failures.replay,
     ]
 
