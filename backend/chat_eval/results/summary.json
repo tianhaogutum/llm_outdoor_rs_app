@@ -1,0 +1,306 @@
+{
+ "protocol": "chat-eval-v1",
+ "cases": 72,
+ "candidates": [
+  {
+   "candidate": "g25f",
+   "provider": "vertex",
+   "model": "gemini-2.5-flash",
+   "location": null,
+   "thinking": 0,
+   "overall": {
+    "tp": 125,
+    "fp": 2,
+    "fn": 3,
+    "precision": 0.9843,
+    "recall": 0.9766,
+    "f1": 0.9804
+   },
+   "per_type": {
+    "enum": {
+     "tp": 51,
+     "fp": 1,
+     "fn": 0,
+     "precision": 0.9808,
+     "recall": 1.0,
+     "f1": 0.9903
+    },
+    "number": {
+     "tp": 17,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "place": {
+     "tp": 16,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "tags": {
+     "tp": 41,
+     "fp": 1,
+     "fn": 3,
+     "precision": 0.9762,
+     "recall": 0.9318,
+     "f1": 0.9535
+    }
+   },
+   "clarify_decision_accuracy": 1.0,
+   "clarify_slot_accuracy": 1.0,
+   "intent_mention_hit_rate": 1.0,
+   "schema_violation_rate": 0.0,
+   "schema_failed_calls": 0,
+   "validator_drops_per_call": 0.0,
+   "injection_cases_with_unexpected_change": 1,
+   "latency_p50_ms": 849.2,
+   "latency_p95_ms": 1385.1,
+   "cost_usd_per_call": 0.00132446,
+   "cost_usd_total": 0.111254
+  },
+  {
+   "candidate": "g35f-min",
+   "provider": "vertex",
+   "model": "gemini-3.5-flash",
+   "location": "global",
+   "thinking": "minimal",
+   "overall": {
+    "tp": 128,
+    "fp": 2,
+    "fn": 0,
+    "precision": 0.9846,
+    "recall": 1.0,
+    "f1": 0.9922
+   },
+   "per_type": {
+    "enum": {
+     "tp": 51,
+     "fp": 1,
+     "fn": 0,
+     "precision": 0.9808,
+     "recall": 1.0,
+     "f1": 0.9903
+    },
+    "number": {
+     "tp": 17,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "place": {
+     "tp": 16,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "tags": {
+     "tp": 44,
+     "fp": 1,
+     "fn": 0,
+     "precision": 0.9778,
+     "recall": 1.0,
+     "f1": 0.9888
+    }
+   },
+   "clarify_decision_accuracy": 0.9722,
+   "clarify_slot_accuracy": 0.9722,
+   "intent_mention_hit_rate": 1.0,
+   "schema_violation_rate": 0.0,
+   "schema_failed_calls": 0,
+   "validator_drops_per_call": 0.0,
+   "injection_cases_with_unexpected_change": 1,
+   "latency_p50_ms": 1498.5,
+   "latency_p95_ms": 3024.6,
+   "cost_usd_per_call": 0.007658,
+   "cost_usd_total": 0.643272
+  },
+  {
+   "candidate": "g35fl-min",
+   "provider": "vertex",
+   "model": "gemini-3.5-flash-lite",
+   "location": "global",
+   "thinking": "minimal",
+   "overall": {
+    "tp": 123,
+    "fp": 5,
+    "fn": 5,
+    "precision": 0.9609,
+    "recall": 0.9609,
+    "f1": 0.9609
+   },
+   "per_type": {
+    "enum": {
+     "tp": 51,
+     "fp": 3,
+     "fn": 0,
+     "precision": 0.9444,
+     "recall": 1.0,
+     "f1": 0.9714
+    },
+    "number": {
+     "tp": 16,
+     "fp": 2,
+     "fn": 1,
+     "precision": 0.8889,
+     "recall": 0.9412,
+     "f1": 0.9143
+    },
+    "place": {
+     "tp": 16,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "tags": {
+     "tp": 40,
+     "fp": 0,
+     "fn": 4,
+     "precision": 1.0,
+     "recall": 0.9091,
+     "f1": 0.9524
+    }
+   },
+   "clarify_decision_accuracy": 0.9861,
+   "clarify_slot_accuracy": 0.9861,
+   "intent_mention_hit_rate": 1.0,
+   "schema_violation_rate": 0.0,
+   "schema_failed_calls": 0,
+   "validator_drops_per_call": 0.0119,
+   "injection_cases_with_unexpected_change": 1,
+   "latency_p50_ms": 1013.4,
+   "latency_p95_ms": 1764.3,
+   "cost_usd_per_call": 0.0016996,
+   "cost_usd_total": 0.142766
+  },
+  {
+   "candidate": "haiku55",
+   "provider": "openrouter",
+   "model": "anthropic/claude-haiku-5.5",
+   "location": null,
+   "thinking": 0,
+   "overall": {
+    "tp": 128,
+    "fp": 4,
+    "fn": 0,
+    "precision": 0.9697,
+    "recall": 1.0,
+    "f1": 0.9846
+   },
+   "per_type": {
+    "enum": {
+     "tp": 51,
+     "fp": 2,
+     "fn": 0,
+     "precision": 0.9623,
+     "recall": 1.0,
+     "f1": 0.9808
+    },
+    "number": {
+     "tp": 17,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "place": {
+     "tp": 16,
+     "fp": 0,
+     "fn": 0,
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0
+    },
+    "tags": {
+     "tp": 44,
+     "fp": 2,
+     "fn": 0,
+     "precision": 0.9565,
+     "recall": 1.0,
+     "f1": 0.9778
+    }
+   },
+   "clarify_decision_accuracy": 1.0,
+   "clarify_slot_accuracy": 1.0,
+   "intent_mention_hit_rate": 1.0,
+   "schema_violation_rate": 0.0,
+   "schema_failed_calls": 0,
+   "validator_drops_per_call": 0.0,
+   "injection_cases_with_unexpected_change": 1,
+   "latency_p50_ms": 1123.2,
+   "latency_p95_ms": 2081.1,
+   "cost_usd_per_call": 0.00071739,
+   "cost_usd_total": 0.060261
+  },
+  {
+   "candidate": "rules",
+   "provider": "mock",
+   "model": "mock-llm-1",
+   "location": null,
+   "thinking": null,
+   "overall": {
+    "tp": 108,
+    "fp": 8,
+    "fn": 20,
+    "precision": 0.931,
+    "recall": 0.8438,
+    "f1": 0.8852
+   },
+   "per_type": {
+    "enum": {
+     "tp": 44,
+     "fp": 2,
+     "fn": 7,
+     "precision": 0.9565,
+     "recall": 0.8627,
+     "f1": 0.9072
+    },
+    "number": {
+     "tp": 12,
+     "fp": 2,
+     "fn": 5,
+     "precision": 0.8571,
+     "recall": 0.7059,
+     "f1": 0.7742
+    },
+    "place": {
+     "tp": 15,
+     "fp": 0,
+     "fn": 1,
+     "precision": 1.0,
+     "recall": 0.9375,
+     "f1": 0.9677
+    },
+    "tags": {
+     "tp": 37,
+     "fp": 4,
+     "fn": 7,
+     "precision": 0.9024,
+     "recall": 0.8409,
+     "f1": 0.8706
+    }
+   },
+   "clarify_decision_accuracy": 0.9583,
+   "clarify_slot_accuracy": 0.9583,
+   "intent_mention_hit_rate": 1.0,
+   "schema_violation_rate": 0.0,
+   "schema_failed_calls": 0,
+   "validator_drops_per_call": 0.0119,
+   "injection_cases_with_unexpected_change": 1,
+   "latency_p50_ms": 0.0,
+   "latency_p95_ms": 0.0,
+   "cost_usd_per_call": 0.0,
+   "cost_usd_total": 0.0
+  }
+ ]
+}
