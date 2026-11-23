@@ -207,13 +207,13 @@ Paired bootstrap of the per-persona difference (dev):
 
 *Simulated users (300 personas, LLM-written intents); LLM-judged relevance (judge `g35f-min-b8` = `gemini-3.5-flash`, rubric/v1); the judge is **not yet validated against the owner's labels**.*
 
-**Robustness rows, not new defaults.** `length_cap_ratio` (route length / the user's distance cap) is the learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, DECISIONS.md D15). These rows retrain the default ranker on the same pinned dev labels without that feature, or without the whole suspicious group, and run the same pipeline otherwise (filters, BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers (trained on dev labels).
+**Robustness rows, not new defaults.** `length_cap_ratio` (route length / the user's distance cap) is the learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, DECISIONS.md D15). These rows retrain the Phase 3 default's ranker on the same pinned dev labels without that feature, or without the whole suspicious group, and run the same pipeline otherwise (filters, BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers (trained on dev labels).
 
 | System | Ranker | NDCG@10 test | MRR@10 test | NDCG@10 dev (in-sample) | CV NDCG@10 (dev, grouped) | Judged@10 |
 |---|---|---|---|---|---|---|
-| `recsys_v1` | default (ranker `v1_noapi`, all non-API features) | 0.759 [0.733, 0.784] | 0.915 [0.876, 0.949] | 0.892 [0.876, 0.907] | 0.801 [0.780, 0.819] | 100% |
-| `recsys_v1_nocap` | default, ranker without `length_cap_ratio` (`v1_noapi_nocap`) | 0.735 [0.704, 0.765] | 0.882 [0.838, 0.923] | 0.868 [0.852, 0.884] | 0.778 [0.757, 0.798] | 100% |
-| `recsys_v1_nosusp` | default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`) | 0.725 [0.693, 0.756] | 0.885 [0.834, 0.929] | 0.841 [0.823, 0.857] | 0.768 [0.747, 0.788] | 100% |
+| `recsys_v1` | Phase 3 default (ranker `v1_noapi`, all non-API features) | 0.759 [0.733, 0.784] | 0.915 [0.876, 0.949] | 0.892 [0.876, 0.907] | 0.801 [0.780, 0.819] | 100% |
+| `recsys_v1_nocap` | Phase 3 default, ranker without `length_cap_ratio` (`v1_noapi_nocap`; the served ranker) | 0.735 [0.704, 0.765] | 0.882 [0.838, 0.923] | 0.868 [0.852, 0.884] | 0.778 [0.757, 0.798] | 100% |
+| `recsys_v1_nosusp` | Phase 3 default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`) | 0.725 [0.693, 0.756] | 0.885 [0.834, 0.929] | 0.841 [0.823, 0.857] | 0.768 [0.747, 0.788] | 100% |
 
 Paired differences against `recsys_v1` (per-persona, 1,000 resamples):
 
@@ -502,7 +502,7 @@ Every OpenRouter reranker re-ranks the same candidate lists (v4_rrf fused top 50
 
 Best on dev: `mongodb/rerank-3`.
 
-## Explanation example (default system)
+## Explanation example (Phase 3 default)
 
 Real output of `recsys_v1` for test persona `P003` (`python -m evalkit.explain_example`; schema `recsys.explanation/v1`, documented in [RECSYS.md](RECSYS.md)). Intent: "A quiet, challenging mountain bike ride with forest trails beside a lake and a beer garden along the way. For a group of friends, about 30–70 km.". Top route `6006347` (Rennweg Haßberge - Radroute):
 

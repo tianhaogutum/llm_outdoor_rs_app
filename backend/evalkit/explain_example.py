@@ -1,4 +1,4 @@
-"""Write one real explanation of the default system (``eval/results/_explanation_example.json``).
+"""Write one real explanation of the Phase 3 default ``recsys_v1`` (``eval/results/_explanation_example.json``).
 
     cd backend && python -m evalkit.explain_example
 

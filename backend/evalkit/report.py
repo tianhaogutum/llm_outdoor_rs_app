@@ -492,7 +492,7 @@ def _explanation_example() -> list[str]:
     if not ex:
         return []
     return [
-        "## Explanation example (default system)",
+        "## Explanation example (Phase 3 default)",
         "",
         f"Real output of `{ex['system']}` for test persona `{ex['persona_id']}` (`python -m evalkit.explain_example`; "
         "schema `recsys.explanation/v1`, documented in [RECSYS.md](RECSYS.md)). Intent: "
@@ -512,9 +512,9 @@ def _pair_cell(r: dict[str, Any]) -> str:
 
 ROBUST = ["recsys_v1", "recsys_v1_nocap", "recsys_v1_nosusp"]
 ROBUST_TEXT = {
-    "recsys_v1": "default (ranker `v1_noapi`, all non-API features)",
-    "recsys_v1_nocap": "default, ranker without `length_cap_ratio` (`v1_noapi_nocap`)",
-    "recsys_v1_nosusp": "default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`)",
+    "recsys_v1": "Phase 3 default (ranker `v1_noapi`, all non-API features)",
+    "recsys_v1_nocap": "Phase 3 default, ranker without `length_cap_ratio` (`v1_noapi_nocap`; the served ranker)",
+    "recsys_v1_nosusp": "Phase 3 default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`)",
 }
 
 
@@ -531,9 +531,9 @@ def _robustness(docs: list[dict[str, Any]], cap: str) -> list[str]:
         "",
         "**Robustness rows, not new defaults.** `length_cap_ratio` (route length / the user's distance cap) is the "
         "learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, "
-        "DECISIONS.md D15). These rows retrain the default ranker on the same pinned dev labels without that feature, "
-        "or without the whole suspicious group, and run the same pipeline otherwise (filters, BM25 + dense, RRF, "
-        "MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers "
+        "DECISIONS.md D15). These rows retrain the Phase 3 default's ranker on the same pinned dev labels without "
+        "that feature, or without the whole suspicious group, and run the same pipeline otherwise (filters, "
+        "BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers "
         "(trained on dev labels).",
         "",
         "| System | Ranker | NDCG@10 test | MRR@10 test | NDCG@10 dev (in-sample) | CV NDCG@10 (dev, grouped) | "
