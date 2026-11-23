@@ -50,3 +50,7 @@ backend/logs/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Narrative generation rejects; credentials that must never be committed
+backend/data/narratives/_rejected_*.json
+*service-account*.json

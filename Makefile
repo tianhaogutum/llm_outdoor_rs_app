@@ -7,6 +7,8 @@
 #   make dev     run the API with autoreload on http://localhost:8000
 #   make data    rebuild the OSM route catalogue in backend/data/catalog (downloads ~0.9 GB once)
 #   make data-stats  print every figure quoted in docs/DATA.md
+#   make narratives  rebuild backend/data/narratives from the committed cache (no credentials);
+#                    narratives-live: new route set / prompt (costs about 0.15 USD)
 #   make llm-smoke  one live generate/embed/rank call per configured provider (costs a fraction of a cent)
 #
 # Evaluation harness (docs/EVAL.md). Recorded LLM calls replay from the committed frozen cache eval/cache/,
@@ -64,6 +66,7 @@ endif
 .PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
 	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency ltr-robust simulate sim-tune \
 	chat-eval
+.PHONY: narratives narratives-live narratives-check
 
 setup:
 	@if [ ! -x $(VENV)/bin/python ]; then \
@@ -161,3 +164,12 @@ freeze:
 
 replay-check:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.freeze verify
+
+narratives:
+	cd $(BACKEND) && $(PYTHON) scripts/narratives.py generate && $(PYTHON) scripts/narratives.py check
+
+narratives-live:
+	cd $(BACKEND) && $(PYTHON) scripts/narratives.py select && $(PYTHON) scripts/narratives.py generate --live --budget 0.5
+
+narratives-check:
+	cd $(BACKEND) && $(PYTHON) scripts/narratives.py check

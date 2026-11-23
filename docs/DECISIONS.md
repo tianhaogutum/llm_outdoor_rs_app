@@ -55,6 +55,8 @@ The 150 blind labels can only come from the owner. The harness produces the blin
 
 Dockerfile, rate limit and budget cap are built. Nothing is deployed and no public URL is created without the owner's explicit approval of target and spend.
 
+Update 2026-11-23: the Dockerfile, pre-generated narratives and a CI job that builds the image and smoke-tests it without credentials exist ([DEPLOY.md](DEPLOY.md)). Image defaults: no live providers, `NARRATIVES_LIVE=false`, rate limit on, `DAILY_BUDGET_USD=2`; seeded at build time, user data on a `/data` volume. Still **pending owner** before any deployment: target, URL, spend ceiling, which providers are live, the EU-region question for chat (D18), OSM attribution on every screen that shows route data, and the Harry Potter themed stories and souvenir graphics inherited from the course project, which are third-party intellectual property and should not go on a public demo as they are.
+
 ## D7. More baseline findings from Phase 0 (2026-11-22)
 
 Found while writing the tests. None of these is changed in `v0_rules` (the spec allows only the two decay fixes there); the new pipeline and Phase 5 address them.
