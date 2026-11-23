@@ -141,7 +141,7 @@ The ten test queries with the lowest NDCG@10 of the served default, traced stage
 [FAILURES.md](docs/FAILURES.md) (`make failures`), with a diagnosis of each.
 
 <!-- BEGIN GENERATED readme-failures (make report; do not edit) -->
-Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, ranker 76, retrieval 34; shown 40 (of 154).
+Known-relevant routes (grade ≥ 2) of the 10 worst test queries of `recsys_serve`, by where they dropped out of the top 10: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 34; shown 40 (of 154).
 
 - Class A: 5 of 10 (P018, P260, P145, P003, P177)
 - Class B: 2 of 10 (P110, P218)

@@ -38,7 +38,7 @@ The 10 test personas with the lowest NDCG@10 of `recsys_serve` (served default),
 | [P048](#p048) | A quiet forest walk by a lake, with a place to eat or drink along the way. | 0.469 | 0.573 | 0.426 | 0.621 | mmr 1, ranker 10, retrieval 11, shown 8 |
 | [P225](#p225) | Could you suggest a mountain bike route to a summit with great views and a hut stop? | 0.471 | 0.592 | 0.530 | 0.372 | exploration 1, mmr 1, ranker 1, retrieval 1, shown 1 |
 
-All relevant routes of the ten personas, by where they were lost: exploration 1, filter 0, mmr 3, ranker 76, retrieval 34, shown 40 (total 154). Grade 3 only: exploration 0, filter 0, mmr 1, ranker 24, retrieval 9, shown 8 (total 42).
+All relevant routes of the ten personas, by where they were lost: exploration 1, filter 0, mmr 3, needs 0, ranker 76, retrieval 34, shown 40 (total 154). Grade 3 only: exploration 0, filter 0, mmr 1, needs 0, ranker 24, retrieval 9, shown 8 (total 42).
 <!-- END GENERATED failures-summary -->
 
 Context used in the diagnoses (persona counts, from `eval/personas/personas.jsonl`):

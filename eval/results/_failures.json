@@ -25,6 +25,7 @@
   "exploration": 0,
   "filter": 0,
   "mmr": 1,
+  "needs": 0,
   "ranker": 24,
   "retrieval": 9,
   "shown": 8
@@ -354,6 +355,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 3,
     "retrieval": 0,
     "shown": 0
@@ -417,6 +419,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 8,
     "retrieval": 2,
     "shown": 2
@@ -1466,6 +1469,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 1,
+    "needs": 0,
     "ranker": 6,
     "retrieval": 3,
     "shown": 0
@@ -1530,6 +1534,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 1,
+    "needs": 0,
     "ranker": 15,
     "retrieval": 5,
     "shown": 7
@@ -2557,6 +2562,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 4,
     "retrieval": 1,
     "shown": 1
@@ -2619,6 +2625,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 12,
     "retrieval": 9,
     "shown": 5
@@ -3641,6 +3648,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 1,
     "retrieval": 0,
     "shown": 0
@@ -3701,6 +3709,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 5,
     "retrieval": 0,
     "shown": 2
@@ -4776,6 +4785,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 0,
     "retrieval": 0,
     "shown": 2
@@ -4837,6 +4847,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 5,
     "retrieval": 1,
     "shown": 2
@@ -5881,6 +5892,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 2,
     "retrieval": 1,
     "shown": 1
@@ -5943,6 +5955,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 7,
     "retrieval": 2,
     "shown": 4
@@ -7012,6 +7025,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 4,
     "retrieval": 0,
     "shown": 1
@@ -7073,6 +7087,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 6,
     "retrieval": 2,
     "shown": 5
@@ -8112,6 +8127,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 1,
     "retrieval": 1,
     "shown": 2
@@ -8175,6 +8191,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 7,
     "retrieval": 1,
     "shown": 4
@@ -9277,6 +9294,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 3,
     "retrieval": 3,
     "shown": 1
@@ -9337,6 +9355,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 1,
+    "needs": 0,
     "ranker": 10,
     "retrieval": 11,
     "shown": 8
@@ -10295,6 +10314,7 @@
     "exploration": 0,
     "filter": 0,
     "mmr": 0,
+    "needs": 0,
     "ranker": 0,
     "retrieval": 0,
     "shown": 0
@@ -10353,6 +10373,7 @@
     "exploration": 1,
     "filter": 0,
     "mmr": 1,
+    "needs": 0,
     "ranker": 1,
     "retrieval": 1,
     "shown": 1
@@ -11074,6 +11095,7 @@
   "exploration": 1,
   "filter": 0,
   "mmr": 3,
+  "needs": 0,
   "ranker": 76,
   "retrieval": 34,
   "shown": 40

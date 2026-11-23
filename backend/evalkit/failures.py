@@ -11,6 +11,8 @@ the best judged routes, stage by stage:
 - ``filter``: the route violates one of the request's hard constraints (it cannot be relevant then: such
   pairs are graded 0 by rule, so this never happens for a judged-relevant route unless the request's slots
   differ from the persona's own limits);
+- ``needs``: it passes the hard filter but the stated-need stage (iteration 2, systems with ``needs``
+  configured) left it out of the eligible set;
 - ``retrieval``: eligible, but not in the fused top 50 (BM25 and dense ranks among the eligible set say which
   generator missed it);
 - ``ranker``: a candidate the learned ranker put below rank 10;
@@ -47,7 +49,7 @@ OUT = "_failures.json"
 SCHEMA = "evalkit.failures/v1"
 # other systems' NDCG@10 on the same request, for context
 COMPARE = ("recsys_v1", "recsys_v1_nocap", "v4_rrf", "v2_bm25", "v3_dense", "v1_filters")
-STAGES = ("filter", "retrieval", "ranker", "mmr", "exploration", "shown")
+STAGES = ("filter", "needs", "retrieval", "ranker", "mmr", "exploration", "shown")
 LATENT_KEYS = (
     "party",
     "fitness",
@@ -65,12 +67,12 @@ LATENT_KEYS = (
 )
 
 
-def worst_personas(doc: dict[str, Any], split_of: dict[str, str], n: int = N_WORST) -> list[str]:
-    """The ``n`` test personas with the lowest NDCG@10 (ties by persona id); undefined NDCG is skipped."""
+def worst_personas(doc: dict[str, Any], split_of: dict[str, str], n: int = N_WORST, split: str = "test") -> list[str]:
+    """The ``n`` personas of ``split`` with the lowest NDCG@10 (ties by persona id); undefined NDCG is skipped."""
     rows = [
         (v["ndcg_at_10"], pid)
         for pid, v in doc["per_persona"].items()
-        if split_of[pid] == "test" and v["ndcg_at_10"] is not None
+        if split_of[pid] == split and v["ndcg_at_10"] is not None
     ]
     return [pid for _, pid in sorted(rows)[:n]]
 
@@ -95,11 +97,13 @@ def _facts(route, home: tuple[float, float]) -> dict[str, Any]:
     }
 
 
-def _lost_at(violations: list[str], fused_rank, ltr_rank, mmr_after, final_rank) -> str:
+def _lost_at(violations: list[str], fused_rank, ltr_rank, mmr_after, final_rank, by_needs: bool = False) -> str:
     if violations:
         return "filter"
     if final_rank is not None and final_rank <= 10:
         return "shown"
+    if by_needs:
+        return "needs"
     if fused_rank is None or fused_rank > 50 or ltr_rank is None:
         return "retrieval"
     if ltr_rank > 10:
@@ -113,14 +117,16 @@ def _client():
     return make_client("failures", embed_provider="vertex", rank_provider="openrouter", cache_only=True)
 
 
-def analyse(client=None) -> dict[str, Any]:
+def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = N_WORST) -> dict[str, Any]:
+    """The analysis for ``system``'s ``n`` worst personas of ``split`` (``make failures``: the served system on
+    test; ``--split dev`` is the development-split version, which is what an improvement may be tuned on)."""
     catalog = get_catalog()
     personas = {p.persona_id: p for p in load_personas()}
     split_of = {pid: p.split for pid, p in personas.items()}
-    results = json.loads((paths.RESULTS_DIR / f"{SYSTEM}.json").read_text(encoding="utf-8"))
-    run, _ = load_run(SYSTEM)
+    results = json.loads((paths.RESULTS_DIR / f"{system}.json").read_text(encoding="utf-8"))
+    run, _ = load_run(system)
     qrels = Qrels.load()
-    worst = worst_personas(results, split_of)
+    worst = worst_personas(results, split_of, n, split)
 
     # who put each route in a top 10 (the pool): stored systems and the pool-only contributors
     pooled_by: dict[tuple[str, int], list[str]] = {}
@@ -140,20 +146,21 @@ def analyse(client=None) -> dict[str, Any]:
         if p.exists():
             compare[name] = json.loads(p.read_text(encoding="utf-8"))["per_persona"]
 
-    pipe = make_system(SYSTEM, catalog, llm=client or _client())
+    pipe = make_system(system, catalog, llm=client or _client())
     out: list[dict[str, Any]] = []
     for pid in worst:
         p = personas[pid]
         q = p.to_query()
         rec = pipe.recommend(q, 50)
         if rec.route_ids != run[pid]["ids"]:
-            raise RuntimeError(f"{pid}: replay differs from eval/runs/{SYSTEM}.jsonl; rerun make eval first")
+            raise RuntimeError(f"{pid}: replay differs from eval/runs/{system}.jsonl; rerun make eval first")
         ret = run_sync(pipe._retrieve(q))  # stage arrays over the whole eligible set
         pos_in_elig = {int(i): j for j, i in enumerate(ret.elig)}
+        hard_ok = {int(i) for i in ret.fr.indices}  # before the stated-need stage
         hc = p.constraints()
         judged = {rid: rec_ for (pp, rid), rec_ in qrels.records.items() if pp == pid}
 
-        def stage_ranks(rid: int, rec=rec, ret=ret, pos_in_elig=pos_in_elig, hc=hc) -> dict[str, Any]:
+        def stage_ranks(rid: int, rec=rec, ret=ret, pos_in_elig=pos_in_elig, hc=hc, hard_ok=hard_ok) -> dict[str, Any]:
             route = catalog.get(rid)
             j = pos_in_elig.get(catalog.index_of(rid))
             c = rec.contributions(rid)
@@ -162,6 +169,7 @@ def analyse(client=None) -> dict[str, Any]:
             ltr_rank = c.get("ltr", {}).get("rank")
             mmr_after = c.get("mmr", {}).get("rank_after")
             viol = hc.violations(route)
+            by_needs = j is None and catalog.index_of(rid) in hard_ok and ret.needs_levels is not None
             return {
                 "violations": viol,
                 "eligible": j is not None,
@@ -178,7 +186,7 @@ def analyse(client=None) -> dict[str, Any]:
                 "mmr_after": mmr_after,
                 "explore": "explore" in c,
                 "final_rank": final,
-                "lost_at": _lost_at(viol, fused, ltr_rank, mmr_after, final),
+                "lost_at": _lost_at(viol, fused, ltr_rank, mmr_after, final, by_needs),
             }
 
         def row(rid: int, judged=judged, q=q, pid=pid, stage_ranks=stage_ranks) -> dict[str, Any]:
@@ -254,9 +262,9 @@ def analyse(client=None) -> dict[str, Any]:
         totals3.update(f["grade3_lost_at"])
     return {
         "schema": SCHEMA,
-        "system": SYSTEM,
-        "split": "test",
-        "n_worst": N_WORST,
+        "system": system,
+        "split": split,
+        "n_worst": n,
         "n_best_traced": N_BEST,
         "qrels_sha256": qrels.sha256(),
         "results_note": results["note"],
@@ -280,10 +288,21 @@ def replay(check: bool) -> tuple[list[str], list[str]]:
     return client.touched_keys(), probs
 
 
-def main() -> None:
-    doc = analyse()
-    (paths.RESULTS_DIR / OUT).write_text(dumps(doc), encoding="utf-8")
-    print(f"wrote {paths.RESULTS_DIR / OUT}; now run make report")
+def main(argv=None) -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--system", default=SYSTEM)
+    ap.add_argument("--split", default="test", choices=("test", "dev"))
+    ap.add_argument("-n", type=int, default=N_WORST)
+    ap.add_argument("--out", default=None, help=f"results file name (default {OUT} for the served system on test)")
+    args = ap.parse_args(argv)
+    doc = analyse(system=args.system, split=args.split, n=args.n)
+    out = args.out or (OUT if (args.system, args.split, args.n) == (SYSTEM, "test", N_WORST) else None)
+    if out is None:
+        out = f"_failures_{args.system}_{args.split}.json"
+    (paths.RESULTS_DIR / out).write_text(dumps(doc), encoding="utf-8")
+    print(f"wrote {paths.RESULTS_DIR / out}" + ("; now run make report" if out == OUT else ""))
 
 
 if __name__ == "__main__":
