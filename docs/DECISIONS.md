@@ -228,7 +228,8 @@ exists to retrain on; `recsys_v1` stays what it is and stays registered.** Reaso
 4. Switching is one config value (`ltr_model="v1_noapi_nocap"`); nothing else changes.
 
 Not checked here, and the first thing to measure with real traffic: behaviour with the cap slot empty.
-**Pending owner** (serving default).
+~~Pending owner~~ **Decided by D25** (served default `recsys_serve` uses this ranker; the empty-cap check is in
+D25).
 
 ## D20. Feedback design (2026-11-23)
 
@@ -270,8 +271,9 @@ test simulation it costs −0.011 [−0.015, −0.008] NDCG@10 over rounds 2-10 
 users leave the cold-start window) and raises cumulative coverage after 10 rounds from 16.7% to 18.7% of the
 catalogue; completions per persona 7.84 vs 7.94. The simulated user never discovers new tastes (its
 preferences are fixed and fully reflected in the judge's grades), so the benefit exploration exists for
-cannot appear here. Whether a 1-2 point NDCG cost is worth more coverage is a product call: **pending owner**;
-`recsys_v1_fb_explore` is registered and one config change away.
+cannot appear here. Whether a 1-2 point NDCG cost is worth more coverage is a product call: ~~pending owner~~
+**decided by D25** (exploration on in the served default); `recsys_v1_fb_explore` is registered and one config
+change away.
 
 ## D23. Simulation protocol (2026-11-23)
 
@@ -295,3 +297,42 @@ cannot appear here. Whether a 1-2 point NDCG cost is worth more coverage is a pr
   the intents were written from the latent profile the judge reads (RESULTS.md, EVAL.md section 11).
 - The LLM ledger now attributes spend to the requested model (the ranker pilot's rows had been filed under
   the configured default reranker). Rows logged before the fix keep the old attribution.
+
+## D25. The served default: `recsys_serve` (decided by the coordinator, 2026-11-23)
+
+The API serves **`recsys_serve`** = the ranker trained without `length_cap_ratio` (D19) + the feedback loop with
+the dev-chosen settings (`recsys_v1_fb`'s, D21) + the exploration slot on (D22). It is a composition of
+registered parts; nothing new was trained. `recsys_v1` and every other system stay as they were. **This is a
+judgement call made without real users**: every number below comes from simulated users, an LLM judge not yet
+checked against the owner, and (for the feedback rows) a behaviour model written for this project.
+
+What it costs and buys, from RESULTS.md "Served default" and "Empty profile slots":
+
+- Single request (no feedback yet), test: NDCG@10 0.724 vs 0.759 for `recsys_v1`, −0.035 [−0.053, −0.020];
+  of that, −0.024 is the ranker (D19) and −0.011 [−0.015, −0.006] the exploration pick at rank 10. Dev shows
+  the same split.
+- 10-round simulation, test: 0.681 over rounds 2-10 vs 0.315 for `recsys_v1` without feedback and 0.701 for
+  `recsys_v1_fb` (full-feature ranker, no exploration). Exploration on the served ranker costs −0.011
+  [−0.015, −0.008] (as on the full-feature ranker) and raises cumulative coverage after 10 rounds from 16.7%
+  to 18.7%.
+- Users who leave the cap empty: removing the cap costs the served system −0.114 NDCG@10 (routes beyond the
+  persona's own cap reach the list: 17.8% violations@10), and `recsys_v1` −0.180 (20.2%). Without a cap the
+  served system is ahead of `recsys_v1` by +0.031 [+0.001, +0.064]: the measured version of D19's point 2,
+  and the reason the "cap" feature's simulator gain is not worth its fragility.
+- Users who leave the home empty: there is no radius filter, and NDCG@10 falls to 0.134 (0.126 with the cap
+  also empty), with 84-85% of the top 10 outside the persona's travel radius. Neither the ranker nor any
+  later stage substitutes for the home; the UI should ask for it (the chat already treats the place as
+  required, CHAT.md section 3).
+
+Why these three parts anyway: the cap feature's gain is a property of how the persona generator draws caps,
+and the empty-cap check shows the full-feature ranker degrading more when real users skip the field;
+the dev-chosen feedback settings are the ones chosen by the pre-stated rule (`recsys_v1_fb_light` did better
+on test, D21, but test is for reporting); exploration is part of the target architecture, its simulated cost
+is about one NDCG point, and the benefit it exists for (finding tastes the form did not capture) cannot
+appear with simulated users whose preferences are fixed and fully known to the judge.
+
+Alternatives, all registered and one config change away: `recsys_v1` (best single-request number, keeps the
+cap feature), `recsys_v1_fb` / `recsys_v1_fb_explore` (full-feature ranker with the loop),
+`recsys_serve_noexplore` (exploration off), `recsys_v1_fb_light` (the light full loop), `recsys_v1_nosusp`
+(the most conservative ranker). Spend for this follow-up (local spend log): about 0.8 USD.
+

@@ -401,7 +401,7 @@ cluster, draw, posterior and `"shown to learn your taste"`.
 `app.recsys.feedback.feedback_events_from_rows(feedback_rows, souvenir_rows, now=None)` (rows: objects or
 mappings with `route_id`, `reason`, `created_at`; souvenirs `route_id`, `completed_at`; naive timestamps are
 UTC), put them on the **original** profile's query (`dataclasses.replace(query, feedback=events)`), and serve
-`build_system("recsys_v1_fb", catalog, ...)` or `"recsys_v1_fb_explore"`. Never store the adjusted vector.
+`build_system("recsys_serve", catalog, ...)` (section 12). Never store the adjusted vector.
 
 ## 11. Phase 4 end-to-end variants and robustness rows
 
@@ -413,4 +413,19 @@ UTC), put them on the **original** profile's query (`dataclasses.replace(query, 
 - `recsys_v1_nocap` / `recsys_v1_nosusp`: the default with rankers `v1_noapi_nocap` / `v1_noapi_nosusp`
   (`make ltr-robust`), trained like `v1_noapi` without `length_cap_ratio` or without the suspicious group.
   Results: RESULTS.md "Robustness of the learned ranker"; recommendation D19.
+
+## 12. The served system: `recsys_serve`
+
+`build_system("recsys_serve", ...)` (`SERVED_SYSTEM` in `systems/pipelines.py`) is what the API serves
+(D25): filters → BM25F + dense (Rocchio-moved with feedback) → RRF → learned ranker `v1_noapi_nocap` (no
+`length_cap_ratio`, D19) → feedback stage (route effects + slot steps, dev-chosen, D21) → MMR 0.8 → exploration
+slot at rank 10 while the user has fewer than 10 feedback events (D22). Its twin without exploration is
+`recsys_serve_noexplore`. `recsys_v1` remains the Phase 3 default of the ablation and is not what is served.
+Numbers: RESULTS.md "Served default" (single request and simulation).
+
+**Empty slots** (`systems/empty_slots.py`, RESULTS.md "Empty profile slots"): without a distance cap no length
+filter applies and the ranker has no cap to compare with, so longer routes than the user can do reach the list;
+the served ranker degrades less there than `recsys_v1`'s. Without a home there is no radius filter at all and
+most of the list is out of reach; nothing downstream substitutes, so the product must collect the home (the
+chat treats the place as required).
 

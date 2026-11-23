@@ -329,8 +329,8 @@
  "rule": "highest mean NDCG@10 over rounds 2-10 on the dev subset",
  "schema": "evalkit.sim_tuning/v1",
  "sim_qrels": {
-  "pairs": 6058,
-  "sha256": "7046ed9ac2fc806e200176c05502abfe169d605a35351006b7e839ea2b38a16e"
+  "pairs": 6170,
+  "sha256": "496ee81593605d4cf36ab7ca16827a2dc9e7b4500b9dae7cf007ea7eeb6f138f"
  },
  "split": "dev",
  "vs_control": {

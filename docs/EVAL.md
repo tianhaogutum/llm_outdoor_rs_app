@@ -479,3 +479,10 @@ leave feedback less to repair than on test; the grid therefore leans towards lig
 - **Robustness rows** `recsys_v1_nocap` and `recsys_v1_nosusp` (Part D): the default with rankers retrained
   (`make ltr-robust`, same pinned dev labels, same CV) without `length_cap_ratio` or without the suspicious
   group; evaluated like every system on all personas. D19 has the recommendation.
+- **Served default and empty slots** (D25): `recsys_serve` is evaluated like every system (all personas,
+  100% judged) and in the simulation, next to its no-exploration twin `recsys_serve_noexplore`.
+  `recsys_serve_nocap`, `recsys_serve_nohome`, `recsys_serve_noslots` and `recsys_v1_nocapslot` remove the
+  cap, the home (and with it the radius), or both from the request before the system sees it; relevance is
+  still judged against the persona's real limits, so routes beyond them are graded 0 by rule. They are checks,
+  not product variants.
+
