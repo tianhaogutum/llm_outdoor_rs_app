@@ -476,7 +476,7 @@ class ServedBy(BaseModel):
     """Which system and path produced the list, and why (docs/SERVING.md "Paths and fallbacks")."""
 
     configured_system: str  # RECSYS_SYSTEM
-    system: str  # what actually ranked: recsys_serve | v2_bm25 | v0_rules | random | ...
+    system: str  # what actually ranked: recsys_serve_v2 | v2_bm25 | v0_rules | random | ...
     path: str  # pipeline | no_llm | baseline | random
     reason: Optional[str] = None  # why this path (no_intent, embedding_unavailable, timeout, budget, ...)
     degraded: bool = False  # True if a fallback replaced the configured system

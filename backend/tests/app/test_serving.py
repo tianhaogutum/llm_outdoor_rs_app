@@ -70,12 +70,13 @@ def test_default_system_serves_the_pipeline_with_explanations(serving):
     pid = new_profile(api, home=HOME, travel_radius_km=40, distance_cap_km=15, intent="easy lake loop with a hut")
     body = recs(api, pid, category="hiking")
     sb = body["served_by"]
-    assert sb["configured_system"] == sb["system"] == "recsys_serve"
+    assert sb["configured_system"] == sb["system"] == "recsys_serve_v2"  # D28
     assert sb["path"] == "pipeline" and sb["degraded"] is False and sb["reason"] is None
     assert sb["explanation_schema"] == "recsys.explanation/v1.1"
     assert sb["query"]["home_name"] == "Grainau" and sb["query"]["intent"] == "easy lake loop with a hut"
     assert sb["query"]["vector_source"] == "questionnaire"
-    assert [s["stage"] for s in sb["stages"]][:5] == ["filter", "bm25", "dense", "fusion", "ltr"]
+    # "loop" is a stated need, so the served system's stated-need stage runs between the filter and retrieval
+    assert [s["stage"] for s in sb["stages"]][:6] == ["filter", "needs", "bm25", "dense", "fusion", "ltr"]
     assert body["total"] == 10
     cat = get_catalog()
     home = sb["query"]["home"]
@@ -452,7 +453,7 @@ def test_status_reports_start_up_and_the_frontend_is_still_served(serving, monke
     assert "trailsaga" in api.get("/").text
     assert api.get("/api/does-not-exist").status_code == 404
     st = api.get("/api/recsys/status").json()["recsys"]
-    assert st["configured"] == "recsys_serve" and st["ok"] and st["catalogue_routes"] == len(get_catalog())
+    assert st["configured"] == "recsys_serve_v2" and st["ok"] and st["catalogue_routes"] == len(get_catalog())
     assert st["total_ms"] >= 0 and st["peak_rss_mb_after"] > 0
 
 
@@ -480,8 +481,15 @@ def test_pipeline_with_its_own_feedback_and_exploration_stages(serving):
 
 
 # ------------------------------------------------------------------------------- stated needs (iteration 2)
-def test_served_default_has_no_needs_stage_and_v1_fields_are_unchanged(serving):
-    api = serving()
+def test_served_default_runs_the_needs_stage(serving):
+    api = serving()  # D28: recsys_serve_v2 = recsys_serve + stated needs as a filter
+    pid = new_profile(api, home=HOME, travel_radius_km=40, intent="an easy walk with our stroller, around 6 km")
+    sb = recs(api, pid, category="hiking")["served_by"]
+    assert sb["system"] == "recsys_serve_v2" and "needs" in [s["stage"] for s in sb["stages"]]
+
+
+def test_previous_default_has_no_needs_stage_and_v1_fields_are_unchanged(serving):
+    api = serving(recsys_system="recsys_serve")  # the D25 default, still registered and servable
     pid = new_profile(api, home=HOME, travel_radius_km=40, intent="an easy walk with our stroller, around 6 km")
     body = recs(api, pid, category="hiking")
     assert "needs" not in [s["stage"] for s in body["served_by"]["stages"]]

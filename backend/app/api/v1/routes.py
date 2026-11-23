@@ -69,7 +69,7 @@ async def get_route_recommendations(
     db: Annotated[AsyncSession, Depends(get_db)] = ...,
 ):
     """
-    Route recommendations from the configured system (``RECSYS_SYSTEM``, default ``recsys_serve``).
+    Route recommendations from the configured system (``RECSYS_SYSTEM``, default ``recsys_serve_v2``).
 
     Query Parameters:
     - profile_id: optional profile for personalised recommendations (404 if unknown); without it the

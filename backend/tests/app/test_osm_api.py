@@ -46,7 +46,7 @@ def test_recommendations_expose_catalogue_facts_for_every_tab(full_client):
         body = resp.json()
         assert body["is_personalized"] is True and body["total"] == 20
         # the DB holds the catalogue, so the default pipeline serves (no intent: its rule path)
-        assert body["served_by"]["system"] == "recsys_serve" and body["served_by"]["reason"] == "no_intent"
+        assert body["served_by"]["system"] == "recsys_serve_v2" and body["served_by"]["reason"] == "no_intent"
         for route in body["routes"]:
             assert_osm_route_payload(route)
             if category:

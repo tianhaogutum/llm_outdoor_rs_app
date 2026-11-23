@@ -81,8 +81,12 @@ def test_served_system_composition_and_empty_slot_checks(cat, llm):
     from app.recsys.systems.pipelines import CONFIGS, SERVED_SYSTEM
 
     cfg = CONFIGS[SERVED_SYSTEM]
-    assert SERVED_SYSTEM == "recsys_serve" and cfg.ltr_model == "v1_noapi_nocap"
-    assert cfg.feedback == CONFIGS["recsys_v1_fb"].feedback and cfg.explore is not None
+    # D28: the served system is recsys_serve_needs under its own name; recsys_serve (D25) is unchanged
+    assert SERVED_SYSTEM == "recsys_serve_v2" and cfg == CONFIGS["recsys_serve_needs"]
+    assert cfg == CONFIGS["recsys_serve"].with_(needs=cfg.needs) and cfg.needs.mode == "filter"
+    base = CONFIGS["recsys_serve"]
+    assert base.ltr_model == "v1_noapi_nocap" and base.needs is None
+    assert base.feedback == CONFIGS["recsys_v1_fb"].feedback and base.explore is not None
     assert CONFIGS["recsys_v1"].ltr_model == "v1_noapi" and CONFIGS["recsys_v1"].feedback is None  # unchanged
     q = _q()
     checks = (("recsys_serve_nocap", ("max_distance_km",)), ("recsys_serve_nohome", ("home",)),

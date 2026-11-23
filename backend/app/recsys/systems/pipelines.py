@@ -6,8 +6,8 @@ The ablation chain (docs/RESULTS.md) adds one component per row::
 
 ``v2_bm25`` and ``v3_dense`` rank the eligible set by that generator's own score (standalone), ``v4_rrf``
 by the fused score. ``recsys_v1`` is the Phase 3 default (the end of the ablation); the API serves
-``SERVED_SYSTEM`` = ``recsys_serve`` (docs/DECISIONS.md D25). Every factory accepts config
-overrides (``build_system("v4_rrf", catalog, rrf_k=30)``) plus ``llm=``, ``doc_embeddings=`` and
+``SERVED_SYSTEM`` = ``recsys_serve_v2`` (docs/DECISIONS.md D28; before that ``recsys_serve``, D25). Every factory
+accepts config overrides (``build_system("v4_rrf", catalog, rrf_k=30)``) plus ``llm=``, ``doc_embeddings=`` and
 ``ltr_model=`` (a loaded :class:`~app.recsys.ltr.TreeEnsemble`) to inject resources.
 """
 
@@ -59,16 +59,19 @@ CONFIGS["recsys_v1_fb"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=FEEDBACK)
 CONFIGS["recsys_v1_fb_explore"] = CONFIGS["recsys_v1_fb"].with_(explore=ExploreConfig())
 CONFIGS["recsys_v1_fb_route"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=ROUTE_EFFECTS_ONLY)
 CONFIGS["recsys_v1_fb_light"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=LIGHT_LOOP)
-# The system the API serves (docs/DECISIONS.md D25): ranker without length_cap_ratio (D19), the feedback loop as
-# chosen on dev (D21), exploration slot on (D22). A composition of registered parts; nothing new is trained.
-SERVED_SYSTEM = "recsys_serve"
+# The served default from D25 to D28: ranker without length_cap_ratio (D19), the feedback loop as chosen on dev
+# (D21), exploration slot on (D22). A composition of registered parts; nothing new is trained. Unchanged since.
 CONFIGS["recsys_serve_noexplore"] = CONFIGS["recsys_v1_nocap"].with_(feedback=FEEDBACK)
-CONFIGS[SERVED_SYSTEM] = CONFIGS["recsys_serve_noexplore"].with_(explore=ExploreConfig())
-# Iteration 2 (docs/RECSYS.md section 13, DECISIONS.md D27): the served system plus the stated-need stage, as a
+CONFIGS["recsys_serve"] = CONFIGS["recsys_serve_noexplore"].with_(explore=ExploreConfig())
+# Iteration 2 (docs/RECSYS.md section 13, DECISIONS.md D27): recsys_serve plus the stated-need stage, as a
 # constraint in front of candidate generation (filter, with relaxation below a floor) or as a post-ranker demotion.
-CONFIGS["recsys_serve_needs"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="filter"))
-CONFIGS["recsys_serve_needs_promote"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="filter_promote"))
-CONFIGS["recsys_serve_needs_demote"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="demote"))
+CONFIGS["recsys_serve_needs"] = CONFIGS["recsys_serve"].with_(needs=NeedsConfig(mode="filter"))
+CONFIGS["recsys_serve_needs_promote"] = CONFIGS["recsys_serve"].with_(needs=NeedsConfig(mode="filter_promote"))
+CONFIGS["recsys_serve_needs_demote"] = CONFIGS["recsys_serve"].with_(needs=NeedsConfig(mode="demote"))
+# The system the API serves since iteration 3 (docs/DECISIONS.md D28): the variant the pre-registered holdout rule
+# selected, recsys_serve_needs, registered under its own name with exactly that config.
+SERVED_SYSTEM = "recsys_serve_v2"
+CONFIGS[SERVED_SYSTEM] = CONFIGS["recsys_serve_needs"]
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -86,7 +89,9 @@ DESCRIPTIONS: dict[str, str] = {
     "recsys_v1_fb": "recsys_v1 + feedback loop as chosen on dev (route effects, slot adjustments)",
     "recsys_v1_fb_light": "recsys_v1 + full light feedback loop (slots, Rocchio, re-scoring, near-duplicates)",
     "recsys_v1_fb_explore": "recsys_v1_fb + one exploration slot (Thompson sampling over tag clusters)",
-    "recsys_serve": "SERVED: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot (D25)",
+    "recsys_serve": "served D25-D28: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot",
+    "recsys_serve_v2": "SERVED since D28: recsys_serve + stated needs as constraints in front of retrieval "
+    "(= recsys_serve_needs, chosen on the holdout)",
     "recsys_serve_noexplore": "recsys_serve without the exploration slot (its feedback-on, no-exploration twin)",
     "recsys_v1_fb_route": "recsys_v1 + route effects only (recent completions and rejections not shown again)",
     "recsys_serve_needs": "recsys_serve + stated needs as constraints in front of retrieval (relaxed below a floor)",

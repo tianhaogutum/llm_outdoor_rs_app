@@ -68,7 +68,7 @@ google-genai. It leaves out:
 - the evaluation harness's training-time libraries (`lightgbm`, `scikit-learn`, `matplotlib`). The ranker
   trees are evaluated in numpy (`app/recsys/ltr.py`);
 - `google-cloud-discoveryengine` (grpc/protobuf). Only `RANK_PROVIDER=vertex` uses it (the Vertex Ranking API,
-  not enabled in the project, D2), and the served `recsys_serve` calls no ranking API;
+  not enabled in the project, D2), and the served `recsys_serve_v2` calls no ranking API;
 - uvicorn's `watchfiles`, `websockets` and PyYAML (reload, websocket routes and YAML log config are unused);
 - pytest, ruff, pre-commit.
 
@@ -121,7 +121,7 @@ The image's defaults are the demo configuration. Every value can be overridden w
 | `GOOGLE_APPLICATION_CREDENTIALS` | unset | Needed with the project for Vertex inside a container (section 3). Project set but ADC missing: the call fails, and the request falls back as above. The chat uses the keyword rules for that turn |
 | `OPENROUTER_API_KEY` | unset | The chat does not use Claude Haiku (D18). With neither key nor Vertex project, chat turns are answered by the **keyword extractor** (`model: "keyword-rules"`; slot F1 0.885 vs 0.985 for Haiku on the scripted set, CHAT.md) |
 | `EMBED_PROVIDER` | = `LLM_PROVIDER` | Set `vertex` for live query embeddings. Do **not** set `mock` in a demo: the pipeline would then rank with hashed bag-of-words vectors instead of the evaluated embeddings |
-| `RECSYS_SYSTEM` | `recsys_serve` | Any registered pipeline (`recsys_v1`, …), or `v0_rules` |
+| `RECSYS_SYSTEM` | `recsys_serve_v2` (D28) | Any registered pipeline (`recsys_serve`, `recsys_v1`, …), or `v0_rules` |
 | `NARRATIVES_LIVE` | `false` | Pre-generated text, else template (section 4) |
 | `NARRATIVES_DIR` | `backend/data/narratives` | Missing or unreadable store: templates |
 | `RATE_LIMIT_*`, `DAILY_BUDGET_USD` | see above | Section 5 |
@@ -206,6 +206,13 @@ The set was selected on 2026-11-23 with `recsys_v1`, before D25 made `recsys_ser
 10, so a re-selection (`python scripts/narratives.py select`, no provider call) changes part of the set; routes
 outside the stored set get the template text. Re-run `select` and `make narratives-live` before a deployment
 (owner checklist, section 6).
+
+D28 made `recsys_serve_v2` the default. Its stated-need stage reads needs from the intent and the chat slots;
+the selection grid's main part has no intent and the intent part runs through the no-LLM path, so re-selecting
+with `recsys_serve_v2` gives exactly the same 400 routes as with `recsys_serve` (checked on 2026-11-23 with
+`RECSYS_SYSTEM=recsys_serve_v2 python scripts/narratives.py select`; the file was not committed). The narratives
+were therefore not regenerated for D28; the difference to the stored `recsys_v1` selection (21 of 400 routes)
+is the one described above.
 
 **Provenance.** Each file has `schema`, `llm_generated: true`, a notice and `provenance` (provider, model,
 prompt version, system-prompt hash, parameters, generator). Each item has `text`, `llm_generated`, `model`
@@ -322,7 +329,7 @@ Limits of this design:
   indefinitely. Decide on a retention or reset policy.
 - [ ] **Narrative store.** The pre-generated route texts were selected with `recsys_v1` (section 4). Re-run
   `python scripts/narratives.py select` and `make narratives-live` (live call for the new routes only) so the
-  store matches the served `recsys_serve`.
+  store matches the served `recsys_serve_v2` (whose selection equals `recsys_serve`'s, section 4).
 
 ## 7. One neutral example (NOT executed)
 

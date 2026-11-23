@@ -45,7 +45,7 @@ from app.recsys.pipeline import Pipeline, PipelineConfig
 from app.recsys.dense import DocEmbeddings
 from app.recsys.ltr import load_model
 
-pipe = build_system("recsys_serve", get_catalog(), llm=client)       # what the API serves (section 12)
+pipe = build_system("recsys_serve_v2", get_catalog(), llm=client)    # what the API serves (sections 12, 13)
 # or explicitly, with injected resources:
 pipe = Pipeline(catalog, PipelineConfig(...), name="custom",
                 doc_embeddings=DocEmbeddings.load(), ltr_model=load_model("v1_noapi"), llm=client)
@@ -97,7 +97,8 @@ each returns exactly `recsys_v1`'s list) and, in `systems/chat_e2e.py`, `recsys_
 (section 11). D25 adds the served system **`recsys_serve`** and its twin `recsys_serve_noexplore` (section 12),
 and `systems/empty_slots.py` the checks `recsys_serve_nocap`, `recsys_serve_nohome`, `recsys_serve_noslots`,
 `recsys_v1_nocapslot`. Iteration 2 (D27) adds `recsys_serve_needs`, `recsys_serve_needs_promote` and
-`recsys_serve_needs_demote` (section 13); none is served. Any field can be overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
+`recsys_serve_needs_demote` (section 13); iteration 3 (D28) registers the winner, `recsys_serve_needs`, under the
+served name `recsys_serve_v2`. Any field can be overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
 
 ## 2. Hard filters (3a)
 
@@ -352,7 +353,7 @@ rank change when it is non-zero. Wiring this into the API and the score modal is
 | `app/recsys/feedback.py`, `explore.py` | Phase 5: decay, slot adjustments, Rocchio, re-scoring, route effects; tag clusters and Thompson sampling |
 | `app/recsys/needs.py` | iteration 2: stated-need extraction, verification levels, relaxation, per-route checks (section 13) |
 | `app/recsys/systems/chat_e2e.py` | Phase 4 end-to-end variants (questionnaire only, + chat) |
-| `app/recsys/systems/pipelines.py` | registered systems, `DEFAULT_SYSTEM = "recsys_v1"` (Phase 3), `SERVED_SYSTEM = "recsys_serve"` (D25) |
+| `app/recsys/systems/pipelines.py` | registered systems, `DEFAULT_SYSTEM = "recsys_v1"` (Phase 3), `SERVED_SYSTEM = "recsys_serve_v2"` (D28; `recsys_serve` D25-D28) |
 | `app/recsys/systems/empty_slots.py` | the empty-slot checks (`recsys_serve_nocap`, `_nohome`, `_noslots`, `recsys_v1_nocapslot`) |
 | `app/recsys/artifacts/` | `doc_embeddings.npz`, `ltr_v1.json`, `ltr_v1_noapi.json`, `ltr_v1_noapi_nocap.json`, `ltr_v1_noapi_nosusp.json` |
 | `evalkit/cg.py`, `rank_pilot.py`, `ltr.py`, `mmr_sweep.py`, `latency.py`, `explain_example.py` | the Phase 3 experiments (`make cg-tune`, `rank-pilot`, `ltr-sample`, `ltr`, `mmr-sweep`, `latency`) |
@@ -431,10 +432,11 @@ UTC), put them on the **original** profile's query (`dataclasses.replace(query, 
   (`make ltr-robust`), trained like `v1_noapi` without `length_cap_ratio` or without the suspicious group.
   Results: RESULTS.md "Robustness of the learned ranker"; recommendation D19.
 
-## 12. The served system: `recsys_serve`
+## 12. The served system: `recsys_serve_v2` = `recsys_serve` + stated needs
 
-`build_system("recsys_serve", ...)` (`SERVED_SYSTEM` in `systems/pipelines.py`) is what the API serves
-(D25): filters → BM25F + dense → RRF → learned ranker `v1_noapi_nocap` (no
+Since D28 the API serves `recsys_serve_v2` (`SERVED_SYSTEM` in `systems/pipelines.py`): exactly
+`recsys_serve_needs`, the system below plus the stated-need stage as a filter after the hard filter (section 13).
+`build_system("recsys_serve", ...)` is what the API served from D25 to D28, and stays registered: filters → BM25F + dense → RRF → learned ranker `v1_noapi_nocap` (no
 `length_cap_ratio`, D19) → feedback stage (route effects + slot steps, dev-chosen, D21) → MMR 0.8 → exploration
 slot at rank 10 while the user has fewer than 10 feedback events (D22). Rocchio and re-scoring are off in the
 dev-chosen feedback settings, so feedback changes the request's slots and tags and hides routes but does not move the
@@ -454,7 +456,8 @@ The design principle says verifiable constraints decide eligibility; until itera
 slots were verified. The failure analysis (FAILURES.md, test) showed the learned ranker outweighing needs the user
 had *stated* and the catalogue can *check*. This stage turns those into constraints. Where the hypothesis came
 from and how it was evaluated: EVAL.md section 12; the decision: DECISIONS.md D27; numbers: RESULTS.md "Iteration
-2". **It is built, tested and registered, and off in the served default** (D27).
+2". **Off in the served default after iteration 2 (D27); since iteration 3 the filter mode is served**
+(`recsys_serve_v2`, D28).
 
 **Extraction** (`extract_needs(intent, category, slot_needs)`): regular expressions over the intent, English and
 German, after lower-casing and normalising quotes and dashes. A mention is negated if a negator ("no", "not",
@@ -515,10 +518,12 @@ reach the stage through `UserQuery.needs` (activity `mtb`, the tags `Suitable fo
 **Cost.** Extraction and the per-need masks are numpy over arrays built once per catalogue; the stage's own compute
 is well under a millisecond at p95 on dev (RESULTS.md). No upstream call.
 
-**What it showed.** By the rule fixed in advance on dev, no variant is accepted (D27). The dev comparison is
-dominated by the learned ranker being in-sample on dev; with a cross-fitted ranker every variant is ahead on dev,
-and test agrees (reported once). Where it hurts, the catalogue's check is stricter than the judge's reading
-(FAILURES.md "Iteration 2"). Next step, if the owner wants it: pre-register a cross-fitted dev rule, loosen the
-train check to "station at either end or public transport" only if dev says so, and keep promotion from
-resurrecting needs the relaxation dropped.
+**What it showed.** By the rule fixed in advance on in-sample dev, no variant was accepted (D27). That comparison
+was dominated by the learned ranker being in-sample on dev; with a cross-fitted ranker every variant is ahead on
+dev, and test agreed (reported once). Iteration 3 made cross-fitted dev the dev standard (EVAL.md section 13) and
+decided on a fresh holdout under a rule registered in advance (D28): the filter mode won and is served as
+`recsys_serve_v2`; promotion was also eligible with a smaller bound, demotion was not. Where it hurts, the
+catalogue's check is stricter than the judge's reading or the relaxation keeps the wrong need (FAILURES.md
+"Iteration 2" on test, class E on the holdout): next, on cross-fitted dev, relax `mtb` after `train` for cyclists,
+measure a looser stroller level, and add an effort need ("without much climbing").
 

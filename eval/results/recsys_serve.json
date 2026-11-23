@@ -134,7 +134,7 @@
    "test": 100
   }
  },
- "description": "SERVED: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot (D25)",
+ "description": "served D25-D28: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot",
  "judge": {
   "config": {
    "batch_size": 8,
@@ -3348,7 +3348,7 @@
  "schema": "evalkit.results/v1",
  "system": "recsys_serve",
  "volatile": {
-  "generated_at": "2026-11-23T12:35:57Z",
+  "generated_at": "2026-11-23T13:16:41Z",
   "latency_ms_nominal": {
    "all": {
     "definition": "local compute + recorded upstream latency",

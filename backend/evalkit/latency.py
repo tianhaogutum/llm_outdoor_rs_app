@@ -27,7 +27,7 @@ from evalkit.evaluate import dumps
 from evalkit.llm import make_client
 from evalkit.personas import load_personas
 
-SYSTEMS = ("recsys_serve", "recsys_v1", "v7_mmr")
+SYSTEMS = ("recsys_serve_v2", "recsys_serve", "recsys_v1", "v7_mmr")
 N = 60
 WARMUP = 5
 OUT = "_latency.json"

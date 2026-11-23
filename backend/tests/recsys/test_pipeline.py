@@ -37,6 +37,7 @@ EXPECTED_STAGES = {
     "recsys_serve": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
     # iteration 2: the default intent states a loop and a length, so the stated-need stage runs
     "recsys_serve_needs": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
+    "recsys_serve_v2": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},  # D28
     "recsys_serve_needs_promote": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
     "recsys_serve_needs_demote": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
 }

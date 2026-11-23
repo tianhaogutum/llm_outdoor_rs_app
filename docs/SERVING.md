@@ -12,14 +12,17 @@ of one machine and one network, not as results.
 
 ## 1. System selection
 
-`RECSYS_SYSTEM` (default `recsys_serve`, the served system chosen in DECISIONS.md D25: the ranker trained without
-`length_cap_ratio`, the feedback stage and one exploration slot) names any registered pipeline (`recsys_v1`,
+`RECSYS_SYSTEM` (default `recsys_serve_v2` since DECISIONS.md D28: the D25 system `recsys_serve`, i.e. the ranker
+trained without `length_cap_ratio`, the feedback stage and one exploration slot, plus the stated-need stage as a
+filter in front of retrieval, RECSYS.md section 13) names any registered pipeline (`recsys_serve`, `recsys_v1`,
 `v7_mmr`, `v4_rrf`, ...) or `v0_rules`. The measurements and the example payload below were taken with
-`recsys_v1`, which runs the same stages up to the ranker; `recsys_serve` adds the feedback and exploration stages.
+`recsys_v1`, which runs the same stages up to the ranker; `recsys_serve` adds the feedback and exploration stages,
+and `recsys_serve_v2` the `needs` stage after the filter (its own compute is well under a millisecond; the warm
+benchmark of `recsys_serve_v2` is in RESULTS.md "Latency and cost against the budget").
 `v0_rules` runs the original DB path (`recommendation_service.get_recommended_routes`) unchanged, so its
 golden test still holds. The stated-need variants of iteration 2 (`recsys_serve_needs`,
 `recsys_serve_needs_promote`, `recsys_serve_needs_demote`; RECSYS.md section 13, DECISIONS.md D27) are servable
-the same way; by D27 none is the default. An unknown name, or a pipeline that fails to load, is logged at start-up and
+the same way; by the D28 rule `recsys_serve_needs` won and is served under the name `recsys_serve_v2` (same config). An unknown name, or a pipeline that fails to load, is logged at start-up and
 falls back to the baseline (`reason: pipeline_not_loaded`).
 
 ## 2. From the stored profile to a `UserQuery`
@@ -57,7 +60,7 @@ Every response carries `served_by`: `configured_system`, `system` (what actually
 
 | Situation | Path / system | `reason` |
 |---|---|---|
-| Profile with intent, provider fine | `pipeline` / the configured system (default `recsys_serve`) | – |
+| Profile with intent, provider fine | `pipeline` / the configured system (default `recsys_serve_v2`) | – |
 | Profile without intent | `pipeline` / the configured system's rule path: filters → rule scorer → (feedback) → MMR (→ exploration slot) (no provider call) | `no_intent` |
 | Profile without home | `pipeline`. The radius filter is not applied, and the verdict says `"applied": false` with `null` distances | – |
 | Guest (no `profile_id`) | `random` over the tab, seeded per request (uniform over the whole tab, unlike the baseline's lowest-id bias, D7.3) | `guest` |
@@ -158,7 +161,7 @@ deployment needs a shared store, or the deployment's own limits.
 ## 7. Feedback
 
 The pipeline gets every event in `UserQuery.feedback`, from the original vector, applied once. The served
-default `recsys_serve` has its own feedback stage (`app/recsys/feedback.py`, D25). For a configured system
+default `recsys_serve_v2` (like `recsys_serve` before it) has its own feedback stage (`app/recsys/feedback.py`, D25). For a configured system
 *without* one (`recsys_v1`, `v7_mmr`, ...), the serving layer adds an **interim rule** instead: a route the
 user rejected or completed in the last 60 days is
 left out of the list. Sixty days is two 30-day half-lives of the baseline's decay. Older events no longer
@@ -171,7 +174,7 @@ off. The stage's route effects and re-scoring then appear in `explanation.stages
 `served_by.query.feedback_handled_by` says `pipeline`. Phase 5a (`recsys_v1_fb`, `recsys_v1_fb_explore`) is committed, and serving it is one setting away:
 `RECSYS_SYSTEM=recsys_v1_fb_explore`. `tests/app/test_serving.py` checks that path: the interim rule switches off,
 the pipeline drops the rejected route itself, and exactly one card per list is labelled "Exploration pick"
-with `stages.explore` filled. Since D25 the default is `recsys_serve`, which has both stages, so the interim
+with `stages.explore` filled. Since D25 the default (now `recsys_serve_v2`, D28) has both stages, so the interim
 rule only applies when a system without a feedback stage is configured.
 
 ## 8. Explanations

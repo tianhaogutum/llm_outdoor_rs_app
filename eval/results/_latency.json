@@ -8,7 +8,7 @@
  "note": "sequential warm requests, LLM cache off, wall time of Pipeline.arecommend; machine-dependent",
  "python": "3.12.14",
  "real_usd": 0.000262,
- "real_usd_earlier_runs": 0.050149,
+ "real_usd_earlier_runs": 0.050411,
  "schema": "evalkit.latency/v1",
  "systems": {
   "recsys_serve": {
@@ -56,6 +56,58 @@
     "max": 4933.067375,
     "p50": 100.235125,
     "p95": 203.339759
+   },
+   "within_budget": true
+  },
+  "recsys_serve_v2": {
+   "budget_ms_p95": 500.0,
+   "cost_usd_per_request": 4e-06,
+   "local_compute_ms": {
+    "p50": 6.868708,
+    "p95": 13.844889
+   },
+   "per_stage_ms_p50": {
+    "bm25": {
+     "local": 0.206063,
+     "upstream": 0.0
+    },
+    "dense": {
+     "local": 0.129729,
+     "upstream": 117.054895
+    },
+    "explore": {
+     "local": 0.182854,
+     "upstream": 0.0
+    },
+    "filter": {
+     "local": 0.632896,
+     "upstream": 0.0
+    },
+    "fusion": {
+     "local": 0.106416,
+     "upstream": 0.0
+    },
+    "ltr": {
+     "local": 4.614187,
+     "upstream": 0.0
+    },
+    "mmr": {
+     "local": 0.272562,
+     "upstream": 0.0
+    },
+    "needs": {
+     "local": 0.125209,
+     "upstream": 0.0
+    }
+   },
+   "upstream_ms_p95": {
+    "dense": 241.794363
+   },
+   "uses_rank_api": false,
+   "wall_ms": {
+    "max": 61256.332667,
+    "p50": 126.078458,
+    "p95": 293.450123
    },
    "within_budget": true
   },
