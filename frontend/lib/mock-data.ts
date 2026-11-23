@@ -1,3 +1,5 @@
+import type { ApiRouteExplanation } from "./api-types";
+
 // Mock data for TrailSaga – Hogwarts Expedition Series prototype
 //
 // NOTE: When connecting to the real backend API, use the types from api-types.ts
@@ -58,6 +60,9 @@ export interface Route {
   epilogue?: string;
   recommendationScore?: number | null; // CBF recommendation score (0.0-1.0)
   recommendationScoreBreakdown?: RecommendationScoreBreakdown | null; // Score breakdown
+  explanation?: ApiRouteExplanation | null; // per-stage explanation (pipeline paths)
+  reason?: string | null; // one-line grounded reason
+  isExploration?: boolean; // exploration pick
   gpxData?: string | null; // GPX track data for map visualization
   // Real catalogue facts (OSM routes; undefined for mock/legacy routes)
   facts?: RouteFacts;

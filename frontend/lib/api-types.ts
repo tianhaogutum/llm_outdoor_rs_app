@@ -123,6 +123,10 @@ export interface ApiRoute {
   is_locked: boolean; // Computed field based on user XP
   recommendation_score?: number | null; // CBF score (0.0-1.0)
   recommendation_score_breakdown?: RecommendationScoreBreakdown | null; // Score components
+  // Pipeline paths: per-stage explanation and a one-line grounded reason (baseline: reason only)
+  explanation?: ApiRouteExplanation | null;
+  reason?: string | null;
+  is_exploration?: boolean;
   // Catalogue facts (OSM routes; null for the legacy catalogue)
   source?: string | null; // "osm"
   source_url?: string | null; // OSM relation page
@@ -175,10 +179,107 @@ export interface ApiHomeLocation {
   lon?: number | null;
 }
 
+/**
+ * Per-stage explanation of one recommended route (backend RouteExplanationResponse; stages follow
+ * app/recsys/explain.py "recsys.explanation/v1"). A stage that did not run is null.
+ */
+export interface ApiFilterExplanation {
+  verdict: "pass" | "pass_relaxed" | "fail";
+  category: { applied: boolean; ok: boolean; value: string; allowed: string[] | null };
+  radius: {
+    applied: boolean;
+    ok: boolean;
+    distance_km: number | null;
+    limit_km: number | null;
+    limit_used_km: number | null;
+    relaxed: boolean;
+  };
+  distance_cap: { applied: boolean; ok: boolean; length_km: number; limit_km: number | null };
+}
+
+export interface ApiStageContributions {
+  filter?: ApiFilterExplanation | null;
+  v0_rules?: {
+    difficulty: number;
+    distance: number;
+    tags: number;
+    total: number;
+    feedback_penalty?: number | null;
+  } | null;
+  bm25?: { score: number; rank: number; matched_terms: { term: string; contribution: number }[] } | null;
+  dense?: { similarity: number; rank: number } | null;
+  fusion?: { rrf_score: number; rank: number; k: number; inputs: Record<string, number> } | null;
+  rank_api?: { score: number; rank: number; model: string } | null;
+  ltr?: {
+    score: number;
+    rank: number;
+    bias: number;
+    model: string;
+    features: { name: string; value: number | null; contribution: number }[];
+  } | null;
+  mmr?: {
+    lambda: number;
+    relevance: number;
+    max_similarity: number;
+    penalty: number;
+    mmr_score: number;
+    rank_before: number;
+    rank_after: number;
+  } | null;
+  // Phase 5 stages (present once the pipeline has them)
+  feedback?: Record<string, unknown> | null;
+  explore?: Record<string, unknown> | null;
+}
+
+export interface ApiRouteExplanation {
+  schema_version: string;
+  rank: number;
+  score: number; // final pipeline score, not a percentage
+  stages: ApiStageContributions;
+  feedback: {
+    events_considered: number;
+    on_this_route: { reason: string; age_days: number }[];
+    rule_penalty: number | null;
+    hidden_routes: number;
+    window_days: number | null;
+    stage: Record<string, unknown> | null;
+  };
+  exploration: { is_exploration: boolean; detail: Record<string, unknown> | null };
+  n_candidates: number | null;
+  n_eligible: number | null;
+  other_stages?: Record<string, unknown> | null;
+}
+
+export interface ApiServedBy {
+  configured_system: string;
+  system: string;
+  path: "pipeline" | "no_llm" | "baseline" | "random" | string;
+  reason: string | null;
+  degraded: boolean;
+  request_id?: string | null;
+  explanation_schema?: string | null;
+  query?: {
+    category: string | null;
+    home_name: string | null;
+    home: [number, number] | null;
+    travel_radius_km: number | null;
+    distance_cap_km: number | null;
+    intent: string | null;
+    vector_source: string | null;
+    feedback_events: number;
+    suppressed_route_ids: number[];
+    feedback_handled_by?: string | null;
+  } | null;
+  stages: { stage: string; n_in: number; n_out: number; local_ms: number; upstream_latency_ms: number }[];
+  latency_ms: number | null;
+  upstream_cost_usd?: number | null;
+}
+
 export interface ApiRecommendationResponse {
   routes: ApiRoute[];
   total: number;
   is_personalized: boolean;
+  served_by?: ApiServedBy | null;
 }
 
 export interface ApiProfile {

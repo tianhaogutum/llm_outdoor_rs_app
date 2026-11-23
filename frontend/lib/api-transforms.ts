@@ -359,6 +359,9 @@ export function transformApiRoute(apiRoute: ApiRoute): Route {
     epilogue: apiRoute.story_epilogue_body || undefined,
     recommendationScore: apiRoute.recommendation_score ?? undefined,
     recommendationScoreBreakdown: apiRoute.recommendation_score_breakdown ?? undefined,
+    explanation: apiRoute.explanation ?? undefined,
+    reason: apiRoute.reason ?? undefined,
+    isExploration: apiRoute.is_exploration ?? apiRoute.explanation?.exploration?.is_exploration ?? false,
     gpxData: apiRoute.gpx_data_raw || undefined,
     facts: transformRouteFacts(apiRoute, allTags),
   };

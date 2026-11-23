@@ -10,23 +10,134 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { RecommendationScoreBreakdown } from "@/lib/mock-data";
-import { TrendingUp, Target, Tags, Info } from "lucide-react";
+import type { ApiRouteExplanation } from "@/lib/api-types";
+import { explanationLines, type ExplanationLine } from "@/lib/explanation";
+import { TrendingUp, Target, Tags, Info, Compass, CheckCircle2, AlertTriangle, Circle } from "lucide-react";
+import { useState } from "react";
 
 interface RecommendationScoreModalProps {
-  score: number;
-  breakdown: RecommendationScoreBreakdown;
+  score?: number | null;
+  breakdown?: RecommendationScoreBreakdown | null;
+  explanation?: ApiRouteExplanation | null;
+  reason?: string | null;
+  homeName?: string | null;
+  intent?: string | null;
   routeName: string;
   open: boolean;
   onClose: () => void;
 }
 
+function StageRow({ line, showNumbers }: { line: ExplanationLine; showNumbers: boolean }) {
+  const Icon = line.tone === "good" ? CheckCircle2 : line.tone === "warn" ? AlertTriangle : Circle;
+  const color =
+    line.tone === "good" ? "text-primary" : line.tone === "warn" ? "text-orange-600" : "text-muted-foreground";
+  return (
+    <li className="p-3 border-2 rounded-lg" data-stage={line.key}>
+      <div className="flex items-start gap-2">
+        <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${color}`} />
+        <div className="min-w-0">
+          <p className="font-semibold text-sm">{line.title}</p>
+          <p className="text-sm text-foreground">{line.text}</p>
+          {showNumbers && line.numbers.length > 0 && (
+            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-xs text-muted-foreground font-mono">
+              {line.numbers.map(([k, v], i) => (
+                <div key={i} className="contents">
+                  <dt className="truncate">{k}</dt>
+                  <dd className="text-foreground">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/** Stage-by-stage explanation of a pipeline recommendation (recsys.explanation/v1). */
+function PipelineExplanation({
+  explanation,
+  reason,
+  homeName,
+  intent,
+}: {
+  explanation: ApiRouteExplanation;
+  reason?: string | null;
+  homeName?: string | null;
+  intent?: string | null;
+}) {
+  const [showNumbers, setShowNumbers] = useState(false);
+  const lines = explanationLines(explanation, homeName, intent);
+  return (
+    <div className="space-y-4 mt-2">
+      {explanation.exploration?.is_exploration && (
+        <Badge variant="outline" className="gap-1">
+          <Compass className="w-3.5 h-3.5" /> Exploration pick
+        </Badge>
+      )}
+      {reason && (
+        <p className="p-3 bg-primary/10 rounded-lg border-2 border-primary/20 text-sm" data-testid="route-reason">
+          {reason}
+        </p>
+      )}
+      <ol className="space-y-2">
+        {lines.map((l) => (
+          <StageRow key={l.key} line={l} showNumbers={showNumbers} />
+        ))}
+      </ol>
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => setShowNumbers((v) => !v)}
+          className="text-xs underline text-muted-foreground hover:text-foreground"
+          aria-expanded={showNumbers}
+        >
+          {showNumbers ? "Hide the numbers" : "Show the numbers"}
+        </button>
+        <span className="text-xs text-muted-foreground">
+          Position {explanation.rank} · score {explanation.score.toFixed(3)}
+        </span>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        How it works: routes must first fit your limits (activity, distance from home, length). Among them, a
+        word search and a meaning search propose candidates, a ranker trained on judged examples orders them,
+        and the list is then spread out so it is not ten versions of the same walk.
+      </p>
+    </div>
+  );
+}
+
 export function RecommendationScoreModal({
   score,
   breakdown,
+  explanation,
+  reason,
+  homeName,
+  intent,
   routeName,
   open,
   onClose,
 }: RecommendationScoreModalProps) {
+  if (explanation) {
+    return (
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Why we recommend this
+            </DialogTitle>
+            <DialogDescription>
+              Step by step, how <span className="font-semibold text-foreground">{routeName}</span> got onto
+              your list
+            </DialogDescription>
+          </DialogHeader>
+          <PipelineExplanation explanation={explanation} reason={reason} homeName={homeName} intent={intent} />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  if (score === undefined || score === null || !breakdown) return null;
   const percentage = Math.round(score * 100);
 
   return (

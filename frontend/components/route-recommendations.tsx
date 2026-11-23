@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockRoutes, UserProfile, Route } from "@/lib/mock-data";
 import { apiClient } from "@/lib/api-client";
-import { ApiChatResponse, ApiRecommendationResponse } from "@/lib/api-types";
+import { ApiChatResponse, ApiRecommendationResponse, ApiServedBy } from "@/lib/api-types";
+import { servedNote } from "@/lib/explanation";
 import { PreferenceChat } from "@/components/preference-chat";
 import { transformApiRoutes, transformApiSouvenir } from "@/lib/api-transforms";
 import { logger } from "@/lib/logger";
@@ -26,6 +27,7 @@ import {
   Sparkles,
   User,
   Bike,
+  Compass,
 } from "lucide-react";
 import { RouteDetailModal } from "@/components/route-detail-modal";
 import { HikingSimulator } from "@/components/hiking-simulator";
@@ -104,6 +106,7 @@ export function RouteRecommendations({
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
   const [scoreModalRoute, setScoreModalRoute] = useState<Route | null>(null);
+  const [servedBy, setServedBy] = useState<ApiServedBy | null>(null);
   const [routeLimit, setRouteLimit] = useState<number>(20);
   const [isGeneratingStory, setIsGeneratingStory] = useState(false);
   const [storyGenerationRouteId, setStoryGenerationRouteId] = useState<
@@ -186,6 +189,7 @@ export function RouteRecommendations({
 
       const routes = transformApiRoutes(response.routes);
       setBackendRoutes(routes);
+      setServedBy(response.served_by ?? null);
 
       // Log personalization status
       if (response.is_personalized) {
@@ -701,6 +705,8 @@ export function RouteRecommendations({
 
       onUpdateProfile(updatedProfile);
       localStorage.setItem("trailsaga-profile", JSON.stringify(updatedProfile));
+      // A completion is feedback too: refresh the list behind the simulator (the route drops out)
+      fetchBackendRoutes();
 
       // Return AI-generated summary and newly unlocked achievements so HikingSimulator can display them.
       // Do NOT close the simulator here; let the simulator decide when to exit
@@ -1053,6 +1059,12 @@ export function RouteRecommendations({
           )}
         </div>
 
+        {!isLoadingRoutes && servedNote(servedBy) && (
+          <p className="mb-4 text-xs text-muted-foreground" data-testid="served-note">
+            How this list was made: {servedNote(servedBy)}.
+          </p>
+        )}
+
         {/* Refine box (chat preference elicitation, docs/CHAT.md) */}
         {!isNaN(backendProfileId) && (
           <div className="mb-6">
@@ -1134,8 +1146,34 @@ export function RouteRecommendations({
                       Completed
                     </div>
                   )}
-                  {/* Recommendation Score Badge */}
+                  {route.isExploration && (
+                    <div
+                      className="absolute bottom-2 right-2 bg-background/90 text-foreground px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 border z-10"
+                      title="Shown to learn your taste, not because it is your closest match"
+                    >
+                      <Compass className="w-3 h-3" />
+                      Exploration pick
+                    </div>
+                  )}
+                  {/* Why this? (pipeline explanation) */}
+                  {isLoggedIn && route.explanation && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setScoreModalRoute(route);
+                      }}
+                      className={`absolute ${
+                        isCompleted ? "top-12" : "top-2"
+                      } right-2 bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-lg z-10`}
+                      title="See step by step why this route is on your list"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      Why this?
+                    </button>
+                  )}
+                  {/* Recommendation Score Badge (rule baseline) */}
                   {isLoggedIn &&
+                    !route.explanation &&
                     route.recommendationScore !== undefined &&
                     route.recommendationScore !== null &&
                     route.recommendationScoreBreakdown && (
@@ -1179,6 +1217,16 @@ export function RouteRecommendations({
                       <span className="truncate">{routePlaceLine(route)}</span>
                     </p>
                   </div>
+
+                  {route.reason && (
+                    <p
+                      className="text-sm text-primary font-medium line-clamp-2"
+                      data-testid="route-reason"
+                      title={route.reason}
+                    >
+                      {route.reason}
+                    </p>
+                  )}
 
                   <p className="text-sm text-foreground line-clamp-2">
                     {route.description}
@@ -1282,12 +1330,17 @@ export function RouteRecommendations({
 
       {/* Recommendation Score Modal */}
       {scoreModalRoute &&
-        scoreModalRoute.recommendationScore !== undefined &&
-        scoreModalRoute.recommendationScore !== null &&
-        scoreModalRoute.recommendationScoreBreakdown && (
+        (scoreModalRoute.explanation ||
+          (scoreModalRoute.recommendationScore !== undefined &&
+            scoreModalRoute.recommendationScore !== null &&
+            scoreModalRoute.recommendationScoreBreakdown)) && (
           <RecommendationScoreModal
             score={scoreModalRoute.recommendationScore}
             breakdown={scoreModalRoute.recommendationScoreBreakdown}
+            explanation={scoreModalRoute.explanation}
+            reason={scoreModalRoute.reason}
+            homeName={servedBy?.query?.home_name}
+            intent={servedBy?.query?.intent}
             routeName={scoreModalRoute.name}
             open={true}
             onClose={() => setScoreModalRoute(null)}
