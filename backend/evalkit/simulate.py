@@ -496,7 +496,8 @@ def figure(doc: dict[str, Any]) -> None:
     import matplotlib.pyplot as plt
 
     colours = {"v0_rules": "#9e9e9e", "v1_filters": "#6d6875", "recsys_v1": "#2a6f97",
-               "recsys_v1_fb_route": "#8ecae6", "recsys_v1_fb": "#e76f51", "recsys_v1_fb_explore": "#2a9d8f"}
+               "recsys_v1_fb_route": "#8ecae6", "recsys_v1_fb": "#e76f51", "recsys_v1_fb_light": "#9b5de5",
+               "recsys_v1_fb_explore": "#2a9d8f"}
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=120)
     ax = axes[0]
     for lab, m in doc["metrics"].items():
