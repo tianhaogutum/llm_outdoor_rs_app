@@ -1,0 +1,329 @@
+{
+ "dedup": {
+  "draws_used": 150,
+  "identical_intent_texts": [
+   {
+    "intent": "A quiet mountain bike ride to a summit",
+    "persona": "H117",
+    "same_text_as": "P102"
+   }
+  ],
+  "skipped": []
+ },
+ "generator_params": {
+  "activity": {
+   "cycling": 0.32,
+   "hiking": 0.68
+  },
+  "alpine_regions": [
+   "Oberbayern",
+   "Schwaben"
+  ],
+  "ascent": {
+   "hiking": [
+    150,
+    380
+   ],
+   "mtb": [
+    300,
+    450
+   ],
+   "touring": [
+    120,
+    330
+   ]
+  },
+  "ascent_cap": {
+   "family_school": 450,
+   "family_young": 250,
+   "older": 600,
+   "stroller": 150
+  },
+  "cycling_style": {
+   "mtb": 0.28,
+   "touring": 0.72
+  },
+  "desire_propensity": {
+   "hiking": {
+    "beer_garden": 0.5,
+    "cave_geology": 0.3,
+    "culture": 0.6,
+    "hut": 0.6,
+    "lake": 1.0,
+    "quiet_nature": 0.9,
+    "refreshment": 0.9,
+    "river": 0.35,
+    "summit": 0.9,
+    "swimming": 0.15,
+    "viewpoint": 1.0,
+    "waterfall_gorge": 0.5,
+    "wildlife": 0.15
+   },
+   "mtb": {
+    "cave_geology": 0.2,
+    "hut": 0.6,
+    "lake": 0.3,
+    "quiet_nature": 0.8,
+    "refreshment": 0.3,
+    "summit": 0.9,
+    "viewpoint": 0.7
+   },
+   "touring": {
+    "beer_garden": 0.9,
+    "culture": 0.9,
+    "lake": 0.9,
+    "quiet_nature": 0.5,
+    "refreshment": 0.7,
+    "river": 1.0,
+    "swimming": 0.3,
+    "viewpoint": 0.3
+   }
+  },
+  "distance_cap_factor": [
+   1.25,
+   1.7
+  ],
+  "distance_centre": {
+   "hiking": [
+    4.0,
+    4.5
+   ],
+   "mtb": [
+    12.0,
+    12.0
+   ],
+   "touring": [
+    15.0,
+    22.0
+   ]
+  },
+  "distance_centre_cap": {
+   "family_school": {
+    "hiking": 10.0,
+    "touring": 35.0
+   },
+   "family_young": {
+    "hiking": 5.5,
+    "touring": 18.0
+   },
+   "older": {
+    "hiking": 12.0,
+    "touring": 50.0
+   },
+   "stroller": {
+    "hiking": 7.0
+   }
+  },
+  "fitness": {
+   "couple": [
+    1.4,
+    0.6
+   ],
+   "family_school": [
+    1.3,
+    0.5
+   ],
+   "family_teen": [
+    1.8,
+    0.5
+   ],
+   "family_young": [
+    1.0,
+    0.45
+   ],
+   "friends": [
+    1.9,
+    0.6
+   ],
+   "older": [
+    0.9,
+    0.5
+   ],
+   "solo": [
+    1.7,
+    0.7
+   ],
+   "stroller": [
+    0.7,
+    0.4
+   ],
+   "with_dog": [
+    1.4,
+    0.6
+   ]
+  },
+  "hut_propensity_outside_alps": 0.2,
+  "intent_mentions_home": 0.4,
+  "intent_styles": {
+   "detailed": 0.2,
+   "medium": 0.35,
+   "short": 0.27,
+   "vague": 0.18
+  },
+  "intent_voices": {
+   "casual": 0.3,
+   "enthusiastic": 0.15,
+   "polite": 0.15,
+   "practical": 0.25,
+   "terse": 0.15
+  },
+  "min_activity_match": 10,
+  "min_eligible": 40,
+  "mtb_fitness_bonus": 0.4,
+  "multi_day_prob": {
+   "hiking": 0.05,
+   "mtb": 0.0,
+   "touring": 0.1
+  },
+  "n_personas": 300,
+  "n_test": 100,
+  "party": {
+   "hiking": {
+    "couple": 0.22,
+    "family_school": 0.1,
+    "family_young": 0.1,
+    "friends": 0.11,
+    "older": 0.12,
+    "solo": 0.17,
+    "stroller": 0.05,
+    "with_dog": 0.13
+   },
+   "mtb": {
+    "couple": 0.12,
+    "family_teen": 0.06,
+    "friends": 0.37,
+    "solo": 0.45
+   },
+   "touring": {
+    "couple": 0.28,
+    "family_school": 0.16,
+    "family_young": 0.06,
+    "friends": 0.12,
+    "older": 0.18,
+    "solo": 0.2
+   }
+  },
+  "party_desire_boost": {
+   "family_school": {
+    "cave_geology": 0.6,
+    "culture": 0.5,
+    "lake": 1.1,
+    "playground": 0.9,
+    "swimming": 0.7,
+    "waterfall_gorge": 0.6,
+    "wildlife": 0.6
+   },
+   "family_young": {
+    "hut": 0.2,
+    "lake": 1.2,
+    "playground": 1.5,
+    "refreshment": 1.0,
+    "summit": 0.1,
+    "swimming": 0.7,
+    "wildlife": 0.8
+   },
+   "friends": {
+    "beer_garden": 1.0,
+    "hut": 0.9,
+    "summit": 0.9
+   },
+   "older": {
+    "beer_garden": 0.8,
+    "culture": 1.2,
+    "lake": 0.9,
+    "refreshment": 1.4,
+    "summit": 0.3,
+    "viewpoint": 0.9
+   },
+   "stroller": {
+    "hut": 0.0,
+    "lake": 1.2,
+    "playground": 0.8,
+    "refreshment": 1.2,
+    "summit": 0.0,
+    "waterfall_gorge": 0.2
+   },
+   "with_dog": {
+    "lake": 0.9,
+    "quiet_nature": 1.4,
+    "refreshment": 0.6,
+    "river": 0.9
+   }
+  },
+  "questionnaire_noise": {
+   "overestimate": 0.17,
+   "select_all_types": 0.08,
+   "underestimate": 0.08
+  },
+  "radius_max_km": 150,
+  "radius_widen_factor": 1.25,
+  "seed": 20261122,
+  "shape": {
+   "default": {
+    "any": 0.47,
+    "linear": 0.08,
+    "loop": 0.45
+   },
+   "family": {
+    "any": 0.23,
+    "linear": 0.02,
+    "loop": 0.75
+   },
+   "train": {
+    "any": 0.45,
+    "linear": 0.3,
+    "loop": 0.25
+   }
+  },
+  "town_weight_exponent": 0.5,
+  "train_user_prob": {
+   "city_over_100k": 0.35,
+   "default": 0.15
+  },
+  "travel_radius_km": {
+   "car": [
+    [
+     20,
+     30,
+     40,
+     60,
+     80
+    ],
+    [
+     0.12,
+     0.25,
+     0.3,
+     0.22,
+     0.11
+    ]
+   ],
+   "train": [
+    [
+     25,
+     40,
+     60
+    ],
+    [
+     0.3,
+     0.45,
+     0.25
+    ]
+   ]
+  },
+  "version": "personas/v1"
+ },
+ "id_prefix": "H",
+ "intent_writer": {
+  "max_tokens": 300,
+  "model": "openai/gpt-6-luna",
+  "prompt_version": "intent/v2",
+  "provider": "openrouter",
+  "temperature": 0.9,
+  "thinking": 0
+ },
+ "n": 150,
+ "note": "same generator and parameters as eval/personas/personas.jsonl, new seed (D28)",
+ "seed": 20261128,
+ "spare_draws": 30,
+ "split": "holdout"
+}
