@@ -548,3 +548,49 @@ iteration's 8 USD allowance, no decision is taken and that is reported.
 *Afterwards.* The holdout is used only for this decision and then as a reporting split. The worst-queries failure
 analysis of the system served after this decision moves to the holdout, because test has been used for development
 (D27).
+
+**3. Outcome (written after the holdout was judged; nothing above was changed).** Commit order: dev protocol
+`359fe5d`, rule as code `cd1faac`, this pre-registration `bd8f1d9`, holdout personas `171d5a9`, holdout judged
+and decided `4b7c129`.
+
+*Holdout.* 150 personas, seed 20261128, no draw skipped as a duplicate; one intent text ("A quiet mountain bike
+ride to a summit", H117) equals a dev persona's (P102) and was kept as registered. Mix: hiking 108, touring 29,
+MTB 13; parties solo 32, couple 29, friends 21, older 19, school-age families 16, young families 13, with a dog 11,
+stroller 8, parent with teenager 1; 26 train travellers. 3,684 pairs judged (holdout qrels sha256 prefix
+`69db8f93f8de`), every top 10 of the four candidates judged; about 4.8 USD.
+
+*Rule applied* (`_holdout.json`; numbers are a snapshot, RESULTS.md "Iteration 3" is generated from the files):
+all three variants pass the cross-fitted dev gate, so m = 3 and the max-T critical value is c = 2.00. Holdout
+NDCG@10: `recsys_serve` 0.771 [0.744, 0.796]; paired differences against it, 95% CI and simultaneous one-sided
+lower bound: filter `recsys_serve_needs` +0.021 [+0.010, +0.034], bound **+0.009**; filter + promote +0.019
+[+0.003, +0.034], bound +0.003; demote +0.006 [−0.007, +0.020], bound −0.008. Violations@10 are 0 for all four.
+Eligible: filter and promote; the larger bound is the filter's.
+
+**Decision: `recsys_serve_needs` wins. It is registered as `recsys_serve_v2` (exactly its config) and is the API
+default** (`backend/app/settings.py`, `backend/env.example`, serving tests, SERVING.md, DEPLOY.md);
+`recsys_serve` stays registered and unchanged. `recsys_serve_v2` returns the same lists as `recsys_serve_needs` on
+all 300 main, 200 cross-fitted dev and 150 holdout personas. The narrative demo route set does not change (the
+selection grid carries no stated needs; re-selection with `recsys_serve_v2` gives the same 400 routes as with
+`recsys_serve`; DEPLOY.md section 4), so the narratives were not regenerated.
+
+*What it does not show.* The gain is modest and its corrected lower bound is close to zero; Recall@50 of the
+filter is lower than `recsys_serve`'s on the holdout (it removes routes from the candidates); everything rests on
+simulated users and a judge not yet validated against the owner. The feedback simulation was not rerun with the
+stage. The latency benchmark of `recsys_serve_v2` (one live run) is within the 500 ms p95 budget; its maximum
+includes one embedding call that timed out and was retried.
+
+*Holdout failure analysis* (`make failures`, now on the holdout for the served system; FAILURES.md): of the ten
+worst holdout queries, 6 are class C (the judge grades wishes the request never stated), 3 a new class E (the
+stage's own choices: MTB relaxed before train for a cyclist, a stroller check stricter than the judge, a stated
+loop and train enforced where the judge would trade them), 1 class A (an effort limit the stage does not read). It
+also found an evaluation bug: the judge's card prints the distance cap rounded to whole kilometres
+(`evalkit/cards.py`), while the rule-grader uses the exact cap. Fixing it changes the judge prompt and therefore
+needs re-judging; it is listed below, not done here.
+
+*Spend for iteration 3* (local spend log): about 5.0 USD (cross-fitted dev holes 0.2, holdout intents under 0.02,
+holdout judging 4.8, latency under 0.01).
+
+**Still open after D28** (in addition to D26's owner items, of which "confirm or change the served default" now
+refers to `recsys_serve_v2`): the stage's class-E fixes and an effort need, developed on cross-fitted dev; the
+judge card's cap rounding (re-judge); re-tuning the feedback parameters on cross-fitted dev (D21); rerunning the
+feedback simulation with the stage.
