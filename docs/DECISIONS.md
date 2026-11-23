@@ -691,3 +691,7 @@ decided on it. **The holdout simulation was not run**: its judging was estimated
 cross-fitted dev; re-tuning the feedback parameters on cross-fitted dev (D21, now with the note above); the
 holdout feedback simulation if the cost is wanted; whether the stated-need filter should relax as the user
 consumes routes (the simulation pattern above), to be developed on dev.
+
+## D30. Feedback settings after the card fix: unchanged (2026-11-23)
+
+On the corrected labels (D29) the D21 tuning rule names `light` over `slots_only` by a margin far inside the noise of the 40-persona dev tuning set. Switching would change the served system on a difference the tuning cannot resolve, so the served feedback settings stay as chosen in D21/D25. Revisit with real feedback data, not with more simulation.
