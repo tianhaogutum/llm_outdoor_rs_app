@@ -68,6 +68,26 @@ async def test_ledger_per_tag_and_capability(make_client):
     json.dumps(rep)  # plain, serialisable
 
 
+async def test_spend_is_attributed_to_the_requested_model(make_client):
+    """Phase 3 found rerank spend filed under the configured default rank model; it belongs to the model
+    actually requested, per model, with cache hits costing nothing."""
+    c = make_client(mock_cost_usd_per_call=0.002)
+    await c.rank("q", ["d1", "d2"], model="other/rerank-a", tag="rerank")
+    await c.rank("q", ["d1", "d2"], model="other/rerank-a", tag="rerank")  # cache hit
+    await c.rank("q2", ["d1"], model="other/rerank-b", tag="rerank")
+    await c.rank("q3", ["d1"], tag="rerank")  # no model: the configured default
+    rep = c.usage_report()
+    by = {(m["capability"], m["model"]): m for m in rep["models_used"]}
+    a, b, d = by[("rank", "other/rerank-a")], by[("rank", "other/rerank-b")], by[("rank", "mock-rank-1")]
+    assert (a["calls"], a["cache_hits"], a["provider_requests"]) == (2, 1, 1)
+    assert a["real_usd"] == pytest.approx(0.002) and a["nominal_usd"] == pytest.approx(0.004)
+    assert b["real_usd"] == pytest.approx(0.002)
+    assert d["real_usd"] == pytest.approx(0.002)
+    assert sum(m["real_usd"] for m in rep["models_used"]) == pytest.approx(rep["real_usd"])
+    # the configured default is still reported as such, but carries only its own spend
+    assert rep["providers"]["rank"]["model"] == "mock-rank-1"
+
+
 def test_report_and_reprs_contain_no_secrets(make_client):
     secret = "sk-or-v1-THIS-IS-NOT-A-REAL-KEY"
     c = make_client(

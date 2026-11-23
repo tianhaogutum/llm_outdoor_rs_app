@@ -42,10 +42,15 @@ class Stats:
 
 @dataclass
 class ModelUse:
+    """Usage of one requested model (the ``model=`` argument of the call, or the configured default when
+    none was passed). Spend is attributed here, not to the client's configured default model, so a client
+    that ranks with several models (``rank(..., model=...)``) reports each model's own cost."""
+
     capability: str
     provider: str
     model: str
     reported_models: set[str] = field(default_factory=set)
+    stats: Stats = field(default_factory=Stats)
 
 
 class Ledger:
@@ -70,6 +75,7 @@ class Ledger:
             self.real_usd += delta.real_usd
             if provider and model:
                 mu = self._models.setdefault((capability, provider, model), ModelUse(capability, provider, model))
+                mu.stats.add(delta)
                 if reported_model:
                     mu.reported_models.add(reported_model)
 
@@ -95,6 +101,11 @@ class Ledger:
                     "provider": m.provider,
                     "model": m.model,
                     "reported_models": sorted(m.reported_models),
+                    "calls": m.stats.calls,
+                    "cache_hits": m.stats.cache_hits,
+                    "provider_requests": m.stats.provider_requests,
+                    "real_usd": round(m.stats.real_usd, 8),
+                    "nominal_usd": round(m.stats.nominal_usd, 8),
                 }
                 for m in sorted(self._models.values(), key=lambda m: (m.capability, m.provider, m.model))
             ]

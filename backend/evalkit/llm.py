@@ -102,6 +102,16 @@ def spend_summary() -> dict[str, Any]:
     for line in p.read_text(encoding="utf-8").splitlines():
         row = json.loads(line)
         out["total_usd"] += row["real_usd"]
+        per_model = [m for m in row.get("models_used", []) if "real_usd" in m]
+        if per_model:  # rows written since the ledger attributes spend to the requested model
+            for m in per_model:
+                prov = m["provider"]
+                out["by_provider"][prov] = round(out["by_provider"].get(prov, 0.0) + m["real_usd"], 6)
+                key = f"{prov}:{m['model']}"
+                out["by_model"][key] = round(out["by_model"].get(key, 0.0) + m["real_usd"], 6)
+            continue
+        # older rows: only per-capability totals, filed under the configured default model (for the
+        # ranker-pilot rows this mislabels the spend of the non-default rerankers)
         for cap, s in row["totals"].items():
             prov = row["providers"][cap]["provider"]
             model = row["providers"][cap]["model"]
