@@ -338,3 +338,46 @@ cap feature), `recsys_v1_fb` / `recsys_v1_fb_explore` (full-feature ranker with 
 `recsys_serve_noexplore` (exploration off), `recsys_v1_fb_light` (the light full loop), `recsys_v1_nosusp`
 (the most conservative ranker). Spend for this follow-up (local spend log): about 0.8 USD.
 
+
+## D26. Phase 6 write-up: corrections and the open items in one place (2026-11-23)
+
+Written while turning the README into the report, adding [FAILURES.md](FAILURES.md) and [REVIEW.md](REVIEW.md), and
+checking the docs against each other and the code. Earlier entries are left as written; corrections are listed here.
+
+- **Served system in docs and comments.** Several places still said `recsys_v1` is what the API serves (code comments
+  in `systems/pipelines.py` and the recommendations endpoint, RECSYS.md, SERVING.md's paths table, DEPLOY.md). Since
+  D25 it is `recsys_serve`; fixed. `recsys_v1` is the Phase 3 default and the reference row of most comparisons. Its
+  registry description string still starts with "DEFAULT" because it is stored in the committed results files and
+  changing it would break the byte-identical replay.
+- **D15's "pending owner"** (ship the "no suspicious features" ranker?) was settled by D19 and D25: the served ranker
+  drops only `length_cap_ratio`.
+- **RECSYS.md section 12** said the served pipeline's dense retrieval is moved by Rocchio; with the dev-chosen
+  feedback settings (D21) Rocchio and re-scoring are off, so it is not.
+- **EVAL.md** quoted Phase 2 pool and frozen-cache counts as if current; they are now marked as Phase 2 snapshots and
+  point to the generated figures.
+- **Demo narratives** were selected with `recsys_v1` before D25 (DEPLOY.md section 4); re-selecting for
+  `recsys_serve` changes part of the set. Added to the deployment checklist rather than regenerated (a live call,
+  and the deployment itself is pending).
+- **Latency of the served default** was not measured before; `make latency` now includes `recsys_serve` (one live run,
+  under a tenth of a cent).
+- **Generated numbers in the README and REVIEW.md.** `make report` now also rewrites marked blocks in README.md,
+  docs/FAILURES.md and docs/REVIEW.md; `tests/evalkit/test_docs_fresh.py` fails if any block or RESULTS.md is stale,
+  or if README / REVIEW.md prose outside the blocks contains a metric value. The other docs (EVAL.md, D-entries here,
+  SERVING.md's hand measurements) still contain typed figures from the time they were written; they are labelled as
+  snapshots or point to RESULTS.md.
+- **What the failure analysis changes:** nothing in the served configuration. It shows the learned ranker overriding
+  good retrieval for stated minority needs (MTB skill, strollers, small children) and the judge penalising wishes the
+  request never stated; the fixes are new slots and features plus an evaluation change (FAILURES.md "Synthesis"),
+  not a different registered system.
+
+**Still open, all in one place** (REVIEW.md "What is still open for you" has the steps):
+
+| Item | Owner of the decision | Where |
+|---|---|---|
+| 150 blind relevance labels, then `make kappa`, `make eval-all`, `make report` | owner | D5, EVAL.md section 4 |
+| Deployment: target, URL, spend, live providers, attribution, third-party theme, analytics, retention, narrative re-selection | owner | D6, DEPLOY.md section 6 |
+| Outdooractive texts in the public history of `app.db` | owner | D3 |
+| EU-only processing for chat messages | owner | D18 |
+| Confirm or change the served default chosen by the coordinator | owner | D25 |
+| Generation model `gemini-2.5-flash` past its retirement date | owner | LLM_CLIENT.md |
+| Re-tune feedback parameters with a cross-fitted dev ranker or real feedback | technical | D21 |
