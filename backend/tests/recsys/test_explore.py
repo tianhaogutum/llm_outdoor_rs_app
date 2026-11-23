@@ -121,6 +121,8 @@ def test_pipeline_slot_passes_filters_and_is_marked(cat, llm, intent):
         ex = explain(rec)
         marked = [r for r in ex.routes if r.stages.explore is not None]
         assert len(marked) == 1 and marked[0].rank == 10 and marked[0].stages.explore.reason == EXPLORE_REASON
+        if intent is None:  # rule path: the explored route carries the rule scorer's breakdown like the rest
+            assert all(r.stages.v0_rules is not None for r in ex.routes)
         assert sysm.recommend(q, 10).route_ids == rec.route_ids  # seeded: reproducible
         # the first nine are the feedback system's own top nine
         base = build_system("recsys_v1_fb", cat, llm=llm).recommend(q, 10)

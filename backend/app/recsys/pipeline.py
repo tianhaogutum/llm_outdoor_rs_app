@@ -58,6 +58,19 @@ RANKERS = ("none", "v0", "api", "ltr")
 GENERATORS = ("bm25", "dense")
 
 
+def _rule_contribution(entry: Any) -> dict[str, Any]:
+    """The rule scorer's three weighted sub-scores for one route, as reported in the stage trace."""
+    out = {
+        "difficulty": round(entry.breakdown["difficulty"]["weighted_score"], 6),
+        "distance": round(entry.breakdown["distance"]["weighted_score"], 6),
+        "tags": round(entry.breakdown["tags"]["weighted_score"], 6),
+        "total": round(entry.score, 6),
+    }
+    if "feedback_penalty" in entry.breakdown:
+        out["feedback_penalty"] = entry.breakdown["feedback_penalty"]
+    return out
+
+
 @dataclass(frozen=True)
 class PipelineConfig:
     filters: bool = True
@@ -412,17 +425,7 @@ class Pipeline:
             cand = [pos_of[e.route_id] for e in ranked]
             order_scores = [float(e.score) for e in ranked]
             for e in ranked:
-                rule_contrib[pos_of[e.route_id]] = {
-                    "difficulty": round(e.breakdown["difficulty"]["weighted_score"], 6),
-                    "distance": round(e.breakdown["distance"]["weighted_score"], 6),
-                    "tags": round(e.breakdown["tags"]["weighted_score"], 6),
-                    "total": round(e.score, 6),
-                    **(
-                        {"feedback_penalty": e.breakdown["feedback_penalty"]}
-                        if "feedback_penalty" in e.breakdown
-                        else {}
-                    ),
-                }
+                rule_contrib[pos_of[e.route_id]] = _rule_contribution(e)
             traces.append(
                 StageTrace(
                     "v0_rules",
@@ -596,6 +599,9 @@ class Pipeline:
                 scores_l.insert(p, own)
                 final_scores = np.array(scores_l)
                 explore_contrib[j] = choice
+                if rule_contrib and j not in rule_contrib:
+                    # the pick can come from beyond the rule scorer's top list: explain it like the others
+                    rule_contrib[j] = _rule_contribution(self._v0(query, np.array([elig[j]]), limit=None)[0])
                 info.update({"cluster": choice["cluster"], "label": choice["label"], "position": p + 1})
             traces.append(StageTrace("explore", len(cand), len(cand), (time.perf_counter() - t0) * 1000, info=info))
 
