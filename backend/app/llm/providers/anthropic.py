@@ -81,7 +81,6 @@ class AnthropicProvider(Provider):
             "model": req.model,
             "messages": messages,
             "max_tokens": req.max_tokens,
-            "temperature": req.temperature,
         }
         if system:
             body["system"] = system
