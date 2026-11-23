@@ -533,8 +533,8 @@ def _robustness(docs: list[dict[str, Any]], cap: str) -> list[str]:
         "learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, "
         "DECISIONS.md D15). These rows retrain the Phase 3 default's ranker on the same pinned dev labels without "
         "that feature, or without the whole suspicious group, and run the same pipeline otherwise (filters, "
-        "BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers "
-        "(trained on dev labels).",
+        "BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all "
+        "three rankers (trained on dev labels).",
         "",
         "| System | Ranker | NDCG@10 test | MRR@10 test | NDCG@10 dev (in-sample) | CV NDCG@10 (dev, grouped) | "
         "Judged@10 |",
