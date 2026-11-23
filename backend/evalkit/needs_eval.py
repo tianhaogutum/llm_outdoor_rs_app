@@ -174,23 +174,20 @@ def needs_met_in_top10(run: dict[str, Any], personas: list[Persona]) -> dict[str
 
 
 # --------------------------------------------------------------------------------------- dev comparison
-def dev_comparison(variants: tuple[str, ...] = VARIANTS, *, judge: bool = True) -> dict[str, Any]:
+def _compare(runs: dict[str, dict[str, Any]], baseline: str, dev: list[Persona], qrels: Qrels) -> dict[str, Any]:
+    """Metrics of every run on ``dev`` and paired differences of each against ``baseline`` (overall, where a need
+    was stated, per need), the largest per-persona gains and losses, and how often the top 10 meets the needs."""
     catalog = get_catalog()
-    personas = load_personas()
-    dev = [p for p in personas if p.split == "dev"]
-    base_run, _ = load_run(BASELINE)
-    runs = {BASELINE: {p.persona_id: base_run[p.persona_id] for p in dev}}
-    timings = {}
-    for v in variants:
-        run, tm, _ = run_system(v, catalog, dev)
-        runs[v] = run
-        timings[v] = tm
-    qrels = Qrels.load()
-    rep = judge_pool(catalog, dev, {v: runs[v] for v in variants}, qrels, judge=judge)
-    print(f"[needs dev] pool holes {rep}", file=sys.stderr)
     pp = {n: per_persona_metrics(catalog, dev, run, qrels) for n, run in runs.items()}
     pids = [p.persona_id for p in dev]
-    out: dict[str, Any] = {"holes": rep, "systems": {}}
+    stated = {p.persona_id: extract_needs(p.intent, p.latent["category"]).codes() for p in dev}
+    out: dict[str, Any] = {"systems": {}, "paired_vs_baseline": {}}
+
+    def pb(a: str, b: str, key: str, among: list[str]) -> dict[str, Any]:
+        return paired_bootstrap(
+            [pp[a][pid][key] for pid in among], [pp[b][pid][key] for pid in among], n_boot=N_BOOT, seed=BOOT_SEED
+        )
+
     for n in runs:
         m = {
             k: bootstrap_ci([pp[n][pid][k] for pid in pids], n_boot=N_BOOT, seed=BOOT_SEED)
@@ -198,42 +195,115 @@ def dev_comparison(variants: tuple[str, ...] = VARIANTS, *, judge: bool = True) 
         }
         m["judged_share_at_10"] = float(np.mean([pp[n][pid]["judged_at_10"] for pid in pids]))
         out["systems"][n] = m
-    for v in variants:
-        d = {
-            k: paired_bootstrap(
-                [pp[BASELINE][pid][k] for pid in pids], [pp[v][pid][k] for pid in pids], n_boot=N_BOOT, seed=BOOT_SEED
-            )
-            for k in ("ndcg_at_10", "mrr_at_10", "recall_at_50", "violation_at_10")
+    for v in runs:
+        if v == baseline:
+            continue
+        d = {k: pb(baseline, v, k, pids) for k in ("ndcg_at_10", "mrr_at_10", "recall_at_50", "violation_at_10")}
+        d["ndcg_at_10_personas_with_needs"] = pb(baseline, v, "ndcg_at_10", [pid for pid in pids if stated[pid]])
+        d["ndcg_at_10_by_need"] = {
+            c: pb(baseline, v, "ndcg_at_10", [pid for pid in pids if c in stated[pid]])
+            for c in sorted({c for cs in stated.values() for c in cs})
         }
-        # where the stage did anything: personas with at least one extracted need
-        touched = [p.persona_id for p in dev if extract_needs(p.intent, p.latent["category"])]
-        d["ndcg_at_10_personas_with_needs"] = paired_bootstrap(
-            [pp[BASELINE][pid]["ndcg_at_10"] for pid in touched],
-            [pp[v][pid]["ndcg_at_10"] for pid in touched],
-            n_boot=N_BOOT,
-            seed=BOOT_SEED,
-        )
         diffs = [
-            (pp[v][pid]["ndcg_at_10"] - pp[BASELINE][pid]["ndcg_at_10"], pid)
+            (pp[v][pid]["ndcg_at_10"] - pp[baseline][pid]["ndcg_at_10"], pid)
             for pid in pids
-            if pp[v][pid]["ndcg_at_10"] is not None and pp[BASELINE][pid]["ndcg_at_10"] is not None
+            if pp[v][pid]["ndcg_at_10"] is not None and pp[baseline][pid]["ndcg_at_10"] is not None
         ]
         d["better_by_0_1"] = sum(1 for x, _ in diffs if x > 0.1)
         d["worse_by_0_1"] = sum(1 for x, _ in diffs if x < -0.1)
         d["unchanged"] = sum(1 for x, _ in diffs if abs(x) < 1e-9)
-        d["largest_losses"] = [{"persona": pid, "diff": x} for x, pid in sorted(diffs)[:8]]
-        d["largest_gains"] = [{"persona": pid, "diff": x} for x, pid in sorted(diffs, reverse=True)[:8]]
-        loc = []
-        for pid in pids:
-            st = [s for s in runs[v][pid]["trace"] if s["stage"] == "needs"]
-            loc.append(bool(st))
-        d["personas_where_stage_ran"] = int(sum(loc))
-        d["top10_meets_needs"] = needs_met_in_top10(runs[v], load_personas())
+        d["largest_losses"] = [{"persona": pid, "diff": x, "needs": stated[pid]} for x, pid in sorted(diffs)[:8]]
+        d["largest_gains"] = [
+            {"persona": pid, "diff": x, "needs": stated[pid]} for x, pid in sorted(diffs, reverse=True)[:8]
+        ]
+        d["personas_where_stage_ran"] = sum(
+            1 for pid in pids if any(s["stage"] == "needs" for s in runs[v][pid]["trace"])
+        )
+        d["top10_meets_needs"] = needs_met_in_top10(runs[v], dev)
         ndcg = d["ndcg_at_10"]
-        viol_ok = out["systems"][v]["violation_at_10"]["mean"] <= out["systems"][BASELINE]["violation_at_10"]["mean"]
+        viol_ok = out["systems"][v]["violation_at_10"]["mean"] <= out["systems"][baseline]["violation_at_10"]["mean"]
         d["rule"] = {"ndcg_ci_lower_above_0": bool(ndcg["lo"] is not None and ndcg["lo"] > 0), "violations_ok": viol_ok}
-        out.setdefault("paired_vs_baseline", {})[v] = d
+        out["paired_vs_baseline"][v] = d
+    out["per_persona_ndcg_at_10"] = {n: {pid: pp[n][pid]["ndcg_at_10"] for pid in pids} for n in runs}
     return out
+
+
+def dev_comparison(variants: tuple[str, ...] = VARIANTS, *, judge: bool = True) -> dict[str, Any]:
+    """The pre-registered comparison: each variant vs the stored ``recsys_serve`` run, dev personas only."""
+    catalog = get_catalog()
+    dev = [p for p in load_personas() if p.split == "dev"]
+    base_run, _ = load_run(BASELINE)
+    runs = {BASELINE: {p.persona_id: base_run[p.persona_id] for p in dev}}
+    for v in variants:
+        runs[v] = run_system(v, catalog, dev)[0]
+    qrels = Qrels.load()
+    rep = judge_pool(catalog, dev, {v: runs[v] for v in variants}, qrels, judge=judge)
+    print(f"[needs dev] pool holes {rep}", file=sys.stderr)
+    return {"holes": rep, **_compare(runs, BASELINE, dev, qrels)}
+
+
+# --------------------------------------------------------------------------------------- cross-fitted check
+CF_SUFFIX = "@crossfit"
+
+
+def crossfit_models() -> tuple[list[tuple[set[str], Any]], dict[str, Any]]:
+    """Five copies of the served ranker (no ranker-API feature, no ``length_cap_ratio``), each trained like
+    ``v1_noapi_nocap`` (same pinned dev labels, parameters and number of rounds) on four fifths of the dev
+    personas: the persona folds of the ranker's own grouped CV. A dev persona is then ranked by the model that
+    never saw its labels, so dev numbers stop being in-sample for the ranker. Needs LightGBM (training only)."""
+    import lightgbm as lgb
+
+    from app.recsys.ltr import FORMAT, TreeEnsemble, flatten_lightgbm_dump
+    from evalkit import ltr as LT
+
+    dev = [p for p in load_personas() if p.split == "dev"]
+    qrels = LT.train_labels()
+    ds = LT.dataset(dev, LT.candidate_matrix(dev, with_api=False), qrels)
+    drop = LT.ROBUST_VARIANTS["noapi_no_length_cap"]
+    cols = LT._cols(drop)
+    robust = json.loads((paths.RESULTS_DIR / LT.ROBUST_OUT).read_text(encoding="utf-8"))
+    rounds = int(robust["variants"]["noapi_no_length_cap"]["best_rounds"])
+    out = []
+    for k, f in enumerate(LT._folds(ds["pids"])):
+        booster, _ = LT._train(lgb, LT._subset(ds, set(ds["pids"]) - f), cols, rounds)
+        art = {
+            "format": FORMAT,
+            "feature_names": [LT.FEATURES[c] for c in cols],
+            "trees": flatten_lightgbm_dump(booster.dump_model()),
+            "meta": {"crossfit_fold": k, "rounds": rounds},
+            "reference": {"X": [], "pred": []},
+        }
+        m = TreeEnsemble.from_dict(art, name=f"v1_noapi_nocap_cf{k}")
+        Xf = ds["X"][:200][:, cols]
+        assert np.allclose(m.predict(Xf), booster.predict(Xf), atol=1e-9), "numpy trees differ from LightGBM"
+        out.append((f, m))
+    meta = {"folds": len(out), "rounds": rounds, "fold_sizes": [len(f) for f, _ in out], "lightgbm": lgb.__version__}
+    return out, meta
+
+
+def crossfit_comparison(variants: tuple[str, ...] = VARIANTS, *, judge: bool = True) -> dict[str, Any]:
+    """Post-hoc (not part of the pre-registered rule): ``recsys_serve`` and each variant on dev with the
+    cross-fitted ranker, holes of these lists judged (dev only)."""
+    catalog = get_catalog()
+    dev = [p for p in load_personas() if p.split == "dev"]
+    models, meta = crossfit_models()
+
+    def fold_of(pid: str) -> int:
+        return next((k for k, (f, _) in enumerate(models) if pid in f), 0)
+
+    runs: dict[str, dict[str, Any]] = {}
+    for name in (BASELINE, *variants):
+        run: dict[str, Any] = {}
+        for k, (_, m) in enumerate(models):
+            ps = [p for p in dev if fold_of(p.persona_id) == k]
+            run.update(run_system(name, catalog, ps, ltr_model=m)[0])
+        runs[name + CF_SUFFIX] = run
+    qrels = Qrels.load()
+    rep = judge_pool(catalog, dev, runs, qrels, judge=judge)
+    print(f"[needs crossfit] pool holes {rep}", file=sys.stderr)
+    if not judge and rep.get("holes"):
+        return {"holes": rep, "models": meta}
+    return {"holes": rep, "models": meta, **_compare(runs, BASELINE + CF_SUFFIX, dev, qrels)}
 
 
 def _stage_ms(variants: tuple[str, ...]) -> dict[str, Any]:
@@ -265,7 +335,7 @@ def _load() -> dict[str, Any]:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("what", choices=("extractor", "dev", "latency"))
+    ap.add_argument("what", choices=("extractor", "dev", "crossfit", "latency"))
     ap.add_argument("--variants", nargs="+", default=list(VARIANTS))
     ap.add_argument("--no-judge", action="store_true")
     args = ap.parse_args(argv)
@@ -277,9 +347,14 @@ def main(argv=None) -> None:
         doc["served_top10_meets_needs"] = needs_met_in_top10(load_run(BASELINE)[0], ps)
     elif args.what == "dev":
         doc["dev"] = dev_comparison(tuple(args.variants), judge=not args.no_judge)
+    elif args.what == "crossfit":
+        res = crossfit_comparison(tuple(args.variants), judge=not args.no_judge)
+        if args.no_judge:
+            print(json.dumps(res["holes"]))
+            return
+        doc["dev_crossfit"] = res
     else:
-        print(json.dumps(_stage_ms(tuple(args.variants)), indent=1))
-        return
+        doc["stage_ms"] = _stage_ms(tuple(args.variants))
     (paths.RESULTS_DIR / OUT).write_text(dumps(doc), encoding="utf-8")
     print(f"wrote {paths.RESULTS_DIR / OUT}")
 

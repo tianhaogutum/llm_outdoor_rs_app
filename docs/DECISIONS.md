@@ -427,3 +427,25 @@ dev intents, so they rest on unit tests and general language only).
 dev (optimistic for `recsys_serve`, and it hides the class-A failures the stage targets), while the stage's
 thresholds were set by reading dev intents and judgements (optimistic for the stage). Neither is removable
 without a second development split or a cross-fitted ranker; the test run is the check.
+
+**Dev result and the decision (written before any test run of a variant).** Every top 10 judged on dev
+(`_needs_dev.json`, `dev`). Paired difference of mean NDCG@10 against `recsys_serve`, dev, 200 personas:
+filter −0.013 [−0.024, −0.003], filter + promote −0.025 [−0.040, −0.009], demote −0.031 [−0.044, −0.020];
+no rise in violations (all 0); the stage's own compute is under 1 ms at p95. **No variant meets rule 1, so by the
+pre-stated rule the change is not accepted: the stage stays off by default and `recsys_serve` remains the served
+system.** Per need, on dev the stage helps where a day count or a one-way route is stated and costs most where
+MTB or the train is stated.
+
+**A post-hoc check, explicitly not used for the decision.** The in-sample bias named above was then measured
+instead of only named: the served ranker retrained five times on four fifths of the dev personas (the folds of
+its own grouped CV, same labels, parameters and rounds), each dev persona ranked by the copy that never saw its
+labels (`python -m evalkit.needs_eval crossfit`; holes judged, dev only). With that ranker the baseline's dev
+NDCG@10 falls to about its test level, and all three variants are *ahead* of it, with CIs above zero (filter
++0.018 [+0.006, +0.029], filter + promote +0.022 [+0.007, +0.036], demote +0.011 [+0.001, +0.022]). So the rule's
+comparison was dominated by the ranker having memorised the dev users: the sign of the dev result flips when
+that is removed. This is a reason to pre-register the next iteration's rule on a cross-fitted dev comparison; it
+is not a licence to change this iteration's decision after seeing it, and the decision above stands.
+
+**What test is used for.** All three variants are registered and evaluated on both splits for the tables
+(reporting only; the decision is above and does not change with them). The failure analysis on test is rerun
+for `recsys_serve_needs_promote`, chosen now, before test, as the variant the cross-fitted check favours.
