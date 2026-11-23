@@ -10,7 +10,8 @@ import {
   defaultUserProfile,
 } from "@/lib/mock-data";
 import { apiClient } from "@/lib/api-client";
-import { ApiPlace, ApiProfileCreate, ApiProfileCreateResponse } from "@/lib/api-types";
+import { ApiChatResponse, ApiPlace, ApiProfileCreate, ApiProfileCreateResponse } from "@/lib/api-types";
+import { PreferenceChat } from "@/components/preference-chat";
 import { ArrowRight, ArrowLeft, Sparkles, MapPin } from "lucide-react";
 
 // Optional last step: slots used by hard filters (radius, distance cap) and retrieval (intent).
@@ -57,6 +58,8 @@ export function OnboardingQuestionnaire({
   const [distanceCapKm, setDistanceCapKm] = useState<number | null>(null);
   const [intent, setIntent] = useState("");
   const searchSeq = useRef(0);
+  // Optional chat step after the questions (docs/CHAT.md); its slots overwrite the form's on completion
+  const [chatState, setChatState] = useState<ApiChatResponse | null>(null);
 
   const totalSteps = questionnaireQuestions.length + 1;
   const isDetailsStep = currentQuestion === questionnaireQuestions.length;
@@ -114,12 +117,24 @@ export function OnboardingQuestionnaire({
     return payload;
   };
 
-  const profileSlots = () => ({
-    home: home ? { name: home.name, lat: home.lat, lon: home.lon } : null,
-    travelRadiusKm: home ? travelRadiusKm : null,
-    distanceCapKm,
-    intent: intent.trim() || null,
-  });
+  const profileSlots = () => {
+    const form = {
+      home: home ? { name: home.name, lat: home.lat, lon: home.lon } : null,
+      travelRadiusKm: home ? travelRadiusKm : null,
+      distanceCapKm,
+      intent: intent.trim() || null,
+      activity: null as UserProfile["activity"],
+    };
+    if (!chatState) return form;
+    const s = chatState.slots;
+    return {
+      home: s.place ? { name: s.place.name, lat: s.place.lat, lon: s.place.lon } : null,
+      travelRadiusKm: s.travel_radius_km,
+      distanceCapKm: s.distance_cap_km,
+      intent: s.intent,
+      activity: s.activity,
+    };
+  };
 
   const handleAnswer = (
     questionId: string,
@@ -365,6 +380,16 @@ export function OnboardingQuestionnaire({
                 </div>
               )}
             </div>
+
+            {backendProfileId && (
+              <PreferenceChat
+                profileId={backendProfileId}
+                variant="pixel"
+                title="TELL ME MORE IN YOUR OWN WORDS (OPTIONAL)"
+                placeholder="e.g. easy loop near Tegernsee with a hut, max 12 km"
+                onUpdated={setChatState}
+              />
+            )}
 
             <button
               onClick={handleComplete}

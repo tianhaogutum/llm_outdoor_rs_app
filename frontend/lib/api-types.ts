@@ -192,6 +192,105 @@ export interface ApiProfile {
   travel_radius_km?: number | null;
   distance_cap_km?: number | null;
   intent?: string | null;
+  activity?: ChatActivity | null;
+}
+
+// ---------------------------------------------------------------------------
+// Chat preference elicitation (backend/app/chat/schema.py, docs/CHAT.md)
+// ---------------------------------------------------------------------------
+
+export type ChatActivity = "hiking" | "cycling" | "mtb" | "running";
+export type ChatDifficulty = "easy" | "moderate" | "hard";
+export type ChatDistanceBand = "short" | "medium" | "long";
+export type ChatSlotName =
+  | "activity"
+  | "difficulty"
+  | "distance_band"
+  | "duration_hours"
+  | "distance_cap_km"
+  | "place"
+  | "travel_radius_km"
+  | "tags_preferred"
+  | "tags_avoided"
+  | "intent";
+export type ChatClearable =
+  | "activity"
+  | "difficulty"
+  | "distance_band"
+  | "duration_hours"
+  | "distance_cap_km"
+  | "place"
+  | "travel_radius_km"
+  | "tags"
+  | "intent";
+
+export interface ApiChatSlots {
+  activity: ChatActivity | null;
+  difficulty: ChatDifficulty | null;
+  distance_band: ChatDistanceBand | null;
+  duration_hours: number | null;
+  distance_cap_km: number | null;
+  place: { name: string; lat: number; lon: number; admin_district?: string | null } | null;
+  travel_radius_km: number | null;
+  tags_preferred: string[];
+  tags_avoided: string[];
+  intent: string | null;
+  category: "hiking" | "cycling" | "running" | null; // UI tab that follows from the activity
+  distance_range_km: [number, number] | null;
+  difficulty_range: [number, number] | null;
+  questionnaire_tags: string[];
+  sources: Record<string, "chat" | "edit" | "default" | "profile">;
+}
+
+export interface ApiChatChange {
+  slot: ChatSlotName;
+  old: unknown;
+  new: unknown;
+  source: "chat" | "edit" | "default";
+}
+
+export interface ApiChatDropped {
+  field: string;
+  reason: string;
+  value?: string | null;
+}
+
+export interface ApiChatTurn {
+  role: "user" | "assistant";
+  text: string;
+  at?: string | null;
+  question_slot?: "activity" | "place" | null;
+}
+
+export interface ApiChatResponse {
+  profile_id: number;
+  status: "clarify" | "ready" | "idle";
+  reply: string;
+  question: { slot: "activity" | "place"; text: string; options: string[] } | null;
+  changes: ApiChatChange[];
+  dropped: ApiChatDropped[];
+  slots: ApiChatSlots;
+  intent: string | null;
+  clarify_turns_used: number;
+  clarify_turns_max: number;
+  defaults_applied: string[];
+  turns: ApiChatTurn[];
+  model?: string | null;
+  cached?: boolean | null;
+}
+
+/** PATCH /api/profiles/{id}/chat/slots: the chips (same strict fields as a chat turn, no LLM) */
+export interface ApiChatSlotEdit {
+  activity?: ChatActivity;
+  difficulty?: ChatDifficulty;
+  distance_band?: ChatDistanceBand;
+  distance_cap_km?: number;
+  travel_radius_km?: number;
+  place_name?: string;
+  tags_add?: string[];
+  tags_avoid?: string[];
+  tags_remove?: string[];
+  clear?: ChatClearable[];
 }
 
 export interface ApiProfileCreate {

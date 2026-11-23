@@ -372,6 +372,23 @@ class ApiClient {
   /**
    * Get one route with breakpoints and catalogue facts
    */
+  /** Chat preference elicitation (docs/CHAT.md). The LLM call can take a few seconds. */
+  async getChat(profileId: number): Promise<ApiChatResponse> {
+    return this.get<ApiChatResponse>(`api/profiles/${profileId}/chat`);
+  }
+
+  async sendChatMessage(profileId: number, message: string): Promise<ApiChatResponse> {
+    return this.post<ApiChatResponse>(`api/profiles/${profileId}/chat`, { message }, undefined, 45000);
+  }
+
+  async editChatSlots(profileId: number, edit: ApiChatSlotEdit): Promise<ApiChatResponse> {
+    return this.patch<ApiChatResponse>(`api/profiles/${profileId}/chat/slots`, edit);
+  }
+
+  async resetChat(profileId: number): Promise<ApiChatResponse> {
+    return this.delete<ApiChatResponse>(`api/profiles/${profileId}/chat`);
+  }
+
   async getRoute(routeId: number): Promise<ApiRoute> {
     return this.get<ApiRoute>(`api/routes/${routeId}`);
   }
@@ -422,4 +439,6 @@ import type {
   ApiPlaceSearchResponse,
   ApiRoute,
   ApiRouteGeometry,
+  ApiChatResponse,
+  ApiChatSlotEdit,
 } from "./api-types";

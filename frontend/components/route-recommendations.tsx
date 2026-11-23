@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockRoutes, UserProfile, Route } from "@/lib/mock-data";
 import { apiClient } from "@/lib/api-client";
-import { ApiRecommendationResponse } from "@/lib/api-types";
+import { ApiChatResponse, ApiRecommendationResponse } from "@/lib/api-types";
+import { PreferenceChat } from "@/components/preference-chat";
 import { transformApiRoutes, transformApiSouvenir } from "@/lib/api-transforms";
 import { logger } from "@/lib/logger";
 import { describeApiBaseUrl } from "@/lib/api-base";
@@ -68,9 +69,33 @@ export function RouteRecommendations({
 }: RouteRecommendationsProps) {
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route | null>(null);
+  const chatTab = (activity: UserProfile["activity"]) =>
+    activity === "running" ? "running" : activity === "hiking" ? "hiking" : activity ? "cycling" : null;
   const [selectedType, setSelectedType] = useState<
     "all" | "running" | "hiking" | "cycling"
-  >("all");
+  >(() => chatTab(userProfile.activity) ?? "all");
+  const backendProfileId = isLoggedIn ? parseInt(userProfile.id, 10) : NaN;
+
+  // Refine box: the chat changed the stored profile; follow its activity tab and reload the list.
+  const handleChatUpdated = (r: ApiChatResponse) => {
+    const s = r.slots;
+    const updated: UserProfile = {
+      ...userProfile,
+      activity: s.activity,
+      home: s.place ? { name: s.place.name, lat: s.place.lat, lon: s.place.lon } : null,
+      travelRadiusKm: s.travel_radius_km,
+      distanceCapKm: s.distance_cap_km,
+      intent: s.intent,
+    };
+    onUpdateProfile(updated);
+    localStorage.setItem("trailsaga-profile", JSON.stringify(updated));
+    const tab = s.category;
+    if (tab && tab !== selectedType) {
+      setSelectedType(tab); // the effect refetches
+    } else {
+      fetchBackendRoutes();
+    }
+  };
   const [feedbackRoute, setFeedbackRoute] = useState<Route | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
@@ -1027,6 +1052,13 @@ export function RouteRecommendations({
             </div>
           )}
         </div>
+
+        {/* Refine box (chat preference elicitation, docs/CHAT.md) */}
+        {!isNaN(backendProfileId) && (
+          <div className="mb-6">
+            <PreferenceChat profileId={backendProfileId} variant="plain" onUpdated={handleChatUpdated} />
+          </div>
+        )}
 
         {/* Activity Type Filter */}
         <Tabs

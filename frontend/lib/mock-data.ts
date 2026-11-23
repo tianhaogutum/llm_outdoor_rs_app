@@ -136,6 +136,8 @@ export interface UserProfile {
   travelRadiusKm?: number | null;
   distanceCapKm?: number | null;
   intent?: string | null;
+  // Set by the preference chat (backend profile.activity); the results page opens the matching tab
+  activity?: "hiking" | "cycling" | "mtb" | "running" | null;
 }
 
 export interface Achievement {
