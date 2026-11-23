@@ -1,0 +1,43 @@
+# Allowlist: the build context holds only what the Dockerfile copies (docs/DEPLOY.md). Everything else,
+# including backend/.env, the venv, raw OSM downloads (~1.3 GB), LLM caches, the local app.db, node_modules,
+# the evaluation harness and its data, never reaches the Docker daemon.
+*
+
+!Dockerfile
+!.dockerignore
+
+!backend/requirements-runtime.txt
+!backend/alembic.ini
+!backend/alembic/
+!backend/app/
+!backend/scripts/
+!backend/pipeline/__init__.py
+!backend/pipeline/tags.py
+!backend/data/catalog/routes.jsonl.gz
+!backend/data/catalog/geometry.jsonl.gz
+!backend/data/catalog/manifest.json
+!backend/data/catalog/ATTRIBUTION.md
+!backend/data/narratives/
+!backend/data/historical_context/
+
+!frontend/
+frontend/node_modules
+frontend/.next
+frontend/out
+frontend/tsconfig.tsbuildinfo
+frontend/scripts
+
+# Never, wherever they appear under an allowed path
+**/.env
+**/.env.*
+**/*.db
+**/*.db-journal
+**/*.db-wal
+**/*.db-shm
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/.DS_Store
+**/*.log
+backend/data/narratives/_rejected_*.json

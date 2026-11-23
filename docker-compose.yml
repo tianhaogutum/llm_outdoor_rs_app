@@ -1,0 +1,20 @@
+# Local run of the demo image (docs/DEPLOY.md). No credentials: everything that needs an LLM degrades.
+#   docker compose up --build        -> http://localhost:8000
+# For live query embeddings see docs/DEPLOY.md, "Credentials at run time" (uncomment the lines below).
+services:
+  app:
+    build: .
+    image: trailsaga-demo:local
+    ports:
+      - "8000:8000"
+    volumes:
+      - trailsaga-data:/data
+      # - ./gcp-service-account.json:/run/secrets/gcp.json:ro   # live Vertex embeddings (not committed!)
+    # environment:
+    #   EMBED_PROVIDER: vertex
+    #   GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT}
+    #   GOOGLE_CLOUD_LOCATION: europe-west4
+    #   GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp.json
+    restart: unless-stopped
+volumes:
+  trailsaga-data:

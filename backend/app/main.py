@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import time
 from contextlib import asynccontextmanager
@@ -32,6 +33,10 @@ async def lifespan(app: FastAPI):
 
     # Initialize logging system
     init_logging_from_settings()
+    # httpx logs every request URL at INFO; Vertex URLs contain the Google Cloud project id, which must not
+    # reach the logs (docs/DEPLOY.md). Warnings and errors still show.
+    for noisy in ("httpx", "httpx2", "httpcore"):  # httpx2: the client google-genai uses
+        logging.getLogger(noisy).setLevel(logging.WARNING)
     logger = get_logger(__name__)
     logger.info("🚀 Application starting...")
 

@@ -1,0 +1,34 @@
+# What the served app imports at runtime (the Docker image installs only this file; docs/DEPLOY.md).
+# Pinned to the versions the test suite runs against (backend/.venv, 2026-11-23). Checked by
+# scripts/check_runtime_imports.py, which the image build runs: every import in app/ (including the lazy ones
+# inside functions) must resolve, except the ones listed there as optional.
+#
+# Differences from requirements.txt:
+# - uvicorn without [standard]: uvloop + httptools for speed; no watchfiles (--reload is a dev feature),
+#   websockets or PyYAML (no websocket routes, no YAML log config).
+# - no google-cloud-discoveryengine: only RANK_PROVIDER=vertex uses it (the Vertex Ranking API, not enabled in
+#   the project, D2), and the served system recsys_v1 calls no ranking API. It pulls in grpc and protobuf.
+# Not here at all: the data pipeline (requirements-data.txt: osmium, shapely), the evaluation harness's
+# training-time libraries (requirements-eval.txt: lightgbm, scikit-learn, matplotlib; the ranker trees are
+# evaluated in numpy, app/recsys/ltr.py), and the dev tools (pytest, ruff).
+
+fastapi==0.165.0
+uvicorn==0.54.0
+uvloop==0.23.0 ; sys_platform != "win32"
+httptools==0.9.0
+
+pydantic==2.14.4
+pydantic-settings==2.16.3
+python-dotenv==1.2.4
+
+sqlalchemy==2.1.9
+aiosqlite==0.22.1
+alembic==1.20.1
+greenlet==3.5.6
+
+httpx==0.28.1
+numpy==2.5.5
+
+# Live Vertex AI (query embeddings, narratives, chat fallback model) when credentials are given at run time.
+# Imported lazily: the app starts and serves without it being configured.
+google-genai==3.6.1
