@@ -1,0 +1,431 @@
+{
+ "best": "slots_only",
+ "grid": {
+  "light": {
+   "alpha": 1.0,
+   "beta": 0.25,
+   "cap_step": 0.25,
+   "difficulty_step": 0.25,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.1,
+   "eta_tag": 0.1,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.1,
+   "half_life_days": 60.0,
+   "nu_dup": 0.15,
+   "radius_step": 0.25
+  },
+  "medium": {
+   "alpha": 1.0,
+   "beta": 0.5,
+   "cap_step": 0.5,
+   "difficulty_step": 0.5,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.3,
+   "eta_tag": 0.2,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.25,
+   "half_life_days": 60.0,
+   "nu_dup": 0.3,
+   "radius_step": 0.5
+  },
+  "rescore_only": {
+   "alpha": 1.0,
+   "beta": 0.25,
+   "cap_step": 0.0,
+   "difficulty_step": 0.0,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.1,
+   "eta_tag": 0.1,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.1,
+   "half_life_days": 60.0,
+   "nu_dup": 0.15,
+   "radius_step": 0.0
+  },
+  "rocchio_only": {
+   "alpha": 1.0,
+   "beta": 0.25,
+   "cap_step": 0.0,
+   "difficulty_step": 0.0,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.0,
+   "eta_tag": 0.0,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.1,
+   "half_life_days": 60.0,
+   "nu_dup": 0.0,
+   "radius_step": 0.0
+  },
+  "route_only": {
+   "alpha": 1.0,
+   "beta": 0.0,
+   "cap_step": 0.0,
+   "difficulty_step": 0.0,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.0,
+   "eta_tag": 0.0,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.0,
+   "half_life_days": 60.0,
+   "nu_dup": 0.0,
+   "radius_step": 0.0
+  },
+  "slots_only": {
+   "alpha": 1.0,
+   "beta": 0.0,
+   "cap_step": 0.25,
+   "difficulty_step": 0.25,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.0,
+   "eta_tag": 0.0,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.0,
+   "half_life_days": 60.0,
+   "nu_dup": 0.0,
+   "radius_step": 0.25
+  },
+  "strong": {
+   "alpha": 1.0,
+   "beta": 1.0,
+   "cap_step": 1.0,
+   "difficulty_step": 1.0,
+   "dup_length_ratio": 0.25,
+   "dup_start_km": 1.0,
+   "eta_emb": 0.6,
+   "eta_tag": 0.4,
+   "exclude_weight": 0.25,
+   "floor_share": 0.5,
+   "gamma": 0.5,
+   "half_life_days": 60.0,
+   "nu_dup": 0.5,
+   "radius_step": 1.0
+  }
+ },
+ "metrics": {
+  "control": {
+   "completions": 6.525,
+   "ndcg_rounds_2_10": {
+    "hi": 0.403902,
+    "lo": 0.349568,
+    "mean": 0.375821,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.727224,
+    0.598902,
+    0.491944,
+    0.41224,
+    0.333337,
+    0.275371,
+    0.227381,
+    0.175312,
+    0.140679
+   ]
+  },
+  "light": {
+   "completions": 7.85,
+   "ndcg_rounds_2_10": {
+    "hi": 0.813846,
+    "lo": 0.736674,
+    "mean": 0.775819,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.836046,
+    0.829339,
+    0.804183,
+    0.789084,
+    0.776089,
+    0.756656,
+    0.760049,
+    0.723297,
+    0.707626
+   ]
+  },
+  "medium": {
+   "completions": 7.925,
+   "ndcg_rounds_2_10": {
+    "hi": 0.798348,
+    "lo": 0.732783,
+    "mean": 0.76536,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.781944,
+    0.793698,
+    0.767909,
+    0.781551,
+    0.760117,
+    0.770674,
+    0.751336,
+    0.735771,
+    0.745242
+   ]
+  },
+  "rescore_only": {
+   "completions": 7.825,
+   "ndcg_rounds_2_10": {
+    "hi": 0.813464,
+    "lo": 0.736857,
+    "mean": 0.775834,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.83614,
+    0.828986,
+    0.806016,
+    0.790198,
+    0.779173,
+    0.754384,
+    0.756597,
+    0.719086,
+    0.711924
+   ]
+  },
+  "rocchio_only": {
+   "completions": 7.825,
+   "ndcg_rounds_2_10": {
+    "hi": 0.812173,
+    "lo": 0.737544,
+    "mean": 0.775159,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.840468,
+    0.825076,
+    0.806951,
+    0.783557,
+    0.77345,
+    0.764677,
+    0.742758,
+    0.726716,
+    0.71278
+   ]
+  },
+  "route_only": {
+   "completions": 8.025,
+   "ndcg_rounds_2_10": {
+    "hi": 0.814962,
+    "lo": 0.734892,
+    "mean": 0.775865,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.863852,
+    0.846445,
+    0.821091,
+    0.785851,
+    0.764708,
+    0.738229,
+    0.733233,
+    0.716188,
+    0.713193
+   ]
+  },
+  "slots_only": {
+   "completions": 7.975,
+   "ndcg_rounds_2_10": {
+    "hi": 0.816359,
+    "lo": 0.735098,
+    "mean": 0.776532,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.864331,
+    0.846233,
+    0.821896,
+    0.786004,
+    0.764654,
+    0.737678,
+    0.737844,
+    0.716826,
+    0.713322
+   ]
+  },
+  "strong": {
+   "completions": 8.275,
+   "ndcg_rounds_2_10": {
+    "hi": 0.757135,
+    "lo": 0.686179,
+    "mean": 0.722412,
+    "n": 40
+   },
+   "per_round": [
+    0.886441,
+    0.729893,
+    0.734355,
+    0.729199,
+    0.72507,
+    0.717727,
+    0.708639,
+    0.72361,
+    0.718252,
+    0.714965
+   ]
+  }
+ },
+ "personas": [
+  "P001",
+  "P015",
+  "P036",
+  "P039",
+  "P060",
+  "P076",
+  "P077",
+  "P081",
+  "P087",
+  "P096",
+  "P102",
+  "P129",
+  "P130",
+  "P133",
+  "P136",
+  "P142",
+  "P150",
+  "P153",
+  "P163",
+  "P169",
+  "P182",
+  "P189",
+  "P195",
+  "P201",
+  "P204",
+  "P206",
+  "P214",
+  "P220",
+  "P227",
+  "P232",
+  "P235",
+  "P238",
+  "P273",
+  "P277",
+  "P279",
+  "P288",
+  "P289",
+  "P293",
+  "P294",
+  "P298"
+ ],
+ "rule": "highest mean NDCG@10 over rounds 2-10 on the dev subset",
+ "schema": "evalkit.sim_tuning/v1",
+ "sim_qrels": {
+  "pairs": 6058,
+  "sha256": "7046ed9ac2fc806e200176c05502abfe169d605a35351006b7e839ea2b38a16e"
+ },
+ "split": "dev",
+ "vs_control": {
+  "light": {
+   "diff": 0.399998,
+   "hi": 0.430966,
+   "lo": 0.364893,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "medium": {
+   "diff": 0.389539,
+   "hi": 0.417357,
+   "lo": 0.358351,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "rescore_only": {
+   "diff": 0.400013,
+   "hi": 0.430394,
+   "lo": 0.365813,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "rocchio_only": {
+   "diff": 0.399338,
+   "hi": 0.42832,
+   "lo": 0.367025,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "route_only": {
+   "diff": 0.400044,
+   "hi": 0.428444,
+   "lo": 0.367676,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "slots_only": {
+   "diff": 0.400711,
+   "hi": 0.430007,
+   "lo": 0.367233,
+   "n": 40,
+   "p_le_0": 0.0
+  },
+  "strong": {
+   "diff": 0.346591,
+   "hi": 0.38256,
+   "lo": 0.308124,
+   "n": 40,
+   "p_le_0": 0.0
+  }
+ },
+ "vs_route_only": {
+  "light": {
+   "diff": -4.7e-05,
+   "hi": 0.014793,
+   "lo": -0.015024,
+   "n": 40,
+   "p_le_0": 0.513
+  },
+  "medium": {
+   "diff": -0.010505,
+   "hi": 0.004523,
+   "lo": -0.025307,
+   "n": 40,
+   "p_le_0": 0.917
+  },
+  "rescore_only": {
+   "diff": -3.2e-05,
+   "hi": 0.016165,
+   "lo": -0.014836,
+   "n": 40,
+   "p_le_0": 0.498
+  },
+  "rocchio_only": {
+   "diff": -0.000706,
+   "hi": 0.015081,
+   "lo": -0.01482,
+   "n": 40,
+   "p_le_0": 0.527
+  },
+  "slots_only": {
+   "diff": 0.000667,
+   "hi": 0.003788,
+   "lo": -0.002477,
+   "n": 40,
+   "p_le_0": 0.378
+  },
+  "strong": {
+   "diff": -0.053453,
+   "hi": -0.024066,
+   "lo": -0.083108,
+   "n": 40,
+   "p_le_0": 1.0
+  }
+ }
+}

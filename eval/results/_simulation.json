@@ -1,0 +1,2473 @@
+{
+ "behaviour": {
+  "examine_decay": 0.95,
+  "max_completions": 1,
+  "max_rejections": 3,
+  "p_complete": [
+   0.0,
+   0.03,
+   0.25,
+   0.5
+  ],
+  "p_reject": [
+   0.5,
+   0.2,
+   0.0,
+   0.0
+  ],
+  "seed": 20261123,
+  "too_easy_ascent": 0.5,
+  "too_easy_length": 0.7,
+  "too_hard_factor": 1.2
+ },
+ "config": {
+  "recsys_v1": {
+   "doc_embeddings": {
+    "dim": 768,
+    "formulation": "facts",
+    "model": "gemini-embedding-001",
+    "precision": "float16",
+    "provider": "vertex",
+    "sha256": "56303dee9f0f4d63",
+    "text_version": "text/v1"
+   },
+   "ltr": {
+    "features": [
+     "rule_difficulty",
+     "rule_distance",
+     "rule_tags",
+     "bm25",
+     "bm25_rank",
+     "dense",
+     "dense_rank",
+     "rrf",
+     "fused_rank",
+     "home_km",
+     "home_ratio",
+     "length_km",
+     "length_cap_ratio",
+     "length_band_pos",
+     "intent_km_gap",
+     "ascent_m",
+     "ascent_per_km",
+     "ascent_fit",
+     "intent_easy",
+     "difficulty",
+     "difficulty_in_range",
+     "technical",
+     "duration_h",
+     "is_loop",
+     "intent_loop",
+     "loop_match",
+     "tag_cover",
+     "tag_hits",
+     "neg_hits",
+     "is_mtb",
+     "intent_mtb",
+     "paved_share",
+     "busy_road_share",
+     "popularity",
+     "pois_per_km",
+     "waymarked",
+     "osm_description"
+    ],
+    "name": "v1_noapi",
+    "trained": "dev personas only",
+    "trees": 290
+   },
+   "models": [
+    "embed:gemini-embedding-001",
+    "ltr:v1_noapi"
+   ],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": null,
+    "feedback": null,
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [
+     "bm25",
+     "dense"
+    ],
+    "ltr_model": "v1_noapi",
+    "mmr_lambda": 0.8,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "ltr",
+    "rrf_k": 30
+   },
+   "system": "recsys_v1"
+  },
+  "recsys_v1_fb": {
+   "doc_embeddings": {
+    "dim": 768,
+    "formulation": "facts",
+    "model": "gemini-embedding-001",
+    "precision": "float16",
+    "provider": "vertex",
+    "sha256": "56303dee9f0f4d63",
+    "text_version": "text/v1"
+   },
+   "ltr": {
+    "features": [
+     "rule_difficulty",
+     "rule_distance",
+     "rule_tags",
+     "bm25",
+     "bm25_rank",
+     "dense",
+     "dense_rank",
+     "rrf",
+     "fused_rank",
+     "home_km",
+     "home_ratio",
+     "length_km",
+     "length_cap_ratio",
+     "length_band_pos",
+     "intent_km_gap",
+     "ascent_m",
+     "ascent_per_km",
+     "ascent_fit",
+     "intent_easy",
+     "difficulty",
+     "difficulty_in_range",
+     "technical",
+     "duration_h",
+     "is_loop",
+     "intent_loop",
+     "loop_match",
+     "tag_cover",
+     "tag_hits",
+     "neg_hits",
+     "is_mtb",
+     "intent_mtb",
+     "paved_share",
+     "busy_road_share",
+     "popularity",
+     "pois_per_km",
+     "waymarked",
+     "osm_description"
+    ],
+    "name": "v1_noapi",
+    "trained": "dev personas only",
+    "trees": 290
+   },
+   "models": [
+    "embed:gemini-embedding-001",
+    "ltr:v1_noapi"
+   ],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": null,
+    "feedback": {
+     "alpha": 1.0,
+     "beta": 0.0,
+     "cap_step": 0.25,
+     "difficulty_step": 0.25,
+     "dup_length_ratio": 0.25,
+     "dup_start_km": 1.0,
+     "eta_emb": 0.0,
+     "eta_tag": 0.0,
+     "exclude_weight": 0.25,
+     "floor_share": 0.5,
+     "gamma": 0.0,
+     "half_life_days": 60.0,
+     "nu_dup": 0.0,
+     "radius_step": 0.25
+    },
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [
+     "bm25",
+     "dense"
+    ],
+    "ltr_model": "v1_noapi",
+    "mmr_lambda": 0.8,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "ltr",
+    "rrf_k": 30
+   },
+   "system": "recsys_v1_fb"
+  },
+  "recsys_v1_fb_explore": {
+   "doc_embeddings": {
+    "dim": 768,
+    "formulation": "facts",
+    "model": "gemini-embedding-001",
+    "precision": "float16",
+    "provider": "vertex",
+    "sha256": "56303dee9f0f4d63",
+    "text_version": "text/v1"
+   },
+   "ltr": {
+    "features": [
+     "rule_difficulty",
+     "rule_distance",
+     "rule_tags",
+     "bm25",
+     "bm25_rank",
+     "dense",
+     "dense_rank",
+     "rrf",
+     "fused_rank",
+     "home_km",
+     "home_ratio",
+     "length_km",
+     "length_cap_ratio",
+     "length_band_pos",
+     "intent_km_gap",
+     "ascent_m",
+     "ascent_per_km",
+     "ascent_fit",
+     "intent_easy",
+     "difficulty",
+     "difficulty_in_range",
+     "technical",
+     "duration_h",
+     "is_loop",
+     "intent_loop",
+     "loop_match",
+     "tag_cover",
+     "tag_hits",
+     "neg_hits",
+     "is_mtb",
+     "intent_mtb",
+     "paved_share",
+     "busy_road_share",
+     "popularity",
+     "pois_per_km",
+     "waymarked",
+     "osm_description"
+    ],
+    "name": "v1_noapi",
+    "trained": "dev personas only",
+    "trees": 290
+   },
+   "models": [
+    "embed:gemini-embedding-001",
+    "ltr:v1_noapi"
+   ],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": {
+     "k": 8,
+     "max_events": 10,
+     "position": 10,
+     "prior_a": 1.0,
+     "prior_b": 1.0,
+     "restarts": 5,
+     "seed": 20261123
+    },
+    "feedback": {
+     "alpha": 1.0,
+     "beta": 0.0,
+     "cap_step": 0.25,
+     "difficulty_step": 0.25,
+     "dup_length_ratio": 0.25,
+     "dup_start_km": 1.0,
+     "eta_emb": 0.0,
+     "eta_tag": 0.0,
+     "exclude_weight": 0.25,
+     "floor_share": 0.5,
+     "gamma": 0.0,
+     "half_life_days": 60.0,
+     "nu_dup": 0.0,
+     "radius_step": 0.25
+    },
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [
+     "bm25",
+     "dense"
+    ],
+    "ltr_model": "v1_noapi",
+    "mmr_lambda": 0.8,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "ltr",
+    "rrf_k": 30
+   },
+   "system": "recsys_v1_fb_explore"
+  },
+  "recsys_v1_fb_light": {
+   "doc_embeddings": {
+    "dim": 768,
+    "formulation": "facts",
+    "model": "gemini-embedding-001",
+    "precision": "float16",
+    "provider": "vertex",
+    "sha256": "56303dee9f0f4d63",
+    "text_version": "text/v1"
+   },
+   "ltr": {
+    "features": [
+     "rule_difficulty",
+     "rule_distance",
+     "rule_tags",
+     "bm25",
+     "bm25_rank",
+     "dense",
+     "dense_rank",
+     "rrf",
+     "fused_rank",
+     "home_km",
+     "home_ratio",
+     "length_km",
+     "length_cap_ratio",
+     "length_band_pos",
+     "intent_km_gap",
+     "ascent_m",
+     "ascent_per_km",
+     "ascent_fit",
+     "intent_easy",
+     "difficulty",
+     "difficulty_in_range",
+     "technical",
+     "duration_h",
+     "is_loop",
+     "intent_loop",
+     "loop_match",
+     "tag_cover",
+     "tag_hits",
+     "neg_hits",
+     "is_mtb",
+     "intent_mtb",
+     "paved_share",
+     "busy_road_share",
+     "popularity",
+     "pois_per_km",
+     "waymarked",
+     "osm_description"
+    ],
+    "name": "v1_noapi",
+    "trained": "dev personas only",
+    "trees": 290
+   },
+   "models": [
+    "embed:gemini-embedding-001",
+    "ltr:v1_noapi"
+   ],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": null,
+    "feedback": {
+     "alpha": 1.0,
+     "beta": 0.25,
+     "cap_step": 0.25,
+     "difficulty_step": 0.25,
+     "dup_length_ratio": 0.25,
+     "dup_start_km": 1.0,
+     "eta_emb": 0.1,
+     "eta_tag": 0.1,
+     "exclude_weight": 0.25,
+     "floor_share": 0.5,
+     "gamma": 0.1,
+     "half_life_days": 60.0,
+     "nu_dup": 0.15,
+     "radius_step": 0.25
+    },
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [
+     "bm25",
+     "dense"
+    ],
+    "ltr_model": "v1_noapi",
+    "mmr_lambda": 0.8,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "ltr",
+    "rrf_k": 30
+   },
+   "system": "recsys_v1_fb_light"
+  },
+  "recsys_v1_fb_route": {
+   "doc_embeddings": {
+    "dim": 768,
+    "formulation": "facts",
+    "model": "gemini-embedding-001",
+    "precision": "float16",
+    "provider": "vertex",
+    "sha256": "56303dee9f0f4d63",
+    "text_version": "text/v1"
+   },
+   "ltr": {
+    "features": [
+     "rule_difficulty",
+     "rule_distance",
+     "rule_tags",
+     "bm25",
+     "bm25_rank",
+     "dense",
+     "dense_rank",
+     "rrf",
+     "fused_rank",
+     "home_km",
+     "home_ratio",
+     "length_km",
+     "length_cap_ratio",
+     "length_band_pos",
+     "intent_km_gap",
+     "ascent_m",
+     "ascent_per_km",
+     "ascent_fit",
+     "intent_easy",
+     "difficulty",
+     "difficulty_in_range",
+     "technical",
+     "duration_h",
+     "is_loop",
+     "intent_loop",
+     "loop_match",
+     "tag_cover",
+     "tag_hits",
+     "neg_hits",
+     "is_mtb",
+     "intent_mtb",
+     "paved_share",
+     "busy_road_share",
+     "popularity",
+     "pois_per_km",
+     "waymarked",
+     "osm_description"
+    ],
+    "name": "v1_noapi",
+    "trained": "dev personas only",
+    "trees": 290
+   },
+   "models": [
+    "embed:gemini-embedding-001",
+    "ltr:v1_noapi"
+   ],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": null,
+    "feedback": {
+     "alpha": 1.0,
+     "beta": 0.0,
+     "cap_step": 0.0,
+     "difficulty_step": 0.0,
+     "dup_length_ratio": 0.25,
+     "dup_start_km": 1.0,
+     "eta_emb": 0.0,
+     "eta_tag": 0.0,
+     "exclude_weight": 0.25,
+     "floor_share": 0.5,
+     "gamma": 0.0,
+     "half_life_days": 60.0,
+     "nu_dup": 0.0,
+     "radius_step": 0.0
+    },
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [
+     "bm25",
+     "dense"
+    ],
+    "ltr_model": "v1_noapi",
+    "mmr_lambda": 0.8,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "ltr",
+    "rrf_k": 30
+   },
+   "system": "recsys_v1_fb_route"
+  },
+  "v0_rules": {
+   "feedback_reference_time": "2026-11-22T00:00:00+00:00",
+   "ranker": "app.services.recommendation_service.rank_routes_v0",
+   "sees": [
+    "user_vector",
+    "category",
+    "feedback"
+   ],
+   "system": "v0_rules",
+   "weights": {
+    "difficulty": 0.4,
+    "distance": 0.3,
+    "tags": 0.3
+   }
+  },
+  "v1_filters": {
+   "models": [],
+   "pipeline": {
+    "bm25": {
+     "b": 0.75,
+     "expand": true,
+     "glossary": false,
+     "k1": 1.2,
+     "negation": true,
+     "stem": true,
+     "text_version": "text/v1",
+     "w_description": 1.0,
+     "w_tags": 2.0,
+     "w_title": 0.5
+    },
+    "cand_depth": 50,
+    "embed_dim": 768,
+    "embed_model": "gemini-embedding-001",
+    "explore": null,
+    "feedback": null,
+    "filter": {
+     "min_eligible": 10,
+     "relax_factor": 1.25,
+     "relax_max_factor": 2.0
+    },
+    "filters": true,
+    "gen_depth": 100,
+    "generators": [],
+    "ltr_model": null,
+    "mmr_lambda": null,
+    "rank_doc": "facts_desc",
+    "rank_model": "mongodb/rerank-3",
+    "ranker": "v0",
+    "rrf_k": 30
+   },
+   "system": "v1_filters"
+  }
+ },
+ "days_per_round": 7,
+ "exploration": {
+  "per_round_coverage_gain": [
+   {
+    "coverage_gain": 0.000642,
+    "round": 1
+   },
+   {
+    "coverage_gain": 0.001498,
+    "round": 2
+   },
+   {
+    "coverage_gain": 0.000963,
+    "round": 3
+   },
+   {
+    "coverage_gain": 0.001391,
+    "round": 4
+   },
+   {
+    "coverage_gain": 0.001712,
+    "round": 5
+   },
+   {
+    "coverage_gain": 0.000535,
+    "round": 6
+   },
+   {
+    "coverage_gain": 0.000107,
+    "round": 7
+   },
+   {
+    "coverage_gain": -0.000107,
+    "round": 8
+   },
+   {
+    "coverage_gain": 0.000856,
+    "round": 9
+   },
+   {
+    "coverage_gain": -0.000321,
+    "round": 10
+   }
+  ]
+ },
+ "metrics": {
+  "recsys_v1": {
+   "completions_total": 5.77,
+   "events_by_reason": {
+    "completed": 577,
+    "not-interested": 191,
+    "too-easy": 16,
+    "too-hard": 27
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.337975,
+    "lo": 0.292513,
+    "mean": 0.316253,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.88,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.762199,
+      "lo": 0.706627,
+      "mean": 0.735019,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.88,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.628829,
+      "lo": 0.568826,
+      "mean": 0.598922,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.29,
+     "reshown_consumed_per_list": 1.58,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.72,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.5177,
+      "lo": 0.453226,
+      "mean": 0.486808,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.32,
+     "reshown_consumed_per_list": 2.75,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.58,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.430047,
+      "lo": 0.369005,
+      "mean": 0.400863,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.25,
+     "reshown_consumed_per_list": 3.79,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.66,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.370917,
+      "lo": 0.316597,
+      "mean": 0.345139,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.25,
+     "reshown_consumed_per_list": 4.62,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.59,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.312318,
+      "lo": 0.26064,
+      "mean": 0.287095,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.15,
+     "reshown_consumed_per_list": 5.53,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.46,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.261537,
+      "lo": 0.209782,
+      "mean": 0.23565,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.13,
+     "reshown_consumed_per_list": 6.27,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.42,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.222017,
+      "lo": 0.176775,
+      "mean": 0.198812,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.12,
+     "reshown_consumed_per_list": 6.86,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.36,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.183772,
+      "lo": 0.142491,
+      "mean": 0.162463,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.04,
+     "reshown_consumed_per_list": 7.4,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.22,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.148853,
+      "lo": 0.112612,
+      "mean": 0.130522,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.09,
+     "reshown_consumed_per_list": 7.8,
+     "round": 10
+    }
+   ]
+  },
+  "recsys_v1_fb": {
+   "completions_total": 7.94,
+   "events_by_reason": {
+    "completed": 794,
+    "not-interested": 503,
+    "too-easy": 47,
+    "too-hard": 69
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.735146,
+    "lo": 0.669917,
+    "mean": 0.704005,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.88,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.762199,
+      "lo": 0.706627,
+      "mean": 0.735019,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.9,
+     "coverage_at_10": 0.083556,
+     "cumulative_coverage": 0.095004,
+     "ndcg_at_10": {
+      "hi": 0.758532,
+      "lo": 0.699664,
+      "mean": 0.730651,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.44,
+     "reshown_consumed_per_list": 0.0,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.83,
+     "coverage_at_10": 0.083556,
+     "cumulative_coverage": 0.104098,
+     "ndcg_at_10": {
+      "hi": 0.73789,
+      "lo": 0.674838,
+      "mean": 0.708764,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.56,
+     "reshown_consumed_per_list": 0.0,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.76,
+     "coverage_at_10": 0.085375,
+     "cumulative_coverage": 0.112656,
+     "ndcg_at_10": {
+      "hi": 0.735041,
+      "lo": 0.668222,
+      "mean": 0.702823,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.52,
+     "reshown_consumed_per_list": 0.0,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.8,
+     "coverage_at_10": 0.086338,
+     "cumulative_coverage": 0.121857,
+     "ndcg_at_10": {
+      "hi": 0.73557,
+      "lo": 0.664352,
+      "mean": 0.70154,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.62,
+     "reshown_consumed_per_list": 0.0,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.82,
+     "coverage_at_10": 0.087408,
+     "cumulative_coverage": 0.130523,
+     "ndcg_at_10": {
+      "hi": 0.734511,
+      "lo": 0.665068,
+      "mean": 0.701728,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.65,
+     "reshown_consumed_per_list": 0.0,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.77,
+     "coverage_at_10": 0.088906,
+     "cumulative_coverage": 0.140152,
+     "ndcg_at_10": {
+      "hi": 0.733307,
+      "lo": 0.659764,
+      "mean": 0.698299,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.61,
+     "reshown_consumed_per_list": 0.0,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.71,
+     "coverage_at_10": 0.089761,
+     "cumulative_coverage": 0.149246,
+     "ndcg_at_10": {
+      "hi": 0.736143,
+      "lo": 0.66236,
+      "mean": 0.700462,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.69,
+     "reshown_consumed_per_list": 0.0,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.72,
+     "coverage_at_10": 0.090082,
+     "cumulative_coverage": 0.157805,
+     "ndcg_at_10": {
+      "hi": 0.730621,
+      "lo": 0.659317,
+      "mean": 0.697129,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.72,
+     "reshown_consumed_per_list": 0.0,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.75,
+     "coverage_at_10": 0.091152,
+     "cumulative_coverage": 0.167326,
+     "ndcg_at_10": {
+      "hi": 0.729528,
+      "lo": 0.655683,
+      "mean": 0.694649,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.68,
+     "reshown_consumed_per_list": 0.0,
+     "round": 10
+    }
+   ]
+  },
+  "recsys_v1_fb_explore": {
+   "completions_total": 7.84,
+   "events_by_reason": {
+    "completed": 784,
+    "not-interested": 520,
+    "too-easy": 74,
+    "too-hard": 75
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.722945,
+    "lo": 0.658875,
+    "mean": 0.692638,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.87,
+     "coverage_at_10": 0.0827,
+     "cumulative_coverage": 0.0827,
+     "ndcg_at_10": {
+      "hi": 0.747654,
+      "lo": 0.692973,
+      "mean": 0.720395,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.71,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.91,
+     "coverage_at_10": 0.085054,
+     "cumulative_coverage": 0.101851,
+     "ndcg_at_10": {
+      "hi": 0.745685,
+      "lo": 0.6882,
+      "mean": 0.718207,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.53,
+     "reshown_consumed_per_list": 0.0,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.82,
+     "coverage_at_10": 0.084519,
+     "cumulative_coverage": 0.114261,
+     "ndcg_at_10": {
+      "hi": 0.721741,
+      "lo": 0.660838,
+      "mean": 0.69261,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.64,
+     "reshown_consumed_per_list": 0.0,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.75,
+     "coverage_at_10": 0.086766,
+     "cumulative_coverage": 0.125067,
+     "ndcg_at_10": {
+      "hi": 0.718031,
+      "lo": 0.653448,
+      "mean": 0.686708,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.62,
+     "reshown_consumed_per_list": 0.0,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.77,
+     "coverage_at_10": 0.08805,
+     "cumulative_coverage": 0.136621,
+     "ndcg_at_10": {
+      "hi": 0.719735,
+      "lo": 0.650977,
+      "mean": 0.686462,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.69,
+     "reshown_consumed_per_list": 0.0,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.81,
+     "coverage_at_10": 0.087943,
+     "cumulative_coverage": 0.148176,
+     "ndcg_at_10": {
+      "hi": 0.724248,
+      "lo": 0.656559,
+      "mean": 0.690799,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.71,
+     "reshown_consumed_per_list": 0.0,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.75,
+     "coverage_at_10": 0.089013,
+     "cumulative_coverage": 0.158875,
+     "ndcg_at_10": {
+      "hi": 0.719644,
+      "lo": 0.647472,
+      "mean": 0.685115,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.6,
+     "reshown_consumed_per_list": 0.0,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.71,
+     "coverage_at_10": 0.089654,
+     "cumulative_coverage": 0.168717,
+     "ndcg_at_10": {
+      "hi": 0.726072,
+      "lo": 0.652874,
+      "mean": 0.690928,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.72,
+     "coverage_at_10": 0.090938,
+     "cumulative_coverage": 0.178453,
+     "ndcg_at_10": {
+      "hi": 0.727525,
+      "lo": 0.653086,
+      "mean": 0.69179,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.79,
+     "reshown_consumed_per_list": 0.0,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.73,
+     "coverage_at_10": 0.090831,
+     "cumulative_coverage": 0.187333,
+     "ndcg_at_10": {
+      "hi": 0.727936,
+      "lo": 0.651769,
+      "mean": 0.69112,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 10
+    }
+   ]
+  },
+  "recsys_v1_fb_light": {
+   "completions_total": 7.93,
+   "events_by_reason": {
+    "completed": 793,
+    "not-interested": 504,
+    "too-easy": 45,
+    "too-hard": 67
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.757733,
+    "lo": 0.698485,
+    "mean": 0.729149,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.88,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.762199,
+      "lo": 0.706627,
+      "mean": 0.735019,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.86,
+     "coverage_at_10": 0.084198,
+     "cumulative_coverage": 0.100995,
+     "ndcg_at_10": {
+      "hi": 0.773139,
+      "lo": 0.716165,
+      "mean": 0.746665,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.52,
+     "reshown_consumed_per_list": 0.0,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.82,
+     "coverage_at_10": 0.083984,
+     "cumulative_coverage": 0.112442,
+     "ndcg_at_10": {
+      "hi": 0.76043,
+      "lo": 0.701192,
+      "mean": 0.732658,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.52,
+     "reshown_consumed_per_list": 0.0,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.75,
+     "coverage_at_10": 0.086445,
+     "cumulative_coverage": 0.121964,
+     "ndcg_at_10": {
+      "hi": 0.755855,
+      "lo": 0.694072,
+      "mean": 0.726358,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.52,
+     "reshown_consumed_per_list": 0.0,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.79,
+     "coverage_at_10": 0.086445,
+     "cumulative_coverage": 0.129774,
+     "ndcg_at_10": {
+      "hi": 0.761908,
+      "lo": 0.698952,
+      "mean": 0.731235,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.59,
+     "reshown_consumed_per_list": 0.0,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.87,
+     "coverage_at_10": 0.086873,
+     "cumulative_coverage": 0.136942,
+     "ndcg_at_10": {
+      "hi": 0.75822,
+      "lo": 0.693546,
+      "mean": 0.727287,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.62,
+     "reshown_consumed_per_list": 0.0,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.8,
+     "coverage_at_10": 0.088692,
+     "cumulative_coverage": 0.146999,
+     "ndcg_at_10": {
+      "hi": 0.759733,
+      "lo": 0.689502,
+      "mean": 0.726077,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.56,
+     "reshown_consumed_per_list": 0.0,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.74,
+     "coverage_at_10": 0.089975,
+     "cumulative_coverage": 0.15513,
+     "ndcg_at_10": {
+      "hi": 0.749096,
+      "lo": 0.681784,
+      "mean": 0.716299,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.76,
+     "reshown_consumed_per_list": 0.0,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.7,
+     "coverage_at_10": 0.090938,
+     "cumulative_coverage": 0.163796,
+     "ndcg_at_10": {
+      "hi": 0.756284,
+      "lo": 0.688806,
+      "mean": 0.723875,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.66,
+     "reshown_consumed_per_list": 0.0,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.72,
+     "coverage_at_10": 0.091473,
+     "cumulative_coverage": 0.172355,
+     "ndcg_at_10": {
+      "hi": 0.765316,
+      "lo": 0.696827,
+      "mean": 0.731887,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.71,
+     "reshown_consumed_per_list": 0.0,
+     "round": 10
+    }
+   ]
+  },
+  "recsys_v1_fb_route": {
+   "completions_total": 7.91,
+   "events_by_reason": {
+    "completed": 791,
+    "not-interested": 500,
+    "too-easy": 46,
+    "too-hard": 79
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.735803,
+    "lo": 0.669603,
+    "mean": 0.703812,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.88,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.082058,
+     "ndcg_at_10": {
+      "hi": 0.762199,
+      "lo": 0.706627,
+      "mean": 0.735019,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.7,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.91,
+     "coverage_at_10": 0.083556,
+     "cumulative_coverage": 0.09479,
+     "ndcg_at_10": {
+      "hi": 0.760529,
+      "lo": 0.702638,
+      "mean": 0.732719,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.44,
+     "reshown_consumed_per_list": 0.0,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.83,
+     "coverage_at_10": 0.083449,
+     "cumulative_coverage": 0.103777,
+     "ndcg_at_10": {
+      "hi": 0.739856,
+      "lo": 0.675424,
+      "mean": 0.710233,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.55,
+     "reshown_consumed_per_list": 0.0,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.74,
+     "coverage_at_10": 0.085161,
+     "cumulative_coverage": 0.112336,
+     "ndcg_at_10": {
+      "hi": 0.73748,
+      "lo": 0.668529,
+      "mean": 0.705242,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.54,
+     "reshown_consumed_per_list": 0.0,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.8,
+     "coverage_at_10": 0.086231,
+     "cumulative_coverage": 0.12068,
+     "ndcg_at_10": {
+      "hi": 0.739133,
+      "lo": 0.668358,
+      "mean": 0.705155,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.62,
+     "reshown_consumed_per_list": 0.0,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.82,
+     "coverage_at_10": 0.087194,
+     "cumulative_coverage": 0.129988,
+     "ndcg_at_10": {
+      "hi": 0.734221,
+      "lo": 0.665054,
+      "mean": 0.700999,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.66,
+     "reshown_consumed_per_list": 0.0,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.76,
+     "coverage_at_10": 0.088585,
+     "cumulative_coverage": 0.139403,
+     "ndcg_at_10": {
+      "hi": 0.732919,
+      "lo": 0.658045,
+      "mean": 0.697508,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.62,
+     "reshown_consumed_per_list": 0.0,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.71,
+     "coverage_at_10": 0.089868,
+     "cumulative_coverage": 0.147534,
+     "ndcg_at_10": {
+      "hi": 0.733822,
+      "lo": 0.660045,
+      "mean": 0.697969,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.71,
+     "reshown_consumed_per_list": 0.0,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.74,
+     "coverage_at_10": 0.088799,
+     "cumulative_coverage": 0.156307,
+     "ndcg_at_10": {
+      "hi": 0.728308,
+      "lo": 0.655331,
+      "mean": 0.693067,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.67,
+     "reshown_consumed_per_list": 0.0,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.72,
+     "coverage_at_10": 0.09051,
+     "cumulative_coverage": 0.165508,
+     "ndcg_at_10": {
+      "hi": 0.726768,
+      "lo": 0.652683,
+      "mean": 0.69142,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.74,
+     "reshown_consumed_per_list": 0.0,
+     "round": 10
+    }
+   ]
+  },
+  "v0_rules": {
+   "completions_total": 0.34,
+   "events_by_reason": {
+    "completed": 34,
+    "not-interested": 47,
+    "too-easy": 15,
+    "too-far": 2665,
+    "too-hard": 28
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.026894,
+    "lo": 0.012748,
+    "mean": 0.019139,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.05,
+     "coverage_at_10": 0.019685,
+     "cumulative_coverage": 0.019685,
+     "ndcg_at_10": {
+      "hi": 0.025991,
+      "lo": 0.01024,
+      "mean": 0.0173,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.8,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.09,
+     "coverage_at_10": 0.025249,
+     "cumulative_coverage": 0.029742,
+     "ndcg_at_10": {
+      "hi": 0.033087,
+      "lo": 0.01221,
+      "mean": 0.021568,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.75,
+     "reshown_consumed_per_list": 0.04,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.02,
+     "coverage_at_10": 0.029742,
+     "cumulative_coverage": 0.040227,
+     "ndcg_at_10": {
+      "hi": 0.026408,
+      "lo": 0.010413,
+      "mean": 0.017875,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.83,
+     "reshown_consumed_per_list": 0.08,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.04,
+     "coverage_at_10": 0.030598,
+     "cumulative_coverage": 0.049749,
+     "ndcg_at_10": {
+      "hi": 0.027767,
+      "lo": 0.009449,
+      "mean": 0.017804,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.71,
+     "reshown_consumed_per_list": 0.09,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.04,
+     "coverage_at_10": 0.031668,
+     "cumulative_coverage": 0.057452,
+     "ndcg_at_10": {
+      "hi": 0.028504,
+      "lo": 0.008996,
+      "mean": 0.017812,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.73,
+     "reshown_consumed_per_list": 0.1,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.02,
+     "coverage_at_10": 0.03231,
+     "cumulative_coverage": 0.064299,
+     "ndcg_at_10": {
+      "hi": 0.026368,
+      "lo": 0.009461,
+      "mean": 0.016705,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.7,
+     "reshown_consumed_per_list": 0.1,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.01,
+     "coverage_at_10": 0.03338,
+     "cumulative_coverage": 0.07243,
+     "ndcg_at_10": {
+      "hi": 0.026031,
+      "lo": 0.010119,
+      "mean": 0.017094,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.79,
+     "reshown_consumed_per_list": 0.11,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.01,
+     "coverage_at_10": 0.030598,
+     "cumulative_coverage": 0.077244,
+     "ndcg_at_10": {
+      "hi": 0.031301,
+      "lo": 0.013609,
+      "mean": 0.021699,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.82,
+     "reshown_consumed_per_list": 0.11,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.02,
+     "coverage_at_10": 0.031668,
+     "cumulative_coverage": 0.080347,
+     "ndcg_at_10": {
+      "hi": 0.028026,
+      "lo": 0.011745,
+      "mean": 0.019035,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.71,
+     "reshown_consumed_per_list": 0.1,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.04,
+     "coverage_at_10": 0.034129,
+     "cumulative_coverage": 0.084733,
+     "ndcg_at_10": {
+      "hi": 0.031067,
+      "lo": 0.015447,
+      "mean": 0.022663,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 2.71,
+     "reshown_consumed_per_list": 0.11,
+     "round": 10
+    }
+   ]
+  },
+  "v1_filters": {
+   "completions_total": 4.66,
+   "events_by_reason": {
+    "completed": 466,
+    "not-interested": 686,
+    "too-easy": 107,
+    "too-hard": 244
+   },
+   "ndcg_rounds_2_10": {
+    "hi": 0.322829,
+    "lo": 0.27666,
+    "mean": 0.299989,
+    "n": 100
+   },
+   "rounds": [
+    {
+     "completion_rate": 0.6,
+     "coverage_at_10": 0.073179,
+     "cumulative_coverage": 0.073179,
+     "ndcg_at_10": {
+      "hi": 0.39326,
+      "lo": 0.324766,
+      "mean": 0.359306,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 1.44,
+     "reshown_consumed_per_list": 0.0,
+     "round": 1
+    },
+    {
+     "completion_rate": 0.6,
+     "coverage_at_10": 0.081203,
+     "cumulative_coverage": 0.101637,
+     "ndcg_at_10": {
+      "hi": 0.377088,
+      "lo": 0.312194,
+      "mean": 0.344138,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 1.17,
+     "reshown_consumed_per_list": 0.46,
+     "round": 2
+    },
+    {
+     "completion_rate": 0.48,
+     "coverage_at_10": 0.078207,
+     "cumulative_coverage": 0.120466,
+     "ndcg_at_10": {
+      "hi": 0.362938,
+      "lo": 0.301799,
+      "mean": 0.331452,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 1.12,
+     "reshown_consumed_per_list": 0.76,
+     "round": 3
+    },
+    {
+     "completion_rate": 0.56,
+     "coverage_at_10": 0.080561,
+     "cumulative_coverage": 0.136835,
+     "ndcg_at_10": {
+      "hi": 0.368054,
+      "lo": 0.308524,
+      "mean": 0.336999,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 1.04,
+     "reshown_consumed_per_list": 1.04,
+     "round": 4
+    },
+    {
+     "completion_rate": 0.42,
+     "coverage_at_10": 0.081096,
+     "cumulative_coverage": 0.146678,
+     "ndcg_at_10": {
+      "hi": 0.339099,
+      "lo": 0.288274,
+      "mean": 0.314665,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.98,
+     "reshown_consumed_per_list": 1.47,
+     "round": 5
+    },
+    {
+     "completion_rate": 0.44,
+     "coverage_at_10": 0.078635,
+     "cumulative_coverage": 0.155237,
+     "ndcg_at_10": {
+      "hi": 0.326913,
+      "lo": 0.275562,
+      "mean": 0.301118,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.97,
+     "reshown_consumed_per_list": 1.81,
+     "round": 6
+    },
+    {
+     "completion_rate": 0.46,
+     "coverage_at_10": 0.07917,
+     "cumulative_coverage": 0.161656,
+     "ndcg_at_10": {
+      "hi": 0.30886,
+      "lo": 0.257394,
+      "mean": 0.284348,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.94,
+     "reshown_consumed_per_list": 2.12,
+     "round": 7
+    },
+    {
+     "completion_rate": 0.43,
+     "coverage_at_10": 0.080561,
+     "cumulative_coverage": 0.168503,
+     "ndcg_at_10": {
+      "hi": 0.300407,
+      "lo": 0.248028,
+      "mean": 0.275321,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 1.02,
+     "reshown_consumed_per_list": 2.41,
+     "round": 8
+    },
+    {
+     "completion_rate": 0.29,
+     "coverage_at_10": 0.079384,
+     "cumulative_coverage": 0.175243,
+     "ndcg_at_10": {
+      "hi": 0.28265,
+      "lo": 0.2329,
+      "mean": 0.257109,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.89,
+     "reshown_consumed_per_list": 2.88,
+     "round": 9
+    },
+    {
+     "completion_rate": 0.38,
+     "coverage_at_10": 0.082058,
+     "cumulative_coverage": 0.181342,
+     "ndcg_at_10": {
+      "hi": 0.280877,
+      "lo": 0.226912,
+      "mean": 0.254747,
+      "n": 100
+     },
+     "ndcg_undefined": 0,
+     "rejections_per_persona": 0.8,
+     "reshown_consumed_per_list": 3.01,
+     "round": 10
+    }
+   ]
+  }
+ },
+ "n_personas": 100,
+ "paired": [
+  {
+   "a": "recsys_v1",
+   "b": "recsys_v1_fb_route",
+   "per_round": [
+    {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": 0.133797,
+     "hi": 0.149626,
+     "lo": 0.116782,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.223426,
+     "hi": 0.243066,
+     "lo": 0.202503,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.304378,
+     "hi": 0.32643,
+     "lo": 0.283027,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.360016,
+     "hi": 0.382934,
+     "lo": 0.335841,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.413904,
+     "hi": 0.436868,
+     "lo": 0.390643,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.461858,
+     "hi": 0.486978,
+     "lo": 0.435582,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.499157,
+     "hi": 0.525992,
+     "lo": 0.469864,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.530604,
+     "hi": 0.558552,
+     "lo": 0.50027,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.560898,
+     "hi": 0.591143,
+     "lo": 0.530374,
+     "n": 100,
+     "p_le_0": 0.0
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.38756,
+    "hi": 0.407031,
+    "lo": 0.367298,
+    "n": 100,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "a": "recsys_v1",
+   "b": "recsys_v1_fb",
+   "per_round": [
+    {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": 0.131729,
+     "hi": 0.148026,
+     "lo": 0.114416,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.221957,
+     "hi": 0.241766,
+     "lo": 0.202341,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.30196,
+     "hi": 0.32342,
+     "lo": 0.280846,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.356401,
+     "hi": 0.380644,
+     "lo": 0.331783,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.414633,
+     "hi": 0.437639,
+     "lo": 0.391366,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.46265,
+     "hi": 0.487507,
+     "lo": 0.436871,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.50165,
+     "hi": 0.529573,
+     "lo": 0.472749,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.534666,
+     "hi": 0.562756,
+     "lo": 0.504358,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.564126,
+     "hi": 0.593345,
+     "lo": 0.533896,
+     "n": 100,
+     "p_le_0": 0.0
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.387752,
+    "hi": 0.406613,
+    "lo": 0.368344,
+    "n": 100,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "a": "recsys_v1_fb_route",
+   "b": "recsys_v1_fb",
+   "per_round": [
+    {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.002069,
+     "hi": 0.000322,
+     "lo": -0.005324,
+     "n": 100,
+     "p_le_0": 0.949
+    },
+    {
+     "diff": -0.001469,
+     "hi": 0.002031,
+     "lo": -0.005565,
+     "n": 100,
+     "p_le_0": 0.781
+    },
+    {
+     "diff": -0.002418,
+     "hi": 0.001747,
+     "lo": -0.007187,
+     "n": 100,
+     "p_le_0": 0.856
+    },
+    {
+     "diff": -0.003615,
+     "hi": 0.001458,
+     "lo": -0.009246,
+     "n": 100,
+     "p_le_0": 0.921
+    },
+    {
+     "diff": 0.000729,
+     "hi": 0.00641,
+     "lo": -0.004692,
+     "n": 100,
+     "p_le_0": 0.381
+    },
+    {
+     "diff": 0.000792,
+     "hi": 0.006624,
+     "lo": -0.005407,
+     "n": 100,
+     "p_le_0": 0.384
+    },
+    {
+     "diff": 0.002493,
+     "hi": 0.008413,
+     "lo": -0.003108,
+     "n": 100,
+     "p_le_0": 0.201
+    },
+    {
+     "diff": 0.004061,
+     "hi": 0.010451,
+     "lo": -0.001951,
+     "n": 100,
+     "p_le_0": 0.114
+    },
+    {
+     "diff": 0.003229,
+     "hi": 0.009739,
+     "lo": -0.003529,
+     "n": 100,
+     "p_le_0": 0.184
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.000193,
+    "hi": 0.003143,
+    "lo": -0.002882,
+    "n": 100,
+    "p_le_0": 0.43
+   }
+  },
+  {
+   "a": "recsys_v1_fb",
+   "b": "recsys_v1_fb_light",
+   "per_round": [
+    {
+     "diff": 0.0,
+     "hi": 0.0,
+     "lo": 0.0,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": 0.016014,
+     "hi": 0.029905,
+     "lo": 0.002921,
+     "n": 100,
+     "p_le_0": 0.003
+    },
+    {
+     "diff": 0.023893,
+     "hi": 0.039253,
+     "lo": 0.010777,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.023535,
+     "hi": 0.039108,
+     "lo": 0.008775,
+     "n": 100,
+     "p_le_0": 0.001
+    },
+    {
+     "diff": 0.029696,
+     "hi": 0.046086,
+     "lo": 0.013914,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.025559,
+     "hi": 0.041203,
+     "lo": 0.009889,
+     "n": 100,
+     "p_le_0": 0.001
+    },
+    {
+     "diff": 0.027777,
+     "hi": 0.044228,
+     "lo": 0.010929,
+     "n": 100,
+     "p_le_0": 0.002
+    },
+    {
+     "diff": 0.015837,
+     "hi": 0.033497,
+     "lo": -0.000396,
+     "n": 100,
+     "p_le_0": 0.028
+    },
+    {
+     "diff": 0.026747,
+     "hi": 0.04758,
+     "lo": 0.008426,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.037238,
+     "hi": 0.055625,
+     "lo": 0.018367,
+     "n": 100,
+     "p_le_0": 0.0
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.025144,
+    "hi": 0.036471,
+    "lo": 0.014282,
+    "n": 100,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "a": "recsys_v1_fb",
+   "b": "recsys_v1_fb_explore",
+   "per_round": [
+    {
+     "diff": -0.014624,
+     "hi": -0.009271,
+     "lo": -0.019684,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.012443,
+     "hi": -0.0066,
+     "lo": -0.018297,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.016154,
+     "hi": -0.010556,
+     "lo": -0.021093,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.016115,
+     "hi": -0.010413,
+     "lo": -0.021684,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.015077,
+     "hi": -0.00686,
+     "lo": -0.023218,
+     "n": 100,
+     "p_le_0": 0.999
+    },
+    {
+     "diff": -0.010929,
+     "hi": -0.004556,
+     "lo": -0.01804,
+     "n": 100,
+     "p_le_0": 0.999
+    },
+    {
+     "diff": -0.013184,
+     "hi": -0.006535,
+     "lo": -0.019227,
+     "n": 100,
+     "p_le_0": 1.0
+    },
+    {
+     "diff": -0.009534,
+     "hi": -0.002017,
+     "lo": -0.016966,
+     "n": 100,
+     "p_le_0": 0.997
+    },
+    {
+     "diff": -0.005338,
+     "hi": 0.001619,
+     "lo": -0.01202,
+     "n": 100,
+     "p_le_0": 0.93
+    },
+    {
+     "diff": -0.003529,
+     "hi": 0.004565,
+     "lo": -0.011959,
+     "n": 100,
+     "p_le_0": 0.809
+    }
+   ],
+   "rounds_2_10": {
+    "diff": -0.011367,
+    "hi": -0.007977,
+    "lo": -0.014635,
+    "n": 100,
+    "p_le_0": 1.0
+   }
+  },
+  {
+   "a": "v1_filters",
+   "b": "recsys_v1_fb",
+   "per_round": [
+    {
+     "diff": 0.375713,
+     "hi": 0.41129,
+     "lo": 0.339266,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.386513,
+     "hi": 0.424089,
+     "lo": 0.344922,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.377313,
+     "hi": 0.413977,
+     "lo": 0.335577,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.365824,
+     "hi": 0.401905,
+     "lo": 0.324097,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.386874,
+     "hi": 0.421513,
+     "lo": 0.349887,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.40061,
+     "hi": 0.435925,
+     "lo": 0.363944,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.413951,
+     "hi": 0.448865,
+     "lo": 0.379047,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.42514,
+     "hi": 0.461044,
+     "lo": 0.38585,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.44002,
+     "hi": 0.473407,
+     "lo": 0.402053,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.439901,
+     "hi": 0.472518,
+     "lo": 0.405262,
+     "n": 100,
+     "p_le_0": 0.0
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.404016,
+    "hi": 0.434071,
+    "lo": 0.37127,
+    "n": 100,
+    "p_le_0": 0.0
+   }
+  },
+  {
+   "a": "v0_rules",
+   "b": "recsys_v1_fb",
+   "per_round": [
+    {
+     "diff": 0.717719,
+     "hi": 0.746773,
+     "lo": 0.686272,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.709082,
+     "hi": 0.740055,
+     "lo": 0.675757,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.69089,
+     "hi": 0.721871,
+     "lo": 0.656033,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.68502,
+     "hi": 0.717531,
+     "lo": 0.64839,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.683728,
+     "hi": 0.719984,
+     "lo": 0.644714,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.685023,
+     "hi": 0.719702,
+     "lo": 0.647815,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.681205,
+     "hi": 0.718532,
+     "lo": 0.642135,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.678762,
+     "hi": 0.715574,
+     "lo": 0.641594,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.678094,
+     "hi": 0.713001,
+     "lo": 0.639347,
+     "n": 100,
+     "p_le_0": 0.0
+    },
+    {
+     "diff": 0.671986,
+     "hi": 0.709128,
+     "lo": 0.63221,
+     "n": 100,
+     "p_le_0": 0.0
+    }
+   ],
+   "rounds_2_10": {
+    "diff": 0.684866,
+    "hi": 0.71776,
+    "lo": 0.650368,
+    "n": 100,
+    "p_le_0": 0.0
+   }
+  }
+ ],
+ "qrels_sha256": "dc52481628b0231ec3254caca873ef237d9c08d5d581b4a6a2d321282277dc99",
+ "rounds": 10,
+ "schema": "evalkit.simulation/v1",
+ "sim_qrels": {
+  "pairs": 6058,
+  "sha256": "7046ed9ac2fc806e200176c05502abfe169d605a35351006b7e839ea2b38a16e"
+ },
+ "split": "test",
+ "systems": {
+  "recsys_v1": {
+   "label": "default system, feedback off (control)",
+   "system": "recsys_v1"
+  },
+  "recsys_v1_fb": {
+   "label": "default + feedback loop as chosen on dev (route effects + slot steps)",
+   "system": "recsys_v1_fb"
+  },
+  "recsys_v1_fb_explore": {
+   "label": "default + feedback loop + exploration slot",
+   "system": "recsys_v1_fb_explore"
+  },
+  "recsys_v1_fb_light": {
+   "label": "default + full light loop (slots, Rocchio, re-scoring, near-duplicates)",
+   "system": "recsys_v1_fb_light"
+  },
+  "recsys_v1_fb_route": {
+   "label": "default + route effects only (completed / rejected not shown again)",
+   "system": "recsys_v1_fb_route"
+  },
+  "v0_rules": {
+   "label": "baseline rule scorer, its own feedback (negative reasons only)",
+   "system": "v0_rules"
+  },
+  "v1_filters": {
+   "label": "hard filters + rule scorer, v0's feedback mechanism",
+   "system": "v1_filters"
+  }
+ },
+ "volatile": {
+  "judging": {
+   "holes": 0,
+   "llm_calls_est": 0,
+   "llm_pairs": 0,
+   "reports": [],
+   "rule": 0
+  }
+ }
+}
