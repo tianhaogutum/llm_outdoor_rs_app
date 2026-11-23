@@ -117,6 +117,10 @@ class LLMClient:
                 timeout_s=c.timeout_s,
                 embed_batch_size=c.openrouter_embed_batch_size,
             )
+        if name == "anthropic":
+            from .providers.anthropic import AnthropicProvider
+
+            return AnthropicProvider(api_key=c.anthropic_api_key, base_url=c.anthropic_base_url, timeout_s=c.timeout_s)
         if name == "vertex":
             from .providers.vertex import VertexProvider
 

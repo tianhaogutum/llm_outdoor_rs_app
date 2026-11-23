@@ -55,6 +55,7 @@ def redact(message: str, secrets: Iterable[Optional[str]]) -> str:
             out = out.replace(s, "<redacted>")
     # Bearer tokens / API-key-looking strings, defensively
     out = re.sub(r"(Bearer\s+)[A-Za-z0-9._\-]+", r"\1<redacted>", out)
+    out = re.sub(r"sk-ant-[A-Za-z0-9_\-]+", "<redacted>", out)
     out = re.sub(r"sk-or-[A-Za-z0-9_\-]+", "<redacted>", out)
     return out[:800]
 

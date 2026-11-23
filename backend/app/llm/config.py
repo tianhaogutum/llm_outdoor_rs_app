@@ -18,7 +18,7 @@ from .errors import ConfigError
 if TYPE_CHECKING:  # pragma: no cover
     from app.settings import Settings
 
-GENERATE_PROVIDERS = ("vertex", "openrouter", "ollama", "mock")
+GENERATE_PROVIDERS = ("vertex", "openrouter", "anthropic", "ollama", "mock")
 EMBED_PROVIDERS = ("vertex", "openrouter", "mock")
 RANK_PROVIDERS = ("openrouter", "vertex", "mock")
 
@@ -52,6 +52,11 @@ class LLMConfig:
     openrouter_embed_model: str = "google/gemini-embedding-001"
     openrouter_rank_model: str = "cohere/rerank-v3.5"
     openrouter_embed_batch_size: int = 64
+
+    # Anthropic (generation only)
+    anthropic_api_key: Optional[SecretStr] = field(default=None, repr=False)
+    anthropic_base_url: str = "https://api.anthropic.com"
+    anthropic_llm_model: str = "claude-haiku-5-5"
 
     # Ollama
     ollama_api_url: str = "http://127.0.0.1:11434/api/generate"
@@ -98,6 +103,7 @@ class LLMConfig:
         table = {
             ("generate", "vertex"): self.vertex_llm_model,
             ("generate", "openrouter"): self.openrouter_llm_model,
+            ("generate", "anthropic"): self.anthropic_llm_model,
             ("generate", "ollama"): self.ollama_model,
             ("generate", "mock"): self.mock_llm_model,
             ("embed", "vertex"): self.vertex_embed_model,
@@ -144,6 +150,9 @@ class LLMConfig:
             openrouter_embed_model=settings.openrouter_embed_model,
             openrouter_rank_model=settings.openrouter_rank_model,
             openrouter_embed_batch_size=settings.openrouter_embed_batch_size,
+            anthropic_api_key=settings.anthropic_api_key,
+            anthropic_base_url=settings.anthropic_base_url,
+            anthropic_llm_model=settings.anthropic_llm_model,
             ollama_api_url=settings.ollama_api_url,
             ollama_model=settings.ollama_model,
             ollama_timeout_s=float(settings.ollama_timeout),

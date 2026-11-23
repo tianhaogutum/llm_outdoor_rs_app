@@ -30,6 +30,7 @@ class ChatModel:
 CHAT_DEFAULTS: dict[str, ChatModel] = {
     "vertex": ChatModel("vertex", "gemini-3.5-flash", location="global", thinking="minimal"),
     "openrouter": ChatModel("openrouter", "anthropic/claude-haiku-5.5", thinking=0),
+    "anthropic": ChatModel("anthropic", "claude-haiku-5-5", thinking=None),
     "ollama": ChatModel("ollama", "llama3.1:8b", thinking=None),
     "mock": ChatModel("mock", "mock-llm-1", thinking=None),
 }
@@ -51,6 +52,8 @@ def default_chat_provider(settings: Any) -> str:
         return "mock"
     if settings.chat_llm_provider:
         return settings.chat_llm_provider
+    if settings.llm_provider == "anthropic":
+        return "anthropic"
     if settings.llm_provider in ("vertex", "openrouter") and settings.openrouter_api_key is not None:
         return "openrouter"
     return settings.llm_provider
@@ -82,6 +85,8 @@ def build_chat_client(chat_model: ChatModel, *, config: Optional[LLMConfig] = No
             o["vertex_llm_location"] = chat_model.location
     elif chat_model.provider == "openrouter":
         o["openrouter_llm_model"] = chat_model.model
+    elif chat_model.provider == "anthropic":
+        o["anthropic_llm_model"] = chat_model.model
     elif chat_model.provider == "ollama":
         o["ollama_model"] = chat_model.model
     o.update(overrides)

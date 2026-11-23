@@ -16,6 +16,7 @@ def provider_configured(provider: str, settings: Any, *, location: Optional[str]
 
     - ``mock``: always (offline). ``ollama``: always (a local server; unreachable shows up as a call error).
     - ``openrouter``: ``OPENROUTER_API_KEY`` is set.
+    - ``anthropic``: ``ANTHROPIC_API_KEY`` is set.
     - ``vertex``: ``GOOGLE_CLOUD_PROJECT`` and a location (``location`` if the caller has its own, else
       ``VERTEX_LLM_LOCATION`` or ``GOOGLE_CLOUD_LOCATION``). Application Default Credentials are not checked
       here (that would need the Google auth library and, on some hosts, a metadata-server round trip).
@@ -24,6 +25,12 @@ def provider_configured(provider: str, settings: Any, *, location: Optional[str]
         return True
     if provider == "openrouter":
         key = getattr(settings, "openrouter_api_key", None)
+        if key is None:
+            return False
+        value = key.get_secret_value() if hasattr(key, "get_secret_value") else str(key)
+        return bool(value.strip())
+    if provider == "anthropic":
+        key = getattr(settings, "anthropic_api_key", None)
         if key is None:
             return False
         value = key.get_secret_value() if hasattr(key, "get_secret_value") else str(key)

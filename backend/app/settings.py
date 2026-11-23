@@ -12,7 +12,7 @@ DEFAULT_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 DEFAULT_DB_URL = f"sqlite+aiosqlite:///{DEFAULT_DB_PATH.as_posix()}"
 DEFAULT_LLM_CACHE_DIR = REPO_ROOT / ".cache" / "llm"
 
-LLMProviderName = Literal["vertex", "openrouter", "ollama", "mock"]
+LLMProviderName = Literal["vertex", "openrouter", "anthropic", "ollama", "mock"]
 EmbedProviderName = Literal["vertex", "openrouter", "mock"]
 RankProviderName = Literal["openrouter", "vertex", "mock"]
 
@@ -83,6 +83,11 @@ class Settings(BaseSettings):
     openrouter_embed_model: str = Field(default="google/gemini-embedding-001")
     openrouter_rank_model: str = Field(default="cohere/rerank-v3.5")
     openrouter_embed_batch_size: int = Field(default=64)
+
+    # Anthropic (generation only; no embeddings/rerank endpoint)
+    anthropic_api_key: Optional[SecretStr] = Field(default=None)
+    anthropic_base_url: str = Field(default="https://api.anthropic.com")
+    anthropic_llm_model: str = Field(default="claude-haiku-5-5")
 
     # Ollama LLM configuration (existing local path; generation only)
     ollama_api_url: str = Field(
@@ -217,6 +222,8 @@ class Settings(BaseSettings):
             return self.embed_provider
         if self.llm_provider == "ollama":
             return "mock"
+        if self.llm_provider == "anthropic":
+            return "vertex"  # Anthropic has no embeddings; unconfigured Vertex falls back to BM25
         return self.llm_provider
 
     @property

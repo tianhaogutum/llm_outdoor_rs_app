@@ -70,3 +70,20 @@ def vertex_embed_cost(model: str, input_tokens: int) -> Optional[float]:
 
 def vertex_rank_cost(n_records: int) -> float:
     return math.ceil(max(n_records, 1) / VERTEX_RANK_RECORDS_PER_QUERY) * VERTEX_RANK_PER_QUERY
+
+
+# Anthropic Messages API (no cost in the response). Conservative Haiku-class price; update from
+# https://platform.claude.com/docs/en/about-claude/pricing when it changes.
+_ANTHROPIC_DEFAULT = TokenPrice(1.00, 5.00)
+_ANTHROPIC_GENERATE: dict[str, TokenPrice] = {
+    "claude-haiku-5-5": TokenPrice(1.00, 5.00),
+}
+
+
+def anthropic_generate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
+    """USD for one Anthropic call; unknown models use the conservative default so the budget stays safe."""
+    base = model.split("@")[0]
+    p = _ANTHROPIC_GENERATE.get(base) or next(
+        (v for k, v in _ANTHROPIC_GENERATE.items() if base.startswith(k)), _ANTHROPIC_DEFAULT
+    )
+    return (input_tokens * p.input_per_m + output_tokens * p.output_per_m) / 1e6
