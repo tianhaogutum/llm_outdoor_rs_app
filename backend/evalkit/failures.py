@@ -1,8 +1,13 @@
-"""Failure analysis of the served default on the test split (``make failures``).
+"""Failure analysis of the served default (``make failures``).
 
-    cd backend && python -m evalkit.failures     # -> eval/results/_failures.json, then make report
+    cd backend && python -m evalkit.failures     # served system on the holdout -> _failures_holdout.json
+    cd backend && python -m evalkit.failures --system recsys_serve --split test   # -> _failures.json (iteration 1)
 
-Takes the ``N_WORST`` test personas with the lowest NDCG@10 of ``recsys_serve`` (``eval/results``), replays
+Since iteration 3 (D28) the analysis of record is the served system's ``N_WORST`` **holdout** personas: test was used
+to develop iteration 2, the holdout was used only for the D28 decision. The original analysis (``recsys_serve``'s
+ten worst test personas, ``_failures.json``) is kept and still replayed.
+
+Takes the ``N_WORST`` personas of a split with the lowest NDCG@10 of the system (``eval/results``), replays
 each request through the pipeline (query embeddings from the frozen cache; ``LLM_CACHE_ONLY``, so no provider
 call and no credentials) and checks that the replay returns exactly the stored ranking. For each persona it
 records what the system saw, what it returned (grades and the judge's reasons) and where the pipeline lost
@@ -36,19 +41,21 @@ from app.recsys import get_catalog
 from app.recsys.constraints import haversine_km
 from app.recsys.systems.pipelines import SERVED_SYSTEM
 from evalkit import paths
-from evalkit.evaluate import dumps, load_run, make_system, stored_systems
+from evalkit.evaluate import HOLDOUT, MAIN, dumps, load_run, make_system, stored_systems
 from evalkit.llm import make_client
 from evalkit.personas import load_personas
 from evalkit.pool import POOL_DEPTH, contributor_runs
-from evalkit.qrels import Qrels
 
-SYSTEM = SERVED_SYSTEM
+SYSTEM = SERVED_SYSTEM  # make failures: the served system on the holdout
+HOLDOUT_OUT = "_failures_holdout.json"
+TEST_SYSTEM = "recsys_serve"  # the iteration-1 analysis on test (the served default at the time, D25)
 N_WORST = 10
 N_BEST = 5  # best judged routes traced per persona (highest grade first)
 OUT = "_failures.json"
 SCHEMA = "evalkit.failures/v1"
 # other systems' NDCG@10 on the same request, for context
 COMPARE = ("recsys_v1", "recsys_v1_nocap", "v4_rrf", "v2_bm25", "v3_dense", "v1_filters")
+COMPARE_HOLDOUT = ("recsys_serve", "recsys_serve_needs_promote", "recsys_serve_needs_demote")
 STAGES = ("filter", "needs", "retrieval", "ranker", "mmr", "exploration", "shown")
 LATENT_KEYS = (
     "party",
@@ -117,21 +124,22 @@ def _client():
     return make_client("failures", embed_provider="vertex", rank_provider="openrouter", cache_only=True)
 
 
-def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = N_WORST) -> dict[str, Any]:
-    """The analysis for ``system``'s ``n`` worst personas of ``split`` (``make failures``: the served system on
-    test; ``--split dev`` is the development-split version, which is what an improvement may be tuned on)."""
+def analyse(client=None, *, system: str = SYSTEM, split: str = "holdout", n: int = N_WORST) -> dict[str, Any]:
+    """The analysis for ``system``'s ``n`` worst personas of ``split`` (``make failures``: the served system on the
+    holdout; ``--split test`` / ``--split dev`` read the main personas)."""
+    bench = HOLDOUT if split == "holdout" else MAIN
     catalog = get_catalog()
-    personas = {p.persona_id: p for p in load_personas()}
+    personas = {p.persona_id: p for p in bench.personas()}
     split_of = {pid: p.split for pid, p in personas.items()}
-    results = json.loads((paths.RESULTS_DIR / f"{system}.json").read_text(encoding="utf-8"))
-    run, _ = load_run(system)
-    qrels = Qrels.load()
+    results = json.loads((bench.results_dir / f"{system}.json").read_text(encoding="utf-8"))
+    run, _ = load_run(system, bench)
+    qrels = bench.qrels()
     worst = worst_personas(results, split_of, n, split)
 
     # who put each route in a top 10 (the pool): stored systems and the pool-only contributors
     pooled_by: dict[tuple[str, int], list[str]] = {}
-    for name in stored_systems():
-        r, _ = load_run(name)
+    for name in stored_systems(bench):
+        r, _ = load_run(name, bench)
         for pid in worst:
             for rid in r[pid]["ids"][:POOL_DEPTH]:
                 pooled_by.setdefault((pid, rid), []).append(name)
@@ -141,8 +149,10 @@ def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = 
                 pooled_by.setdefault((pid, int(rid)), []).append(name)
 
     compare = {}
-    for name in COMPARE:
-        p = paths.RESULTS_DIR / f"{name}.json"
+    for name in COMPARE_HOLDOUT if split == "holdout" else COMPARE:
+        if name == system:
+            continue
+        p = bench.results_dir / f"{name}.json"
         if p.exists():
             compare[name] = json.loads(p.read_text(encoding="utf-8"))["per_persona"]
 
@@ -153,7 +163,7 @@ def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = 
         q = p.to_query()
         rec = pipe.recommend(q, 50)
         if rec.route_ids != run[pid]["ids"]:
-            raise RuntimeError(f"{pid}: replay differs from eval/runs/{system}.jsonl; rerun make eval first")
+            raise RuntimeError(f"{pid}: replay differs from the stored {bench.name} run of {system}; rerun make eval")
         ret = run_sync(pipe._retrieve(q))  # stage arrays over the whole eligible set
         pos_in_elig = {int(i): j for j, i in enumerate(ret.elig)}
         hard_ok = {int(i) for i in ret.fr.indices}  # before the stated-need stage
@@ -238,7 +248,7 @@ def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = 
     from app.recsys.features import CONCEPTS
 
     train_re = re.compile(CONCEPTS["train"][0], re.I)
-    allp = list(personas.values())
+    allp = load_personas() + (list(personas.values()) if split == "holdout" else [])
     context = {
         "personas_by_split_and_style": dict(sorted(Counter(f"{p.split}/{p.latent['style']}" for p in allp).items())),
         "stroller_personas_by_split": dict(
@@ -278,13 +288,15 @@ def analyse(client=None, *, system: str = SYSTEM, split: str = "test", n: int = 
 def replay(check: bool) -> tuple[list[str], list[str]]:
     """For ``make replay-check`` / ``make freeze``: recompute the analysis from the frozen cache and compare it
     with the committed file. Returns (touched cache keys, problems)."""
-    if not (paths.RESULTS_DIR / OUT).exists():
-        return [], []
     client = _client()
-    doc = analyse(client)
     probs = []
-    if check and dumps(doc) != (paths.RESULTS_DIR / OUT).read_text(encoding="utf-8"):
-        probs.append(f"failure analysis differs: {OUT} (run make failures)")
+    for out, kw in ((OUT, {"system": TEST_SYSTEM, "split": "test"}), (HOLDOUT_OUT, {"system": SYSTEM})):
+        f = paths.RESULTS_DIR / out
+        if not f.exists():
+            continue
+        doc = analyse(client, **kw)
+        if check and dumps(doc) != f.read_text(encoding="utf-8"):
+            probs.append(f"failure analysis differs: {out} (run make failures)")
     return client.touched_keys(), probs
 
 
@@ -293,16 +305,15 @@ def main(argv=None) -> None:
 
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--system", default=SYSTEM)
-    ap.add_argument("--split", default="test", choices=("test", "dev"))
+    ap.add_argument("--split", default="holdout", choices=("holdout", "test", "dev"))
     ap.add_argument("-n", type=int, default=N_WORST)
-    ap.add_argument("--out", default=None, help=f"results file name (default {OUT} for the served system on test)")
+    ap.add_argument("--out", default=None, help=f"results file name (default {HOLDOUT_OUT} / {OUT})")
     args = ap.parse_args(argv)
     doc = analyse(system=args.system, split=args.split, n=args.n)
-    out = args.out or (OUT if (args.system, args.split, args.n) == (SYSTEM, "test", N_WORST) else None)
-    if out is None:
-        out = f"_failures_{args.system}_{args.split}.json"
+    fixed = {(SYSTEM, "holdout", N_WORST): HOLDOUT_OUT, (TEST_SYSTEM, "test", N_WORST): OUT}
+    out = args.out or fixed.get((args.system, args.split, args.n)) or f"_failures_{args.system}_{args.split}.json"
     (paths.RESULTS_DIR / out).write_text(dumps(doc), encoding="utf-8")
-    print(f"wrote {paths.RESULTS_DIR / out}" + ("; now run make report" if out == OUT else ""))
+    print(f"wrote {paths.RESULTS_DIR / out}" + ("; now run make report" if out in fixed.values() else ""))
 
 
 if __name__ == "__main__":
@@ -405,17 +416,18 @@ def _persona_block(f: dict[str, Any]) -> str:
     return "\n".join(L)
 
 
-def _summary_block(doc: dict[str, Any]) -> str:
-    cols = [
-        c
-        for c in ("recsys_v1", "v4_rrf", "v2_bm25")
-        if all(c in f["other_systems_ndcg_at_10"] for f in doc["personas"])
-    ]
+def _summary_block(doc: dict[str, Any], out: str = OUT) -> str:
+    holdout = doc["split"] == "holdout"
+    want = ("recsys_serve", "recsys_serve_needs_promote", "recsys_serve_needs_demote") if holdout else (
+        "recsys_v1", "v4_rrf", "v2_bm25")  # fmt: skip
+    cols = [c for c in want if all(c in f["other_systems_ndcg_at_10"] for f in doc["personas"])]
+    label = "served default since D28" if holdout else "served default until D28"
+    cmd = "make failures" if holdout else f"python -m evalkit.failures --system {doc['system']} --split test"
     L = [
         f"*{_esc(doc['results_note'])}*",
         "",
-        f"The {doc['n_worst']} test personas with the lowest NDCG@10 of `{doc['system']}` (served default), from "
-        f'`eval/results/{OUT}` (`make failures`). Relevant = judged grade ≥ 2; "lost at" counts every such route '
+        f"The {doc['n_worst']} {doc['split']} personas with the lowest NDCG@10 of `{doc['system']}` ({label}), from "
+        f'`eval/results/{out}` (`{cmd}`). Relevant = judged grade ≥ 2; "lost at" counts every such route '
         "of the persona by the stage after which it was no longer in the top 10.",
         "",
         "| Persona | Intent | NDCG@10 | " + " | ".join(f"`{c}`" for c in cols) + " | Relevant routes: lost at |",
@@ -445,18 +457,18 @@ def _classes_block(prose: str, doc: dict[str, Any]) -> str:
     """Counts of the hand-assigned failure classes (``**Class:** X`` under each ``### Pxxx`` heading)."""
     import re
 
+    want = [f["persona_id"] for f in doc["personas"]]
     by_class: dict[str, list[str]] = {}
     cur = None
     for line in prose.splitlines():
-        m = re.match(r"^### (P\d+)\b", line)
+        m = re.match(r"^### ([PH]\d+)\b", line)
         if m:
-            cur = m.group(1)
+            cur = m.group(1) if m.group(1)[0] == want[0][0] else None  # this analysis's split only
             continue
         m = re.match(r"^\*\*Class:\*\* ([A-Z])\b", line)
         if m and cur:
             by_class.setdefault(m.group(1), []).append(cur)
             cur = None
-    want = [f["persona_id"] for f in doc["personas"]]
     got = sorted(p for ps in by_class.values() for p in ps)
     if sorted(want) != got:
         raise ValueError(f"FAILURES.md: every persona needs exactly one '**Class:** X' line; have {got}, need {want}")
@@ -472,7 +484,7 @@ def _class_of(prose: str) -> dict[str, str]:
 
     out, cur = {}, None
     for line in prose.splitlines():
-        m = re.match(r"^### (P\d+)\b", line)
+        m = re.match(r"^### ([PH]\d+)\b", line)
         if m:
             cur = m.group(1)
             continue
@@ -488,14 +500,14 @@ def _iteration2_block(prose: str, doc: dict[str, Any]) -> str:
     from app.recsys.needs import extract_needs
 
     res = {n: json.loads((paths.RESULTS_DIR / f"{n}.json").read_text(encoding="utf-8"))["per_persona"]
-           for n in (SYSTEM, *ITERATION2)}  # fmt: skip
+           for n in (TEST_SYSTEM, *ITERATION2)}  # fmt: skip
     personas = {p.persona_id: p for p in load_personas()}
     cls = _class_of(prose)
     L = [
         f"NDCG@10 of the ten worst test queries of `{doc['system']}` under each stated-need variant (none is served; "
         "DECISIONS.md D27). Stated needs = what the stage extracted from the intent.",
         "",
-        "| Persona | Class | Stated needs | `" + SYSTEM + "` | " + " | ".join(f"`{n}`" for n in ITERATION2) + " |",
+        "| Persona | Class | Stated needs | `" + TEST_SYSTEM + "` | " + " | ".join(f"`{n}`" for n in ITERATION2) + " |",
         "|---|---|---|---|" + "---|" * len(ITERATION2),
     ]
     for f in doc["personas"]:
@@ -503,7 +515,7 @@ def _iteration2_block(prose: str, doc: dict[str, Any]) -> str:
         p = personas[pid]
         needs = ", ".join(extract_needs(p.intent, p.latent["category"]).codes()) or "none"
         L.append(
-            f"| {pid} | {cls.get(pid, '?')} | {needs} | {_f3(res[SYSTEM][pid]['ndcg_at_10'])} | "
+            f"| {pid} | {cls.get(pid, '?')} | {needs} | {_f3(res[TEST_SYSTEM][pid]['ndcg_at_10'])} | "
             + " | ".join(_f3(res[n][pid]["ndcg_at_10"]) for n in ITERATION2)
             + " |"
         )
@@ -515,9 +527,9 @@ def _iteration2_block(prose: str, doc: dict[str, Any]) -> str:
     L.append("")
     for n in ITERATION2:
         d = sorted(
-            (res[n][pid]["ndcg_at_10"] - res[SYSTEM][pid]["ndcg_at_10"], pid)
+            (res[n][pid]["ndcg_at_10"] - res[TEST_SYSTEM][pid]["ndcg_at_10"], pid)
             for pid in test
-            if res[n][pid]["ndcg_at_10"] is not None and res[SYSTEM][pid]["ndcg_at_10"] is not None
+            if res[n][pid]["ndcg_at_10"] is not None and res[TEST_SYSTEM][pid]["ndcg_at_10"] is not None
         )
         worse = [(x, pid) for x, pid in d if x < -0.1]
         better = [(x, pid) for x, pid in d if x > 0.1]
@@ -575,4 +587,11 @@ def render_blocks(prose: str) -> dict[str, str]:
         blocks[f"failure-{f['persona_id'].lower()}"] = _persona_block(f)
     if all((paths.RESULTS_DIR / f"{n}.json").exists() for n in ITERATION2):
         blocks["failures-iteration2"] = _iteration2_block(prose, doc)
+    hp = paths.RESULTS_DIR / HOLDOUT_OUT
+    if hp.exists():
+        hd = json.loads(hp.read_text(encoding="utf-8"))
+        blocks["holdout-summary"] = _summary_block(hd, HOLDOUT_OUT)
+        blocks["holdout-classes"] = _classes_block(prose, hd)
+        for f in hd["personas"]:
+            blocks[f"failure-{f['persona_id'].lower()}"] = _persona_block(f)
     return blocks
