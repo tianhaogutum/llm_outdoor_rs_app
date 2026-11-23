@@ -17,6 +17,8 @@
 #   make eval SYSTEM=v0_rules  run one system on all personas, judge pool holes, write eval/results/<name>.json
 #   make eval-all      recompute every stored run against the current qrels (tables stay consistent)
 #   make report        render docs/RESULTS.md from eval/results/*.json
+#   make failures      failure analysis of the served default: the ten worst test queries, replayed stage by stage
+#                      from the frozen cache (eval/results/_failures.json, docs/FAILURES.md)
 #   make judge-pilot   judge pilot (candidates vs reference; cached)
 #   make owner-set     blind 150-pair labelling set + interim second judge (eval/owner_labels/)
 #   make kappa         owner labels vs judge (reports "owner labels missing" until the file exists)
@@ -65,7 +67,7 @@ endif
 
 .PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
 	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency ltr-robust simulate sim-tune \
-	chat-eval
+	chat-eval failures
 .PHONY: narratives narratives-live narratives-check
 
 setup:
@@ -119,6 +121,9 @@ eval-all:
 
 report:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.report
+
+failures:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.failures
 
 judge-pilot:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.pilot

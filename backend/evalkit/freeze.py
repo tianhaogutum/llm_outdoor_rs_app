@@ -139,10 +139,10 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
 
 def _extra_replays() -> list:
     """Further recorded experiments to replay: ranker pilot, MMR sweep, the feedback simulation and its dev
-    tuning, the scripted chat evaluation (each returns (keys, problems))."""
-    from evalkit import mmr_sweep, rank_pilot, simulate
+    tuning, the scripted chat evaluation, the failure analysis (each returns (keys, problems))."""
+    from evalkit import failures, mmr_sweep, rank_pilot, simulate
 
-    return [rank_pilot.replay, mmr_sweep.replay, simulate.replay, _chat_eval_replay]
+    return [rank_pilot.replay, mmr_sweep.replay, simulate.replay, _chat_eval_replay, failures.replay]
 
 
 def _chat_eval_replay(check: bool) -> tuple[list[str], list[str]]:
