@@ -540,7 +540,9 @@ def estimate_holes(
         else:
             runs[n] = bench_run(n, catalog, personas, bench)[0]
     q = bench.qrels()
-    pool = pool_pairs({n: {pid: r["ids"] for pid, r in run.items()} for n, run in runs.items()}, POOL_DEPTH)
+    pruns = {n: {pid: r["ids"] for pid, r in run.items()} for n, run in runs.items()}
+    pruns.update(contributor_runs(catalog, personas, POOL_DEPTH))  # judge_pool pools them too
+    pool = pool_pairs(pruns, POOL_DEPTH)
     holes = q.holes(pool)
     llm = [h for h in holes if rule_grade(pm[h[0]], catalog, h[1]) is None]
     by_split = {s: sum(1 for h in llm if pm[h[0]].split == s) for s in ("dev", "test", "holdout")}

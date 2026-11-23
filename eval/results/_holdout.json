@@ -1,0 +1,296 @@
+{
+ "decision": {
+  "outcome": "switch",
+  "serve": "recsys_serve_v2",
+  "text": "recsys_serve_needs wins by the pre-registered rule; it is served as recsys_serve_v2",
+  "winner": "recsys_serve_needs"
+ },
+ "gate_dev_crossfit": {
+  "recsys_serve_needs": {
+   "diff": 0.017763,
+   "hi": 0.028847,
+   "lo": 0.005776,
+   "n": 200,
+   "p_le_0": 0.002,
+   "passed": true
+  },
+  "recsys_serve_needs_demote": {
+   "diff": 0.011248,
+   "hi": 0.021462,
+   "lo": 0.001125,
+   "n": 200,
+   "p_le_0": 0.02,
+   "passed": true
+  },
+  "recsys_serve_needs_promote": {
+   "diff": 0.021426,
+   "hi": 0.035981,
+   "lo": 0.007412,
+   "n": 200,
+   "p_le_0": 0.002,
+   "passed": true
+  }
+ },
+ "paired_95": {
+  "recsys_serve_needs": {
+   "better_by_0_1": 20,
+   "diff": 0.021493,
+   "hi": 0.033949,
+   "lo": 0.010126,
+   "n": 150,
+   "p_le_0": 0.0,
+   "worse_by_0_1": 4
+  },
+  "recsys_serve_needs_demote": {
+   "better_by_0_1": 12,
+   "diff": 0.006129,
+   "hi": 0.019869,
+   "lo": -0.006824,
+   "n": 150,
+   "p_le_0": 0.196,
+   "worse_by_0_1": 10
+  },
+  "recsys_serve_needs_promote": {
+   "better_by_0_1": 21,
+   "diff": 0.018777,
+   "hi": 0.033816,
+   "lo": 0.003413,
+   "n": 150,
+   "p_le_0": 0.005,
+   "worse_by_0_1": 12
+  }
+ },
+ "personas": {
+  "activity_style": {
+   "cycling/mtb": 13,
+   "cycling/touring": 29,
+   "hiking/hiking": 108
+  },
+  "dedup": {
+   "draws_used": 150,
+   "identical_intent_texts": [
+    {
+     "intent": "A quiet mountain bike ride to a summit",
+     "persona": "H117",
+     "same_text_as": "P102"
+    }
+   ],
+   "skipped": []
+  },
+  "eligible_n": {
+   "max": 2594.0,
+   "median": 208.5,
+   "min": 40.0,
+   "p10": 59.9,
+   "p25": 86.0,
+   "p75": 560.2,
+   "p90": 1009.0
+  },
+  "intent_styles": {
+   "detailed": 32,
+   "medium": 62,
+   "short": 34,
+   "vague": 22
+  },
+  "multi_day": 5,
+  "n": 150,
+  "party": {
+   "couple": 29,
+   "family_school": 16,
+   "family_teen": 1,
+   "family_young": 13,
+   "friends": 21,
+   "older": 19,
+   "solo": 32,
+   "stroller": 8,
+   "with_dog": 11
+  },
+  "seed": 20261128,
+  "sha256": "8f890708a7201c5719caed18a83d8a420afc1374581e31a3975d80f6c885f577",
+  "transport": {
+   "car": 124,
+   "train": 26
+  }
+ },
+ "rule": {
+  "baseline": "recsys_serve",
+  "candidates": [
+   "recsys_serve_needs",
+   "recsys_serve_needs_promote",
+   "recsys_serve_needs_demote"
+  ],
+  "choose": "the eligible variant with the largest simultaneous lower bound (ties: order of candidates); it is registered as recsys_serve_v2 with the variant's config and becomes the API default",
+  "eligible": "simultaneous lower bound > 0 and mean holdout Violations@10 not above recsys_serve's",
+  "gate_dev_crossfit": "paired bootstrap 95% CI (1,000 resamples, seed 20261122) of mean cross-fitted dev NDCG@10(variant) - NDCG@10(recsys_serve) has its lower bound above 0; variants failing it are not tested",
+  "holdout_test": "for the m gated variants jointly: one-sided simultaneous 95% lower bounds of the mean paired holdout difference NDCG@10(variant) - NDCG@10(recsys_serve), single-step max-T over a joint paired bootstrap of the holdout personas (10,000 resamples, seed 20261122); family-wise error 5% over the m variants",
+  "metric": "NDCG@10, every top 10 judged (judge g35f-min-b8, rubric/v1)",
+  "null": "no eligible variant: recsys_serve stays the served default, the variants stay registered and off",
+  "precondition": "every top 10 of every compared system on the holdout is judged (judged@10 = 100%)",
+  "registered": "docs/DECISIONS.md D28, committed before the holdout personas existed"
+ },
+ "schema": "evalkit.holdout_decision/v1",
+ "seed": 20261128,
+ "simultaneous": {
+  "alpha": 0.05,
+  "by_name": {
+   "recsys_serve_needs": {
+    "diff": 0.021493,
+    "lower": 0.008848,
+    "se": 0.00633
+   },
+   "recsys_serve_needs_demote": {
+    "diff": 0.006129,
+    "lower": -0.007686,
+    "se": 0.006917
+   },
+   "recsys_serve_needs_promote": {
+    "diff": 0.018777,
+    "lower": 0.003104,
+    "se": 0.007846
+   }
+  },
+  "c": 1.997406,
+  "n": 150,
+  "n_boot": 10000,
+  "seed": 20261122
+ },
+ "status": "complete",
+ "systems": {
+  "recsys_serve": {
+   "judged_share_at_10": 1.0,
+   "mrr_at_10": {
+    "hi": 0.938908,
+    "lo": 0.861333,
+    "mean": 0.901333,
+    "n": 150
+   },
+   "ndcg_at_10": {
+    "hi": 0.79582,
+    "lo": 0.743608,
+    "mean": 0.770923,
+    "n": 150
+   },
+   "qrels_sha256": "69db8f93f8de42c721b4892bd12d24962be64aa5f7f93539621bf03132ce2507",
+   "recall_at_50": {
+    "hi": 0.882054,
+    "lo": 0.822957,
+    "mean": 0.852676,
+    "n": 148
+   },
+   "violation_at_10": {
+    "hi": 0.0,
+    "lo": 0.0,
+    "mean": 0.0,
+    "n": 150
+   }
+  },
+  "recsys_serve_needs": {
+   "judged_share_at_10": 1.0,
+   "mrr_at_10": {
+    "hi": 0.953333,
+    "lo": 0.883306,
+    "mean": 0.918889,
+    "n": 150
+   },
+   "ndcg_at_10": {
+    "hi": 0.816908,
+    "lo": 0.765107,
+    "mean": 0.792416,
+    "n": 150
+   },
+   "qrels_sha256": "69db8f93f8de42c721b4892bd12d24962be64aa5f7f93539621bf03132ce2507",
+   "recall_at_50": {
+    "hi": 0.859356,
+    "lo": 0.799397,
+    "mean": 0.830213,
+    "n": 148
+   },
+   "violation_at_10": {
+    "hi": 0.0,
+    "lo": 0.0,
+    "mean": 0.0,
+    "n": 150
+   }
+  },
+  "recsys_serve_needs_demote": {
+   "judged_share_at_10": 1.0,
+   "mrr_at_10": {
+    "hi": 0.954672,
+    "lo": 0.885256,
+    "mean": 0.922296,
+    "n": 150
+   },
+   "ndcg_at_10": {
+    "hi": 0.800328,
+    "lo": 0.749565,
+    "mean": 0.777052,
+    "n": 150
+   },
+   "qrels_sha256": "69db8f93f8de42c721b4892bd12d24962be64aa5f7f93539621bf03132ce2507",
+   "recall_at_50": {
+    "hi": 0.882113,
+    "lo": 0.82388,
+    "mean": 0.853098,
+    "n": 148
+   },
+   "violation_at_10": {
+    "hi": 0.0,
+    "lo": 0.0,
+    "mean": 0.0,
+    "n": 150
+   }
+  },
+  "recsys_serve_needs_promote": {
+   "judged_share_at_10": 1.0,
+   "mrr_at_10": {
+    "hi": 0.958889,
+    "lo": 0.894889,
+    "mean": 0.929111,
+    "n": 150
+   },
+   "ndcg_at_10": {
+    "hi": 0.813689,
+    "lo": 0.764142,
+    "mean": 0.7897,
+    "n": 150
+   },
+   "qrels_sha256": "69db8f93f8de42c721b4892bd12d24962be64aa5f7f93539621bf03132ce2507",
+   "recall_at_50": {
+    "hi": 0.859356,
+    "lo": 0.799397,
+    "mean": 0.830213,
+    "n": 148
+   },
+   "violation_at_10": {
+    "hi": 0.0,
+    "lo": 0.0,
+    "mean": 0.0,
+    "n": 150
+   }
+  }
+ },
+ "units": {
+  "ndcg_undefined": 0,
+  "personas": 150
+ },
+ "verdict": {
+  "recsys_serve_needs": {
+   "eligible": true,
+   "gated": true,
+   "simultaneous_lower": 0.008848,
+   "violations_ok": true
+  },
+  "recsys_serve_needs_demote": {
+   "eligible": false,
+   "gated": true,
+   "simultaneous_lower": -0.007686,
+   "violations_ok": true
+  },
+  "recsys_serve_needs_promote": {
+   "eligible": true,
+   "gated": true,
+   "simultaneous_lower": 0.003104,
+   "violations_ok": true
+  }
+ }
+}
