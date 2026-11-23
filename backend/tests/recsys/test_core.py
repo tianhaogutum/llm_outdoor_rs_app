@@ -86,6 +86,7 @@ def test_user_query_has_no_latent_fields():
         "max_distance_km",
         "intent",
         "feedback",
+        "needs",
     }
 
 

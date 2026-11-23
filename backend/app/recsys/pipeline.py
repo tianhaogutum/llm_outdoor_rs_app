@@ -10,6 +10,9 @@ trace (``explain.py`` defines the schema). Design and measurements: docs/RECSYS.
 Stages, in order:
 
 1. ``filter`` (``filters``): category tab, radius from home, distance cap (``filters.py``).
+   ``needs`` (iteration 2, if ``needs`` is configured with mode ``filter``): needs the user stated (intent
+   text or structured slots) and the catalogue can verify narrow the eligible set further, relaxed in a fixed
+   order below a floor (``needs.py``).
 2. candidate generation over the eligible set with the intent as query: ``bm25`` and/or ``dense``
    (exact cosine), each keeping its top ``gen_depth``; ``fusion`` = RRF when both run. The candidate
    list is the top ``cand_depth`` (50) of the generator or of the fused list.
@@ -21,7 +24,9 @@ Stages, in order:
    dense retrieval, and this stage removes recently completed / rejected routes and re-scores the rest
    (``feedback.py``).
 5. ``mmr`` re-ranking if ``mmr_lambda`` is set.
-6. ``explore`` (Phase 5, if ``explore`` is configured): one reserved slot filled by Thompson sampling over
+6. ``needs`` with mode ``demote`` (instead of the filter): after MMR, routes are stably re-ordered by how
+   badly they miss the stated needs.
+7. ``explore`` (Phase 5, if ``explore`` is configured): one reserved slot filled by Thompson sampling over
    tag clusters while the user has little feedback (``explore.py``).
 
 **No intent** (questionnaire-only request): BM25, dense, fusion, the ranker API and the learned ranker
@@ -50,6 +55,7 @@ from .filters import FilterConfig, FilterResult, apply_filters
 from .fusion import rrf
 from .ltr import TreeEnsemble, load_model
 from .mmr import mmr as mmr_select
+from .needs import NeedsConfig, StatedNeeds, apply_needs, check_route, demote_key, extract_needs, need_activity
 from .query import UserQuery
 from .result import Recommendation, StageTrace
 from .text import ranker_text
@@ -89,6 +95,7 @@ class PipelineConfig:
     mmr_lambda: Optional[float] = None
     feedback: Optional[FeedbackConfig] = None  # None = feedback ignored (v0 ranker: its own mechanism)
     explore: Optional[ExploreConfig] = None
+    needs: Optional[NeedsConfig] = None  # None = no stated-need stage (every system before iteration 2)
 
     def __post_init__(self) -> None:
         if self.ranker not in RANKERS:
@@ -111,6 +118,10 @@ class PipelineConfig:
         d["bm25"] = self.bm25.describe()
         d["feedback"] = self.feedback.describe() if self.feedback else None
         d["explore"] = self.explore.describe() if self.explore else None
+        if self.needs is None:
+            d.pop("needs")  # keeps the stored config of every earlier system byte-identical
+        else:
+            d["needs"] = self.needs.describe()
         return d
 
 
@@ -127,6 +138,9 @@ class _Retrieval:
     fused_inputs: dict[int, dict[str, int]]
     cand: Optional[list[int]]
     fallback: Optional[str]
+    needs: Optional[StatedNeeds] = None
+    needs_levels: Optional[dict[str, Optional[int]]] = None
+    needs_strict: Optional[np.ndarray] = None  # catalogue indices meeting every need strictly (filter_promote)
 
 
 def _committed_doc_meta() -> dict[str, Any]:
@@ -306,6 +320,25 @@ class Pipeline:
         elig = fr.indices
         traces.append(StageTrace("filter", len(cat), len(elig), (time.perf_counter() - t0) * 1000, info=dict(fr.info)))
 
+        # 1b. stated needs ------------------------------------------------
+        sneeds: Optional[StatedNeeds] = None
+        nlevels: Optional[dict[str, Optional[int]]] = None
+        nstrict: Optional[np.ndarray] = None
+        if cfg.needs is not None:
+            t0 = time.perf_counter()
+            sneeds = extract_needs(intent, query.category, query.needs)
+            if sneeds and cfg.needs.mode in ("filter", "filter_promote"):
+                nres = apply_needs(cat, elig, sneeds, query.category, cfg.needs)
+                n_before, elig, nlevels = len(elig), nres.indices, nres.levels
+                if cfg.needs.mode == "filter_promote" and any(v != 0 for v in nlevels.values()):
+                    nstrict = nres.strict
+                ms = (time.perf_counter() - t0) * 1000
+                traces.append(StageTrace("needs", n_before, len(elig), ms, info=nres.info))
+            elif sneeds:
+                nlevels = {c: 0 for c in sneeds.codes()}
+            else:
+                sneeds = None
+
         use_text = bool(intent) and bool(cfg.generators)
         embed_task = None
         if use_text and "dense" in cfg.generators and len(elig):
@@ -389,8 +422,17 @@ class Pipeline:
         fallback = None
         if cand is None and cfg.generators and not intent:
             fallback = "no_intent"
+        if cand is not None and nstrict is not None and len(nstrict):
+            # filter_promote: routes meeting every need strictly are always candidates (at most floor - 1 of them)
+            pos_of = {int(i): j for j, i in enumerate(elig)}
+            have = set(cand)
+            added = [pos_of[int(i)] for i in nstrict if pos_of[int(i)] not in have]
+            cand = cand + added
+            next(t for t in traces if t.stage == "needs").info["promoted_into_candidates"] = len(added)
 
-        return _Retrieval(hc, fr, elig, intent, traces, stage, per_term, lists, fused_inputs, cand, fallback)
+        return _Retrieval(
+            hc, fr, elig, intent, traces, stage, per_term, lists, fused_inputs, cand, fallback, sneeds, nlevels, nstrict
+        )
 
     async def arecommend(self, query: UserQuery, k: int = 10) -> Recommendation:
         cfg = self.cfg
@@ -564,7 +606,38 @@ class Pipeline:
                 )
             )
 
-        # 6. exploration -------------------------------------------------
+        # 6. stated needs, demote mode ----------------------------------
+        needs_rank: dict[int, tuple[int, int, float]] = {}
+        promote = cfg.needs is not None and cfg.needs.mode == "filter_promote" and r.needs_strict is not None
+        if r.needs is not None and cfg.needs is not None and (cfg.needs.mode == "demote" or promote) and cand:
+            t0 = time.perf_counter()
+            act = need_activity(query.category, r.needs)
+            keys = [demote_key(cat, int(elig[j]), r.needs, act) for j in cand]
+            order = sorted(range(len(cand)), key=lambda o: (keys[o], o))
+            for after, o in enumerate(order, start=1):
+                needs_rank[cand[o]] = (o + 1, after, keys[o])
+            cand = [cand[o] for o in order]
+            final_scores = np.asarray(final_scores, dtype=float)[order]
+            dinfo = {
+                "moved": int(sum(1 for o, a in enumerate(order) if o != a)),
+                "fully_met": int(sum(1 for k_ in keys if k_ == 0)),
+            }
+            if promote:  # one needs stage: the filter's trace gets the re-ordering as well
+                nt = next(t for t in traces if t.stage == "needs")
+                nt.info["promote"] = dinfo
+                nt.local_ms += (time.perf_counter() - t0) * 1000
+            else:
+                traces.append(
+                    StageTrace(
+                        "needs",
+                        len(cand),
+                        len(cand),
+                        (time.perf_counter() - t0) * 1000,
+                        info={"mode": "demote", "extracted": r.needs.describe(), **dinfo},
+                    )
+                )
+
+        # 7. exploration -------------------------------------------------
         explore_contrib: dict[int, Any] = {}
         if cfg.explore is not None and cand and k >= cfg.explore.position:
             t0 = time.perf_counter()
@@ -643,6 +716,8 @@ class Pipeline:
                 by_stage["feedback"][rid] = fb_contrib[j]
             if j in explore_contrib:
                 by_stage["explore"][rid] = explore_contrib[j]
+            if "needs" in by_stage and r.needs is not None:
+                by_stage["needs"][rid] = self._needs_contrib(query, r, i, needs_rank.get(j))
         for t in traces:
             t.contrib = by_stage.get(t.stage, {})
         if fallback:
@@ -665,6 +740,28 @@ class Pipeline:
         return [int(self.catalog.ids[r.elig[j]]) for j in ca], X
 
     # ------------------------------------------------------------ stage helpers
+    def _needs_contrib(
+        self, query: UserQuery, r: _Retrieval, i: int, ranks: Optional[tuple[int, int, float]]
+    ) -> dict[str, Any]:
+        """Per-need checks of route ``i`` with the catalogue's numbers (explanation of stage ``needs``)."""
+        act = need_activity(query.category, r.needs)
+        levels = r.needs_levels or {}
+        checks = []
+        for n in r.needs.needs:
+            lv = levels.get(n.code)
+            c = check_route(self.catalog, i, n, act, lv)
+            c["applied"] = lv is not None
+            checks.append(c)
+        out: dict[str, Any] = {
+            "mode": self.cfg.needs.mode,
+            "met": sum(1 for c in checks if c["ok"]),
+            "unmet": sum(1 for c in checks if not c["ok"]),
+            "checks": checks,
+        }
+        if ranks is not None:
+            out.update(rank_before=ranks[0], rank_after=ranks[1], demotion=ranks[2])
+        return out
+
     def _v0(self, query: UserQuery, pool: np.ndarray, limit: Optional[int]):
         from datetime import timedelta
 

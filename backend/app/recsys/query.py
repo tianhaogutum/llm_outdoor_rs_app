@@ -25,6 +25,9 @@ class UserQuery:
     - profile slots a product form could collect: ``home`` (lat, lon), ``max_travel_km`` (great-circle
       radius from home to the route start) and ``max_distance_km`` (absolute cap on route length).
     - ``intent``: optional free text; ``feedback``: optional history (Phase 5).
+    - ``needs``: needs the user set as structured slots (chat / profile), in the codes of
+      :func:`app.recsys.needs.parse_slot_need` (``"stroller"``, ``"train"``, ``"days:3"``, ...). Read only by
+      systems with a stated-need stage; needs stated in the intent are extracted from the text there.
     - ``request_id``: stable id (seeds randomised systems).
     """
 
@@ -36,6 +39,7 @@ class UserQuery:
     max_distance_km: Optional[float] = None
     intent: Optional[str] = None
     feedback: tuple[FeedbackEvent, ...] = field(default=())
+    needs: tuple[str, ...] = field(default=())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -47,6 +51,7 @@ class UserQuery:
             "max_distance_km": self.max_distance_km,
             "intent": self.intent,
             "feedback": [vars(f) for f in self.feedback],
+            "needs": list(self.needs),
         }
 
     def fingerprint(self) -> str:

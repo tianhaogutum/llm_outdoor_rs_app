@@ -35,7 +35,12 @@ EXPECTED_STAGES = {
     "recsys_v1_fb_explore": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
     "recsys_serve_noexplore": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
     "recsys_serve": {"filter", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
+    # iteration 2: the default intent states a loop and a length, so the stated-need stage runs
+    "recsys_serve_needs": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
+    "recsys_serve_needs_promote": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
+    "recsys_serve_needs_demote": {"filter", "needs", "bm25", "dense", "fusion", "ltr", "mmr", "explore"},
 }
+REORDER_AFTER_MMR = {"recsys_serve_needs_promote", "recsys_serve_needs_demote"}
 
 
 @pytest.fixture(scope="module")
@@ -95,7 +100,13 @@ def test_pipeline_end_to_end_with_explanations(name, cat, llm):
             assert lt["bias"] + sum(f["contribution"] for f in lt["features"]) == pytest.approx(lt["score"], abs=1e-4)
             assert {f["name"] for f in lt["features"]} == set(sysm._ltr.feature_names)
         if "mmr" in EXPECTED_STAGES[name]:
-            assert st["mmr"]["rank_after"] == r["rank"] and st["mmr"]["lambda"] == CONFIGS[name].mmr_lambda
+            assert st["mmr"]["lambda"] == CONFIGS[name].mmr_lambda
+            if name not in REORDER_AFTER_MMR:
+                assert st["mmr"]["rank_after"] == r["rank"]
+        if "needs" in EXPECTED_STAGES[name]:
+            assert {c["need"] for c in st["needs"]["checks"]} == {"loop", "length"}
+            if st["needs"].get("rank_after") is not None:
+                assert st["needs"]["rank_after"] == r["rank"]
     # cost and latency are accounted per stage
     if "rank_api" in EXPECTED_STAGES[name]:
         assert any(t.stage == "rank_api" for t in rec.trace)

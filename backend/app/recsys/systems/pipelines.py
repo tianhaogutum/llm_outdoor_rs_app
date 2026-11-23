@@ -19,6 +19,7 @@ from ..bm25 import BM25Config
 from ..catalog import Catalog
 from ..explore import ExploreConfig
 from ..feedback import FeedbackConfig
+from ..needs import NeedsConfig
 from ..pipeline import Pipeline, PipelineConfig
 from .base import register_system
 
@@ -63,6 +64,11 @@ CONFIGS["recsys_v1_fb_light"] = CONFIGS[DEFAULT_SYSTEM].with_(feedback=LIGHT_LOO
 SERVED_SYSTEM = "recsys_serve"
 CONFIGS["recsys_serve_noexplore"] = CONFIGS["recsys_v1_nocap"].with_(feedback=FEEDBACK)
 CONFIGS[SERVED_SYSTEM] = CONFIGS["recsys_serve_noexplore"].with_(explore=ExploreConfig())
+# Iteration 2 (docs/RECSYS.md section 13, DECISIONS.md D27): the served system plus the stated-need stage, as a
+# constraint in front of candidate generation (filter, with relaxation below a floor) or as a post-ranker demotion.
+CONFIGS["recsys_serve_needs"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="filter"))
+CONFIGS["recsys_serve_needs_promote"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="filter_promote"))
+CONFIGS["recsys_serve_needs_demote"] = CONFIGS[SERVED_SYSTEM].with_(needs=NeedsConfig(mode="demote"))
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -83,6 +89,10 @@ DESCRIPTIONS: dict[str, str] = {
     "recsys_serve": "SERVED: recsys_v1_nocap ranker + feedback loop (dev choice) + exploration slot (D25)",
     "recsys_serve_noexplore": "recsys_serve without the exploration slot (its feedback-on, no-exploration twin)",
     "recsys_v1_fb_route": "recsys_v1 + route effects only (recent completions and rejections not shown again)",
+    "recsys_serve_needs": "recsys_serve + stated needs as constraints in front of retrieval (relaxed below a floor)",
+    "recsys_serve_needs_promote": "recsys_serve_needs + strict matches always candidates and ranked first "
+    "when the filter had to relax",
+    "recsys_serve_needs_demote": "recsys_serve + stated needs as a post-ranker demotion (nothing removed)",
 }
 
 

@@ -5,6 +5,9 @@ The pipeline writes one entry per stage into ``StageTrace.contrib[route_id]``; :
 form the API returns and a UI renders (``model_dump()`` gives plain JSON; ``explanation_json_schema()``
 the JSON schema). A stage that did not run for a request is absent (``None``), never faked.
 Field-by-field documentation and a real example: docs/RECSYS.md section "Explanations".
+
+Versions: ``recsys.explanation/v1`` (Phase 3) and ``v1.1`` (iteration 2), which only *adds* the optional stage
+``needs``; every v1 field is unchanged, so a v1 reader that ignores unknown stages reads v1.1 as before.
 """
 
 from __future__ import annotations
@@ -15,7 +18,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .result import Recommendation
 
-SCHEMA_VERSION = "recsys.explanation/v1"
+SCHEMA_VERSION = "recsys.explanation/v1.1"
+COMPATIBLE_VERSIONS = ("recsys.explanation/v1", SCHEMA_VERSION)
 
 
 class _M(BaseModel):
@@ -136,6 +140,34 @@ class ExploreContribution(_M):
     reason: Literal["shown to learn your taste"]
 
 
+class NeedCheck(_M):
+    need: str = Field(
+        description="need code: stroller, no_steps, train, public_transport, mtb, loop, one_way, days, "
+        "length, max_length, duration"
+    )
+    label: str = Field(description="the need in words ('stroller-friendly')")
+    phrase: str = Field(description="the words that stated it, or 'slot: ...' for a structured slot")
+    source: Literal["intent", "slot"]
+    applied: bool = Field(description="enforced for this request (false = dropped by relaxation)")
+    applied_level: Optional[int] = Field(description="level enforced: 0 = strict, higher = relaxed; null = dropped")
+    met_level: Optional[int] = Field(description="strictest level this route meets; null = none")
+    ok: bool = Field(description="the route meets the need at the enforced level")
+    strict: bool = Field(description="the route meets the need at its strictest level")
+    fact: str = Field(description="what the catalogue says, with the real numbers ('no steps, 94% ...')")
+    threshold: str = Field(description="the rule and its relaxed forms")
+    values: dict[str, Any] = Field(description="the raw catalogue values behind the fact")
+
+
+class NeedsContribution(_M):
+    mode: Literal["filter", "filter_promote", "demote"]
+    met: int
+    unmet: int
+    checks: list[NeedCheck]
+    rank_before: Optional[int] = Field(None, description="demote / promote: rank before the re-ordering")
+    rank_after: Optional[int] = None
+    demotion: Optional[float] = Field(None, description="sum over needs of level met / levels (1 = not met)")
+
+
 class StageContributions(_M):
     filter: Optional[FilterContribution] = None
     v0_rules: Optional[RuleContribution] = None
@@ -147,6 +179,7 @@ class StageContributions(_M):
     mmr: Optional[MMRContribution] = None
     feedback: Optional[FeedbackContribution] = None
     explore: Optional[ExploreContribution] = None
+    needs: Optional[NeedsContribution] = None  # v1.1
 
 
 class RouteExplanation(_M):
@@ -167,7 +200,7 @@ class StageSummary(_M):
 
 
 class RecommendationExplanation(_M):
-    schema_version: Literal["recsys.explanation/v1"] = SCHEMA_VERSION
+    schema_version: Literal["recsys.explanation/v1.1"] = SCHEMA_VERSION
     request_id: str
     system: str
     routes: list[RouteExplanation]
