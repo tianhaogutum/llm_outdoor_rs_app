@@ -33,6 +33,9 @@ make report  ->  docs/RESULTS.md
 | `make judge-pilot` | judge pilot (cached) |
 | `make owner-set` / `make kappa` | blind labelling set + interim second judge / agreement report |
 | `make freeze` / `make replay-check` | export the frozen LLM cache / prove a credential-free replay |
+| `make simulate` / `make sim-tune` | Phase 5 feedback simulation on test / parameter grid on dev (section 10) |
+| `make chat-eval` | scripted chat slot evaluation, replayed from `eval/chat/cache/` (section 11) |
+| `make ltr-robust` | the default ranker retrained without the simulator-shaped features (section 11) |
 
 Code: `backend/app/recsys/` (shared with the API: catalogue, `UserQuery`, result and trace types,
 hard constraints, systems registry) and `backend/evalkit/` (harness). Data artefacts: `eval/`.
@@ -338,7 +341,8 @@ look at.
 - **Small test split.** 100 personas: CIs on NDCG are wide relative to the baselines' values; use
   paired comparisons.
 - **No running, no seasons, no weather, no opening hours, no crowding data.** Single-request
-  evaluation: no sessions, no feedback loop yet (Phase 5).
+  evaluation except the Phase 5 simulation (section 10), whose reactions come from a behaviour model
+  written for this project.
 
 ## 9. Phase 3 additions to the protocol
 
@@ -386,3 +390,92 @@ the harness and in the data the numbers rest on.
   `@register_system(name, description=..., uses_llm=...)`; `config()` must return everything that
   determines the output, including model ids; never read `persona.latent` or the pool-only
   contributors; train on `split == "dev"` only.
+
+## 10. Phase 5: the feedback simulation
+
+`make simulate` (`backend/evalkit/simulate.py`); results `eval/results/_simulation.json`, lists and events
+`eval/runs/simulation.jsonl`, figure `docs/convergence.png`, tables in RESULTS.md "Feedback loop". The feedback
+design itself is in [RECSYS.md](RECSYS.md) section 10; decisions D20-D23.
+
+**Read every number here with two layers of simulation in mind:** the users are simulated (section 2) *and*
+their reactions come from a behaviour model written for this project (below). A feedback loop tuned or
+judged on it is tuned and judged on these assumptions; it says nothing about how real people react to a list.
+
+**Rounds.** 100 test personas x 10 rounds, one week apart. In round t every system gets
+`persona.to_query()` plus the persona's events from rounds 1..t-1 as `FeedbackEvent`s with age
+7 x (t - s) days, and returns its top 10. Systems compared: `v0_rules` with its own mechanism (it sees only
+the four negative reasons: the product has no completion signal), `v1_filters` (filter + rule scorer,
+same mechanism, so the comparison is not just "one system knows where the user lives"), `recsys_v1` with
+feedback off (control: the same list every round), `recsys_v1_fb_route` (route effects only: recent
+completions and rejections are not shown again), `recsys_v1_fb` (the loop as chosen on dev),
+`recsys_v1_fb_light` (the full loop at the grid's light setting) and `recsys_v1_fb_explore` (`recsys_v1_fb`
+plus the exploration slot). All run in lock-step, so every round's holes are judged together.
+
+**Judging.** Every shown route is judged before the user reacts, so every round is 100% judged:
+hard-constraint violations by rule, the rest by the production judge, batched per persona over all
+systems of the round. These judgements go to `eval/qrels/sim_qrels.jsonl` (same record format, replayed by
+`make replay-check`), not into the pooled `qrels.jsonl`: the single-request tables keep their top-10 pool
+and their numbers. The per-round metric reads both files. Volume was estimated first
+(`python -m evalkit.simulate estimate`, which proxies unjudged grades from the latent utility and writes
+nothing). Because a round's batches are formed from the holes of all systems of that round, the grade of
+a pair can depend on which other systems were simulated (the batch-order effect of section 8).
+
+**The behaviour model** (`BehaviourModel`, never visible to a system). For one shown list, in rank order:
+
+- the user looks at rank i with probability 0.95^(i-1), and skips routes they already completed or
+  rejected (no repeat outing within the simulation, no second thumbs-down);
+- a looked-at route is completed with probability 0, 0.03, 0.25, 0.5 for judged grade 0, 1, 2, 3; at most
+  one completion per round (one outing a week);
+- otherwise it is rejected with probability 0.5 / 0.2 for grade 0 / 1 (never for 2 or 3); at most three
+  rejections per round;
+- the reason comes from the **latent profile vs the route's facts**, first that applies: start beyond the
+  latent travel radius -> `too-far`; wrong category, or MTB vs non-MTB mismatch for a cyclist ->
+  `not-interested`; length above 1.2 x the top of the comfortable band, ascent above 1.2 x the ascent
+  tolerance, or a technical grade above the tolerance -> `too-hard`; length below 0.7 x the band's lower end
+  with ascent below half the tolerance -> `too-easy`; else `not-interested`;
+- every random draw is a hash of (seed, persona, round, route, purpose): the same route at the same round
+  gets the same draw for every system (common random numbers), and a rerun is identical.
+
+Its limits, plainly: the probabilities are invented, not measured; completion depends only on the judge's
+grade, so the simulated user agrees with the judge by construction (a system that pleases the judge is
+rewarded twice); the user's preferences never change, so a decay half-life cannot be tuned on it (a
+longer memory always wins); rejection reasons are clean and always given; position bias is a single
+geometric decay; no session effects, no fatigue, no seasons. A loop tuned on this model is tuned on these
+assumptions.
+
+**Per-round metric.** NDCG@10 of the round's list where routes the user completed or rejected in an
+**earlier** round have gain 0 *and* are removed from the ideal ranking. So a system is not punished for no
+longer showing what the user already did (its ideal shrinks with it), and gains nothing by showing it again
+(a re-shown completed route is a wasted slot). Everything else uses its judged grade. The metric is
+computed after the last round against every judgement made in the run, so a round's ideal does not
+depend on which routes happened to be judged by then (and a replay reproduces it). Also reported per
+round: coverage@10 over the 100 lists and cumulative coverage (distinct routes shown so far), completion
+counts and events by reason. CIs: bootstrap over personas; paired differences per persona over the mean
+of rounds 2-10 (round 1 has no feedback) and for round 10 alone.
+
+**Tuning on dev.** `make sim-tune` runs the same simulation on 40 seeded dev personas for a grid of
+feedback parameters (`TUNING`: route effects only; slot steps only; Rocchio only; re-scoring only; the full
+loop light / medium / strong) and picks the highest mean NDCG@10 over rounds 2-10. Test personas are never
+used for a choice. Caveat: the learned ranker is in-sample on dev, so dev lists start close to the ideal and
+leave feedback less to repair than on test; the grid therefore leans towards light feedback.
+
+## 11. Phase 4 and robustness rows in the harness
+
+- **Chat slot evaluation** moved into the harness layout (history kept with `git mv`): cases
+  `eval/chat/utterances.jsonl`, frozen cache `eval/chat/cache/<candidate>/`, runner and scorer
+  `backend/evalkit/chat/`, results `eval/results/chat/<candidate>.json` and the summary
+  `eval/results/_chat_eval.json`. `make chat-eval` replays it without any provider call; `make report`
+  renders slot precision/recall per slot type, clarifying-decision accuracy and schema-violation rate;
+  `make replay-check` re-runs it and compares. Protocol and caveats: CHAT.md section 8.
+- **End-to-end comparison** (test split, three registered systems, 100% judged): `recsys_v1_qonly`
+  (questionnaire only: the intent is dropped, so the pipeline takes its no-intent path), `recsys_v1`
+  (questionnaire + the intent as typed) and `recsys_v1_chat` (questionnaire + chat: the session starts from
+  the form's slots, the intent is sent as one chat message through the real turn logic, and the pipeline
+  gets the merged slots, the projected vector and the extractor's restated intent). The chat model is
+  pinned to the D18 choice in the harness (`evaluate.chat_client`), whatever credentials are configured,
+  so a replay asks the frozen cache for the same calls. What it can and cannot show: RESULTS.md section
+  header. The personas' intents were written by an LLM from the same latent profile the judge reads, so
+  free text here carries exactly the information the judge grades against.
+- **Robustness rows** `recsys_v1_nocap` and `recsys_v1_nosusp` (Part D): the default with rankers retrained
+  (`make ltr-robust`, same pinned dev labels, same CV) without `length_cap_ratio` or without the suspicious
+  group; evaluated like every system on all personas. D19 has the recommendation.

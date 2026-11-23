@@ -25,7 +25,7 @@ backend/app/chat/
 backend/app/services/chat_service.py   load/store a ChatSession on a DemoProfile; user_query_for_profile()
 backend/app/api/v1/chat.py             the endpoints
 backend/alembic/versions/a7c3e9d2b5f4  demo_profiles.activity, demo_profiles.chat_state_json
-backend/chat_eval/                     scripted set, runner, scorer, results, frozen cache
+backend/evalkit/chat/                  scripted-eval runner and scorer (cases, cache, results under eval/)
 frontend/components/preference-chat.tsx  chat box + chips (onboarding and results page)
 ```
 
@@ -166,12 +166,13 @@ Default: **Claude Haiku 5.5 via OpenRouter** (`CHAT_DEFAULTS` in `app/chat/llm.p
 errors on 72 cases, which this set cannot separate; Haiku is about a tenth of `gemini-3.5-flash`'s cost
 per turn with lower latency; `gemini-2.5-flash` is past its retirement date; Flash-Lite was the weakest.
 Accepted cost: user messages (which may name a home town) leave the EU with every candidate except the
-retired `gemini-2.5-flash`, and OpenRouter adds a processor. Proposed as a DECISIONS entry.
+retired `gemini-2.5-flash`, and OpenRouter adds a processor. Recorded as [DECISIONS.md](DECISIONS.md) D18.
 
 ## 8. Scripted evaluation
 
-`python -m chat_eval.run --all [--cache-only] [--freeze]` (from `backend/`). Cases:
-`chat_eval/data/utterances.jsonl`, 72 cases / 84 user turns: single slot (10), multi slot (10), vague
+`make chat-eval` (= `python -m evalkit.chat.run --all --cache-only` from `backend/`; `--freeze` exports the
+touched cache, without `--cache-only` cache misses go to the provider). Moved into the harness layout in
+Phase 5 (history kept). Cases: `eval/chat/utterances.jsonl`, 72 cases / 84 user turns: single slot (10), multi slot (10), vague
 (8, incl. a two-turn clarification and the default fallback after two questions), corrections over two
 turns (8), negations (6), number forms (8), family/stroller/dog/wheelchair (5), place typos and an
 English exonym (6), out-of-vocabulary wishes (5), injection attempts (6); 46 English and 26 German cases (none mix languages within one message: a gap).
@@ -179,7 +180,7 @@ Each case has a starting profile (`start`), the expected *changes* after the las
 optional acceptable alternatives (`optional`), the expected clarifying question (`clarify`) and, for
 out-of-vocabulary wishes, words the intent must mention.
 
-**Matching rules (fixed before the first run, `chat_eval/scoring.py`):** only changes made by the chat
+**Matching rules (fixed before the first run, `evalkit/chat/scoring.py`):** only changes made by the chat
 count (defaults excluded). Enums exact; place = same catalogue locality after both names go through the
 same resolver; `duration_hours` ±25% or ±0.5 h, `distance_cap_km` ±10% or ±1 km, `travel_radius_km` ±25%
 or ±5 km (whichever larger); tags as set precision/recall over the changed tags. A wrong value counts
@@ -187,9 +188,20 @@ as FN and FP (only FN if it is a listed alternative). Micro-averaged per slot ty
 *decision accuracy* = asked vs not asked; *slot accuracy* also needs the right slot. Schema-violation
 rate = invalid answers / provider attempts; validator drops are reported separately.
 
-Determinism: the touched cache is exported to `chat_eval/cache/<candidate>/`; a replay with
+Determinism: the touched cache is exported to `eval/chat/cache/<candidate>/`; a replay with
 `--cache-only` and an empty local cache reproduces every results file except its `volatile` block
-(checked by diffing two replays). Results: `chat_eval/results/<candidate>.json`, `summary.json`.
+(`make replay-check` re-runs it and compares). Results: `eval/results/chat/<candidate>.json` and the
+summary `eval/results/_chat_eval.json`, which `make report` renders into RESULTS.md ("Chat slot
+extraction": precision/recall per slot type and per slot, clarifying-decision accuracy, schema-violation
+rate).
+
+**End-to-end (Phase 4 comparison).** `recsys_v1_qonly` (questionnaire only), `recsys_v1` (questionnaire +
+the intent as typed) and `recsys_v1_chat` (questionnaire + the intent sent as one chat message through this
+turn logic, starting from the form's slots; the pipeline gets the merged slots and the restated intent) on
+the test split, 100% judged, with paired differences: RESULTS.md "Phase 4 end-to-end"; protocol EVAL.md
+section 11. One finding from it: when a persona's intent names a town (often its home town), the chat moves
+the place to that catalogue locality, so the radius filter is centred there rather than on the stored home,
+and a few routes outside the persona's own radius reach the list.
 
 **Worst misses (all LLMs unless named).**
 - Injected JSON with in-range values passes: `{"activity": "running", …} easy loop please` set the activity
@@ -219,4 +231,5 @@ few errors. Not tuned on: the prompt was not changed after the first run.
 - The reply template shows enum values in English inside German replies ("Aktivität hiking").
 - Injected but valid values (above) can only affect the user's own profile; there is no cross-user path.
 - `v0_rules` ignores place, radius, cap and avoided tags; they take effect with the new pipeline's filters.
-- The end-to-end NDCG@10 comparison (questionnaire only vs + chat) is a later step.
+- A place named in a message replaces the stored home (merge rule 6) even when it is only a landmark or the
+  home town itself; the end-to-end run shows this moving the radius centre (RESULTS.md "Phase 4 end-to-end").

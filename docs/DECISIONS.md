@@ -198,3 +198,100 @@ Chosen on the scripted chat set (`backend/chat_eval/`, [CHAT.md](CHAT.md) sectio
 - No model grades its own output: the relevance judge stays Google (D9); chat extraction is Anthropic.
 - Required slots are activity and place (the hard filters need them); one clarifying question each, at most two turns, then defaults (hiking; no radius filter).
 - Spend for this comparison and the live checks: about 1.0 USD.
+
+## D19. Which ranker to serve until real feedback exists: `recsys_v1_nocap` (recommendation, 2026-11-23)
+
+Follow-up to D15 (kept as history). System-level rows, same pipeline as `recsys_v1` except the ranker,
+retrained on the same pinned dev labels with the same CV (`make ltr-robust`), every top 10 judged
+(RESULTS.md "Robustness of the learned ranker"):
+
+| System | Ranker without | NDCG@10 test | Δ vs `recsys_v1`, test | Δ, dev (in-sample) | CV NDCG@10 (dev) |
+|---|---|---|---|---|---|
+| `recsys_v1` | – (all non-API features) | 0.760 | – | – | 0.801 |
+| `recsys_v1_nocap` | `length_cap_ratio` | 0.736 | −0.024 [−0.042, −0.009] | −0.024 | 0.778 |
+| `recsys_v1_nosusp` | slot ratios, home distance, intent km | 0.726 | −0.034 [−0.051, −0.018] | −0.051 | 0.768 |
+
+**Recommendation: serve `recsys_v1_nocap` (and build the Phase 5 feedback systems on it) until real feedback
+exists to retrain on; `recsys_v1` stays what it is and stays registered.** Reasons:
+
+1. The 0.024 that `length_cap_ratio` buys is earned on the simulator that created it: persona caps are the
+   top of the comfortable band times U(1.25, 1.7), and the judge reads the band, so "about two thirds of the
+   cap" is a fact about the generator. The measured loss is therefore an upper bound on what real users
+   would lose, not an estimate of it.
+2. At serving time the feature can be missing or mean something else. Every training persona has a cap, so
+   the trees never saw a missing ratio, and the cap is optional in the form and in the chat; a user who
+   states a cap as a true maximum ("max 12 km") would have routes near it pushed down. Without the feature
+   the ranker leans on `tag_cover`, `duration_h` and the intent's own km figure, which a real user controls.
+3. `recsys_v1_nosusp` also drops home distance and the intent's km figure, which are real signals (people
+   prefer nearer starts; a stated distance is a stated preference). It costs a further 0.010 on test and
+   0.027 on dev for no robustness argument as strong as point 1.
+4. Switching is one config value (`ltr_model="v1_noapi_nocap"`); nothing else changes.
+
+Not checked here, and the first thing to measure with real traffic: behaviour with the cap slot empty.
+**Pending owner** (serving default).
+
+## D20. Feedback design (2026-11-23)
+
+Design: RECSYS.md section 10. Choices not tuned, with reasons:
+
+- **One half-life, 60 days, for completions and rejections.** Different half-lives make the profile drift
+  towards whichever sign forgets more slowly, and with a few outings a month a short half-life forgets before
+  there is signal. 60 days is about a season. The simulation cannot tune it: its users never change their
+  minds, so the longest memory would always win.
+- **Route effects use the same decay**: a completed or rejected route stays hidden while its weight is
+  ≥ 0.25 (two half-lives, about four months), then may return. Fixes D7 point 5 (an old thumbs-down hid a
+  route forever) without re-showing last week's hike.
+- **Applied once from the stored profile**, never written back (D7 point 1).
+- **`too-far` = too far to travel** (the UI shows a car) and tightens the radius; v0 keeps reading it as route
+  length. Effort and distance reasons adjust slots but neither the embedding nor the exploration posteriors;
+  only `completed` and `not-interested` are taste signals.
+- **Questionnaire-only users**: slots, tags and route effects apply as for everyone; Rocchio has no base
+  query, so its feedback direction is used for re-scoring only and retrieval stays on the rule path.
+- Functions for the API: `app.recsys.feedback.feedback_events_from_rows`, then `recsys_v1_fb` (RECSYS.md
+  section 10).
+
+## D21. Feedback parameters chosen on dev; test disagrees (2026-11-23)
+
+Dev grid (40 seeded dev personas, 10 rounds; RESULTS.md "Dev tuning"), rule fixed before the run: highest
+mean NDCG@10 over rounds 2-10. Route effects alone, slot steps, Rocchio only, re-scoring only and the light
+full loop are within ±0.001 of each other; medium loses 0.011, strong 0.053. The rule picks `slots_only`
+(route effects + slot steps 0.25, Rocchio and re-scoring off) and that is `recsys_v1_fb`.
+
+On the test simulation the light full loop (`recsys_v1_fb_light`) beats it by +0.025 [+0.014, +0.036] over
+rounds 2-10, while the dev choice equals route effects alone. The default is **not** switched on that
+evidence (test is for reporting). Likely reason for the disagreement: the ranker is in-sample on dev, so dev
+lists start near the ideal and leave feedback little to repair. Re-tune once a dev ranker that is not
+in-sample exists (cross-fitted), or on real feedback; until then `recsys_v1_fb_light` is the candidate to try.
+
+## D22. Exploration slot: built, measured, not on by default (2026-11-23)
+
+Thompson sampling over 9 content clusters for rank 10 while a user has fewer than 10 feedback events. On the
+test simulation it costs −0.011 [−0.015, −0.008] NDCG@10 over rounds 2-10 (−0.015 in round 1, shrinking as
+users leave the cold-start window) and raises cumulative coverage after 10 rounds from 16.7% to 18.7% of the
+catalogue; completions per persona 7.84 vs 7.94. The simulated user never discovers new tastes (its
+preferences are fixed and fully reflected in the judge's grades), so the benefit exploration exists for
+cannot appear here. Whether a 1-2 point NDCG cost is worth more coverage is a product call: **pending owner**;
+`recsys_v1_fb_explore` is registered and one config change away.
+
+## D23. Simulation protocol (2026-11-23)
+
+- Simulation judgements go to `eval/qrels/sim_qrels.jsonl`, not the pooled qrels, so the single-request
+  tables keep their top-10 pool. A pair can carry a grade in both files (graded in different batches);
+  each table reads its own, and `make replay-check` checks each file against its own replay.
+- The behaviour model, its probabilities and its limits are in EVAL.md section 10; it reads the judge's
+  grades, so the simulated user agrees with the judge by construction.
+- The per-round metric is computed after the last round against all judgements of the run, so a replay
+  reproduces it exactly.
+- Spend for Phase 5 and the rows below (local spend log): about 5.8 USD (simulation 3.7, dev tuning 0.8,
+  robustness rows 0.35, end-to-end rows 1.0 including 300 chat calls).
+
+## D24. Chat evaluation in the harness; end-to-end comparison; ledger fix (2026-11-23)
+
+- The scripted chat evaluation moved from `backend/chat_eval/` (as D18 cites it) to `backend/evalkit/chat/`,
+  `eval/chat/` and `eval/results/chat/` + `_chat_eval.json`, with `git mv`; `make chat-eval` replays it.
+- End-to-end on test: questionnaire only 0.364, + raw intent 0.760, + chat 0.748 (chat − raw −0.012
+  [−0.037, +0.009]). The chat path does not beat typing the same text into a box, and moves the radius
+  centre when the message names a town (2.6% violations@10). The comparison cannot speak for real users:
+  the intents were written from the latent profile the judge reads (RESULTS.md, EVAL.md section 11).
+- The LLM ledger now attributes spend to the requested model (the ranker pilot's rows had been filed under
+  the configured default reranker). Rows logged before the fix keep the old attribution.
