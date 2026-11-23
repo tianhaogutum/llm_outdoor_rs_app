@@ -1,0 +1,156 @@
+{
+ "base_model": "v1_noapi",
+ "personas": 200,
+ "rows": 6903,
+ "schema": "evalkit.ltr_robust/v1",
+ "train_labels": {
+  "file": "ltr_train_v1.jsonl",
+  "pairs": 18380,
+  "sha256": "f1dcfa157ccf70d841f724939ac98276fa5eebb63c84857ce8ee483bbc86c293"
+ },
+ "variants": {
+  "noapi_no_length_cap": {
+   "best_rounds": 228,
+   "cv_fold_means": [
+    0.744218,
+    0.758939,
+    0.786081,
+    0.793159,
+    0.80976
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.798199,
+    "lo": 0.757086,
+    "mean": 0.778431,
+    "n": 200
+   },
+   "dropped": [
+    "rank_api",
+    "length_cap_ratio"
+   ],
+   "importance_top": [
+    {
+     "feature": "tag_cover",
+     "gain_share": 0.173583
+    },
+    {
+     "feature": "duration_h",
+     "gain_share": 0.115679
+    },
+    {
+     "feature": "intent_km_gap",
+     "gain_share": 0.057371
+    },
+    {
+     "feature": "rrf",
+     "gain_share": 0.055615
+    },
+    {
+     "feature": "length_km",
+     "gain_share": 0.052807
+    },
+    {
+     "feature": "fused_rank",
+     "gain_share": 0.048894
+    },
+    {
+     "feature": "paved_share",
+     "gain_share": 0.036438
+    },
+    {
+     "feature": "pois_per_km",
+     "gain_share": 0.032482
+    }
+   ],
+   "lgb_curve_at": {
+    "10": 0.723718,
+    "100": 0.764059,
+    "200": 0.775594,
+    "228": 0.778431,
+    "50": 0.752625
+   },
+   "model": "v1_noapi_nocap",
+   "test_ndcg_at_10": {
+    "hi": 0.821213,
+    "lo": 0.763376,
+    "mean": 0.794043,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.929589,
+   "trees": 228
+  },
+  "noapi_no_suspicious": {
+   "best_rounds": 156,
+   "cv_fold_means": [
+    0.733343,
+    0.74713,
+    0.779635,
+    0.780176,
+    0.799099
+   ],
+   "cv_ndcg_at_10": {
+    "hi": 0.788443,
+    "lo": 0.74703,
+    "mean": 0.767877,
+    "n": 200
+   },
+   "dropped": [
+    "rank_api",
+    "home_ratio",
+    "length_cap_ratio",
+    "home_km",
+    "intent_km_gap"
+   ],
+   "importance_top": [
+    {
+     "feature": "tag_cover",
+     "gain_share": 0.233961
+    },
+    {
+     "feature": "duration_h",
+     "gain_share": 0.109848
+    },
+    {
+     "feature": "fused_rank",
+     "gain_share": 0.065707
+    },
+    {
+     "feature": "length_km",
+     "gain_share": 0.059634
+    },
+    {
+     "feature": "length_band_pos",
+     "gain_share": 0.041529
+    },
+    {
+     "feature": "rrf",
+     "gain_share": 0.038592
+    },
+    {
+     "feature": "paved_share",
+     "gain_share": 0.037668
+    },
+    {
+     "feature": "is_loop",
+     "gain_share": 0.032187
+    }
+   ],
+   "lgb_curve_at": {
+    "10": 0.718411,
+    "100": 0.762687,
+    "156": 0.767877,
+    "200": 0.763882,
+    "50": 0.748008
+   },
+   "model": "v1_noapi_nosusp",
+   "test_ndcg_at_10": {
+    "hi": 0.818875,
+    "lo": 0.756204,
+    "mean": 0.789195,
+    "n": 100
+   },
+   "train_ndcg_at_10": 0.898021,
+   "trees": 156
+  }
+ }
+}

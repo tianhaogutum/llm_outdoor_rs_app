@@ -26,6 +26,8 @@ EXPECTED_STAGES = {
     "v6_ltr_noapi": {"filter", "bm25", "dense", "fusion", "ltr"},
     "v7_mmr": {"filter", "bm25", "dense", "fusion", "rank_api", "ltr", "mmr"},
     "recsys_v1": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_v1_nocap": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
+    "recsys_v1_nosusp": {"filter", "bm25", "dense", "fusion", "ltr", "mmr"},
 }
 
 

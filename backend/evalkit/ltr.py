@@ -97,6 +97,16 @@ VARIANTS: dict[str, tuple[str, ...]] = {
 # committed models: artefact name -> variant
 MODELS = {"v1": "full", "v1_noapi": "no_rank_api"}
 
+# Robustness variants of the default ranker (no ranker-API feature), trained by ``train-robust`` without
+# touching the committed v1 models: the simulator-shaped features left out (docs/DECISIONS.md D15, D19).
+ROBUST_VARIANTS: dict[str, tuple[str, ...]] = {
+    "noapi_no_length_cap": GROUPS["rank_api"] + ("length_cap_ratio",),
+    "noapi_no_suspicious": GROUPS["rank_api"]
+    + tuple(dict.fromkeys(GROUPS["slot_ratios"] + GROUPS["home_distance"] + GROUPS["intent_numbers"])),
+}
+ROBUST_MODELS = {"v1_noapi_nocap": "noapi_no_length_cap", "v1_noapi_nosusp": "noapi_no_suspicious"}
+ROBUST_OUT = "_ltr_robust.json"
+
 
 # --------------------------------------------------------------------------- data
 def candidate_matrix(personas: list[Persona], *, with_api: bool = True) -> dict[str, tuple[list[int], np.ndarray]]:
@@ -379,11 +389,70 @@ def cmd_train() -> None:
     print(f"wrote {paths.RESULTS_DIR / OUT}")
 
 
+def cmd_train_robust() -> None:
+    """Train and export the robustness variants of the default ranker (same data, CV and parameters as
+    ``train``; no ranker-API call is needed because every variant drops that feature)."""
+    import lightgbm as lgb
+
+    allp = load_personas()
+    dev = [p for p in allp if p.split == "dev"]
+    test = [p for p in allp if p.split == "test"]
+    qrels = train_labels()
+    ds = dataset(dev, candidate_matrix(dev, with_api=False), qrels)
+    ds_test = dataset(test, candidate_matrix(test, with_api=False), qrels)
+    ref_rows = ds["X"][:: max(1, len(ds["y"]) // 64)][:64]
+    out: dict[str, Any] = {
+        "schema": "evalkit.ltr_robust/v1",
+        "base_model": "v1_noapi",
+        "train_labels": {"file": TRAIN_LABELS.name, "pairs": len(qrels), "sha256": qrels.sha256()},
+        "rows": int(len(ds["y"])),
+        "personas": len(ds["groups"]),
+        "variants": {},
+    }
+    for name, vname in ROBUST_MODELS.items():
+        drop = ROBUST_VARIANTS[vname]
+        cv = cross_validate(lgb, ds, drop)
+        cols = _cols(drop)
+        booster, _ = _train(lgb, ds, cols, cv["best_rounds"])
+        meta = {
+            "trained_on": "dev personas only",
+            "variant": vname,
+            "dropped": list(drop),
+            "rounds": cv["best_rounds"],
+            "rows": int(len(ds["y"])),
+            "personas": len(ds["groups"]),
+            "lightgbm": lgb.__version__,
+            "params": PARAMS,
+            "train_labels_sha256": qrels.sha256(),
+            "candidates": f"{CANDIDATE_SYSTEM} fused top 50",
+        }
+        m = export_model(booster, cols, name, meta, ref_rows[:, cols])
+        gain = booster.feature_importance("gain")
+        tot = float(gain.sum()) or 1.0
+        imp = sorted(
+            ({"feature": FEATURES[c], "gain_share": float(gain[j] / tot)} for j, c in enumerate(cols)),
+            key=lambda d: -d["gain_share"],
+        )
+        test_nd = _ndcg_rows(booster.predict(ds_test["X"][:, cols]), ds_test["y"], ds_test["groups"])
+        out["variants"][vname] = {
+            "model": name,
+            "dropped": list(drop),
+            **cv,
+            "train_ndcg_at_10": float(np.mean(_ndcg_rows(booster.predict(ds["X"][:, cols]), ds["y"], ds["groups"]))),
+            "test_ndcg_at_10": M.bootstrap_ci(test_nd, n_boot=1000, seed=SEED),
+            "trees": m.n_trees,
+            "importance_top": imp[:8],
+        }
+        print(f"[ltr] {name}: rounds {cv['best_rounds']} cv {cv['cv_ndcg_at_10']['mean']:.3f}", file=sys.stderr)
+    (paths.RESULTS_DIR / ROBUST_OUT).write_text(dumps(out), encoding="utf-8")
+    print(f"wrote {paths.RESULTS_DIR / ROBUST_OUT}")
+
+
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("cmd", choices=["sample", "train"])
+    ap.add_argument("cmd", choices=["sample", "train", "train-robust"])
     args = ap.parse_args(argv)
-    {"sample": cmd_sample, "train": cmd_train}[args.cmd]()
+    {"sample": cmd_sample, "train": cmd_train, "train-robust": cmd_train_robust}[args.cmd]()
 
 
 if __name__ == "__main__":

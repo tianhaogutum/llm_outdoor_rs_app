@@ -38,6 +38,10 @@ CONFIGS["v7_mmr"] = CONFIGS["v6_ltr"].with_(mmr_lambda=MMR_LAMBDA)
 # the ranker-API feature (the API's gain on dev CV does not pay for its latency and cost), then MMR.
 DEFAULT_SYSTEM = "recsys_v1"
 CONFIGS[DEFAULT_SYSTEM] = CONFIGS["v6_ltr_noapi"].with_(mmr_lambda=MMR_LAMBDA)
+# Robustness rows (docs/DECISIONS.md D19): the default with ranker models trained without the features that
+# encode how the simulator draws distance caps (``length_cap_ratio``) or the whole suspicious group.
+CONFIGS["recsys_v1_nocap"] = CONFIGS[DEFAULT_SYSTEM].with_(ltr_model="v1_noapi_nocap")
+CONFIGS["recsys_v1_nosusp"] = CONFIGS[DEFAULT_SYSTEM].with_(ltr_model="v1_noapi_nosusp")
 
 DESCRIPTIONS: dict[str, str] = {
     "v1_filters": "hard filters (tab, radius, distance cap) in front of the v0_rules scorer",
@@ -49,6 +53,9 @@ DESCRIPTIONS: dict[str, str] = {
     "v6_ltr_noapi": "v4_rrf top-50 re-ranked by the learned ranker without the ranker-API feature (no API call)",
     "v7_mmr": "v6_ltr followed by MMR diversification",
     "recsys_v1": "DEFAULT: filters, BM25 + dense fused by RRF, learned ranker without the ranker API, MMR",
+    "recsys_v1_nocap": "recsys_v1 with a ranker trained without length_cap_ratio (robustness row)",
+    "recsys_v1_nosusp": "recsys_v1 with a ranker trained without slot ratios, home distance and intent km "
+    "(robustness row)",
 }
 
 
