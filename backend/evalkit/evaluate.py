@@ -337,6 +337,29 @@ def write_meta(catalog: Catalog, personas: list[Persona], qrels: Qrels) -> None:
     (paths.RESULTS_DIR / "_personas.json").write_text(
         dumps({"schema": "evalkit.persona_stats/v1", **ps}), encoding="utf-8"
     )
+    write_reference(catalog, personas, qrels)
+
+
+def write_reference(catalog: Catalog, personas: list[Persona], qrels: Qrels) -> None:
+    """Scores of the pool-only latent matcher. NOT a system: it reads the simulated user's latent profile, so
+    it indicates headroom only and never appears in the ablation (``_reference.json``)."""
+    from evalkit.pool import pool_latent
+
+    run = {
+        p.persona_id: {"ids": pool_latent(catalog, p, RUN_DEPTH), "upstream_cost_usd": 0.0, "upstream_latency_ms": 0.0}
+        for p in personas
+    }
+    pp = per_persona_metrics(catalog, personas, run, qrels)
+    by_split = {s: [p for p in personas if s == "all" or p.split == s] for s in SPLITS}
+    doc = {
+        "schema": "evalkit.reference/v1",
+        "name": "pool_latent",
+        "note": "not a system: reads the simulated user's latent profile (pool-only contributor)",
+        "qrels_sha256": qrels.sha256(),
+        "metrics": {s: split_metrics(catalog, ps, run, pp) for s, ps in by_split.items()},
+        "per_persona": pp,
+    }
+    (paths.RESULTS_DIR / "_reference.json").write_text(dumps(doc), encoding="utf-8")
 
 
 def _ledger() -> Optional[dict]:

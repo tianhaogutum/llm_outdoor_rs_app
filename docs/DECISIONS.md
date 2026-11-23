@@ -126,3 +126,56 @@ model grades text it wrote. The owner checkpoint (D5) is still open: 150 blind p
   Vertex 8.56 (`gemini-3.5-flash` 8.36: full pool 7.26 plus pilot; `gemini-2.5-flash` 0.20, pilot);
   OpenRouter 1.37 (`claude-sonnet-5.5` second judge 0.79, `claude-opus-5.5` pilot reference 0.53,
   `gpt-6-luna` intents 0.05). The full judging run was capped at 12 USD per process. Reruns cost 0.
+
+## D11. Phase 3 pipeline shape and registry (2026-11-23)
+
+One `Pipeline` class with a `PipelineConfig`; every ablation row is a registered config (`v1_filters` …
+`v7_mmr`, `recsys_v1`), so each row is a complete system selected by name and fully described by the
+`config` stored in its results file. `v2_bm25` and `v3_dense` rank by their own score (standalone
+generators), so in the ablation chain "+ dense" *replaces* BM25 and "+ RRF" fuses both; this gives both
+the chain and the standalone NDCG@10 the spec asks for. Design: [RECSYS.md](RECSYS.md).
+
+## D12. Hard-filter policy (2026-11-23)
+
+Missing slot → constraint not applied (and reported as not applied). Fewer than 10 eligible routes →
+only the radius widens (×1.25 steps, at most ×2); tab and distance cap never relax; widened admissions
+are marked; short lists are not padded. Unknown tab → empty list.
+
+## D13. Retrieval choices (2026-11-23, all on dev)
+
+BM25F with stemming, negation scopes and a query-side synonym list; the German glossary / decompounder
+is implemented but **off** because it lowered dev recall (place-name morphemes). Dense: the structured
+facts card, not title + description. RRF k = 30. Document matrix committed as float16, not int8
+(int8 reorders too many near-ties). Figures: RESULTS.md "Candidate generation".
+
+## D14. Ranker API model and whether the default uses it (2026-11-23)
+
+The Vertex Ranking API stays unavailable (D2); ranking uses OpenRouter. Dev pilot over eight
+rerankers → `mongodb/rerank-3` (reported id `rerank-3`). The learned ranker is trained with and without
+the API score as a feature. **The default (`recsys_v1`) does not call the API**: the grouped-CV gain on
+dev is small next to the API's per-request cost, its several-fold higher median latency and the extra
+external dependency. `v7_mmr` (the same with the API) is registered and one config change away.
+Disclosure: test rows of both variants existed when this was written (EVAL.md section 9).
+
+## D15. Learned-ranker training data (2026-11-23)
+
+Dev only. Labels: judged candidates of the `v4_rrf` top 50 plus a seeded random sample of 8 unjudged
+candidates per dev persona, judged by the production judge (`"sample": "ltr-train/v1"`); unjudged
+candidates are excluded, never negatives. Pinned in `eval/qrels/ltr_train_v1.jsonl`. Model selection by
+5-fold CV grouped by persona. Serving evaluates the exported trees in numpy (no LightGBM at runtime).
+The dominant feature (`length_cap_ratio`) encodes how the simulator draws distance caps; flagged as the
+main overfitting risk (RECSYS.md section 4) — **pending owner**: whether to ship the "no suspicious
+features" variant until real feedback exists.
+
+## D16. MMR (2026-11-23)
+
+Similarity = document-embedding cosine, min-max normalised over the candidate pairs (without it lambda
+had almost no effect). Lambda 0.8 chosen on dev (smallest lambda whose dev NDCG@10 loss stays below
+0.005). The diversity gain is small; MMR stays as a cheap hook for a better similarity.
+
+## D17. Spend accounting after the outage (2026-11-23)
+
+A network outage killed `python -m evalkit.ltr sample` mid-run, so that process never wrote its spend
+row. Its judge batches were in the local cache; the real cost recorded on those cache entries was
+appended to the local spend log as one "recovered" row, and the sample was rerun from cache. Total
+spend: `python -m evalkit.llm`.

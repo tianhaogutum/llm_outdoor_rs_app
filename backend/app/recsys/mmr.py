@@ -7,8 +7,8 @@ Greedy: at each step pick the candidate maximising
 with ``rel`` the ranker score min-max normalised to [0, 1] over the candidate list and ``sim`` the
 cosine similarity of the routes' document embeddings, also min-max normalised over the candidate pairs
 (``normalise_sim``). Without that second normalisation lambda barely acts: route embeddings are all
-alike (pairwise cosines of a candidate list sit in a band of about 0.75-0.95), so the penalty is nearly
-the same constant for every candidate (measured on dev: lambda 0.3 moved ILD@10 by 0.02). lambda = 1 keeps the ranker's
+alike (pairwise cosines of a candidate list sit in a narrow band), so the penalty is nearly the same
+constant for every candidate (found on dev; docs/RECSYS.md section 5). lambda = 1 keeps the ranker's
 order. The diversity metric ILD@10 is computed on catalogue tag sets, not on embeddings, so MMR does
 not optimise the reported metric directly. Ties are broken by the input order.
 """

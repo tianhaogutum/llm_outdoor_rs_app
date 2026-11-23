@@ -29,6 +29,8 @@ from evalkit.qrels import Qrels, fill_holes
 BASE = "v6_ltr_noapi"  # the default ranker (docs/RECSYS.md: no ranker API in the default)
 LAMBDAS = (1.0, 0.9, 0.8, 0.7, 0.5, 0.3)
 OUT = "_mmr_sweep.json"
+# dev labels as they were when the sweep was scored (later judgements must not change the record)
+LABELS = paths.QRELS_DIR / "mmr_sweep_labels.jsonl"
 FIGURE = paths.DOCS_DIR / "mmr_tradeoff.png"
 
 
@@ -54,7 +56,21 @@ def compute(judge: bool = True) -> dict[str, Any]:
         rep = fill_holes(qrels, holes, pm, catalog)
         qrels.save()
         print(f"[mmr] judged holes {rep}", file=sys.stderr)
-    qp = qrels.by_persona()
+    if judge or not LABELS.exists():
+        qp = {p.persona_id: qrels.grades(p.persona_id) for p in personas}
+        LABELS.write_text(
+            "".join(
+                json.dumps({"persona_id": pid, "route_id": rid, "grade": g}, sort_keys=True) + "\n"
+                for pid in sorted(qp)
+                for rid, g in sorted(qp[pid].items())
+            ),
+            encoding="utf-8",
+        )
+    else:
+        qp = {}
+        for line in LABELS.read_text(encoding="utf-8").splitlines():
+            r = json.loads(line)
+            qp.setdefault(r["persona_id"], {})[int(r["route_id"])] = int(r["grade"])
     rows = []
     base_nd = None
     for lam in LAMBDAS:

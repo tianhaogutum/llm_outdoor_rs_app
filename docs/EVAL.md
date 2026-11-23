@@ -13,7 +13,7 @@ and the judge has not yet been checked against a human (the owner's 150 labels a
 personas (latent profile -> questionnaire -> user vector; profile slots; LLM-written intent)
    │  persona.to_query(): only the visible part
    ▼
-system (registry: random, v0_rules, ... Phase 3 stages)  ->  eval/runs/<system>.jsonl (top 50 + trace)
+system (registry: random, v0_rules, v1_filters ... v7_mmr, recsys_v1)  ->  eval/runs/<system>.jsonl (top 50 + trace)
    │
 pool = top-10 of every system ∪ top-10 of two pool-only contributors
    │
@@ -334,25 +334,55 @@ look at.
 - **Pool bias** (section 4): relevance is pool-relative and leans towards the latent matcher.
 - **The baselines are nearly blind to the constraints.** Neither `random` nor `v0_rules` sees the
   home location, so about 93% of their top-10 is rule-graded 0. Their NDCG mostly measures that,
-  not ranking quality among feasible routes. Phase 3a's hard filter will show the split.
+  not ranking quality among feasible routes. Phase 3a's hard filter shows the split (RESULTS.md ablation).
 - **Small test split.** 100 personas: CIs on NDCG are wide relative to the baselines' values; use
   paired comparisons.
 - **No running, no seasons, no weather, no opening hours, no crowding data.** Single-request
   evaluation: no sessions, no feedback loop yet (Phase 5).
 
-## 9. For Phase 3 (plugging in)
+## 9. Phase 3 additions to the protocol
 
-- Add a system: a module in `backend/app/recsys/systems/` with
-  `@register_system("v1_filters", description=...)` and a factory `(catalog, **config) -> System`;
-  `recommend(query, k)` returns a `Recommendation` whose `StageTrace`s carry per-route
-  contributions (`contrib`), nominal upstream latency/cost (take `nominal_latency_ms` /
-  `nominal_cost_usd` from `app.llm` results), and `info`. Import the module from
-  `app/recsys/systems/__init__.py`. `config()` must return everything that determines the output,
-  including model ids (`"models": [...]` is copied into results).
-- Use `HardConstraints.from_query(q).mask(catalog)` for 3a (the metric uses the same predicates).
-- Then `make eval SYSTEM=<name>` (judges its holes; budget-capped), `make eval-all`, `make report`,
-  `make freeze`, `make replay-check`, and commit `eval/` with the code.
-- Train learned rankers on `split == "dev"` personas only; read only dev results while tuning.
-- Never let a system read `persona.latent` or the pool-only contributors.
-- The ablation table: add the system names to `ORDER` in `backend/evalkit/report.py`; paired
-  differences against `v0_rules` are rendered automatically.
+The pipeline itself is described in [RECSYS.md](RECSYS.md); this section lists what Phase 3 changed in
+the harness and in the data the numbers rest on.
+
+- **Systems with upstream calls.** `make eval` injects one LLM client for the systems' own calls
+  (query embeddings on Vertex, the ranker API on OpenRouter; mock under `LLM_PROVIDER=mock`), with the
+  committed frozen layer. Async systems (`arecommend`) run 8 personas at a time; their local time is the
+  sum of the stages' own compute and excludes waiting for upstream calls, whose *recorded* latency is
+  added as nominal upstream latency. Recorded latencies include the cold start of the first calls of a
+  run; the warm end-to-end benchmark is `make latency` (`eval/results/_latency.json`, machine-dependent,
+  not replayed).
+- **Hole estimates.** `python -m evalkit.evaluate --estimate <systems...>` runs the systems and counts
+  pool holes and the judge's expected cost without judging or writing anything. Each Phase 3 system was
+  estimated before its `make eval`.
+- **Ablation and paired differences.** `make report` renders the ablation chain
+  (`evalkit/report.py: ABLATION`) on the test split with paired bootstrap differences between
+  consecutive rows and a few further pairs (`EXTRA_PAIRS`).
+- **Deeper judgements for training (dev only).** The learned ranker's training sample added judged pairs
+  outside any system's top 10: a seeded uniform sample of unjudged `v4_rrf` candidates of every **dev**
+  persona, marked `"sample": "ltr-train/v1"` in `qrels.jsonl`. Consequence: dev personas have more
+  judged pairs than test personas, so dev ideal DCG and the Recall@50 denominator are computed from a
+  deeper pool; dev and test absolute numbers are less comparable than before Phase 3 (compare systems
+  within a split). Test qrels are still top-10 pooling only. The training labels are pinned in
+  `eval/qrels/ltr_train_v1.jsonl` so later judgements cannot leak back into training.
+- **Dev results of the learned ranker are in-sample.** Its training labels are the dev judgements, so
+  `v6_*`, `v7_mmr` and `recsys_v1` on dev are optimistic. Decisions about the ranker used grouped
+  cross-validation on dev (`_ltr.json`), never its system-level dev row and never test.
+- **Dev experiments without new judgements** (`_cg_dev.json`, `_rank_pilot.json`) use a *condensed*
+  NDCG@10 (unjudged routes dropped before the cut) plus pool-relative Recall@50; the MMR sweep
+  (`_mmr_sweep.json`) judges every top 10 on dev.
+- **Reference row.** `_reference.json` scores the pool-only latent matcher with the same metrics; the
+  report shows it in a separate table labelled "not a system". It reads the simulated user's latent
+  profile and is in no comparison.
+- **Frozen replay** now also re-runs every stored system that makes upstream calls (and the ranker pilot
+  and MMR sweep) from the frozen layer and compares rankings, so query embeddings and ranker scores are
+  in `eval/cache/`. The catalogue embedding matrix is not in the cache: it is the committed artefact
+  `backend/app/recsys/artifacts/doc_embeddings.npz` (float16) that both the evaluation and the API use.
+- **What I looked at on test before deciding.** The default system's choice of *no* ranker API was made
+  after the test rows of `v6_ltr` and `v6_ltr_noapi` had been computed (RECSYS.md section 4). The
+  decision rule was dev CV gain against cost and latency; test agreed in sign with dev and did not change
+  it. No system was modified after looking at its test numbers.
+- Plugging in a further system works as before: a module in `backend/app/recsys/systems/` with
+  `@register_system(name, description=..., uses_llm=...)`; `config()` must return everything that
+  determines the output, including model ids; never read `persona.latent` or the pool-only
+  contributors; train on `split == "dev"` only.

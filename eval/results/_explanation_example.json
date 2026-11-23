@@ -1,0 +1,411 @@
+{
+ "intent": "A quiet, challenging mountain bike ride with forest trails beside a lake and a beer garden along the way. For a group of friends, about 30–70 km.",
+ "persona_id": "P003",
+ "profile_slots": {
+  "category": "cycling",
+  "home": [
+   50.14288,
+   11.25155
+  ],
+  "home_town": "Burgkunstadt",
+  "max_distance_km": 95.9,
+  "max_travel_km": 60.0
+ },
+ "returned_route_ids": [
+  6006347,
+  1993829,
+  278231,
+  2155115,
+  6177385,
+  20964509,
+  2533807,
+  1448465,
+  11786222,
+  15788439
+ ],
+ "schema": "evalkit.explanation_example/v1",
+ "stages": [
+  {
+   "info": {
+    "applied": {
+     "category": true,
+     "distance_cap": true,
+     "radius": true
+    },
+    "failed_by": {
+     "category": 7703,
+     "distance_cap": 125,
+     "radius": 7508
+    },
+    "n_category": 1644,
+    "n_eligible": 185,
+    "radius_used_km": 60.0,
+    "relax_steps": 0,
+    "short": false
+   },
+   "local_ms": null,
+   "n_in": 9347,
+   "n_out": 185,
+   "stage": "filter",
+   "upstream_cost_usd": 0.0,
+   "upstream_latency_ms": 0.0
+  },
+  {
+   "info": {
+    "matched_routes": 185,
+    "terms": [
+     "quiet",
+     "challeng",
+     "mountain",
+     "bike",
+     "ride",
+     "forest",
+     "trail",
+     "beside",
+     "lake",
+     "beer",
+     "garden",
+     "along",
+     "group",
+     "friend",
+     "cycle",
+     "cycle"
+    ]
+   },
+   "local_ms": null,
+   "n_in": 185,
+   "n_out": 100,
+   "stage": "bm25",
+   "upstream_cost_usd": 0.0,
+   "upstream_latency_ms": 0.0
+  },
+  {
+   "info": {
+    "dim": 768,
+    "exact": true,
+    "formulation": "facts"
+   },
+   "local_ms": null,
+   "n_in": 185,
+   "n_out": 100,
+   "stage": "dense",
+   "upstream_cost_usd": 5e-06,
+   "upstream_latency_ms": 991.181
+  },
+  {
+   "info": {
+    "k": 30,
+    "method": "rrf"
+   },
+   "local_ms": null,
+   "n_in": 200,
+   "n_out": 50,
+   "stage": "fusion",
+   "upstream_cost_usd": 0.0,
+   "upstream_latency_ms": 0.0
+  },
+  {
+   "info": {
+    "model": "v1_noapi",
+    "trees": 290
+   },
+   "local_ms": null,
+   "n_in": 50,
+   "n_out": 50,
+   "stage": "ltr",
+   "upstream_cost_usd": 0.0,
+   "upstream_latency_ms": 0.0
+  },
+  {
+   "info": {
+    "lambda": 0.8,
+    "similarity": "document-embedding cosine"
+   },
+   "local_ms": null,
+   "n_in": 50,
+   "n_out": 50,
+   "stage": "mmr",
+   "upstream_cost_usd": 0.0,
+   "upstream_latency_ms": 0.0
+  }
+ ],
+ "system": "recsys_v1",
+ "top_route": {
+  "rank": 1,
+  "route_id": 6006347,
+  "score": 0.8,
+  "stages": {
+   "bm25": {
+    "matched_terms": [
+     {
+      "contribution": 3.0024,
+      "term": "cycle"
+     },
+     {
+      "contribution": 2.4918,
+      "term": "lake"
+     },
+     {
+      "contribution": 2.2803,
+      "term": "beer"
+     },
+     {
+      "contribution": 2.2742,
+      "term": "garden"
+     },
+     {
+      "contribution": 0.9087,
+      "term": "along"
+     }
+    ],
+    "rank": 23,
+    "score": 10.95734
+   },
+   "dense": {
+    "rank": 39,
+    "similarity": 0.65981
+   },
+   "filter": {
+    "category": {
+     "allowed": [
+      "Cycling",
+      "Mountainbiking",
+      "Long distance cycling"
+     ],
+     "applied": true,
+     "ok": true,
+     "value": "Cycling"
+    },
+    "distance_cap": {
+     "applied": true,
+     "length_km": 63.45,
+     "limit_km": 95.9,
+     "ok": true
+    },
+    "radius": {
+     "applied": true,
+     "distance_km": 36.16,
+     "limit_km": 60.0,
+     "limit_used_km": 60.0,
+     "ok": true,
+     "relaxed": false
+    },
+    "verdict": "pass"
+   },
+   "fusion": {
+    "inputs": {
+     "bm25": 23,
+     "dense": 39
+    },
+    "k": 30,
+    "rank": 26,
+    "rrf_score": 0.033361
+   },
+   "ltr": {
+    "bias": -0.016426,
+    "features": [
+     {
+      "contribution": 0.927992,
+      "name": "tag_cover",
+      "value": 1.0
+     },
+     {
+      "contribution": 0.54138,
+      "name": "length_cap_ratio",
+      "value": 0.661627
+     },
+     {
+      "contribution": 0.393948,
+      "name": "paved_share",
+      "value": 0.243
+     },
+     {
+      "contribution": 0.38074,
+      "name": "tag_hits",
+      "value": 3.0
+     },
+     {
+      "contribution": 0.302428,
+      "name": "duration_h",
+      "value": 5.0
+     },
+     {
+      "contribution": -0.276368,
+      "name": "is_loop",
+      "value": 0.0
+     },
+     {
+      "contribution": -0.241655,
+      "name": "dense",
+      "value": 0.65981
+     },
+     {
+      "contribution": -0.194195,
+      "name": "ascent_m",
+      "value": 882.0
+     },
+     {
+      "contribution": 0.174827,
+      "name": "technical",
+      "value": 0.0
+     },
+     {
+      "contribution": 0.174442,
+      "name": "intent_km_gap",
+      "value": 0.269
+     },
+     {
+      "contribution": -0.163657,
+      "name": "pois_per_km",
+      "value": 0.25
+     },
+     {
+      "contribution": -0.138892,
+      "name": "fused_rank",
+      "value": 26.0
+     },
+     {
+      "contribution": -0.134348,
+      "name": "home_km",
+      "value": 36.159478
+     },
+     {
+      "contribution": 0.131682,
+      "name": "ascent_fit",
+      "value": 0.972437
+     },
+     {
+      "contribution": 0.127531,
+      "name": "bm25",
+      "value": 10.95734
+     },
+     {
+      "contribution": 0.122699,
+      "name": "length_km",
+      "value": 63.45
+     },
+     {
+      "contribution": -0.121664,
+      "name": "loop_match",
+      "value": 0.0
+     },
+     {
+      "contribution": 0.111341,
+      "name": "intent_loop",
+      "value": 0.0
+     },
+     {
+      "contribution": 0.081956,
+      "name": "waymarked",
+      "value": 1.0
+     },
+     {
+      "contribution": -0.044622,
+      "name": "busy_road_share",
+      "value": 0.091
+     },
+     {
+      "contribution": -0.043328,
+      "name": "intent_mtb",
+      "value": 1.0
+     },
+     {
+      "contribution": 0.031165,
+      "name": "rule_difficulty",
+      "value": 1.0
+     },
+     {
+      "contribution": 0.028896,
+      "name": "dense_rank",
+      "value": 39.0
+     },
+     {
+      "contribution": 0.028839,
+      "name": "difficulty",
+      "value": 2.0
+     },
+     {
+      "contribution": -0.024539,
+      "name": "rule_distance",
+      "value": 0.908513
+     },
+     {
+      "contribution": 0.023087,
+      "name": "popularity",
+      "value": 1.75
+     },
+     {
+      "contribution": 0.017607,
+      "name": "intent_easy",
+      "value": 0.0
+     },
+     {
+      "contribution": -0.016718,
+      "name": "home_ratio",
+      "value": 0.602658
+     },
+     {
+      "contribution": -0.015395,
+      "name": "ascent_per_km",
+      "value": 13.900709
+     },
+     {
+      "contribution": 0.014329,
+      "name": "length_band_pos",
+      "value": 1.33625
+     },
+     {
+      "contribution": 0.012504,
+      "name": "is_mtb",
+      "value": 0.0
+     },
+     {
+      "contribution": 0.012068,
+      "name": "bm25_rank",
+      "value": 23.0
+     },
+     {
+      "contribution": -0.0078,
+      "name": "rule_tags",
+      "value": 0.105263
+     },
+     {
+      "contribution": -0.007761,
+      "name": "rrf",
+      "value": 0.033361
+     },
+     {
+      "contribution": 0.0,
+      "name": "difficulty_in_range",
+      "value": 1.0
+     },
+     {
+      "contribution": 0.0,
+      "name": "neg_hits",
+      "value": 0.0
+     },
+     {
+      "contribution": 0.0,
+      "name": "osm_description",
+      "value": 1.0
+     }
+    ],
+    "model": "v1_noapi",
+    "rank": 1,
+    "score": 2.192092
+   },
+   "mmr": {
+    "lambda": 0.8,
+    "max_similarity": 0.0,
+    "mmr_score": 0.8,
+    "penalty": 0.0,
+    "rank_after": 1,
+    "rank_before": 1,
+    "relevance": 1.0
+   },
+   "rank_api": null,
+   "v0_rules": null
+  },
+  "title": "Rennweg Haßberge - Radroute"
+ }
+}

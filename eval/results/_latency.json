@@ -1,0 +1,108 @@
+{
+ "budget_ms_p95": {
+  "with_rank_api": 1500.0,
+  "without_rank_api": 500.0
+ },
+ "machine": "arm64",
+ "n": 60,
+ "note": "sequential warm requests, LLM cache off, wall time of Pipeline.arecommend; machine-dependent",
+ "python": "3.12.14",
+ "real_usd": 0.050149,
+ "schema": "evalkit.latency/v1",
+ "systems": {
+  "recsys_v1": {
+   "budget_ms_p95": 500.0,
+   "cost_usd_per_request": 4e-06,
+   "local_compute_ms": {
+    "p50": 17.995125,
+    "p95": 19.962675
+   },
+   "per_stage_ms_p50": {
+    "bm25": {
+     "local": 0.31948,
+     "upstream": 0.0
+    },
+    "dense": {
+     "local": 0.452563,
+     "upstream": 85.031312
+    },
+    "filter": {
+     "local": 1.087772,
+     "upstream": 0.0
+    },
+    "fusion": {
+     "local": 0.360292,
+     "upstream": 0.0
+    },
+    "ltr": {
+     "local": 15.027958,
+     "upstream": 0.0
+    },
+    "mmr": {
+     "local": 0.571105,
+     "upstream": 0.0
+    }
+   },
+   "upstream_ms_p95": {
+    "dense": 220.371089
+   },
+   "uses_rank_api": false,
+   "wall_ms": {
+    "max": 4055.166792,
+    "p50": 104.322875,
+    "p95": 238.778086
+   },
+   "within_budget": true
+  },
+  "v7_mmr": {
+   "budget_ms_p95": 1500.0,
+   "cost_usd_per_request": 0.000769,
+   "local_compute_ms": {
+    "p50": 22.075916,
+    "p95": 24.322933
+   },
+   "per_stage_ms_p50": {
+    "bm25": {
+     "local": 0.344354,
+     "upstream": 0.0
+    },
+    "dense": {
+     "local": 0.461229,
+     "upstream": 123.405291
+    },
+    "filter": {
+     "local": 1.299604,
+     "upstream": 0.0
+    },
+    "fusion": {
+     "local": 0.364937,
+     "upstream": 0.0
+    },
+    "ltr": {
+     "local": 18.063791,
+     "upstream": 0.0
+    },
+    "mmr": {
+     "local": 0.584229,
+     "upstream": 0.0
+    },
+    "rank_api": {
+     "local": 1.067542,
+     "upstream": 333.315166
+    }
+   },
+   "upstream_ms_p95": {
+    "dense": 182.43369,
+    "rank_api": 562.768744
+   },
+   "uses_rank_api": true,
+   "wall_ms": {
+    "max": 2101.257917,
+    "p50": 509.782751,
+    "p95": 758.680656
+   },
+   "within_budget": true
+  }
+ },
+ "warmup": 5
+}

@@ -3327,7 +3327,7 @@
  "schema": "evalkit.results/v1",
  "system": "v7_mmr",
  "volatile": {
-  "generated_at": "2026-11-23T08:09:20Z",
+  "generated_at": "2026-11-23T08:14:40Z",
   "latency_ms_nominal": {
    "all": {
     "definition": "local compute + recorded upstream latency",

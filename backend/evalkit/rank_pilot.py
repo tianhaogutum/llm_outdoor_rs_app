@@ -41,6 +41,17 @@ MODELS = [
 ]
 DOC_FORMULATIONS = ("facts_desc", "desc")
 OUT = "_rank_pilot.json"
+# Labels pinned at decision time (the qrels after v4_rrf was judged, the pilot personas only), so the
+# recorded comparison does not drift as later systems add judgements.
+LABELS = paths.QRELS_DIR / "rank_pilot_labels.jsonl"
+
+
+def pinned_labels() -> dict[str, dict[int, int]]:
+    out: dict[str, dict[int, int]] = {}
+    for line in LABELS.read_text(encoding="utf-8").splitlines():
+        r = json.loads(line)
+        out.setdefault(r["persona_id"], {})[int(r["route_id"])] = int(r["grade"])
+    return out
 
 
 def compute() -> dict[str, Any]:
@@ -48,7 +59,7 @@ def compute() -> dict[str, Any]:
     dev = [p for p in load_personas() if p.split == "dev"]
     rng = np.random.default_rng(SEED)
     personas = [dev[i] for i in sorted(rng.choice(len(dev), N_PERSONAS, replace=False))]
-    qp = Qrels.load().by_persona()
+    qp = pinned_labels() if LABELS.exists() else Qrels.load().by_persona()
     v4 = make_system("v4_rrf", catalog)
     cands = {p.persona_id: v4.recommend(p.to_query(), 50).route_ids for p in personas}
     client = system_client()

@@ -232,6 +232,12 @@ def _candidate_generation(docs: list[dict[str, Any]], cap: str) -> list[str]:
                 f"{ex['ms_per_query_full_catalogue']:.3f} ms per query ({ex['ns_per_doc']:.0f} ns per document; "
                 f"{ex['machine_note']})."
             )
+            per_doc_ms = ex["ns_per_doc"] / 1e6
+            for budget_ms in (10.0, 50.0):
+                L.append(
+                    f"At that rate exact search alone takes {budget_ms:.0f} ms at about "
+                    f"{budget_ms / per_doc_ms / 1e6:.1f} million routes (linear in size and dimension)."
+                )
     L.append("")
     return L
 
@@ -379,6 +385,124 @@ def _mmr_sweep() -> list[str]:
     return L
 
 
+def _ablation(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    by = {d["system"]: d for d in docs}
+    chain = [n for n in ABLATION if n in by]
+    if len(chain) < 2:
+        return []
+    L = [
+        "## Phase 3 ablation (test split)",
+        "",
+        cap,
+        "",
+        "Each row is a complete registered system; each adds one component to the row above (`v2`-`v4` rank by "
+        "the generator's own score, so `+ dense` replaces BM25 and `+ RRF` fuses both). The learned ranker "
+        "(`v6`, `v7`) was trained on dev judgements only. Every top 10 is 100% judged.",
+        "",
+        "| Step | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | ILD@10 | Cost/request | Judged@10 |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for n in chain:
+        m = by[n]["metrics"]["test"]
+        L.append(
+            f"| {ABLATION_LABELS[n]} | `{n}` | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | "
+            f"{_ci(m['recall_at_50'])} | {_ci(m['violation_at_10'], pct=True)} | {_ci(m['ild_at_10'])} | "
+            f"{m['cost_usd']['mean']:.5f} USD | {100 * m['judged_share_at_10']:.0f}% |"
+        )
+    L += [
+        "",
+        "Paired bootstrap, consecutive rows (test; per-persona differences, 1,000 resamples):",
+        "",
+    ]
+    L += _paired_rows(by, list(zip(chain, chain[1:], strict=False)), "test")
+    extra = _paired_rows(by, EXTRA_PAIRS, "test")
+    if extra:
+        L += ["", "Other comparisons (test):", ""] + extra
+    L.append("")
+    return L
+
+
+def _default_system(docs: list[dict[str, Any]]) -> list[str]:
+    lat = _load("_latency.json")
+    by = {d["system"]: d for d in docs}
+    if not lat or "recsys_v1" not in by:
+        return []
+    L = [
+        "## Default system: latency and cost against the budget",
+        "",
+        "Budget for this project: p95 ≤ 1.5 s nominal for a pipeline that calls the ranker API, p95 ≤ 500 ms for "
+        f"one that does not (query embedding included). Warm benchmark (`make latency`, {lat['n']} sequential dev "
+        f"requests after {lat['warmup']} warm-up requests, LLM cache off, live Vertex embedding and OpenRouter "
+        f"ranking, one {lat['machine']} laptop): wall time of `Pipeline.arecommend`. Cost per request: the mean "
+        "nominal upstream cost over the test personas in the evaluation.",
+        "",
+        "| System | Ranker API | p50 ms | p95 ms | max ms | Upstream p95 ms by stage | Local compute p95 ms | "
+        "Cost/request | Budget p95 | Within |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for n, v in lat["systems"].items():
+        up = ", ".join(f"{k} {x:.0f}" for k, x in v["upstream_ms_p95"].items())
+        cost = by[n]["metrics"]["test"]["cost_usd"]["mean"] if n in by else v["cost_usd_per_request"]
+        L.append(
+            f"| `{n}` | {'yes' if v['uses_rank_api'] else 'no'} | {v['wall_ms']['p50']:.0f} | "
+            f"{v['wall_ms']['p95']:.0f} | {v['wall_ms']['max']:.0f} | {up} | {v['local_compute_ms']['p95']:.1f} | "
+            f"{cost:.6f} USD | {v['budget_ms_p95']:.0f} ms | {'yes' if v['within_budget'] else '**no**'} |"
+        )
+    L += [
+        "",
+        "The evaluation's own nominal latency (section *Latency* below) adds the latency recorded when each upstream "
+        "call was first made, 8 calls at a time from a cold process; its p95 includes those cold starts.",
+        "",
+    ]
+    return L
+
+
+def _reference(cap: str) -> list[str]:
+    r = _load("_reference.json")
+    if not r:
+        return []
+    L = [
+        "## Reference: the latent matcher (not a system)",
+        "",
+        "**Not a system: reads the simulated user's latent profile.** `pool_latent` is the pool-only contributor "
+        "that scores routes with the persona's hidden preferences (EVAL.md section 4). It is shown only as a "
+        "rough indication of headroom and is not part of the ablation or any comparison. Its top 10 is fully "
+        "judged by construction (it is pooled), and the judge reads the same latent profile, so this is an "
+        "optimistic ceiling for what a system could reach from the visible query.",
+        "",
+        cap,
+        "",
+        "| Split | NDCG@10 | MRR@10 | Recall@50 | ILD@10 | Judged@10 |",
+        "|---|---|---|---|---|---|",
+    ]
+    for split in ("test", "dev"):
+        m = r["metrics"][split]
+        L.append(
+            f"| {split} | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | {_ci(m['recall_at_50'])} | "
+            f"{_ci(m['ild_at_10'])} | {100 * m['judged_share_at_10']:.0f}% |"
+        )
+    L.append("")
+    return L
+
+
+def _explanation_example() -> list[str]:
+    ex = _load("_explanation_example.json")
+    if not ex:
+        return []
+    return [
+        "## Explanation example (default system)",
+        "",
+        f"Real output of `{ex['system']}` for test persona `{ex['persona_id']}` (`python -m evalkit.explain_example`; "
+        "schema `recsys.explanation/v1`, documented in [RECSYS.md](RECSYS.md)). Intent: "
+        f"\"{ex['intent']}\". Top route `{ex['top_route']['route_id']}` ({ex['top_route']['title']}):",
+        "",
+        "```json",
+        json.dumps(ex["top_route"], indent=1, ensure_ascii=False),
+        "```",
+        "",
+    ]
+
+
 def render() -> str:
     docs = _systems()
     q = _load("_qrels.json")
@@ -396,13 +520,17 @@ def render() -> str:
         L.append("No results yet: run `make eval SYSTEM=<name>`.")
         return "\n".join(L) + "\n"
     cap = _caption(docs[0])
-    for split, title in (("test", "Test split (headline)"), ("dev", "Dev split")):
+    L += _ablation(docs, cap)
+    L += _default_system(docs)
+    L += _reference(cap)
+    for split, title in (("test", "All systems, test split"), ("dev", "All systems, dev split")):
         L += [f"## {title}", "", cap, ""] + _table(docs, split) + [""]
         paired = _paired(docs, split)
         if paired:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
     L += _candidate_generation(docs, cap)
     L += _rank_pilot()
+    L += _explanation_example()
     L += _ltr(docs)
     L += _mmr_sweep()
     L += [
