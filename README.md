@@ -34,7 +34,7 @@ is still there; its LLM-written texts (welcome and route summaries) are now pre-
 route facts.
 
 <!-- BEGIN GENERATED readme-data (make report; do not edit) -->
-Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 24,160 (persona, route) pairs, 39% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
+Catalogue: 9,347 routes. Simulated users: 300 personas (200 dev for every choice and all training, 100 test for reporting only). Judgements: 24,759 (persona, route) pairs, 40% graded 0 by rule (hard-constraint violations), the rest by the LLM judge.
 <!-- END GENERATED readme-data -->
 
 The catalogue is built reproducibly from a Geofabrik extract (`make data`); route descriptions are generated
@@ -182,7 +182,7 @@ D27), and test was run once, afterwards.
 | `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
 | `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
 
-The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.853 [0.837, 0.868] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
 <!-- END GENERATED readme-iteration2 -->
 
 **The outcome is a null result by the rule, and the stage stays off.** On dev every variant loses against the
@@ -202,7 +202,7 @@ away (`RECSYS_SYSTEM=recsys_serve_needs_promote`).
 - Test split: 100 personas; dev: 200.
 - Judge pilot (80 pairs): QWK 0.84 against a stronger LLM reference, mean grade +0.11 above it; QWK 0.86 between two batch orders of the same pairs.
 - Judge validation: owner labels: **missing** (the 150 blind pairs are in `eval/owner_labels/`); interim, **not a human check**: a second LLM judge (`anthropic/claude-sonnet-5.5`) agrees with the production judge at QWK 0.758 (exact 0.61, within one grade 0.97) on the same 150 pairs.
-- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.888 [0.873, 0.904], test 0.755 [0.729, 0.780].
+- Learned ranker (`v6_ltr`, judged candidates): NDCG@10 0.968 in-sample on dev, 0.808 [0.790, 0.826] in grouped cross-validation, 0.828 [0.799, 0.853] on test. System level, `recsys_v1`: dev (in-sample) 0.886 [0.872, 0.901], test 0.755 [0.729, 0.780].
 - Largest feature of the Phase 3 ranker: `length_cap_ratio` (25% of the gain), which encodes how the persona generator draws distance caps. Dropping it costs -0.024 [-0.042, -0.009] on test; with the cap slot left empty, the served ranker is +0.031 [+0.001, +0.063] ahead of `recsys_v1`'s.
 - For comparison, the pool-only latent-profile matcher (reads the hidden profile, not a system): 0.761 [0.729, 0.789] on test; `recsys_v1`: 0.755 [0.729, 0.780].
 <!-- END GENERATED readme-limits -->

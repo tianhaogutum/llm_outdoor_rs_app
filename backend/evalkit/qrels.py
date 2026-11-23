@@ -21,8 +21,9 @@ from evalkit.personas import Persona
 
 
 class Qrels:
-    def __init__(self, records: Iterable[dict[str, Any]] = ()) -> None:
+    def __init__(self, records: Iterable[dict[str, Any]] = (), path: Optional[Path] = None) -> None:
         self.records: dict[tuple[str, int], dict[str, Any]] = {}
+        self.path = path  # the file this set was loaded from; ``save()`` writes back there
         for r in records:
             self.records[(r["persona_id"], int(r["route_id"]))] = r
 
@@ -30,9 +31,9 @@ class Qrels:
     def load(cls, path: Optional[Path] = None) -> Qrels:
         path = path or paths.QRELS_FILE
         if not path.exists():
-            return cls()
+            return cls(path=path)
         with path.open(encoding="utf-8") as fh:
-            return cls(json.loads(line) for line in fh if line.strip())
+            return cls((json.loads(line) for line in fh if line.strip()), path=path)
 
     def _lines(self) -> str:
         return "".join(
@@ -40,7 +41,7 @@ class Qrels:
         )
 
     def save(self, path: Optional[Path] = None) -> str:
-        path = path or paths.QRELS_FILE
+        path = path or self.path or paths.QRELS_FILE
         path.parent.mkdir(parents=True, exist_ok=True)
         data = self._lines()
         path.write_text(data, encoding="utf-8")

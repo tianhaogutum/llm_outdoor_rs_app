@@ -1,11 +1,18 @@
 """Run systems, pool and judge holes, compute metrics, write ``eval/results/<system>.json``.
 
     cd backend && python -m evalkit.evaluate --system v0_rules     # make eval SYSTEM=v0_rules
+    cd backend && python -m evalkit.evaluate --system recsys_serve --crossfit   # make eval ... CROSSFIT=1
+    cd backend && python -m evalkit.evaluate --system recsys_serve --holdout    # make eval ... HOLDOUT=1
     cd backend && python -m evalkit.evaluate --all                 # make eval-all (from stored runs)
 
 A results file is byte-identical on rerun except for its ``volatile`` block (locally measured timings
 and this process's LLM ledger). Run files: ``eval/runs/<system>.jsonl`` (deterministic) and
 ``eval/runs/<system>.timings.json`` (local timings).
+
+Three benches (:class:`Bench`): ``main`` (the 300 personas, test / dev / all), ``crossfit`` (the dev personas,
+each ranked by a copy of the system's learned ranker that never saw its labels; ``evalkit.crossfit``,
+docs/EVAL.md section 13) and ``holdout`` (150 personas generated for the iteration-3 decision, with their own
+qrels file; docs/DECISIONS.md D28). Each has its own runs and results directory.
 """
 
 from __future__ import annotations
@@ -15,6 +22,8 @@ import json
 import platform
 import sys
 import time
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
@@ -50,6 +59,53 @@ def _round(x: Any, nd: int = 6) -> Any:
 
 def dumps(doc: dict[str, Any]) -> str:
     return json.dumps(_round(doc), indent=1, sort_keys=True, ensure_ascii=False) + "\n"
+
+
+# --------------------------------------------------------------------------- benches
+@dataclass(frozen=True)
+class Bench:
+    """A set of personas with its own runs and results (paths resolved lazily, so tests can redirect them).
+
+    - ``main``: ``eval/personas/personas.jsonl`` (dev 200 / test 100), ``eval/qrels/qrels.jsonl``.
+    - ``crossfit``: the main dev personas, each ranked by a learned-ranker copy that never saw its labels
+      (``evalkit.crossfit``); judgements go to the main qrels (dev pairs only).
+    - ``holdout``: ``eval/personas/holdout.jsonl`` and its own ``eval/qrels/holdout_qrels.jsonl``; used only for
+      the iteration-3 decision (D28) and afterwards for reporting.
+    """
+
+    name: str
+
+    @property
+    def splits(self) -> tuple[str, ...]:
+        return {"main": SPLITS, "crossfit": ("dev",), "holdout": ("holdout",)}[self.name]
+
+    @property
+    def personas_file(self) -> Path:
+        return paths.PERSONA_DIR / "holdout.jsonl" if self.name == "holdout" else paths.PERSONAS_FILE
+
+    @property
+    def qrels_file(self) -> Path:
+        return paths.QRELS_DIR / "holdout_qrels.jsonl" if self.name == "holdout" else paths.QRELS_FILE
+
+    @property
+    def runs_dir(self) -> Path:
+        return paths.RUNS_DIR if self.name == "main" else paths.RUNS_DIR / self.name
+
+    @property
+    def results_dir(self) -> Path:
+        return paths.RESULTS_DIR if self.name == "main" else paths.RESULTS_DIR / self.name
+
+    def personas(self) -> list[Persona]:
+        if self.name == "holdout":
+            return load_personas(self.personas_file)
+        ps = load_personas()
+        return [p for p in ps if p.split == "dev"] if self.name == "crossfit" else ps
+
+    def qrels(self) -> Qrels:
+        return Qrels.load(self.qrels_file)
+
+
+MAIN, CROSSFIT, HOLDOUT = Bench("main"), Bench("crossfit"), Bench("holdout")
 
 
 # --------------------------------------------------------------------------- runs
@@ -152,12 +208,12 @@ def run_system(
     return run, timings, system.config()
 
 
-def save_run(name: str, run: dict[str, Any], timings: dict[str, Any]) -> None:
-    paths.RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    with (paths.RUNS_DIR / f"{name}.jsonl").open("w", encoding="utf-8") as fh:
+def save_run(name: str, run: dict[str, Any], timings: dict[str, Any], bench: Bench = MAIN) -> None:
+    bench.runs_dir.mkdir(parents=True, exist_ok=True)
+    with (bench.runs_dir / f"{name}.jsonl").open("w", encoding="utf-8") as fh:
         for pid in sorted(run):
             fh.write(json.dumps({"persona_id": pid, **run[pid]}, sort_keys=True) + "\n")
-    (paths.RUNS_DIR / f"{name}.timings.json").write_text(
+    (bench.runs_dir / f"{name}.timings.json").write_text(
         json.dumps(
             {
                 "note": "locally measured, varies run to run",
@@ -173,19 +229,39 @@ def save_run(name: str, run: dict[str, Any], timings: dict[str, Any]) -> None:
     )
 
 
-def load_run(name: str) -> tuple[dict[str, Any], dict[str, Any]]:
+def load_run(name: str, bench: Bench = MAIN) -> tuple[dict[str, Any], dict[str, Any]]:
     run = {}
-    with (paths.RUNS_DIR / f"{name}.jsonl").open(encoding="utf-8") as fh:
+    with (bench.runs_dir / f"{name}.jsonl").open(encoding="utf-8") as fh:
         for line in fh:
             d = json.loads(line)
             run[d.pop("persona_id")] = d
-    tp = paths.RUNS_DIR / f"{name}.timings.json"
+    tp = bench.runs_dir / f"{name}.timings.json"
     timings = json.loads(tp.read_text(encoding="utf-8"))["per_persona"] if tp.exists() else {}
     return run, timings
 
 
-def stored_systems() -> list[str]:
-    return sorted(p.stem for p in paths.RUNS_DIR.glob("*.jsonl") if p.stem in list_systems())
+def stored_systems(bench: Bench = MAIN) -> list[str]:
+    return sorted(p.stem for p in bench.runs_dir.glob("*.jsonl") if p.stem in list_systems())
+
+
+def bench_run(
+    name: str, catalog: Catalog, personas: list[Persona], bench: Bench = MAIN
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """``run_system`` on a bench: the cross-fitted bench ranks each dev persona with the fold copy of the
+    system's learned ranker that was trained without it (``evalkit.crossfit``)."""
+    if bench.name == "crossfit":
+        from evalkit import crossfit
+
+        return crossfit.run(name, catalog, personas)
+    return run_system(name, catalog, personas)
+
+
+def bench_config(name: str, catalog: Catalog, bench: Bench = MAIN) -> dict[str, Any]:
+    if bench.name == "crossfit":
+        from evalkit import crossfit
+
+        return crossfit.config(name, catalog)
+    return make_system(name, catalog).config()
 
 
 # --------------------------------------------------------------------------- pooling
@@ -275,6 +351,15 @@ def owner_validation() -> dict[str, Any]:
     return {"validated": False, "owner_qwk": None}
 
 
+BENCH_LABEL = {
+    "main": None,
+    "crossfit": "dev, cross-fitted ranker: each dev persona ranked by a copy of the learned ranker trained without "
+    "it (docs/EVAL.md section 13); not in-sample",
+    "holdout": "holdout: 150 personas generated after the iteration-3 pre-registration (docs/DECISIONS.md D28), "
+    "used for that decision and for reporting only",
+}
+
+
 def compute_results(
     name: str,
     catalog: Catalog,
@@ -283,12 +368,13 @@ def compute_results(
     timings: dict[str, Any],
     qrels: Qrels,
     config: dict[str, Any],
+    bench: Bench = MAIN,
 ) -> tuple[dict, dict]:
     from evalkit.intents import writer_config
     from evalkit.judge import RUBRIC_VERSION, production_judge
 
     pp = per_persona_metrics(catalog, personas, run, qrels)
-    by_split = {s: [p for p in personas if s == "all" or p.split == s] for s in SPLITS}
+    by_split = {s: [p for p in personas if s == "all" or p.split == s] for s in bench.splits}
     mets = {s: split_metrics(catalog, ps, run, pp) for s, ps in by_split.items()}
     jcfg = production_judge()
     st = qrels.stats(personas)
@@ -315,7 +401,7 @@ def compute_results(
         "data": {
             "catalogue_sha256": catalog.sha256,
             "catalogue_routes": len(catalog),
-            "personas_sha256": file_sha256(paths.PERSONAS_FILE),
+            "personas_sha256": file_sha256(bench.personas_file),
             "n_personas": len(personas),
             "split_sizes": {s: len(ps) for s, ps in by_split.items()},
             "qrels_sha256": qrels.sha256(),
@@ -327,6 +413,8 @@ def compute_results(
         "metrics": mets,
         "per_persona": pp,
     }
+    if bench.name != "main":
+        doc["bench"] = {"name": bench.name, "label": BENCH_LABEL[bench.name], "qrels_file": bench.qrels_file.name}
     loc = {
         s: [timings.get(p.persona_id, {}).get("local_ms", 0.0) + pp[p.persona_id]["upstream_latency_ms"] for p in ps]
         for s, ps in by_split.items()
@@ -347,10 +435,10 @@ def compute_results(
     return doc, volatile
 
 
-def write_results(name: str, doc: dict, volatile: dict, ledger: Optional[dict] = None) -> None:
-    paths.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+def write_results(name: str, doc: dict, volatile: dict, ledger: Optional[dict] = None, bench: Bench = MAIN) -> None:
+    bench.results_dir.mkdir(parents=True, exist_ok=True)
     full = {**doc, "volatile": {**volatile, "llm_ledger": ledger}}
-    (paths.RESULTS_DIR / f"{name}.json").write_text(dumps(full), encoding="utf-8")
+    (bench.results_dir / f"{name}.json").write_text(dumps(full), encoding="utf-8")
 
 
 def write_meta(catalog: Catalog, personas: list[Persona], qrels: Qrels) -> None:
@@ -402,18 +490,28 @@ def _ledger() -> Optional[dict]:
 
 # --------------------------------------------------------------------------- commands
 def evaluate(
-    name: str, *, judge: bool = True, catalog: Optional[Catalog] = None, personas: Optional[list[Persona]] = None
+    name: str,
+    *,
+    judge: bool = True,
+    catalog: Optional[Catalog] = None,
+    personas: Optional[list[Persona]] = None,
+    bench: Bench = MAIN,
 ) -> dict:
     catalog = catalog or get_catalog()
-    personas = personas or load_personas()
-    run, timings, config = run_system(name, catalog, personas)
-    save_run(name, run, timings)
-    qrels = Qrels.load()
+    personas = personas or bench.personas()
+    run, timings, config = bench_run(name, catalog, personas, bench)
+    save_run(name, run, timings, bench)
+    qrels = bench.qrels()
     rep = judge_pool(catalog, personas, {name: run}, qrels, judge=judge)
-    print(f"[eval] {name}: pool holes {rep}", file=sys.stderr)
-    doc, vol = compute_results(name, catalog, personas, run, timings, qrels, config)
-    write_results(name, doc, vol, _ledger())
-    write_meta(catalog, personas, qrels)
+    print(f"[eval:{bench.name}] {name}: pool holes {rep}", file=sys.stderr)
+    doc, vol = compute_results(name, catalog, personas, run, timings, qrels, config, bench)
+    write_results(name, doc, vol, _ledger(), bench)
+    if bench.name == "main":
+        write_meta(catalog, personas, qrels)
+    elif bench.name == "holdout":
+        from evalkit import holdout
+
+        holdout.write_decision()
     return doc
 
 
@@ -422,27 +520,32 @@ JUDGE_COST_PER_PAIR_USD = 0.00133
 
 
 def estimate_holes(
-    names: list[str], *, catalog: Optional[Catalog] = None, personas: Optional[list[Persona]] = None
+    names: list[str],
+    *,
+    catalog: Optional[Catalog] = None,
+    personas: Optional[list[Persona]] = None,
+    bench: Bench = MAIN,
 ) -> dict[str, Any]:
     """Pool holes the given systems would add (rule-graded vs LLM-judged) and the judge's nominal cost.
     Runs the systems (upstream calls go through the cache) but writes nothing."""
     from evalkit.judge import rule_grade
 
     catalog = catalog or get_catalog()
-    personas = personas or load_personas()
+    personas = personas or bench.personas()
     pm = {p.persona_id: p for p in personas}
     runs = {}
     for n in names:
-        if (paths.RUNS_DIR / f"{n}.jsonl").exists() and n not in names[-1:]:
-            runs[n] = load_run(n)[0]
+        if (bench.runs_dir / f"{n}.jsonl").exists() and n not in names[-1:]:
+            runs[n] = load_run(n, bench)[0]
         else:
-            runs[n] = run_system(n, catalog, personas)[0]
-    q = Qrels.load()
+            runs[n] = bench_run(n, catalog, personas, bench)[0]
+    q = bench.qrels()
     pool = pool_pairs({n: {pid: r["ids"] for pid, r in run.items()} for n, run in runs.items()}, POOL_DEPTH)
     holes = q.holes(pool)
     llm = [h for h in holes if rule_grade(pm[h[0]], catalog, h[1]) is None]
-    by_split = {s: sum(1 for h in llm if pm[h[0]].split == s) for s in ("dev", "test")}
+    by_split = {s: sum(1 for h in llm if pm[h[0]].split == s) for s in ("dev", "test", "holdout")}
     return {
+        "bench": bench.name,
         "systems": names,
         "holes": len(holes),
         "rule_graded": len(holes) - len(llm),
@@ -455,13 +558,19 @@ def estimate_holes(
 def evaluate_all(
     *, judge: bool = True, catalog: Optional[Catalog] = None, personas: Optional[list[Persona]] = None
 ) -> list[str]:
-    """Recompute every stored run's results against the current qrels (judging holes of all runs first)."""
+    """Recompute every stored run's results against the current qrels (judging holes of all runs first): the
+    main runs and the cross-fitted dev runs share the main qrels and are pooled together; the holdout runs are
+    pooled and rescored against the holdout qrels, and the holdout decision file is rewritten."""
     catalog = catalog or get_catalog()
     personas = personas or load_personas()
     names = stored_systems()
     loaded = {n: load_run(n) for n in names}
+    cf_names = stored_systems(CROSSFIT)
+    cf_loaded = {n: load_run(n, CROSSFIT) for n in cf_names}
     qrels = Qrels.load()
-    rep = judge_pool(catalog, personas, {n: r for n, (r, _) in loaded.items()}, qrels, judge=judge)
+    pool_runs = {n: r for n, (r, _) in loaded.items()}
+    pool_runs.update({f"{n}@crossfit": r for n, (r, _) in cf_loaded.items()})
+    rep = judge_pool(catalog, personas, pool_runs, qrels, judge=judge)
     print(f"[eval-all] pool holes {rep}", file=sys.stderr)
     for n in names:
         run, timings = loaded[n]
@@ -469,6 +578,25 @@ def evaluate_all(
         doc, vol = compute_results(n, catalog, personas, run, timings, qrels, config)
         write_results(n, doc, vol, _ledger())
     write_meta(catalog, personas, qrels)
+    dev = [p for p in personas if p.split == "dev"]
+    for n in cf_names:
+        run, timings = cf_loaded[n]
+        doc, vol = compute_results(n, catalog, dev, run, timings, qrels, bench_config(n, catalog, CROSSFIT), CROSSFIT)
+        write_results(n, doc, vol, _ledger(), CROSSFIT)
+    ho_names = stored_systems(HOLDOUT)
+    if ho_names:
+        hp = HOLDOUT.personas()
+        ho_loaded = {n: load_run(n, HOLDOUT) for n in ho_names}
+        hq = HOLDOUT.qrels()
+        rep = judge_pool(catalog, hp, {n: r for n, (r, _) in ho_loaded.items()}, hq, judge=judge)
+        print(f"[eval-all] holdout pool holes {rep}", file=sys.stderr)
+        for n in ho_names:
+            run, timings = ho_loaded[n]
+            doc, vol = compute_results(n, catalog, hp, run, timings, hq, make_system(n, catalog).config(), HOLDOUT)
+            write_results(n, doc, vol, _ledger(), HOLDOUT)
+        from evalkit import holdout
+
+        holdout.write_decision()
     return names
 
 
@@ -478,19 +606,26 @@ def main(argv=None) -> None:
     g.add_argument("--system")
     g.add_argument("--all", action="store_true")
     g.add_argument("--estimate", nargs="+", metavar="SYSTEM", help="count pool holes and judge cost; writes nothing")
+    b = ap.add_mutually_exclusive_group()
+    b.add_argument(
+        "--crossfit", action="store_true", help="dev personas, each ranked by a ranker copy trained without it"
+    )
+    b.add_argument("--holdout", action="store_true", help="the holdout personas (docs/DECISIONS.md D28)")
     ap.add_argument("--no-judge", action="store_true", help="fail instead of judging holes")
     args = ap.parse_args(argv)
+    bench = CROSSFIT if args.crossfit else HOLDOUT if args.holdout else MAIN
     if args.estimate:
-        print(json.dumps(estimate_holes(args.estimate), indent=1))
+        print(json.dumps(estimate_holes(args.estimate, bench=bench), indent=1))
         return
     if args.all:
         names = evaluate_all(judge=not args.no_judge)
         print("recomputed:", ", ".join(names))
         return
-    doc = evaluate(args.system, judge=not args.no_judge)
-    m = doc["metrics"]["test"]
+    doc = evaluate(args.system, judge=not args.no_judge, bench=bench)
+    split = bench.splits[0]
+    m = doc["metrics"][split]
     print(
-        f"{args.system} test: NDCG@10 {m['ndcg_at_10']['mean']:.3f} [{m['ndcg_at_10']['lo']:.3f}, "
+        f"{args.system} {bench.name}/{split}: NDCG@10 {m['ndcg_at_10']['mean']:.3f} [{m['ndcg_at_10']['lo']:.3f}, "
         f"{m['ndcg_at_10']['hi']:.3f}]  violations@10 {m['violation_at_10']['mean']:.3f}  "
         f"judged@10 {m['judged_share_at_10']:.3f}"
     )

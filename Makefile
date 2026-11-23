@@ -15,6 +15,8 @@
 # so on a fresh clone these need no credentials unless something new has to be judged.
 #   make personas      regenerate eval/personas/personas.jsonl (deterministic from cache)
 #   make eval SYSTEM=v0_rules  run one system on all personas, judge pool holes, write eval/results/<name>.json
+#   make eval SYSTEM=recsys_serve CROSSFIT=1  dev personas, each ranked by a copy of the system's learned ranker
+#                      trained without it (eval/results/crossfit/<name>.json; the dev standard, docs/EVAL.md 13)
 #   make eval-all      recompute every stored run against the current qrels (tables stay consistent)
 #   make report        render docs/RESULTS.md and the generated blocks of README.md, docs/FAILURES.md and
 #                      docs/REVIEW.md from eval/results/*.json (tests/evalkit/test_docs_fresh.py checks they are fresh)
@@ -56,6 +58,7 @@ CATALOG     ?= osm
 CATALOG_DIR ?= $(abspath $(BACKEND)/data/catalog)
 
 SYSTEM ?= v0_rules
+EVAL_FLAGS := $(if $(filter 1 true yes,$(CROSSFIT)),--crossfit) $(if $(filter 1 true yes,$(HOLDOUT)),--holdout)
 
 # LightGBM needs an OpenMP runtime. On macOS Homebrew's libomp is not assumed; scikit-learn's wheel ships
 # libomp.dylib. DYLD_* variables are stripped when make starts /bin/sh, so the variable is set inline in
@@ -114,8 +117,9 @@ data-stats:
 personas:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.personas
 
+# LGBM_ENV: CROSSFIT=1 trains the fold copies of the ranker once (LightGBM); everything else ignores it
 eval:
-	cd $(BACKEND) && $(PYTHON) -m evalkit.evaluate --system $(SYSTEM)
+	cd $(BACKEND) && $(LGBM_ENV) $(PYTHON) -m evalkit.evaluate --system $(SYSTEM) $(EVAL_FLAGS)
 
 eval-all:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.evaluate --all

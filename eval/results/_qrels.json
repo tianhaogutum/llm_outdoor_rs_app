@@ -1,29 +1,29 @@
 {
  "by_source": {
-  "llm": 14752,
-  "rule": 9408
+  "llm": 14828,
+  "rule": 9931
  },
  "grades_all": {
-  "0": 10947,
-  "1": 7511,
-  "2": 4427,
-  "3": 1275
+  "0": 11476,
+  "1": 7548,
+  "2": 4455,
+  "3": 1280
  },
  "grades_llm": {
-  "0": 1539,
-  "1": 7511,
-  "2": 4427,
-  "3": 1275
+  "0": 1545,
+  "1": 7548,
+  "2": 4455,
+  "3": 1280
  },
  "judges": {
-  "g35f-min-b8": 14752
+  "g35f-min-b8": 14828
  },
  "models": {
-  "gemini-3.5-flash": 14752
+  "gemini-3.5-flash": 14828
  },
- "pairs": 24160,
+ "pairs": 24759,
  "personas": 300,
- "qrels_sha256": "01ab7f1f758332720f552c35c752e587a1920e8c974cc4cdf92d0015fbf45860",
+ "qrels_sha256": "7f8bed2ce224dffd139df6e56d1cb7f5e452eece00cc439fd263e45394ddc452",
  "relevant_per_persona": {
   "max": 49,
   "median": 19,
@@ -31,13 +31,13 @@
   "personas_without_relevant": 0
  },
  "rubrics": {
-  "rubric/v1": 24160
+  "rubric/v1": 24759
  },
- "rule_share": 0.3894,
+ "rule_share": 0.4011,
  "rules": {
-  "distance_cap": 859,
-  "radius": 7537,
-  "radius+distance_cap": 1012
+  "distance_cap": 987,
+  "radius": 7873,
+  "radius+distance_cap": 1071
  },
  "schema": "evalkit.qrels_stats/v1"
 }

@@ -80,16 +80,27 @@ def _caption(doc: dict[str, Any]) -> str:
     )
 
 
+def _crossfit_docs() -> dict[str, dict[str, Any]]:
+    """Cross-fitted dev results (``eval/results/crossfit/``), by system."""
+    d = paths.RESULTS_DIR / "crossfit"
+    return {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in sorted(d.glob("*.json"))} if d.exists() else {}
+
+
 def _table(docs: list[dict[str, Any]], split: str) -> list[str]:
-    head = "| System | " + " | ".join(c for _, c in COLUMNS) + " | Cost/request | Judged@10 |"
-    out = [head, "|" + "---|" * (len(COLUMNS) + 3)]
+    cf = _crossfit_docs() if split == "dev" else {}
+    extra = " NDCG@10, cross-fitted ranker |" if cf else ""
+    head = "| System | " + " | ".join(c for _, c in COLUMNS) + " | Cost/request | Judged@10 |" + extra
+    out = [head, "|" + "---|" * (len(COLUMNS) + 3 + bool(cf))]
     for d in docs:
         m = d["metrics"][split]
         cells = [_ci(m[k], pct=k in ("violation_at_10", "coverage_at_10")) for k, _ in COLUMNS]
         cost = m["cost_usd"]["mean"]
-        out.append(
-            f"| `{d['system']}` | " + " | ".join(cells) + f" | {cost:.5f} USD | {100 * m['judged_share_at_10']:.0f}% |"
-        )
+        judged = f"{100 * m['judged_share_at_10']:.0f}%"
+        row = f"| `{d['system']}` | " + " | ".join(cells) + f" | {cost:.5f} USD | {judged} |"
+        if cf:
+            c = cf.get(d["system"])
+            row += f" {_ci(c['metrics']['dev']['ndcg_at_10']) if c else '–'} |"
+        out.append(row)
     n = docs[0]["metrics"][split]
     out.append("")
     out.append(
@@ -98,6 +109,14 @@ def _table(docs: list[dict[str, Any]], split: str) -> list[str]:
         + ". 95% percentile-bootstrap CIs over personas. Coverage@10 is a set statistic (distinct routes in all "
         "top-10 lists / catalogue size); it has no bootstrap CI and depends on the number of personas."
     )
+    if cf:
+        out += [
+            "",
+            "Dev rows of systems with a learned ranker are **in-sample** (the ranker was trained on these personas' "
+            "judgements). The last column is the same system with the ranker cross-fitted (each persona ranked by a "
+            "copy trained without it; EVAL.md section 13), the dev standard for these systems; – = no learned ranker, "
+            "where the dev row is not in-sample.",
+        ]
     return out
 
 
@@ -642,6 +661,109 @@ def _needs_section(docs: list[dict[str, Any]], cap: str) -> list[str]:
     return L
 
 
+# paired comparisons on cross-fitted dev (a system without a learned ranker contributes its ordinary dev row)
+CROSSFIT_PAIRS = [
+    ("v4_rrf", "v6_ltr_noapi"),
+    ("v6_ltr_noapi", "v6_ltr"),
+    ("v6_ltr", "v7_mmr"),
+    ("v7_mmr", "recsys_v1"),
+    ("recsys_v1", "recsys_v1_nocap"),
+    ("recsys_v1", "recsys_v1_nosusp"),
+    ("recsys_v1", "recsys_serve"),
+    ("recsys_v1_qonly", "recsys_v1"),
+    ("recsys_v1", "recsys_v1_chat"),
+    ("recsys_serve", "recsys_serve_needs"),
+    ("recsys_serve", "recsys_serve_needs_promote"),
+    ("recsys_serve", "recsys_serve_needs_demote"),
+]
+
+
+def _crossfit_section(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    """Dev with a cross-fitted learned ranker: the dev standard for systems with one (EVAL.md section 13)."""
+    cf = _crossfit_docs()
+    by = {d["system"]: d for d in docs}
+    if not cf:
+        return []
+    any_cf = next(iter(cf.values()))
+    folds = any_cf["config"]["crossfit"]["folds"]
+    L = [
+        "## Dev with a cross-fitted learned ranker (the dev standard for learned-ranker systems)",
+        "",
+        cap,
+        "",
+        "Every learned ranker was trained on the dev personas' judgements, so a system-level dev row of a system "
+        f"that contains one is in-sample. Cross-fitted: {folds} copies of the system's ranker, each trained exactly "
+        "like it (same pinned labels, features, LightGBM parameters and number of rounds) without one fold of dev "
+        "personas (the folds of its own grouped CV); every dev persona is ranked by the copy that never saw it "
+        "(`make eval SYSTEM=<name> CROSSFIT=1`, EVAL.md section 13). Every top 10 is judged.",
+        "",
+        "| System | Ranker | NDCG@10 dev, in-sample | NDCG@10 dev, cross-fitted | In-sample − cross-fitted (paired) | "
+        "Violations@10 dev, cross-fitted | NDCG@10 test |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for n, c in sorted(cf.items(), key=lambda kv: ([d["system"] for d in docs].index(kv[0]) if kv[0] in by else 99)):
+        if n not in by:
+            continue
+        a = by[n]
+        pids = sorted(c["per_persona"])
+        r = paired_bootstrap(
+            [c["per_persona"][p]["ndcg_at_10"] for p in pids],
+            [a["per_persona"][p]["ndcg_at_10"] for p in pids],
+            n_boot=a["protocol"]["bootstrap"]["n"],
+            seed=a["protocol"]["bootstrap"]["seed"],
+        )
+        L.append(
+            f"| `{n}` | `{c['config']['crossfit']['model']}` | {_ci(a['metrics']['dev']['ndcg_at_10'])} | "
+            f"{_ci(c['metrics']['dev']['ndcg_at_10'])} | {_pb_cell(r)} | "
+            f"{_ci(c['metrics']['dev']['violation_at_10'], pct=True)} | {_ci(a['metrics']['test']['ndcg_at_10'])} |"
+        )
+    L += [
+        "",
+        "Paired differences on dev with every learned ranker cross-fitted (a system without a learned ranker enters "
+        "with its ordinary dev row), next to the same difference on test:",
+        "",
+        "| Comparison | ΔNDCG@10 dev, cross-fitted | ΔNDCG@10 dev, in-sample | ΔNDCG@10 test |",
+        "|---|---|---|---|",
+    ]
+
+    def dev_pp(n: str) -> Optional[dict[str, Any]]:
+        if n in cf:
+            return cf[n]["per_persona"]
+        from evalkit.crossfit import ltr_model_name
+
+        if n in by and ltr_model_name(by[n].get("config", {})) is None:
+            return by[n]["per_persona"]
+        return None
+
+    def pb(x: dict[str, Any], y: dict[str, Any], pids: list[str]) -> str:
+        return _pb_cell(
+            paired_bootstrap(
+                [x[p]["ndcg_at_10"] for p in pids],
+                [y[p]["ndcg_at_10"] for p in pids],
+                n_boot=any_cf["protocol"]["bootstrap"]["n"],
+                seed=any_cf["protocol"]["bootstrap"]["seed"],
+            )
+        )
+
+    for an, bn in CROSSFIT_PAIRS:
+        xa, xb = dev_pp(an), dev_pp(bn)
+        if xa is None or xb is None or an not in by or bn not in by:
+            continue
+        dev = sorted(set(xa) & set(xb))
+        test = sorted(p for p in by[an]["per_persona"] if _split_of(by[an], p) == "test")
+        L.append(
+            f"| `{bn}` − `{an}` | {pb(xa, xb, dev)} | {pb(by[an]['per_persona'], by[bn]['per_persona'], dev)} | "
+            f"{pb(by[an]['per_persona'], by[bn]['per_persona'], test)} |"
+        )
+    L += [
+        "",
+        "Remaining leak, accepted: the number of boosting rounds was chosen by grouped CV over all dev personas, so "
+        "each fold copy inherits one hyper-parameter that saw its held-out fold.",
+        "",
+    ]
+    return L
+
+
 def _failure_classes() -> dict[str, str]:
     import re
 
@@ -1158,6 +1280,7 @@ def render() -> str:
     L += _served(docs, cap)
     L += _needs_section(docs, cap)
     L += _ablation(docs, cap)
+    L += _crossfit_section(docs, cap)
     L += _default_system(docs)
     L += _reference(cap)
     for split, title in (("test", "All systems, test split"), ("dev", "All systems, dev split")):

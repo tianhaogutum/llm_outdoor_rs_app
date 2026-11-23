@@ -139,10 +139,18 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
 
 def _extra_replays() -> list:
     """Further recorded experiments to replay: ranker pilot, MMR sweep, the feedback simulation and its dev
-    tuning, the scripted chat evaluation, the failure analysis (each returns (keys, problems))."""
-    from evalkit import failures, mmr_sweep, rank_pilot, simulate
+    tuning, the scripted chat evaluation, the cross-fitted dev runs, the holdout (personas, judgements, runs),
+    the failure analyses (each returns (keys, problems))."""
+    from evalkit import crossfit, failures, mmr_sweep, rank_pilot, simulate
 
-    return [rank_pilot.replay, mmr_sweep.replay, simulate.replay, _chat_eval_replay, failures.replay]
+    return [
+        rank_pilot.replay,
+        mmr_sweep.replay,
+        simulate.replay,
+        _chat_eval_replay,
+        crossfit.replay,
+        failures.replay,
+    ]
 
 
 def _chat_eval_replay(check: bool) -> tuple[list[str], list[str]]:
@@ -188,9 +196,16 @@ def verify_inner() -> None:
     from evalkit import evaluate
 
     keys, problems = _replay_all(check=True)
-    saved = {p: p.read_bytes() for p in paths.RESULTS_DIR.glob("*.json")}
-    before = {p.name: _strip(json.loads(b)) for p, b in saved.items() if not p.name.startswith("_")}
-    qrels_before = paths.QRELS_FILE.read_bytes()
+    # main results, the cross-fitted dev results and the holdout results (each in its own directory)
+    pats = ("*.json", "crossfit/*.json", "holdout/*.json")
+    saved = {p: p.read_bytes() for pat in pats for p in paths.RESULTS_DIR.glob(pat)}
+    before = {
+        p.relative_to(paths.RESULTS_DIR).as_posix(): _strip(json.loads(b))
+        for p, b in saved.items()
+        if not p.name.startswith("_")
+    }
+    qfiles = [evaluate.MAIN.qrels_file, evaluate.HOLDOUT.qrels_file]
+    qrels_before = {q: q.read_bytes() for q in qfiles if q.exists()}
     try:
         evaluate.evaluate_all(judge=False)
         for name, doc in before.items():
@@ -198,10 +213,11 @@ def verify_inner() -> None:
             if json.dumps(after, sort_keys=True) != json.dumps(doc, sort_keys=True):
                 problems.append(f"results differ: {name}")
         for p, b in saved.items():
-            if p.name in ("_qrels.json", "_personas.json") and p.read_bytes() != b:
+            if p.name in ("_qrels.json", "_personas.json", "_holdout.json") and p.read_bytes() != b:
                 problems.append(f"{p.name} differs")
-        if paths.QRELS_FILE.read_bytes() != qrels_before:
-            problems.append("qrels changed")
+        for q, b in qrels_before.items():
+            if q.read_bytes() != b:
+                problems.append(f"{q.name} changed")
     finally:  # leave the committed files (including their volatile blocks) untouched
         for p, b in saved.items():
             p.write_bytes(b)

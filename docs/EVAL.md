@@ -28,6 +28,7 @@ make report  ->  docs/RESULTS.md
 |---|---|
 | `make personas` | regenerate `eval/personas/personas.jsonl` (byte-identical from cache) |
 | `make eval SYSTEM=<name>` | run the system on all 300 personas, judge pool holes, write results |
+| `make eval SYSTEM=<name> CROSSFIT=1` | dev personas, learned ranker cross-fitted (section 13): the dev standard for systems with a learned ranker |
 | `make eval-all` | rescore every stored run against the current qrels (tables stay mutually consistent) |
 | `make report` | render `docs/RESULTS.md` from `eval/results/*.json` |
 | `make judge-pilot` | judge pilot (cached) |
@@ -373,7 +374,8 @@ the harness and in the data the numbers rest on.
   `eval/qrels/ltr_train_v1.jsonl` so later judgements cannot leak back into training.
 - **Dev results of the learned ranker are in-sample.** Its training labels are the dev judgements, so
   `v6_*`, `v7_mmr` and `recsys_v1` on dev are optimistic. Decisions about the ranker used grouped
-  cross-validation on dev (`_ltr.json`), never its system-level dev row and never test.
+  cross-validation on dev (`_ltr.json`), never its system-level dev row and never test. Since iteration 3 the
+  system-level dev row has a cross-fitted counterpart (section 13), which is the dev number to use.
 - **Dev experiments without new judgements** (`_cg_dev.json`, `_rank_pilot.json`) use a *condensed*
   NDCG@10 (unjudged routes dropped before the cut) plus pool-relative Recall@50; the MMR sweep
   (`_mmr_sweep.json`) judges every top 10 on dev.
@@ -533,3 +535,51 @@ measured data. `no_steps` and `public_transport` never occur in dev intents. The
 and the intents were written from it, so a stated need that matches the latent profile is graded as a need; real
 users may state needs they would trade away. Results files: `eval/results/_needs_dev.json` (dev work),
 `eval/results/recsys_serve_needs*.json` (rows), `_failures_recsys_serve_needs_promote_test.json`.
+
+
+## 13. Cross-fitted dev evaluation: the dev standard for systems with a learned ranker (iteration 3)
+
+**Why.** Every learned ranker in this project is trained on the dev personas' judgements (RECSYS.md section 4). A
+system-level dev row of any system that contains one is therefore in-sample, and the bias is large: about 0.15
+NDCG@10 for the served system (RESULTS.md "Dev with a cross-fitted learned ranker"). It is worse for comparisons
+than for single rows. A change that keeps the ranker's ordering inherits the memorised dev users; a change that
+overrides the ranker (a filter, a demotion, feedback) gives that advantage up, so dev systematically favours "no
+change". This decided D21 and D27 the wrong way round relative to test.
+
+**What `make eval SYSTEM=<name> CROSSFIT=1` does** (`backend/evalkit/crossfit.py`, `python -m evalkit.evaluate
+--system <name> --crossfit`):
+
+1. Finds the learned-ranker model in the system's config (`ltr.name`, also inside the chat and empty-slot
+   wrappers); a system without one is refused, because its dev row is not in-sample.
+2. Trains K = 5 copies of that model exactly like the committed one: the same pinned labels
+   (`eval/qrels/ltr_train_v1.jsonl`), the same feature set (its training variant), the same LightGBM parameters
+   and the same number of boosting rounds, each on the dev personas outside one fold. The folds are the ranker's
+   own grouped-CV folds (`evalkit.ltr._folds`: by persona, seeded). The copies are written once to
+   `eval/crossfit/ltr_<model>_cf<k>.json.gz` (numpy-evaluable trees, a reference block checked on load), so
+   rescoring and replay never need LightGBM. Training them does; the Makefile sets the macOS OpenMP path.
+3. Runs the system on the 200 dev personas, each with the copy whose training set excluded it. Nothing else in
+   the system changes.
+4. Pools and judges the new top-10 holes like any dev hole (into the main qrels; dev pairs only), and writes
+   `eval/runs/crossfit/<name>.jsonl` and `eval/results/crossfit/<name>.json` (dev metrics only; the results file
+   carries `bench.label` "dev, cross-fitted ranker" and the fold files' digests in `config.crossfit`).
+
+`make eval-all` rescores the stored cross-fitted runs with the others; `make replay-check` re-runs them from the
+committed fold copies and the frozen cache and compares rankings and results; `make report` shows the cross-fitted
+dev NDCG next to the in-sample one (column in "All systems, dev split", and the section "Dev with a cross-fitted
+learned ranker" with paired differences on cross-fitted dev next to the same differences in-sample and on test).
+
+**Check.** It reproduces the iteration-2 post-hoc check exactly: the same fold models, and for `recsys_serve` and
+the three stated-need variants the same per-persona NDCG@10 on all 200 dev personas, hence the same paired
+differences (D27). The post-hoc command `python -m evalkit.needs_eval crossfit` now uses these fold copies.
+
+**The standard from now on.** For any system with a learned ranker, a dev number used for a decision is the
+cross-fitted one; the in-sample row is shown, labelled "in-sample", and is never the basis of a choice.
+Comparisons between such systems on dev are paired over the dev personas on cross-fitted rows (a system without a
+learned ranker enters with its ordinary dev row, which is not in-sample).
+
+**What it does not fix.** (1) One hyper-parameter leaks: the number of rounds was chosen by grouped CV over all
+dev personas, so each copy inherits a choice that saw its held-out fold (probably small: the mean CV curves in
+`_ltr.json` and `_ltr_robust.json` move by a few thousandths between 200 rounds and the chosen number). (2) Everything else tuned on dev (thresholds, the stated-need rules, MMR lambda, RRF k) is still
+tuned on dev; cross-fitting removes only the ranker's memory of the dev users. (3) The copies are trained on four
+fifths of the data, so cross-fitted dev is slightly pessimistic for the ranker itself. (4) It is not a substitute
+for a split nobody has looked at, which is why iteration 3 decides on a fresh holdout (D28).

@@ -27,7 +27,7 @@ comparable; compare systems within a split.
 
 <!-- BEGIN GENERATED review-pooling (make report; do not edit) -->
 - Pool: top 10 of every registered system plus the pool-only contributors `pool_latent`, `pool_intent_lexical`.
-- 24,160 judged pairs over 300 personas; 9,408 (38.9%) graded 0 by rule, 14,752 by the LLM judge.
+- 24,759 judged pairs over 300 personas; 9,931 (40.1%) graded 0 by rule, 14,828 by the LLM judge.
 - Known relevant (grade ≥ 2) routes per persona: median 19, min 1, max 49; personas without any: 0.
 - Reference, the latent matcher that supplies much of the relevant set: NDCG@10 0.761 [0.729, 0.789] on test (`_reference.json`).
 <!-- END GENERATED review-pooling -->
@@ -99,13 +99,13 @@ The ranker's dev gains are in-sample and much larger than on test.
 <!-- BEGIN GENERATED review-stages (make report; do not edit) -->
 | Step | ΔNDCG@10 (test, paired) | ΔNDCG@10 (dev, paired) |
 |---|---|---|
-| `v0_rules` − `random` | +0.000 [-0.011, +0.011] | -0.001 [-0.007, +0.005] |
-| `v1_filters` − `v0_rules` | +0.351 [+0.318, +0.382] | +0.336 [+0.311, +0.361] |
-| `v2_bm25` − `v1_filters` | +0.179 [+0.132, +0.229] | +0.148 [+0.116, +0.179] |
+| `v0_rules` − `random` | +0.000 [-0.011, +0.011] | -0.001 [-0.007, +0.004] |
+| `v1_filters` − `v0_rules` | +0.351 [+0.318, +0.382] | +0.336 [+0.310, +0.361] |
+| `v2_bm25` − `v1_filters` | +0.179 [+0.132, +0.229] | +0.148 [+0.115, +0.179] |
 | `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.022] | +0.022 [-0.004, +0.049] |
-| `v4_rrf` − `v3_dense` | +0.074 [+0.049, +0.100] | +0.040 [+0.025, +0.056] |
+| `v4_rrf` − `v3_dense` | +0.074 [+0.049, +0.100] | +0.039 [+0.025, +0.055] |
 | `v5_rank_api` − `v4_rrf` | +0.039 [+0.008, +0.067] | +0.065 [+0.045, +0.084] |
-| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.172] | +0.285 [+0.264, +0.308] |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.172] | +0.284 [+0.264, +0.308] |
 | `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | -0.005 [-0.007, -0.002] |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.016 [-0.021, -0.010] |
 | `recsys_serve` − `recsys_v1` | -0.035 [-0.053, -0.020] | -0.035 [-0.043, -0.028] |
@@ -145,7 +145,7 @@ the fix for both D21 and D27.
 
 <!-- BEGIN GENERATED review-overfit (make report; do not edit) -->
 - `v6_ltr` on judged candidates: in-sample 0.968, grouped CV 0.808 [0.790, 0.826], test 0.828 [0.799, 0.853].
-- System level: `v6_ltr` dev (in-sample) 0.908 [0.893, 0.923] vs test 0.771 [0.741, 0.800]; `recsys_v1` dev 0.888 [0.873, 0.904] vs test 0.755 [0.729, 0.780].
+- System level: `v6_ltr` dev (in-sample) 0.907 [0.892, 0.922] vs test 0.771 [0.741, 0.800]; `recsys_v1` dev 0.886 [0.872, 0.901] vs test 0.755 [0.729, 0.780].
 - `length_cap_ratio`: 25.1% of the gain of the Phase 3 ranker. Without it (`recsys_v1_nocap` − `recsys_v1`): test -0.024 [-0.042, -0.009], dev -0.023 [-0.030, -0.018]. Without the whole suspicious group (`recsys_v1_nosusp`): test -0.034 [-0.051, -0.018].
 - Cap slot left empty: `recsys_v1` loses -0.179 [-0.212, -0.148], the served system -0.114 [-0.142, -0.086]; served minus Phase 3 without the cap +0.031 [+0.001, +0.063].
 - Feedback parameters: chosen on dev (`slots_only`); on the test simulation the light full loop beats the dev choice by +0.025 [+0.014, +0.036] (rounds 2-10).
@@ -216,7 +216,7 @@ queries while filtering out some routes the judge likes (FAILURES.md "Iteration 
 | `recsys_serve_needs_promote` (filter, strict matches promoted) | -0.025 [-0.040, -0.009] | no | +0.021 [+0.007, +0.036] | +0.025 [+0.004, +0.049] | 0.0% [0.0%, 0.0%] |
 | `recsys_serve_needs_demote` (post-ranker demotion) | -0.031 [-0.043, -0.020] | no | +0.011 [+0.001, +0.022] | +0.026 [+0.009, +0.047] | 0.0% [0.0%, 0.0%] |
 
-The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.853 [0.837, 0.868] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
+The served default is unchanged: `recsys_serve` 0.720 [0.688, 0.748] on test, 0.851 [0.835, 0.866] on dev (in-sample ranker). Its ten worst test queries (FAILURES.md) under `recsys_serve_needs_promote`, which is not served (NDCG@10 before→after): P018 0.20→0.76, P260 0.35→0.50, P190 0.39→0.50, P145 0.40→0.61, P003 0.41→0.92, P177 0.43→0.71, P110 0.44→0.44, P218 0.44→0.77, P048 0.47→0.47, P225 0.47→0.53.
 <!-- END GENERATED review-iteration2 -->
 
 **Evidence:** [FAILURES.md](FAILURES.md) (generated traces and hand-written diagnoses); `eval/results/_failures.json`.

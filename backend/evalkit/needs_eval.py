@@ -249,36 +249,18 @@ CF_SUFFIX = "@crossfit"
 def crossfit_models() -> tuple[list[tuple[set[str], Any]], dict[str, Any]]:
     """Five copies of the served ranker (no ranker-API feature, no ``length_cap_ratio``), each trained like
     ``v1_noapi_nocap`` (same pinned dev labels, parameters and number of rounds) on four fifths of the dev
-    personas: the persona folds of the ranker's own grouped CV. A dev persona is then ranked by the model that
-    never saw its labels, so dev numbers stop being in-sample for the ranker. Needs LightGBM (training only)."""
-    import lightgbm as lgb
+    personas: the persona folds of the ranker's own grouped CV. Since iteration 3 this is the harness feature
+    ``evalkit.crossfit`` (``make eval SYSTEM=... CROSSFIT=1``); this post-hoc check uses the same fold models."""
+    from evalkit import crossfit
 
-    from app.recsys.ltr import FORMAT, TreeEnsemble, flatten_lightgbm_dump
-    from evalkit import ltr as LT
-
-    dev = [p for p in load_personas() if p.split == "dev"]
-    qrels = LT.train_labels()
-    ds = LT.dataset(dev, LT.candidate_matrix(dev, with_api=False), qrels)
-    drop = LT.ROBUST_VARIANTS["noapi_no_length_cap"]
-    cols = LT._cols(drop)
-    robust = json.loads((paths.RESULTS_DIR / LT.ROBUST_OUT).read_text(encoding="utf-8"))
-    rounds = int(robust["variants"]["noapi_no_length_cap"]["best_rounds"])
-    out = []
-    for k, f in enumerate(LT._folds(ds["pids"])):
-        booster, _ = LT._train(lgb, LT._subset(ds, set(ds["pids"]) - f), cols, rounds)
-        art = {
-            "format": FORMAT,
-            "feature_names": [LT.FEATURES[c] for c in cols],
-            "trees": flatten_lightgbm_dump(booster.dump_model()),
-            "meta": {"crossfit_fold": k, "rounds": rounds},
-            "reference": {"X": [], "pred": []},
-        }
-        m = TreeEnsemble.from_dict(art, name=f"v1_noapi_nocap_cf{k}")
-        Xf = ds["X"][:200][:, cols]
-        assert np.allclose(m.predict(Xf), booster.predict(Xf), atol=1e-9), "numpy trees differ from LightGBM"
-        out.append((f, m))
-    meta = {"folds": len(out), "rounds": rounds, "fold_sizes": [len(f) for f, _ in out], "lightgbm": lgb.__version__}
-    return out, meta
+    models = crossfit.fold_models("v1_noapi_nocap")
+    meta = {
+        "folds": len(models),
+        "rounds": models[0][1].meta["rounds"],
+        "fold_sizes": [len(f) for f, _ in models],
+        "lightgbm": models[0][1].meta["lightgbm"],
+    }
+    return models, meta
 
 
 def crossfit_comparison(variants: tuple[str, ...] = VARIANTS, *, judge: bool = True) -> dict[str, Any]:

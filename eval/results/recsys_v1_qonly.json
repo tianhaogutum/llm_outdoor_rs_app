@@ -103,11 +103,11 @@
   "n_personas": 300,
   "personas_sha256": "e56c999efd2049a0f820e239111987943e2df4275d1733cb306a816007d6eb9d",
   "qrels_by_source": {
-   "llm": 14752,
-   "rule": 9408
+   "llm": 14828,
+   "rule": 9931
   },
-  "qrels_pairs": 24160,
-  "qrels_sha256": "01ab7f1f758332720f552c35c752e587a1920e8c974cc4cdf92d0015fbf45860",
+  "qrels_pairs": 24759,
+  "qrels_sha256": "7f8bed2ce224dffd139df6e56d1cb7f5e452eece00cc439fd263e45394ddc452",
   "split_sizes": {
    "all": 300,
    "dev": 200,
@@ -126,7 +126,7 @@
    "thinking": "minimal"
   },
   "models": {
-   "gemini-3.5-flash": 14752
+   "gemini-3.5-flash": 14828
   },
   "owner_validation": {
    "owner_qwk": null,
@@ -164,16 +164,16 @@
    },
    "n_personas": 300,
    "ndcg_at_10": {
-    "hi": 0.370745,
-    "lo": 0.334268,
-    "mean": 0.35182,
+    "hi": 0.370479,
+    "lo": 0.33383,
+    "mean": 0.351534,
     "n": 300
    },
    "ndcg_undefined": 0,
    "recall_at_50": {
-    "hi": 0.539041,
-    "lo": 0.464779,
-    "mean": 0.501402,
+    "hi": 0.538668,
+    "lo": 0.465027,
+    "mean": 0.501189,
     "n": 300
    },
    "upstream_latency_ms": {
@@ -216,16 +216,16 @@
    },
    "n_personas": 200,
    "ndcg_at_10": {
-    "hi": 0.3719,
-    "lo": 0.323151,
-    "mean": 0.346571,
+    "hi": 0.371762,
+    "lo": 0.322585,
+    "mean": 0.346141,
     "n": 200
    },
    "ndcg_undefined": 0,
    "recall_at_50": {
-    "hi": 0.53578,
-    "lo": 0.441169,
-    "mean": 0.490382,
+    "hi": 0.536072,
+    "lo": 0.440662,
+    "mean": 0.490064,
     "n": 200
    },
    "upstream_latency_ms": {
@@ -584,7 +584,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.25,
    "ndcg_at_10": 0.418826,
-   "recall_at_50": 0.28125,
+   "recall_at_50": 0.257143,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -594,7 +594,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.491196,
-   "recall_at_50": 0.375,
+   "recall_at_50": 0.4,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -723,8 +723,8 @@
    "ild_at_10": 0.595294,
    "judged_at_10": 1.0,
    "mrr_at_10": 0.25,
-   "ndcg_at_10": 0.255667,
-   "recall_at_50": 0.037037,
+   "ndcg_at_10": 0.197662,
+   "recall_at_50": 0.035714,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -894,7 +894,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.5,
    "ndcg_at_10": 0.425908,
-   "recall_at_50": 0.291667,
+   "recall_at_50": 0.32,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1084,7 +1084,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.319443,
-   "recall_at_50": 0.241379,
+   "recall_at_50": 0.233333,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1174,7 +1174,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.333333,
    "ndcg_at_10": 0.288417,
-   "recall_at_50": 0.170732,
+   "recall_at_50": 0.186047,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1224,7 +1224,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.142857,
    "ndcg_at_10": 0.245442,
-   "recall_at_50": 0.571429,
+   "recall_at_50": 0.6,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1314,7 +1314,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.2,
    "ndcg_at_10": 0.224575,
-   "recall_at_50": 0.583333,
+   "recall_at_50": 0.56,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1644,7 +1644,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.333333,
    "ndcg_at_10": 0.391102,
-   "recall_at_50": 0.25,
+   "recall_at_50": 0.24,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1664,7 +1664,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.270248,
-   "recall_at_50": 0.2,
+   "recall_at_50": 0.193548,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1884,7 +1884,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.166667,
    "ndcg_at_10": 0.264662,
-   "recall_at_50": 0.222222,
+   "recall_at_50": 0.214286,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1974,7 +1974,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.166667,
    "ndcg_at_10": 0.102428,
-   "recall_at_50": 0.263158,
+   "recall_at_50": 0.25,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -1984,7 +1984,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.25,
    "ndcg_at_10": 0.339803,
-   "recall_at_50": 0.219512,
+   "recall_at_50": 0.214286,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2254,7 +2254,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.445016,
-   "recall_at_50": 0.30303,
+   "recall_at_50": 0.294118,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2314,7 +2314,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.620993,
-   "recall_at_50": 0.3125,
+   "recall_at_50": 0.30303,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2344,7 +2344,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.125,
    "ndcg_at_10": 0.253434,
-   "recall_at_50": 0.380952,
+   "recall_at_50": 0.363636,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2704,7 +2704,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 1.0,
    "ndcg_at_10": 0.317659,
-   "recall_at_50": 0.133333,
+   "recall_at_50": 0.129032,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2843,8 +2843,8 @@
    "ild_at_10": 0.62688,
    "judged_at_10": 1.0,
    "mrr_at_10": 0.5,
-   "ndcg_at_10": 0.254926,
-   "recall_at_50": 0.225806,
+   "ndcg_at_10": 0.244001,
+   "recall_at_50": 0.21875,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2854,7 +2854,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.5,
    "ndcg_at_10": 0.2383,
-   "recall_at_50": 0.230769,
+   "recall_at_50": 0.225,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2864,7 +2864,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.5,
    "ndcg_at_10": 0.30551,
-   "recall_at_50": 0.173913,
+   "recall_at_50": 0.170213,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -2913,8 +2913,8 @@
    "ild_at_10": 0.666824,
    "judged_at_10": 1.0,
    "mrr_at_10": 0.2,
-   "ndcg_at_10": 0.224575,
-   "recall_at_50": 0.192308,
+   "ndcg_at_10": 0.21395,
+   "recall_at_50": 0.178571,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -3023,8 +3023,8 @@
    "ild_at_10": 0.71273,
    "judged_at_10": 1.0,
    "mrr_at_10": 0.0,
-   "ndcg_at_10": 0.104342,
-   "recall_at_50": 0.266667,
+   "ndcg_at_10": 0.097991,
+   "recall_at_50": 0.25,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -3144,7 +3144,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.0,
    "ndcg_at_10": 0.086282,
-   "recall_at_50": 0.333333,
+   "recall_at_50": 0.36,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -3224,7 +3224,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.5,
    "ndcg_at_10": 0.24894,
-   "recall_at_50": 0.870968,
+   "recall_at_50": 0.875,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -3244,7 +3244,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.0,
    "ndcg_at_10": 0.08098,
-   "recall_at_50": 0.153846,
+   "recall_at_50": 0.142857,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   },
@@ -3304,7 +3304,7 @@
    "judged_at_10": 1.0,
    "mrr_at_10": 0.2,
    "ndcg_at_10": 0.122875,
-   "recall_at_50": 0.888889,
+   "recall_at_50": 0.894737,
    "upstream_latency_ms": 0.0,
    "violation_at_10": 0.0
   }
@@ -3328,7 +3328,7 @@
  "schema": "evalkit.results/v1",
  "system": "recsys_v1_qonly",
  "volatile": {
-  "generated_at": "2026-11-23T12:11:04Z",
+  "generated_at": "2026-11-23T12:35:59Z",
   "latency_ms_nominal": {
    "all": {
     "definition": "local compute + recorded upstream latency",
@@ -3352,7 +3352,7 @@
     "budget_usd": 1.0,
     "by_tag": {},
     "cache": {
-     "cache_only": true,
+     "cache_only": false,
      "enabled": true,
      "frozen_layers": 1,
      "keys_touched": 0
@@ -3385,7 +3385,7 @@
     "budget_usd": 5.0,
     "by_tag": {},
     "cache": {
-     "cache_only": true,
+     "cache_only": false,
      "enabled": true,
      "frozen_layers": 1,
      "keys_touched": 0
