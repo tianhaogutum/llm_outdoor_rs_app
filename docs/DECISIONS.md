@@ -381,3 +381,49 @@ checking the docs against each other and the code. Earlier entries are left as w
 | Confirm or change the served default chosen by the coordinator | owner | D25 |
 | Generation model `gemini-2.5-flash` past its retirement date | owner | LLM_CLIENT.md |
 | Re-tune feedback parameters with a cross-fitted dev ranker or real feedback | technical | D21 |
+
+## D27. Iteration 2: stated needs as constraints; acceptance rule fixed before any dev result (2026-11-23)
+
+**Where the hypothesis comes from (disclosure).** From the *test* failure analysis ([FAILURES.md](FAILURES.md)):
+half of the ten worst test queries of `recsys_serve` state a verifiable need (stroller, train, a technical MTB
+ride, a loop) that the learned ranker outweighs, two more state a length or a day count the pipeline does not
+read. That observation is the only thing test contributes to this iteration. Which needs, the phrases, the
+thresholds, the relaxation order, the floor and the way of using the needs are developed on dev and on general
+language knowledge; test is run once, for the variant the rule below picks, and reported whatever it shows.
+
+**Does the failure pattern replicate on dev?** Same analysis on dev (`python -m evalkit.failures --split dev
+-n 20`, `eval/results/_failures_recsys_serve_dev.json`), classes assigned by hand with the definitions of
+FAILURES.md "Synthesis":
+
+| Dev worst | A: stated need overridden | B: length / days not read | C: unstated wish graded | D: no ranking failure |
+|---|---|---|---|---|
+| 10 | 0 | 3 (P162, P278, P265) | 1 (P175) | 6 |
+| 20 | 1 (P026) | 7 (+ P094, P252, P214, P007) | 1 | 11 |
+
+Class B replicates (four of the twenty state a day count, one says "short"); class A barely does. The reason is
+known and matters for everything below: the learned ranker was trained on the dev personas' grades, so on dev it
+has memorised exactly the users whose needs it overrides on test. A catalogue-only check that does not depend
+on the ranker's fit shows the mechanism is there on dev too: among dev personas who state the need, the share of
+`recsys_serve`'s top 10 that meets it strictly is low for the minority needs (MTB, train, multi-day, stroller;
+`eval/results/_needs_dev.json`, `served_top10_meets_needs`).
+
+**The acceptance rule, written down before any dev NDCG of a variant was computed** (also in
+`evalkit/needs_eval.py: RULE`, stored in `_needs_dev.json`):
+
+1. On dev (200 personas, every top 10 judged), the paired-bootstrap 95% CI of mean NDCG@10(variant) −
+   NDCG@10(`recsys_serve`) has its lower bound above 0;
+2. mean Violations@10 on dev is not above `recsys_serve`'s;
+3. the stage's own compute adds less than 20 ms at p95.
+
+Among accepted variants the one with the larger mean dev difference is served (under a new name; `recsys_serve`
+stays as it is); if none is accepted the stage stays off by default and this is recorded as a null result.
+Variants compared: the filter in front of retrieval (`recsys_serve_needs`), the filter plus promotion of strict
+matches when it had to relax (`recsys_serve_needs_promote`), the post-ranker demotion (`recsys_serve_needs_demote`).
+Extractor gate, also fixed in advance: a need with a latent counterpart is enabled only if its dev precision
+against the latent profile is at least 0.8 (all are 1.0 on dev; `no_steps` and `public_transport` never fire on
+dev intents, so they rest on unit tests and general language only).
+
+**What dev can and cannot say here.** Two biases in opposite directions: the baseline's ranker is in-sample on
+dev (optimistic for `recsys_serve`, and it hides the class-A failures the stage targets), while the stage's
+thresholds were set by reading dev intents and judgements (optimistic for the stage). Neither is removable
+without a second development split or a cross-fitted ranker; the test run is the check.

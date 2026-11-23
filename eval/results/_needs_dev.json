@@ -1,0 +1,162 @@
+{
+ "extractor": {
+  "dev_personas_with_a_need": 148,
+  "n_dev": 200,
+  "per_need": {
+   "days": {
+    "days_exact": 0.444444,
+    "false_positives": [],
+    "fired": 9,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 9
+   },
+   "duration": {
+    "fired": 1
+   },
+   "length": {
+    "band_mostly_inside": 1.0,
+    "band_share_mean": 0.971348,
+    "fired": 93
+   },
+   "loop": {
+    "false_positives": [],
+    "fired": 66,
+    "fn": 33,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.666667,
+    "tp": 66
+   },
+   "max_length": {
+    "band_mostly_inside": 1.0,
+    "band_share_mean": 1.0,
+    "fired": 2
+   },
+   "mtb": {
+    "false_positives": [],
+    "fired": 17,
+    "fn": 1,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.944444,
+    "tp": 17
+   },
+   "no_steps": {
+    "false_positives": [],
+    "fired": 0,
+    "fn": 4,
+    "fp": 0,
+    "precision": null,
+    "recall": 0.0,
+    "tp": 0
+   },
+   "one_way": {
+    "false_positives": [],
+    "fired": 4,
+    "fn": 16,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.2,
+    "tp": 4
+   },
+   "public_transport": {
+    "false_positives": [],
+    "fired": 0,
+    "fn": 36,
+    "fp": 0,
+    "precision": null,
+    "recall": 0.0,
+    "tp": 0
+   },
+   "stroller": {
+    "false_positives": [],
+    "fired": 4,
+    "fn": 0,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "tp": 4
+   },
+   "train": {
+    "false_positives": [],
+    "fired": 26,
+    "fn": 10,
+    "fp": 0,
+    "precision": 1.0,
+    "recall": 0.722222,
+    "tp": 26
+   }
+  },
+  "truth": {
+   "days": "latent multi-day trip; days_exact = share with the right day count",
+   "length / max_length": "share of the latent comfortable band inside the stated window",
+   "loop / one_way": "latent shape loop / linear",
+   "mtb": "latent style is mountain biking (cycling personas only)",
+   "stroller / no_steps": "party pushes a stroller",
+   "train / public_transport": "latent transport is train (the judge treats it as a hard wish)"
+  }
+ },
+ "rule": {
+  "accept_if": [
+   "paired bootstrap 95% CI of mean NDCG@10(variant) - NDCG@10(recsys_serve) on dev has lower bound > 0",
+   "mean Violations@10 on dev not above recsys_serve's",
+   "the stage's own compute adds < 20 ms at p95 (local)"
+  ],
+  "baseline": "recsys_serve",
+  "choose": "among accepted variants, the larger mean dev NDCG@10 difference; none accepted -> stage off",
+  "extractor_gate": "a need with a latent counterpart is enabled only with dev precision >= 0.8",
+  "metric": "ndcg_at_10",
+  "split": "dev"
+ },
+ "schema": "evalkit.needs_dev/v1",
+ "served_top10_meets_needs": {
+  "days": {
+   "any_level": 0.633333,
+   "personas": 9,
+   "strict": 0.533333
+  },
+  "duration": {
+   "any_level": 0.9,
+   "personas": 1,
+   "strict": 0.7
+  },
+  "length": {
+   "any_level": 0.982796,
+   "personas": 93,
+   "strict": 0.882796
+  },
+  "loop": {
+   "any_level": 0.874242,
+   "personas": 66,
+   "strict": 0.874242
+  },
+  "max_length": {
+   "any_level": 1.0,
+   "personas": 2,
+   "strict": 0.9
+  },
+  "mtb": {
+   "any_level": 0.558824,
+   "personas": 17,
+   "strict": 0.464706
+  },
+  "one_way": {
+   "any_level": 0.625,
+   "personas": 4,
+   "strict": 0.625
+  },
+  "stroller": {
+   "any_level": 0.775,
+   "personas": 4,
+   "strict": 0.625
+  },
+  "train": {
+   "any_level": 0.9,
+   "personas": 26,
+   "strict": 0.665385
+  }
+ }
+}
