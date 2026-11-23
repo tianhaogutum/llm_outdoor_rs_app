@@ -16,9 +16,10 @@
 #   make personas      regenerate eval/personas/personas.jsonl (deterministic from cache)
 #   make eval SYSTEM=v0_rules  run one system on all personas, judge pool holes, write eval/results/<name>.json
 #   make eval-all      recompute every stored run against the current qrels (tables stay consistent)
-#   make report        render docs/RESULTS.md from eval/results/*.json
+#   make report        render docs/RESULTS.md and the generated blocks of README.md, docs/FAILURES.md and
+#                      docs/REVIEW.md from eval/results/*.json (tests/evalkit/test_docs_fresh.py checks they are fresh)
 #   make failures      failure analysis of the served default: the ten worst test queries, replayed stage by stage
-#                      from the frozen cache (eval/results/_failures.json, docs/FAILURES.md)
+#                      from the frozen cache (eval/results/_failures.json; then make report)
 #   make judge-pilot   judge pilot (candidates vs reference; cached)
 #   make owner-set     blind 150-pair labelling set + interim second judge (eval/owner_labels/)
 #   make kappa         owner labels vs judge (reports "owner labels missing" until the file exists)
@@ -27,7 +28,7 @@
 #   make ltr-sample    judge a deeper random sample of dev candidates for the learned ranker (costs money)
 #   make ltr           train the learned ranker on dev (LightGBM), write the model artefacts and _ltr.json
 #   make mmr-sweep     Phase 3d MMR lambda sweep on dev (+ docs/mmr_tradeoff.png)
-#   make latency       warm end-to-end latency benchmark of the default system (live calls, cents)
+#   make latency       warm end-to-end latency benchmark of recsys_serve, recsys_v1, v7_mmr (live calls, cents)
 #   make ltr-robust    retrain the default ranker without length_cap_ratio / the suspicious group (dev only)
 #   make simulate      Phase 5 feedback simulation: 10 rounds per test persona (+ docs/convergence.png)
 #   make sim-tune      Phase 5 feedback-parameter grid on a dev subset (judges holes: costs money)

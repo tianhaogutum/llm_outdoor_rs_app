@@ -1,4 +1,6 @@
-"""Render ``docs/RESULTS.md`` from ``eval/results/*.json`` only (``make report``). No number is typed by hand."""
+"""Render ``docs/RESULTS.md`` from ``eval/results/*.json`` only (``make report``), and the generated blocks of
+README.md, docs/FAILURES.md and docs/REVIEW.md (``evalkit.readme``, ``evalkit.failures``). No number is typed by
+hand."""
 
 from __future__ import annotations
 
@@ -1033,9 +1035,27 @@ def render() -> str:
     return "\n".join(L) + "\n"
 
 
+def doc_blocks() -> dict[str, dict[str, str]]:
+    """Generated blocks of the hand-written documents, by file (relative to the repo root)."""
+    from evalkit import blocks, failures, readme
+
+    failures_md = paths.DOCS_DIR / "FAILURES.md"
+    out = {"README.md": readme.readme_blocks(), "docs/REVIEW.md": readme.review_blocks()}
+    out["docs/FAILURES.md"] = failures.render_blocks(blocks.strip_blocks(failures_md.read_text(encoding="utf-8")))
+    return out
+
+
 def main() -> None:
+    from evalkit import blocks
+
     paths.RESULTS_MD.write_text(render(), encoding="utf-8")
     print(f"wrote {paths.RESULTS_MD}")
+    for rel, bl in doc_blocks().items():
+        path = paths.REPO_ROOT / rel
+        if not path.exists():
+            continue
+        changed = blocks.update_file(path, bl)
+        print(f"{'updated' if changed else 'unchanged'} {len(bl)} generated blocks in {rel}")
 
 
 if __name__ == "__main__":
