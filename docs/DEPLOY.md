@@ -347,3 +347,18 @@ docker run -d --name trailsaga --restart unless-stopped \
   trailsaga-demo:2026-11-23
 # the reverse proxy forwards https://<approved-domain>/ to 127.0.0.1:8000
 ```
+
+## 7. Render free tier (public demo, no spend)
+
+`render.yaml` at the repo root is a Blueprint: one Docker web service on the **free** plan, built from the
+`recsys-upgrade` branch, no credentials. In the Render dashboard: *New → Blueprint → pick the repo →
+Apply*. The first build runs the Dockerfile (several minutes).
+
+What the free plan means for this demo:
+
+- **512 MB RAM.** The app measures about 345 MB peak (section 1), so it fits, with little headroom.
+- **Sleeps after 15 min idle**; the next visit waits for a cold start (about a minute with the image pull and the 3 s app start).
+- **No persistent disk.** User data lives in the container and is lost on restart or redeploy. Fine for a demo.
+- **Spend is zero** because no provider key is set. Setting keys in the dashboard turns on live LLM calls, which are
+  limited by the rate limits and `DAILY_BUDGET_USD` (section 5). That is the owner's decision (D6).
+- Vercel is not a fit: the backend is a long-lived process with SQLite and a 345 MB in-memory index, not a serverless function.

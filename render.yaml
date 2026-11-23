@@ -1,0 +1,17 @@
+# Render Blueprint for the public demo (see docs/DEPLOY.md, "Render free tier").
+# Free plan, built from the repo's Dockerfile. No credentials on purpose: without them the app serves the
+# no-LLM path (explained recommendations, keyword chat, pre-generated narratives) and spends nothing.
+# Never put keys in this file; add provider keys in the Render dashboard only if you decide to spend.
+services:
+  - type: web
+    name: trailsaga-demo
+    runtime: docker
+    plan: free
+    branch: recsys-upgrade
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeploy: false
+    envVars:
+      - key: RATE_LIMIT_TRUST_FORWARDED
+        value: "true"   # Render's proxy sets X-Forwarded-For; without this every visitor shares one rate-limit bucket
