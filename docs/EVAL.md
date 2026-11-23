@@ -488,3 +488,48 @@ leave feedback less to repair than on test; the grid therefore leans towards lig
   still judged against the persona's real limits, so routes beyond them are graded 0 by rule. They are checks,
   not product variants.
 
+
+## 12. Iteration 2: an improvement driven by the failure analysis
+
+**Disclosure.** The hypothesis of iteration 2 (stated, verifiable needs should be constraints; RECSYS.md section 13)
+came from reading the ten worst *test* queries of the served system ([FAILURES.md](FAILURES.md)). That is the only
+thing test contributed: which needs, the trigger phrases, the thresholds, the relaxation order, the floor and the
+choice between a filter and a demotion were developed on dev intents, dev judgements and general language
+knowledge (English and German). Test was run once per registered variant, after the decision, for the tables.
+
+**Protocol**, in the order it was carried out (each step committed before the next):
+
+1. The same worst-queries analysis on dev (`python -m evalkit.failures --split dev -n 20`,
+   `eval/results/_failures_recsys_serve_dev.json`), classified by hand: class B (lengths and day counts) replicates,
+   class A (a stated need overridden by the ranker) barely does, because the ranker was trained on these very
+   personas (D27 has the table).
+2. The extractor measured on all dev intents against the latent profiles (`python -m evalkit.needs_eval
+   extractor`): precision and recall per need where a latent field corresponds; how often the served top 10 meets
+   a stated need. **The latent profile is used here only to measure the extractor; no system reads it.**
+3. The acceptance rule written down (D27, `evalkit/needs_eval.py: RULE`) before any dev NDCG of a variant existed:
+   a paired-bootstrap CI of the dev NDCG@10 difference against `recsys_serve` above zero, no rise in violations,
+   under 20 ms of stage compute at p95.
+4. The three variants on dev (`python -m evalkit.needs_eval dev`): every top 10 judged (dev holes only), paired
+   bootstrap against the stored `recsys_serve` run. Decision by the rule.
+5. A post-hoc check, labelled as such and not used for the decision: the same comparison with a cross-fitted
+   ranker (`python -m evalkit.needs_eval crossfit`; five copies of the served ranker trained like it on four fifths
+   of the dev personas, each persona ranked by the copy that did not see it; LightGBM needed, holes judged on dev).
+6. `make eval SYSTEM=<variant>` for each variant (both splits, 100% judged), `make eval-all`, the failure analysis
+   of the variant chosen for it before the run (`python -m evalkit.failures --system recsys_serve_needs_promote`),
+   `make report`.
+
+**What the in-sample ranker does to the comparison.** The served ranker was trained on the dev personas' judged
+candidates, so on dev it reproduces the judge's preferences for exactly these users, including the minority users
+whose needs it overrides on test. Any change that overrides the ranker therefore looks worse on dev than it is: the
+baseline is optimistic and the failures the change targets are hidden. Iteration 2 measured the size of this:
+against the in-sample ranker every variant loses on dev, against the cross-fitted ranker every variant wins
+(RESULTS.md "Iteration 2"). In the other direction, the thresholds were set by reading dev intents and
+judgements, which favours the stage on dev. A rule on system-level dev rows of a system containing the learned
+ranker should use a cross-fitted ranker; this one did not, and its decision stands as written (D27).
+
+**Limits specific to this iteration.** Dev intents are English and clean (all extracted needs with a latent
+counterpart have precision 1.0 there), so the German triggers and the rarer phrasings rest on unit tests, not on
+measured data. `no_steps` and `public_transport` never occur in dev intents. The judge reads the latent profile,
+and the intents were written from it, so a stated need that matches the latent profile is graded as a need; real
+users may state needs they would trade away. Results files: `eval/results/_needs_dev.json` (dev work),
+`eval/results/recsys_serve_needs*.json` (rows), `_failures_recsys_serve_needs_promote_test.json`.

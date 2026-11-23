@@ -356,6 +356,9 @@ no evaluation, not deployed.
   and exploration slot with a ten-round simulation, serving with fallbacks and per-stage explanations in the UI,
   the served default `recsys_serve` (D25), pre-generated narratives, a Docker image with a credential-free smoke
   test in CI, and this write-up (failure analysis, review guide).
+- *2026-11-23, iteration 2.* One evaluation-driven improvement: stated, verifiable needs as constraints
+  (D27). Built, tested and evaluated on both splits; not accepted by its pre-registered dev rule, so it is off by
+  default and the served system is unchanged ([Iteration 2](#iteration-2-stated-needs-as-constraints)).
 
 **Open owner checkpoints:** the 150 blind relevance labels that would validate the judge
 (`eval/owner_labels/label.html`, then `make kappa`), and every deployment decision (target, URL, spend, live

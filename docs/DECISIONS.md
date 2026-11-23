@@ -449,3 +449,22 @@ is not a licence to change this iteration's decision after seeing it, and the de
 **What test is used for.** All three variants are registered and evaluated on both splits for the tables
 (reporting only; the decision is above and does not change with them). The failure analysis on test is rerun
 for `recsys_serve_needs_promote`, chosen now, before test, as the variant the cross-fitted check favours.
+
+**Test, run once after the decision above** (RESULTS.md "Iteration 2"; 100 personas, every top 10 judged; the
+numbers below are a snapshot, the generated tables are authoritative). Paired NDCG@10 difference against
+`recsys_serve`: filter +0.024 [+0.007, +0.046], filter + promote +0.025 [+0.004, +0.049], demote +0.026 [+0.009,
++0.047]; violations stay at zero; the stage adds well under a millisecond, so end-to-end latency is the served
+system's. Test agrees with the post-hoc cross-fitted dev check and disagrees with the pre-registered dev
+comparison. Of the ten worst test queries of `recsys_serve`, the promote variant repairs the class-A stroller,
+MTB and train queries and the four-day tour, leaves the two queries without a verifiable need unchanged, and makes
+seven other test queries worse by more than 0.1, mostly where the catalogue's check is stricter than the judge's
+reading of the same need (FAILURES.md "Iteration 2").
+
+**Decision, unchanged by test:** the served default stays `recsys_serve`; `RECSYS_SYSTEM` default, `env.example`
+and the API are not switched; the stage, the three registered variants and their rows stay. This is the second
+time a dev rule built on system-level dev rows of the learned ranker has disagreed with test (D21 was the first).
+For the owner: serving a variant now would be a judgement call against the pre-registered rule (one setting,
+`RECSYS_SYSTEM=recsys_serve_needs_promote` or `_demote`); the clean route is a next iteration whose rule is stated
+on a cross-fitted dev comparison before anything is run, with the train check and the promotion of dropped needs
+reconsidered on dev. Spend for iteration 2 (local spend log): about 0.8 USD (dev holes 0.4, cross-fitted check 0.2,
+test holes 0.25).

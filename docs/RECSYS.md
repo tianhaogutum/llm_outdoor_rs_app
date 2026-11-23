@@ -15,6 +15,8 @@ against the owner's labels.
 UserQuery (user vector, tab, home, radius, distance cap, intent)
    │
 filter          category tab · radius from home · distance cap            (filters.py)
+   │
+needs           (iteration 2, if configured) stated, verifiable needs narrow the set; relaxed below a floor  (needs.py)
    │  eligible set (tens to ~1,000 routes)
    ├── BM25F over title / description / tags   ─┐                          (bm25.py, text.py)
    ├── dense: intent embedding · exact cosine  ─┤ top 100 each              (dense.py)
@@ -85,6 +87,7 @@ explanation = explain(rec)                 # app.recsys.explain -> pydantic mode
 | `mmr_lambda` | `None` | MMR off unless set |
 | `feedback` | `None` | `FeedbackConfig` (section 10); `None` = feedback ignored (the `v0` ranker keeps its own mechanism) |
 | `explore` | `None` | `ExploreConfig` (section 10); `None` = no exploration slot |
+| `needs` | `None` | `NeedsConfig(mode, floor)` (section 13); `None` = no stated-need stage (left out of the stored config) |
 
 Registered systems (`app/recsys/systems/pipelines.py`): `v1_filters`, `v2_bm25`, `v3_dense`, `v4_rrf`,
 `v5_rank_api`, `v6_ltr`, `v6_ltr_noapi`, `v7_mmr`, and the default **`recsys_v1`**. Phase 4/5 add
@@ -93,7 +96,8 @@ Registered systems (`app/recsys/systems/pipelines.py`): `v1_filters`, `v2_bm25`,
 each returns exactly `recsys_v1`'s list) and, in `systems/chat_e2e.py`, `recsys_v1_qonly` / `recsys_v1_chat`
 (section 11). D25 adds the served system **`recsys_serve`** and its twin `recsys_serve_noexplore` (section 12),
 and `systems/empty_slots.py` the checks `recsys_serve_nocap`, `recsys_serve_nohome`, `recsys_serve_noslots`,
-`recsys_v1_nocapslot`. Any field can be overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
+`recsys_v1_nocapslot`. Iteration 2 (D27) adds `recsys_serve_needs`, `recsys_serve_needs_promote` and
+`recsys_serve_needs_demote` (section 13); none is served. Any field can be overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
 
 ## 2. Hard filters (3a)
 
@@ -290,12 +294,13 @@ latency recorded for the first, cold calls of each batch run.
 
 Every stage writes its per-route contribution into its `StageTrace.contrib`; `app.recsys.explain`
 validates them into `RecommendationExplanation` (pydantic; `explanation_json_schema()` returns the JSON
-schema; version `recsys.explanation/v1`). A stage that did not run is `null`, never filled with
-defaults.
+schema; version `recsys.explanation/v1.1`). A stage that did not run is `null`, never filled with
+defaults. v1.1 (iteration 2) only adds the optional stage `needs`; every v1 field is unchanged, so a reader of
+v1 that ignores unknown stages reads v1.1 unchanged (the API and the UI accept both).
 
 ```
 RecommendationExplanation
-  schema_version  "recsys.explanation/v1"
+  schema_version  "recsys.explanation/v1.1"
   request_id, system
   routes[]        RouteExplanation
     route_id, rank, score (final score: MMR score, else ranker score)
@@ -317,6 +322,10 @@ RecommendationExplanation
                   score, rank_before, rank_after                       (Phase 5; only with feedback events)
       explore     cluster, label, theta, posterior [a, b], source, position,
                   reason "shown to learn your taste"                   (Phase 5; the explored route only)
+      needs       mode, met, unmet, rank_before?, rank_after?, demotion?   (v1.1; only when a need was stated)
+                  checks[{need, label, phrase, source, applied, applied_level, met_level, ok, strict,
+                          fact ("no steps, 94% of the route on stroller-suitable surface, 120 m of climbing"),
+                          threshold, values{raw catalogue numbers}}]
   stages[]        StageSummary {stage, n_in, n_out, local_ms, upstream_latency_ms, upstream_cost_usd, info}
 ```
 
@@ -341,6 +350,7 @@ rank change when it is non-zero. Wiring this into the API and the score modal is
 | `app/recsys/features.py`, `ltr.py` | learned-ranker features, numpy tree ensemble, Saabas contributions |
 | `app/recsys/explain.py` | explanation schema |
 | `app/recsys/feedback.py`, `explore.py` | Phase 5: decay, slot adjustments, Rocchio, re-scoring, route effects; tag clusters and Thompson sampling |
+| `app/recsys/needs.py` | iteration 2: stated-need extraction, verification levels, relaxation, per-route checks (section 13) |
 | `app/recsys/systems/chat_e2e.py` | Phase 4 end-to-end variants (questionnaire only, + chat) |
 | `app/recsys/systems/pipelines.py` | registered systems, `DEFAULT_SYSTEM = "recsys_v1"` (Phase 3), `SERVED_SYSTEM = "recsys_serve"` (D25) |
 | `app/recsys/systems/empty_slots.py` | the empty-slot checks (`recsys_serve_nocap`, `_nohome`, `_noslots`, `recsys_v1_nocapslot`) |
@@ -437,4 +447,78 @@ filter applies and the ranker has no cap to compare with, so longer routes than 
 the served ranker degrades less there than `recsys_v1`'s. Without a home there is no radius filter at all and
 most of the list is out of reach; nothing downstream substitutes, so the product must collect the home (the
 chat treats the place as required).
+
+## 13. Iteration 2: stated needs (`needs.py`)
+
+The design principle says verifiable constraints decide eligibility; until iteration 2 only the three profile
+slots were verified. The failure analysis (FAILURES.md, test) showed the learned ranker outweighing needs the user
+had *stated* and the catalogue can *check*. This stage turns those into constraints. Where the hypothesis came
+from and how it was evaluated: EVAL.md section 12; the decision: DECISIONS.md D27; numbers: RESULTS.md "Iteration
+2". **It is built, tested and registered, and off in the served default** (D27).
+
+**Extraction** (`extract_needs(intent, category, slot_needs)`): regular expressions over the intent, English and
+German, after lower-casing and normalising quotes and dashes. A mention is negated if a negator ("no", "not",
+"without", "instead of", "don't", "kein", "ohne", "nicht", ...) comes at most five words before it in the same
+clause with no scope-breaking word ("with", "reachable", "mit", ...) in between, or if "not needed / optional /
+egal" follows it; negated mentions are reported as `ignored`. Structured needs from the chat or the profile arrive as
+`UserQuery.needs` codes (`"stroller"`, `"train"`, `"mtb"`, `"loop"`, `"one_way"`, `"days:3"`, `"duration_h:2"`,
+`"max_km:12"`) and win over the text. No model call; extraction takes well under a millisecond.
+
+| Need | Triggers (examples) | Verified by | Levels, strict → loosest | Why this threshold |
+|---|---|---|---|---|
+| `stroller` | stroller, pram, pushchair, buggy, Kinderwagen | `profile.steps_m` (O), `profile.stroller_ok_share` (O), max(ascent, descent) (D) | no steps, ≥ 50% stroller-suitable surface, ≤ 200 m; no steps, ≤ 300 m; no steps | steps cannot be pushed; 200 m is the catalogue's own stroller-tag rule; the surface share is "most of the way" |
+| `no_steps` | no steps / stairs, step-free, wheelchair, barrierefrei, keine Treppen | `profile.steps_m` (O) | no steps | literal |
+| `train` | by train, railway, station, S-Bahn, mit dem Zug, Bahnhof | `Train access` (station ≤ 1 km of the start), `near_end.train_station` (O) | station at the start; at the start or at the end of a one-way route; any public transport at the start | the catalogue's train-access radius; a one-way route is walked from the end too |
+| `public_transport` | public transport, by bus, no car, car-free, ÖPNV | `Public transport access` (O) | train 1 km / tram 500 m / bus 300 m at the start | the catalogue's tag |
+| `mtb` (cycling tab only) | mountain bike, MTB, singletrail, enduro | `activity` (O), `profile.paved_share` | an MTB relation; MTB relation or ≤ 50% paved | MTB relations are few (2% of the catalogue); a mostly unpaved ride is the nearest substitute |
+| `loop` / `one_way` | loop, circular, round trip, Rundweg / one-way, linear, A to B, Streckenwanderung, "not a loop" | `is_loop` (D: start and end within 300 m) | the shape | both stated → neither |
+| `days` | four-day, 3 days, multi-day, weekend, a week, mehrtägig, dreitägig | `length_m` (D) | ≥ N × a short day (5 km on foot, 20 km by bike, 15 km MTB); × 0.75 | a deliberately low floor: N days must be longer than N short days; "multi-day" without a number = 2 |
+| `length` | around 8 km (→ 4-12), 5-10 km (→ 4-12), at least 20 km, short (chat band: ≤ 8 km on foot), long (≥ 10 km) | `length_m` (D) | the window; widened by a third | "around X" is generous on purpose; distances followed by "of / from / away" are how far the start is, not a length |
+| `max_length` | no more than / at most / up to / within / höchstens X km | `length_m` (D) | X (+10% with "about"); +25% | an upper bound is a bound, not a target (FAILURES.md P260) |
+| `duration` | 2 hours, half-day, full day | `duration_min` (D, DIN 33466 / planning speeds) | 0.5-1.5 × the hours; widened by a third | moving time without breaks, so the window leans short |
+
+O = observed in OSM, D = derived by the pipeline (DATA.md section 6). Extractor precision and recall per need on dev
+intents, against the personas' latent profiles where one corresponds: RESULTS.md "Iteration 2".
+
+**Three ways to use them** (`NeedsConfig.mode`), compared on dev:
+
+- `filter` (`recsys_serve_needs`): after the hard filter and before candidate generation, the eligible set keeps
+  only routes that meet every need at its current level. Retrieval, ranker, MMR and exploration then work inside
+  that set, so the exploration pick meets the needs too.
+- `filter_promote` (`recsys_serve_needs_promote`): the filter, and when it had to relax, the routes that meet every
+  need strictly (fewer than the floor, by construction) are added to the candidates if retrieval missed them and,
+  after MMR, the list is stably re-ordered by the demotion key below. This is the variant that fixes "four-day
+  tour" queries whose few qualifying routes the plain filter gives up.
+- `demote` (`recsys_serve_needs_demote`): nothing is removed; after MMR the candidate list is stably re-ordered by
+  the demotion key, the sum over needs of (strictest level met / number of levels), 1 for a need not met at any
+  level.
+
+**Relaxation and floor.** The floor is 20 routes (twice the list length): fewer than that leaves the ranker, MMR
+and the exploration slot nothing to choose from. Below the floor, needs are relaxed one at a time in this order,
+each through its levels and then dropped: `length`, `duration`, `loop`, `one_way`, `days`, `mtb`,
+`public_transport`, `train`, `max_length`, `no_steps`, `stroller`. Preferences about the shape of the outing go
+first, needs that decide whether the party can do the route at all go last. A need is never relaxed while the
+floor is met, and an eligible set already smaller than the floor is not cut further. The trace (`needs` stage
+info) lists `applied`, `relaxed` (with the level), `dropped`, every relaxation step with the counts before and
+after and the reason ("only 3 routes met every need (floor 20)"), the strict count and, for promotion, how many
+routes were added to the candidates. The radius is not widened for a need (the hard filter's own tiny-set rule,
+section 2, still applies first).
+
+**Explanation and serving.** Every returned route gets one check per stated need with the catalogue's numbers
+(`fact`), the rule (`threshold`), the raw values, whether it was enforced and at which level. The API returns them
+in the per-route explanation (schema v1.1); the one-line reason names up to two met needs ("you asked for
+stroller-friendly: no steps, 94% of the route on stroller-suitable surface, 120 m of climbing") and the first unmet
+one; the score modal shows a "What you asked for" line (SERVING.md "Explanations"). The chat's structured slots
+reach the stage through `UserQuery.needs` (activity `mtb`, the tags `Suitable for strollers`, `Train access`,
+`Public transport access`, `Round trip`, `Linear route`, `Multi-stage route`, and a stated duration).
+
+**Cost.** Extraction and the per-need masks are numpy over arrays built once per catalogue; the stage's own compute
+is well under a millisecond at p95 on dev (RESULTS.md). No upstream call.
+
+**What it showed.** By the rule fixed in advance on dev, no variant is accepted (D27). The dev comparison is
+dominated by the learned ranker being in-sample on dev; with a cross-fitted ranker every variant is ahead on dev,
+and test agrees (reported once). Where it hurts, the catalogue's check is stricter than the judge's reading
+(FAILURES.md "Iteration 2"). Next step, if the owner wants it: pre-register a cross-fitted dev rule, loosen the
+train check to "station at either end or public transport" only if dev says so, and keep promotion from
+resurrecting needs the relaxation dropped.
 
