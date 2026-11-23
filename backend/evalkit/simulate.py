@@ -1,7 +1,8 @@
 """Feedback-loop simulation (Phase 5): 10 rounds of recommendations and simulated reactions per persona.
 
     cd backend && python -m evalkit.simulate run         # make simulate: test personas, all SIM_SYSTEMS
-    cd backend && python -m evalkit.simulate estimate    # judge volume and cost, proxy grades, writes nothing
+    cd backend && python -m evalkit.simulate run --holdout       # holdout personas, HOLDOUT_SYSTEMS (reporting)
+    cd backend && python -m evalkit.simulate estimate [--holdout]  # judge volume and cost, proxy grades, no writes
     cd backend && python -m evalkit.simulate tune        # dev subset: the feedback parameter grid (TUNING)
     cd backend && python -m evalkit.simulate tune --estimate
 
@@ -22,6 +23,9 @@ Protocol (docs/EVAL.md section 10):
   by showing them again). Everything else uses its judged grade.
 - Deterministic: personas, systems, judge (cached) and behaviour are all seeded; a rerun with the qrels in
   place makes no LLM call and reproduces ``_simulation.json`` outside its ``volatile`` block.
+- Holdout (``--holdout``, after D28; a reporting result, it decides nothing): the holdout personas, the
+  previous and the current served default only, grades from ``holdout_qrels.jsonl`` plus the simulation's own
+  ``holdout_sim_qrels.jsonl``; output ``_simulation_holdout.json``.
 """
 
 from __future__ import annotations
@@ -55,14 +59,20 @@ N_BOOT, BOOT_SEED = 1000, 20261122
 SIM_QRELS_NAME = "sim_qrels.jsonl"
 
 
-def sim_qrels_file():
-    return paths.QRELS_DIR / SIM_QRELS_NAME
+def sim_qrels_file(split: str = "test"):
+    return paths.QRELS_DIR / ("holdout_sim_qrels.jsonl" if split == "holdout" else SIM_QRELS_NAME)
+
+
+def base_qrels_file(split: str = "test"):
+    return paths.QRELS_DIR / "holdout_qrels.jsonl" if split == "holdout" else paths.QRELS_FILE
 
 
 OUT = "_simulation.json"
+HOLDOUT_OUT = "_simulation_holdout.json"
 TUNE_OUT = "_sim_tuning.json"
 FIGURE = paths.DOCS_DIR / "convergence.png"
 RUNS_FILE = paths.RUNS_DIR / "simulation.jsonl"
+HOLDOUT_RUNS_FILE = paths.RUNS_DIR / "simulation_holdout.jsonl"
 
 # label -> (registered system, config overrides). Order = table order.
 SIM_SYSTEMS: dict[str, tuple[str, dict[str, Any]]] = {
@@ -75,7 +85,12 @@ SIM_SYSTEMS: dict[str, tuple[str, dict[str, Any]]] = {
     "recsys_v1_fb_explore": ("recsys_v1_fb_explore", {}),
     "recsys_serve_noexplore": ("recsys_serve_noexplore", {}),
     "recsys_serve": ("recsys_serve", {}),
+    # added after D28: the served default and its no-exploration twin (an override, not a registered system)
+    "recsys_serve_v2_noexplore": ("recsys_serve_v2", {"explore": None}),
+    "recsys_serve_v2": ("recsys_serve_v2", {}),
 }
+# the holdout simulation (reporting only): the previous and the current served default
+HOLDOUT_SYSTEMS = ["recsys_serve", "recsys_serve_v2"]
 SIM_LABELS = {
     "v0_rules": "baseline rule scorer, its own feedback (negative reasons only)",
     "v1_filters": "hard filters + rule scorer, v0's feedback mechanism",
@@ -85,7 +100,9 @@ SIM_LABELS = {
     "recsys_v1_fb_light": "default + full light loop (slots, Rocchio, re-scoring, near-duplicates)",
     "recsys_v1_fb_explore": "default + feedback loop + exploration slot",
     "recsys_serve_noexplore": "served ranker (no length_cap_ratio) + feedback loop, no exploration",
-    "recsys_serve": "SERVED DEFAULT: served ranker + feedback loop + exploration slot (D25)",
+    "recsys_serve": "served D25-D28: served ranker + feedback loop + exploration slot (D25)",
+    "recsys_serve_v2_noexplore": "recsys_serve_v2 without the exploration slot (config override)",
+    "recsys_serve_v2": "SERVED DEFAULT (D28): recsys_serve + stated needs as constraints in front of retrieval",
 }
 
 # Dev tuning grid (feedback parameters; half-life and route effects fixed, see EVAL.md section 10)
@@ -237,11 +254,12 @@ def proxy_grade(p: Persona, catalog: Catalog, rid: int) -> int:
 class Grades:
     """Main qrels + simulation qrels; fills holes per round (or proxies them in estimate mode)."""
 
-    def __init__(self, catalog: Catalog, personas: list[Persona], mode: str) -> None:
+    def __init__(self, catalog: Catalog, personas: list[Persona], mode: str, split: str = "test") -> None:
         self.catalog, self.mode = catalog, mode
         self.pm = {p.persona_id: p for p in personas}
-        self.main = Qrels.load()
-        self.sim = Qrels.load(sim_qrels_file())
+        self.sim_file = sim_qrels_file(split)
+        self.main = Qrels.load(base_qrels_file(split))
+        self.sim = Qrels.load(self.sim_file)
         self.all = Qrels([*self.main.records.values(), *self.sim.records.values()])
         self.proxy: dict[tuple[str, int], int] = {}
         self.counts = {"holes": 0, "rule": 0, "llm_pairs": 0, "llm_calls_est": 0, "reports": []}
@@ -277,8 +295,8 @@ class Grades:
         for k in set(self.all.records) - before:
             self.sim.records[k] = self.all.records[k]
             self._bp.setdefault(k[0], {})[k[1]] = self.all.records[k]["grade"]
-        self.sim.save(sim_qrels_file())
-        sim_qrels_file().with_suffix(".txt").unlink(missing_ok=True)  # the TREC copy is only for the main pool
+        self.sim.save(self.sim_file)
+        self.sim_file.with_suffix(".txt").unlink(missing_ok=True)  # the TREC copy is only for the main pool
         print(f"[simulate] judged {rep}", file=sys.stderr)
 
 
@@ -290,11 +308,12 @@ def simulate(
     behaviour: BehaviourModel = BehaviourModel(),
     rounds: int = ROUNDS,
     catalog: Optional[Catalog] = None,
+    split: str = "test",
 ) -> tuple[dict[str, Any], Grades]:
     """Returns ({label: {persona_id: [round records]}}, grades). ``mode``: judge | proxy | replay."""
     catalog = catalog or get_catalog()
     built = {lab: make_system(name, catalog, **ov) for lab, (name, ov) in systems.items()}
-    G = Grades(catalog, personas, mode)
+    G = Grades(catalog, personas, mode, split)
     hist: dict[str, dict[str, list[tuple[int, int, str]]]] = {
         lab: {p.persona_id: [] for p in personas} for lab in built
     }
@@ -407,6 +426,9 @@ PAIRS = [
     ("recsys_v1_fb", "recsys_v1_fb_explore"),
     ("recsys_serve_noexplore", "recsys_serve"),
     ("recsys_v1", "recsys_serve"),
+    ("recsys_serve", "recsys_serve_v2"),
+    ("recsys_serve_v2_noexplore", "recsys_serve_v2"),
+    ("recsys_v1", "recsys_serve_v2"),
     ("recsys_v1_fb", "recsys_serve_noexplore"),
     ("v1_filters", "recsys_v1_fb"),
     ("v0_rules", "recsys_v1_fb"),
@@ -418,30 +440,46 @@ def _config(systems) -> dict[str, Any]:
     return {lab: make_system(name, catalog, **ov).config() for lab, (name, ov) in systems.items()}
 
 
-def run(mode: str = "judge") -> dict[str, Any]:
-    personas = [p for p in load_personas() if p.split == "test"]
-    out, G = simulate(SIM_SYSTEMS, personas, mode=mode)
+def _split_personas(split: str) -> list[Persona]:
+    if split == "holdout":
+        from evalkit.evaluate import HOLDOUT
+
+        return load_personas(HOLDOUT.personas_file)
+    return [p for p in load_personas() if p.split == split]
+
+
+def run(mode: str = "judge", split: str = "test") -> dict[str, Any]:
+    personas = _split_personas(split)
+    systems = {lab: SIM_SYSTEMS[lab] for lab in HOLDOUT_SYSTEMS} if split == "holdout" else SIM_SYSTEMS
+    out, G = simulate(systems, personas, mode=mode, split=split)
     catalog = get_catalog()
-    labels = list(SIM_SYSTEMS)
+    labels = list(systems)
+    pairs = [(a, b) for a, b in PAIRS if a in systems and b in systems]
     doc = {
         "schema": "evalkit.simulation/v1",
-        "split": "test",
+        "split": split,
         "n_personas": len(personas),
         "rounds": ROUNDS,
         "days_per_round": DAYS_PER_ROUND,
         "behaviour": BehaviourModel().describe(),
-        "systems": {lab: {"system": SIM_SYSTEMS[lab][0], "label": SIM_LABELS[lab]} for lab in labels},
-        "config": _config(SIM_SYSTEMS),
-        "sim_qrels": {"pairs": len(G.sim), "sha256": G.sim.sha256()},
+        "systems": {lab: {"system": systems[lab][0], "label": SIM_LABELS[lab]} for lab in labels},
+        "config": _config(systems),
+        "sim_qrels": {"file": G.sim_file.name, "pairs": len(G.sim), "sha256": G.sim.sha256()},
         "qrels_sha256": G.main.sha256(),
         "metrics": summarise(out, len(catalog), labels),
-        "paired": [paired(out, a, b) for a, b in PAIRS],
+        "paired": [paired(out, a, b) for a, b in pairs],
         "exploration": _exploration(out, len(catalog)),
     }
+    if split == "holdout":
+        doc["note"] = "reporting result after D28; decides nothing"
     return {"doc": doc, "out": out, "counts": G.counts}
 
 
-EXPLORE_PAIRS = [("recsys_v1_fb", "recsys_v1_fb_explore"), ("recsys_serve_noexplore", "recsys_serve")]
+EXPLORE_PAIRS = [
+    ("recsys_v1_fb", "recsys_v1_fb_explore"),
+    ("recsys_serve_noexplore", "recsys_serve"),
+    ("recsys_serve_v2_noexplore", "recsys_serve_v2"),
+]
 
 
 def _exploration(out: dict[str, Any], n_cat: int) -> dict[str, Any]:
@@ -460,9 +498,9 @@ def _exploration(out: dict[str, Any], n_cat: int) -> dict[str, Any]:
     return res
 
 
-def write_runs(out: dict[str, Any]) -> None:
+def write_runs(out: dict[str, Any], split: str = "test") -> None:
     paths.RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    with RUNS_FILE.open("w", encoding="utf-8") as fh:
+    with (HOLDOUT_RUNS_FILE if split == "holdout" else RUNS_FILE).open("w", encoding="utf-8") as fh:
         for lab in out:
             for pid in sorted(out[lab]):
                 fh.write(json.dumps({"system": lab, "persona_id": pid, "rounds": out[lab][pid]}, sort_keys=True) + "\n")
@@ -511,7 +549,7 @@ def figure(doc: dict[str, Any]) -> None:
     colours = {"v0_rules": "#9e9e9e", "v1_filters": "#6d6875", "recsys_v1": "#2a6f97",
                "recsys_v1_fb_route": "#8ecae6", "recsys_v1_fb": "#e76f51", "recsys_v1_fb_light": "#9b5de5",
                "recsys_serve_noexplore": "#f4a261", "recsys_serve": "#d00000",
-               "recsys_v1_fb_explore": "#2a9d8f"}
+               "recsys_v1_fb_explore": "#2a9d8f", "recsys_serve_v2_noexplore": "#bc6c25", "recsys_serve_v2": "#000000"}
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), dpi=120)
     ax = axes[0]
     for lab, m in doc["metrics"].items():
@@ -549,7 +587,16 @@ def replay(check: bool) -> tuple[list[str], list[str]]:
     keys: list[str] = []
     probs: list[str] = []
     client = system_client()
-    for fname, fn in ((OUT, run), (TUNE_OUT, tune)):
+    hf = sim_qrels_file("holdout")
+    if hf.exists():  # the holdout simulation's own judgements (the test ones are replayed by evalkit.freeze)
+        from evalkit.judge import replay_problems
+
+        pm = {p.persona_id: p for p in _split_personas("holdout")}
+        k, pr = replay_problems(get_catalog(), pm, list(Qrels.load(hf).records.values()), hf.name)
+        keys += k
+        probs += pr
+    jobs = ((OUT, run), (TUNE_OUT, tune), (HOLDOUT_OUT, lambda mode: run(mode=mode, split="holdout")))
+    for fname, fn in jobs:
         f = paths.RESULTS_DIR / fname
         if not f.exists():
             continue
@@ -568,9 +615,11 @@ def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("cmd", choices=["run", "estimate", "tune"])
     ap.add_argument("--estimate", action="store_true", help="with tune: proxy grades, count only")
+    ap.add_argument("--holdout", action="store_true", help="with run / estimate: the holdout personas (reporting)")
     args = ap.parse_args(argv)
+    split = "holdout" if args.holdout else "test"
     if args.cmd == "estimate" or (args.cmd == "tune" and args.estimate):
-        res = (tune if args.cmd == "tune" else run)(mode="proxy")
+        res = tune(mode="proxy") if args.cmd == "tune" else run(mode="proxy", split=split)
         c = res["counts"]
         c.pop("reports")
         c["est_judge_usd"] = round(c["llm_calls_est"] * 0.0025 + c["llm_pairs"] * 0.0009, 2)
@@ -582,12 +631,13 @@ def main(argv=None) -> None:
         print(json.dumps({n: m["ndcg_rounds_2_10"]["mean"] for n, m in res["doc"]["metrics"].items()}, indent=1))
         print("best:", res["doc"]["best"])
         return
-    res = run()
+    res = run(split=split)
     doc = res["doc"]
-    write_runs(res["out"])
+    write_runs(res["out"], split)
     full = {**doc, "volatile": {"judging": res["counts"]}}
-    (paths.RESULTS_DIR / OUT).write_text(dumps(full), encoding="utf-8")
-    figure(doc)
+    (paths.RESULTS_DIR / (HOLDOUT_OUT if split == "holdout" else OUT)).write_text(dumps(full), encoding="utf-8")
+    if split == "test":
+        figure(doc)
     for lab, m in doc["metrics"].items():
         print(f"{lab}: " + " ".join(f"{r['ndcg_at_10']['mean']:.3f}" for r in m["rounds"]))
 
