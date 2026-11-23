@@ -29,7 +29,8 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
     """Re-issue every recorded call. Returns (touched keys, problems)."""
     from app.recsys import get_catalog
     from evalkit import intents, owner, pilot
-    from evalkit.judge import JUDGES, client_for, replay_batches
+    from evalkit.cards import CARD_V1
+    from evalkit.judge import JUDGES, client_for, replay_problems
     from evalkit.personas import generate, persona_stats  # noqa: F401
     from evalkit.qrels import Qrels
 
@@ -53,22 +54,15 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
         p.intent = committed[p.persona_id]["intent"]
 
     # 2. judge batches recorded in the qrels: the pooled qrels and, separately, the simulation's own judgements
-    #    (a pair can be in both, graded in different batches; each file is checked against its own replay)
+    #    (a pair can be in both, graded in different batches; each file is checked against its own replay).
+    #    Pairs re-graded with card/v2 (D29) are checked twice: the current grade and the superseded v1 grade.
     from evalkit.simulate import sim_qrels_file
 
     for qfile in (paths.QRELS_FILE, sim_qrels_file()):
         recs = list(Qrels.load(qfile).records.values())
-        for name in sorted({r["judge"] for r in recs if r["source"] == "llm"}):
-            cfg = JUDGES[name]
-            c = client_for(cfg)
-            out = replay_batches(cfg, catalog, pmap, recs, client=c)
-            keys += c.touched_keys()
-            got = {(r["persona_id"], r["route_id"]): r["grade"] for r in out.records}
-            for r in recs:
-                if r["source"] == "llm" and r["judge"] == name:
-                    k = (r["persona_id"], r["route_id"])
-                    if got.get(k) != r["grade"]:
-                        problems.append(f"judge replay differs for {k} ({qfile.name}): {got.get(k)} vs {r['grade']}")
+        k, pr = replay_problems(catalog, pmap, recs, qfile.name)
+        keys += k
+        problems += pr
 
     # 3. judge pilot
     if (paths.RESULTS_DIR / "_judge_pilot.json").exists():
@@ -96,6 +90,7 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
             client=c,
             seed=owner.SEED,
             tag="second-judge",
+            card=CARD_V1,  # the second judge graded the owner set with the v1 card (D29)
         )
         keys += c.touched_keys()
         sec = {
@@ -140,8 +135,8 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
 def _extra_replays() -> list:
     """Further recorded experiments to replay: ranker pilot, MMR sweep, the feedback simulation and its dev
     tuning, the scripted chat evaluation, the cross-fitted dev runs, the holdout (personas, judgements, runs),
-    the failure analyses (each returns (keys, problems))."""
-    from evalkit import crossfit, failures, holdout, mmr_sweep, rank_pilot, simulate
+    the failure analyses, the D29 re-judging summary and its control (each returns (keys, problems))."""
+    from evalkit import crossfit, failures, holdout, mmr_sweep, rank_pilot, rejudge, simulate
 
     return [
         rank_pilot.replay,
@@ -151,6 +146,7 @@ def _extra_replays() -> list:
         crossfit.replay,
         holdout.replay,
         failures.replay,
+        rejudge.replay,
     ]
 
 
