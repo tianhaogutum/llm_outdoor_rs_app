@@ -142,9 +142,11 @@ class Settings(BaseSettings):
     chat_budget_usd: float = Field(default=1.0, description="Hard stop: real USD per process for chat calls.")
 
     # Serving the recommender (docs/SERVING.md). RECSYS_SYSTEM picks what the recommendations endpoint
-    # serves: a registered pipeline (default recsys_v1, see app/recsys/systems/pipelines.py) or the old
+    # serves: a registered pipeline (default recsys_serve, see app/recsys/systems/pipelines.py and D25) or the old
     # rule scorer v0_rules (the DB path in recommendation_service, unchanged).
-    recsys_system: str = Field(default="recsys_v1", description="recsys_v1 (default), v7_mmr, ..., or v0_rules.")
+    recsys_system: str = Field(
+        default="recsys_serve", description="recsys_serve (default), recsys_v1, v7_mmr, ..., or v0_rules."
+    )
     recsys_timeout_s: float = Field(
         default=2.0, description="Deadline for one pipeline call; on expiry the no-LLM path serves the request."
     )

@@ -70,7 +70,7 @@ def test_default_system_serves_the_pipeline_with_explanations(serving):
     pid = new_profile(api, home=HOME, travel_radius_km=40, distance_cap_km=15, intent="easy lake loop with a hut")
     body = recs(api, pid, category="hiking")
     sb = body["served_by"]
-    assert sb["configured_system"] == sb["system"] == "recsys_v1"
+    assert sb["configured_system"] == sb["system"] == "recsys_serve"
     assert sb["path"] == "pipeline" and sb["degraded"] is False and sb["reason"] is None
     assert sb["explanation_schema"] == "recsys.explanation/v1"
     assert sb["query"]["home_name"] == "Grainau" and sb["query"]["intent"] == "easy lake loop with a hut"
@@ -97,7 +97,11 @@ def test_default_system_serves_the_pipeline_with_explanations(serving):
         assert expl.n_candidates == st.mmr.rank_before or expl.n_candidates >= st.mmr.rank_before
         # the reason sentence quotes the explanation's facts
         assert "Grainau" in route["reason"] and "inside your 40 km radius" in route["reason"]
-        assert f"ranked {_ordinal(st.ltr.rank)} of {expl.n_candidates} candidates" in route["reason"]
+        if st.explore is not None:
+            # the served default reserves rank 10 for an exploration pick, and says so
+            assert rank == 10 and "exploration pick" in route["reason"]
+        else:
+            assert f"ranked {_ordinal(st.ltr.rank)} of {expl.n_candidates} candidates" in route["reason"]
     # MMR lambda is serialised under its alias
     assert body["routes"][0]["explanation"]["stages"]["mmr"]["lambda"] == 0.8
 
@@ -243,7 +247,9 @@ def test_ids_missing_from_the_db_at_request_time_fall_back(serving, tmp_path, fu
 def test_feedback_events_carry_real_ages_and_completions(serving, tmp_path, full_osm_db):
     db = tmp_path / "fb.db"
     shutil.copy(full_osm_db, db)
-    api = serving(db=db)
+    # recsys_v1 has no feedback stage, so this also covers the serving layer's interim hiding rule; the
+    # served default handles feedback inside the pipeline (see the recsys_v1_fb_explore test below)
+    api = serving(db=db, recsys_system="recsys_v1")
     pid = new_profile(api, home=HOME, travel_radius_km=40, intent="lake loop")
     ids = [r["id"] for r in recs(api, pid, category="hiking")["routes"]]
     now = datetime.now(UTC)
@@ -446,7 +452,7 @@ def test_status_reports_start_up_and_the_frontend_is_still_served(serving, monke
     assert "trailsaga" in api.get("/").text
     assert api.get("/api/does-not-exist").status_code == 404
     st = api.get("/api/recsys/status").json()["recsys"]
-    assert st["configured"] == "recsys_v1" and st["ok"] and st["catalogue_routes"] == len(get_catalog())
+    assert st["configured"] == "recsys_serve" and st["ok"] and st["catalogue_routes"] == len(get_catalog())
     assert st["total_ms"] >= 0 and st["peak_rss_mb_after"] > 0
 
 

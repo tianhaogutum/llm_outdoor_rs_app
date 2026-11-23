@@ -12,7 +12,10 @@ of one machine and one network, not as results.
 
 ## 1. System selection
 
-`RECSYS_SYSTEM` (default `recsys_v1`) names any registered pipeline (`v7_mmr`, `v4_rrf`, ...) or `v0_rules`.
+`RECSYS_SYSTEM` (default `recsys_serve`, the served system chosen in DECISIONS.md D25: the ranker trained without
+`length_cap_ratio`, the feedback stage and one exploration slot) names any registered pipeline (`recsys_v1`,
+`v7_mmr`, `v4_rrf`, ...) or `v0_rules`. The measurements and the example payload below were taken with
+`recsys_v1`, which runs the same stages up to the ranker; `recsys_serve` adds the feedback and exploration stages.
 `v0_rules` runs the original DB path (`recommendation_service.get_recommended_routes`) unchanged, so its
 golden test still holds. An unknown name, or a pipeline that fails to load, is logged at start-up and
 falls back to the baseline (`reason: pipeline_not_loaded`).
@@ -164,8 +167,8 @@ off. The stage's route effects and re-scoring then appear in `explanation.stages
 `served_by.query.feedback_handled_by` says `pipeline`. Phase 5a (`recsys_v1_fb`, `recsys_v1_fb_explore`) is committed, and serving it is one setting away:
 `RECSYS_SYSTEM=recsys_v1_fb_explore`. `tests/app/test_serving.py` checks that path: the interim rule switches off,
 the pipeline drops the rejected route itself, and exactly one card per list is labelled "Exploration pick"
-with `stages.explore` filled. The default stays `recsys_v1` until those systems' evaluation rows are
-reviewed.
+with `stages.explore` filled. Since D25 the default is `recsys_serve`, which has both stages, so the interim
+rule only applies when a system without a feedback stage is configured.
 
 ## 8. Explanations
 

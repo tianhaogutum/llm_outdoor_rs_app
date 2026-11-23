@@ -121,7 +121,7 @@ The image's defaults are the demo configuration. Every value can be overridden w
 | `GOOGLE_APPLICATION_CREDENTIALS` | unset | Needed with the project for Vertex inside a container (section 3). Project set but ADC missing: the call fails, and the request falls back as above. The chat uses the keyword rules for that turn |
 | `OPENROUTER_API_KEY` | unset | The chat does not use Claude Haiku (D18). With neither key nor Vertex project, chat turns are answered by the **keyword extractor** (`model: "keyword-rules"`; slot F1 0.885 vs 0.985 for Haiku on the scripted set, CHAT.md) |
 | `EMBED_PROVIDER` | = `LLM_PROVIDER` | Set `vertex` for live query embeddings. Do **not** set `mock` in a demo: the pipeline would then rank with hashed bag-of-words vectors instead of the evaluated embeddings |
-| `RECSYS_SYSTEM` | `recsys_v1` | Any registered pipeline, or `v0_rules` |
+| `RECSYS_SYSTEM` | `recsys_serve` | Any registered pipeline (`recsys_v1`, …), or `v0_rules` |
 | `NARRATIVES_LIVE` | `false` | Pre-generated text, else template (section 4) |
 | `NARRATIVES_DIR` | `backend/data/narratives` | Missing or unreadable store: templates |
 | `RATE_LIMIT_*`, `DAILY_BUDGET_USD` | see above | Section 5 |
