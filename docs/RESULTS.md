@@ -10,35 +10,35 @@ Each row is a complete registered system; each adds one component to the row abo
 
 | Step | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | ILD@10 | Cost/request | Judged@10 |
 |---|---|---|---|---|---|---|---|---|
-| baseline rule scorer | `v0_rules` | 0.018 [0.010, 0.026] | 0.035 [0.011, 0.065] | 0.050 [0.034, 0.066] | 93.9% [91.7%, 95.6%] | 0.590 [0.575, 0.604] | 0.00000 USD | 100% |
-| + hard filters | `v1_filters` | 0.371 [0.337, 0.404] | 0.420 [0.355, 0.488] | 0.525 [0.451, 0.595] | 0.0% [0.0%, 0.0%] | 0.629 [0.616, 0.643] | 0.00000 USD | 100% |
-| + BM25 (replaces the rule scorer) | `v2_bm25` | 0.552 [0.515, 0.591] | 0.703 [0.635, 0.770] | 0.762 [0.718, 0.802] | 0.0% [0.0%, 0.0%] | 0.584 [0.567, 0.601] | 0.00000 USD | 100% |
-| + dense (instead of BM25) | `v3_dense` | 0.531 [0.495, 0.566] | 0.688 [0.626, 0.754] | 0.728 [0.682, 0.778] | 0.0% [0.0%, 0.0%] | 0.590 [0.575, 0.604] | 0.00001 USD | 100% |
-| + RRF (BM25 and dense fused) | `v4_rrf` | 0.605 [0.570, 0.643] | 0.765 [0.705, 0.826] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 0.582 [0.567, 0.595] | 0.00001 USD | 100% |
-| + ranker (API) on the fused top 50 | `v5_rank_api` | 0.645 [0.604, 0.685] | 0.799 [0.739, 0.856] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 0.564 [0.548, 0.579] | 0.00078 USD | 100% |
-| + ranker (learned, with the API score as a feature) | `v6_ltr` | 0.777 [0.748, 0.805] | 0.924 [0.882, 0.958] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 0.545 [0.530, 0.559] | 0.00078 USD | 100% |
-| + MMR | `v7_mmr` | 0.773 [0.744, 0.801] | 0.926 [0.883, 0.958] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 0.553 [0.539, 0.567] | 0.00078 USD | 100% |
+| baseline rule scorer | `v0_rules` | 0.018 [0.010, 0.026] | 0.035 [0.011, 0.065] | 0.048 [0.033, 0.065] | 93.9% [91.7%, 95.6%] | 0.590 [0.575, 0.604] | 0.00000 USD | 100% |
+| + hard filters | `v1_filters` | 0.370 [0.336, 0.404] | 0.420 [0.355, 0.488] | 0.525 [0.452, 0.594] | 0.0% [0.0%, 0.0%] | 0.629 [0.616, 0.643] | 0.00000 USD | 100% |
+| + BM25 (replaces the rule scorer) | `v2_bm25` | 0.551 [0.514, 0.590] | 0.703 [0.635, 0.770] | 0.758 [0.714, 0.800] | 0.0% [0.0%, 0.0%] | 0.584 [0.567, 0.601] | 0.00000 USD | 100% |
+| + dense (instead of BM25) | `v3_dense` | 0.530 [0.494, 0.565] | 0.688 [0.626, 0.754] | 0.726 [0.679, 0.775] | 0.0% [0.0%, 0.0%] | 0.590 [0.575, 0.604] | 0.00001 USD | 100% |
+| + RRF (BM25 and dense fused) | `v4_rrf` | 0.604 [0.569, 0.642] | 0.765 [0.705, 0.826] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 0.582 [0.567, 0.595] | 0.00001 USD | 100% |
+| + ranker (API) on the fused top 50 | `v5_rank_api` | 0.644 [0.603, 0.684] | 0.799 [0.739, 0.856] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 0.564 [0.548, 0.579] | 0.00078 USD | 100% |
+| + ranker (learned, with the API score as a feature) | `v6_ltr` | 0.776 [0.747, 0.803] | 0.924 [0.882, 0.958] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 0.545 [0.530, 0.559] | 0.00078 USD | 100% |
+| + MMR | `v7_mmr` | 0.771 [0.742, 0.800] | 0.926 [0.883, 0.958] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 0.553 [0.539, 0.567] | 0.00078 USD | 100% |
 
 Paired bootstrap, consecutive rows (test; per-persona differences, 1,000 resamples):
 
 | Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
 |---|---|---|---|---|---|
-| `v1_filters` − `v0_rules` | +0.353 [+0.321, +0.385] | +0.386 [+0.324, +0.446] | +0.475 [+0.405, +0.542] | 0.000 | 100 |
-| `v2_bm25` − `v1_filters` | +0.181 [+0.133, +0.232] | +0.283 [+0.186, +0.384] | +0.236 [+0.179, +0.292] | 0.000 | 100 |
-| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.023] | -0.015 [-0.100, +0.077] | -0.033 [-0.075, +0.006] | 0.846 | 100 |
-| `v4_rrf` − `v3_dense` | +0.075 [+0.049, +0.101] | +0.077 [+0.012, +0.142] | +0.117 [+0.086, +0.148] | 0.000 | 100 |
-| `v5_rank_api` − `v4_rrf` | +0.039 [+0.009, +0.067] | +0.034 [-0.034, +0.099] | +0.000 [+0.000, +0.000] | 0.003 | 100 |
-| `v6_ltr` − `v5_rank_api` | +0.133 [+0.094, +0.174] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | +0.002 [-0.003, +0.008] | +0.000 [+0.000, +0.000] | 0.906 | 100 |
+| `v1_filters` − `v0_rules` | +0.353 [+0.321, +0.384] | +0.386 [+0.324, +0.446] | +0.477 [+0.406, +0.544] | 0.000 | 100 |
+| `v2_bm25` − `v1_filters` | +0.181 [+0.133, +0.232] | +0.283 [+0.186, +0.384] | +0.233 [+0.178, +0.286] | 0.000 | 100 |
+| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.023] | -0.015 [-0.100, +0.077] | -0.033 [-0.074, +0.006] | 0.846 | 100 |
+| `v4_rrf` − `v3_dense` | +0.075 [+0.049, +0.101] | +0.077 [+0.012, +0.142] | +0.117 [+0.085, +0.147] | 0.000 | 100 |
+| `v5_rank_api` − `v4_rrf` | +0.039 [+0.009, +0.068] | +0.034 [-0.034, +0.099] | +0.000 [+0.000, +0.000] | 0.003 | 100 |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.173] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | +0.002 [-0.003, +0.008] | +0.000 [+0.000, +0.000] | 0.903 | 100 |
 
 Other comparisons (test):
 
 | Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
 |---|---|---|---|---|---|
-| `v6_ltr_noapi` − `v4_rrf` | +0.160 [+0.123, +0.195] | +0.146 [+0.073, +0.215] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `v6_ltr` − `v6_ltr_noapi` | +0.012 [+0.001, +0.024] | +0.013 [-0.017, +0.046] | +0.000 [+0.000, +0.000] | 0.018 | 100 |
-| `v6_ltr` − `v5_rank_api` | +0.133 [+0.094, +0.174] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.011, +0.004] | +0.004 [+0.000, +0.011] | +0.000 [+0.000, +0.000] | 0.832 | 100 |
+| `v6_ltr_noapi` − `v4_rrf` | +0.159 [+0.122, +0.194] | +0.146 [+0.073, +0.215] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `v6_ltr` − `v6_ltr_noapi` | +0.012 [+0.001, +0.024] | +0.013 [-0.017, +0.046] | +0.000 [+0.000, +0.000] | 0.017 | 100 |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.173] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.011, +0.004] | +0.004 [+0.000, +0.011] | +0.000 [+0.000, +0.000] | 0.831 | 100 |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.010 [-0.043, +0.019] | +0.000 [+0.000, +0.000] | 0.955 | 100 |
 
 ## Default system: latency and cost against the budget
@@ -60,8 +60,8 @@ The evaluation's own nominal latency (section *Latency* below) adds the latency 
 
 | Split | NDCG@10 | MRR@10 | Recall@50 | ILD@10 | Judged@10 |
 |---|---|---|---|---|---|
-| test | 0.767 [0.735, 0.796] | 0.948 [0.910, 0.980] | 0.817 [0.778, 0.854] | 0.543 [0.529, 0.558] | 100% |
-| dev | 0.765 [0.746, 0.785] | 0.951 [0.925, 0.973] | 0.807 [0.779, 0.833] | 0.548 [0.536, 0.560] | 100% |
+| test | 0.766 [0.734, 0.795] | 0.948 [0.910, 0.980] | 0.812 [0.772, 0.849] | 0.543 [0.529, 0.558] | 100% |
+| dev | 0.763 [0.744, 0.783] | 0.951 [0.925, 0.973] | 0.803 [0.775, 0.829] | 0.548 [0.536, 0.560] | 100% |
 
 ## All systems, test split
 
@@ -69,19 +69,23 @@ The evaluation's own nominal latency (section *Latency* below) adds the latency 
 
 | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | Coverage@10 | ILD@10 | Cost/request | Judged@10 |
 |---|---|---|---|---|---|---|---|---|
-| `random` | 0.018 [0.010, 0.028] | 0.036 [0.008, 0.073] | 0.018 [0.011, 0.026] | 93.1% [91.3%, 94.6%] | 10.1% (no CI) | 0.707 [0.698, 0.716] | 0.00000 USD | 100% |
-| `v0_rules` | 0.018 [0.010, 0.026] | 0.035 [0.011, 0.065] | 0.050 [0.034, 0.066] | 93.9% [91.7%, 95.6%] | 2.0% (no CI) | 0.590 [0.575, 0.604] | 0.00000 USD | 100% |
-| `v1_filters` | 0.371 [0.337, 0.404] | 0.420 [0.355, 0.488] | 0.525 [0.451, 0.595] | 0.0% [0.0%, 0.0%] | 7.3% (no CI) | 0.629 [0.616, 0.643] | 0.00000 USD | 100% |
-| `v2_bm25` | 0.552 [0.515, 0.591] | 0.703 [0.635, 0.770] | 0.762 [0.718, 0.802] | 0.0% [0.0%, 0.0%] | 9.2% (no CI) | 0.584 [0.567, 0.601] | 0.00000 USD | 100% |
-| `v3_dense` | 0.531 [0.495, 0.566] | 0.688 [0.626, 0.754] | 0.728 [0.682, 0.778] | 0.0% [0.0%, 0.0%] | 8.3% (no CI) | 0.590 [0.575, 0.604] | 0.00001 USD | 100% |
-| `v4_rrf` | 0.605 [0.570, 0.643] | 0.765 [0.705, 0.826] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 8.8% (no CI) | 0.582 [0.567, 0.595] | 0.00001 USD | 100% |
-| `v5_rank_api` | 0.645 [0.604, 0.685] | 0.799 [0.739, 0.856] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 9.0% (no CI) | 0.564 [0.548, 0.579] | 0.00078 USD | 100% |
-| `v6_ltr` | 0.777 [0.748, 0.805] | 0.924 [0.882, 0.958] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.545 [0.530, 0.559] | 0.00078 USD | 100% |
-| `v7_mmr` | 0.773 [0.744, 0.801] | 0.926 [0.883, 0.958] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.553 [0.539, 0.567] | 0.00078 USD | 100% |
-| `recsys_v1` | 0.761 [0.736, 0.786] | 0.915 [0.876, 0.949] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.551 [0.537, 0.565] | 0.00001 USD | 100% |
-| `v6_ltr_noapi` | 0.765 [0.737, 0.791] | 0.911 [0.869, 0.948] | 0.845 [0.812, 0.875] | 0.0% [0.0%, 0.0%] | 8.1% (no CI) | 0.541 [0.526, 0.554] | 0.00001 USD | 100% |
+| `random` | 0.018 [0.010, 0.028] | 0.036 [0.008, 0.073] | 0.018 [0.010, 0.026] | 93.1% [91.3%, 94.6%] | 10.1% (no CI) | 0.707 [0.698, 0.716] | 0.00000 USD | 100% |
+| `v0_rules` | 0.018 [0.010, 0.026] | 0.035 [0.011, 0.065] | 0.048 [0.033, 0.065] | 93.9% [91.7%, 95.6%] | 2.0% (no CI) | 0.590 [0.575, 0.604] | 0.00000 USD | 100% |
+| `v1_filters` | 0.370 [0.336, 0.404] | 0.420 [0.355, 0.488] | 0.525 [0.452, 0.594] | 0.0% [0.0%, 0.0%] | 7.3% (no CI) | 0.629 [0.616, 0.643] | 0.00000 USD | 100% |
+| `v2_bm25` | 0.551 [0.514, 0.590] | 0.703 [0.635, 0.770] | 0.758 [0.714, 0.800] | 0.0% [0.0%, 0.0%] | 9.2% (no CI) | 0.584 [0.567, 0.601] | 0.00000 USD | 100% |
+| `v3_dense` | 0.530 [0.494, 0.565] | 0.688 [0.626, 0.754] | 0.726 [0.679, 0.775] | 0.0% [0.0%, 0.0%] | 8.3% (no CI) | 0.590 [0.575, 0.604] | 0.00001 USD | 100% |
+| `v4_rrf` | 0.604 [0.569, 0.642] | 0.765 [0.705, 0.826] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.8% (no CI) | 0.582 [0.567, 0.595] | 0.00001 USD | 100% |
+| `v5_rank_api` | 0.644 [0.603, 0.684] | 0.799 [0.739, 0.856] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 9.0% (no CI) | 0.564 [0.548, 0.579] | 0.00078 USD | 100% |
+| `v6_ltr` | 0.776 [0.747, 0.803] | 0.924 [0.882, 0.958] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.545 [0.530, 0.559] | 0.00078 USD | 100% |
+| `v7_mmr` | 0.771 [0.742, 0.800] | 0.926 [0.883, 0.958] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.553 [0.539, 0.567] | 0.00078 USD | 100% |
+| `recsys_v1` | 0.760 [0.734, 0.784] | 0.915 [0.876, 0.949] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.2% (no CI) | 0.551 [0.537, 0.565] | 0.00001 USD | 100% |
+| `recsys_v1_chat` | 0.748 [0.714, 0.778] | 0.891 [0.843, 0.937] | 0.818 [0.779, 0.851] | 2.6% [0.4%, 5.6%] | 8.3% (no CI) | 0.553 [0.539, 0.566] | 0.00075 USD | 100% |
+| `recsys_v1_nocap` | 0.736 [0.704, 0.766] | 0.882 [0.838, 0.923] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.0% (no CI) | 0.552 [0.538, 0.566] | 0.00001 USD | 100% |
+| `recsys_v1_nosusp` | 0.726 [0.693, 0.757] | 0.885 [0.834, 0.929] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.0% (no CI) | 0.547 [0.532, 0.561] | 0.00001 USD | 100% |
+| `recsys_v1_qonly` | 0.364 [0.330, 0.397] | 0.431 [0.368, 0.498] | 0.525 [0.452, 0.594] | 0.0% [0.0%, 0.0%] | 7.4% (no CI) | 0.640 [0.627, 0.654] | 0.00000 USD | 100% |
+| `v6_ltr_noapi` | 0.764 [0.736, 0.789] | 0.911 [0.869, 0.948] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 8.1% (no CI) | 0.541 [0.526, 0.554] | 0.00001 USD | 100% |
 
-n = 100 personas; NDCG undefined (no judged relevant route) for `random` 0, `v0_rules` 0, `v1_filters` 0, `v2_bm25` 0, `v3_dense` 0, `v4_rrf` 0, `v5_rank_api` 0, `v6_ltr` 0, `v7_mmr` 0, `recsys_v1` 0, `v6_ltr_noapi` 0. 95% percentile-bootstrap CIs over personas. Coverage@10 is a set statistic (distinct routes in all top-10 lists / catalogue size); it has no bootstrap CI and depends on the number of personas.
+n = 100 personas; NDCG undefined (no judged relevant route) for `random` 0, `v0_rules` 0, `v1_filters` 0, `v2_bm25` 0, `v3_dense` 0, `v4_rrf` 0, `v5_rank_api` 0, `v6_ltr` 0, `v7_mmr` 0, `recsys_v1` 0, `recsys_v1_chat` 0, `recsys_v1_nocap` 0, `recsys_v1_nosusp` 0, `recsys_v1_qonly` 0, `v6_ltr_noapi` 0. 95% percentile-bootstrap CIs over personas. Coverage@10 is a set statistic (distinct routes in all top-10 lists / catalogue size); it has no bootstrap CI and depends on the number of personas.
 
 Paired bootstrap of the per-persona difference (test):
 
@@ -89,18 +93,18 @@ Paired bootstrap of the per-persona difference (test):
 
 | Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
 |---|---|---|---|---|---|
-| `v0_rules` − `random` | -0.001 [-0.013, +0.011] | -0.002 [-0.045, +0.038] | +0.032 [+0.014, +0.050] | 0.534 | 100 |
-| `v1_filters` − `v0_rules` | +0.353 [+0.321, +0.385] | +0.386 [+0.324, +0.446] | +0.475 [+0.405, +0.542] | 0.000 | 100 |
-| `v2_bm25` − `v1_filters` | +0.181 [+0.133, +0.232] | +0.283 [+0.186, +0.384] | +0.236 [+0.179, +0.292] | 0.000 | 100 |
-| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.023] | -0.015 [-0.100, +0.077] | -0.033 [-0.075, +0.006] | 0.846 | 100 |
-| `v4_rrf` − `v3_dense` | +0.075 [+0.049, +0.101] | +0.077 [+0.012, +0.142] | +0.117 [+0.086, +0.148] | 0.000 | 100 |
-| `v5_rank_api` − `v4_rrf` | +0.039 [+0.009, +0.067] | +0.034 [-0.034, +0.099] | +0.000 [+0.000, +0.000] | 0.003 | 100 |
-| `v6_ltr` − `v5_rank_api` | +0.133 [+0.094, +0.174] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | +0.002 [-0.003, +0.008] | +0.000 [+0.000, +0.000] | 0.906 | 100 |
-| `v6_ltr_noapi` − `v4_rrf` | +0.160 [+0.123, +0.195] | +0.146 [+0.073, +0.215] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `v6_ltr` − `v6_ltr_noapi` | +0.012 [+0.001, +0.024] | +0.013 [-0.017, +0.046] | +0.000 [+0.000, +0.000] | 0.018 | 100 |
-| `v6_ltr` − `v5_rank_api` | +0.133 [+0.094, +0.174] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
-| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.011, +0.004] | +0.004 [+0.000, +0.011] | +0.000 [+0.000, +0.000] | 0.832 | 100 |
+| `v0_rules` − `random` | -0.001 [-0.013, +0.010] | -0.002 [-0.045, +0.038] | +0.031 [+0.013, +0.048] | 0.536 | 100 |
+| `v1_filters` − `v0_rules` | +0.353 [+0.321, +0.384] | +0.386 [+0.324, +0.446] | +0.477 [+0.406, +0.544] | 0.000 | 100 |
+| `v2_bm25` − `v1_filters` | +0.181 [+0.133, +0.232] | +0.283 [+0.186, +0.384] | +0.233 [+0.178, +0.286] | 0.000 | 100 |
+| `v3_dense` − `v2_bm25` | -0.022 [-0.065, +0.023] | -0.015 [-0.100, +0.077] | -0.033 [-0.074, +0.006] | 0.846 | 100 |
+| `v4_rrf` − `v3_dense` | +0.075 [+0.049, +0.101] | +0.077 [+0.012, +0.142] | +0.117 [+0.085, +0.147] | 0.000 | 100 |
+| `v5_rank_api` − `v4_rrf` | +0.039 [+0.009, +0.068] | +0.034 [-0.034, +0.099] | +0.000 [+0.000, +0.000] | 0.003 | 100 |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.173] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `v7_mmr` − `v6_ltr` | -0.005 [-0.011, +0.002] | +0.002 [-0.003, +0.008] | +0.000 [+0.000, +0.000] | 0.903 | 100 |
+| `v6_ltr_noapi` − `v4_rrf` | +0.159 [+0.122, +0.194] | +0.146 [+0.073, +0.215] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `v6_ltr` − `v6_ltr_noapi` | +0.012 [+0.001, +0.024] | +0.013 [-0.017, +0.046] | +0.000 [+0.000, +0.000] | 0.017 | 100 |
+| `v6_ltr` − `v5_rank_api` | +0.132 [+0.094, +0.173] | +0.125 [+0.058, +0.195] | +0.000 [+0.000, +0.000] | 0.000 | 100 |
+| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.011, +0.004] | +0.004 [+0.000, +0.011] | +0.000 [+0.000, +0.000] | 0.831 | 100 |
 | `recsys_v1` − `v7_mmr` | -0.011 [-0.025, +0.002] | -0.010 [-0.043, +0.019] | +0.000 [+0.000, +0.000] | 0.955 | 100 |
 
 ## All systems, dev split
@@ -109,19 +113,23 @@ Paired bootstrap of the per-persona difference (test):
 
 | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | Coverage@10 | ILD@10 | Cost/request | Judged@10 |
 |---|---|---|---|---|---|---|---|---|
-| `random` | 0.014 [0.010, 0.019] | 0.033 [0.014, 0.055] | 0.016 [0.011, 0.022] | 92.3% [90.7%, 93.8%] | 19.1% (no CI) | 0.702 [0.696, 0.708] | 0.00000 USD | 100% |
-| `v0_rules` | 0.013 [0.008, 0.018] | 0.041 [0.020, 0.064] | 0.041 [0.031, 0.052] | 94.5% [93.0%, 95.8%] | 2.4% (no CI) | 0.591 [0.580, 0.601] | 0.00000 USD | 100% |
-| `v1_filters` | 0.351 [0.327, 0.377] | 0.440 [0.392, 0.492] | 0.493 [0.443, 0.537] | 0.0% [0.0%, 0.0%] | 11.7% (no CI) | 0.622 [0.610, 0.633] | 0.00000 USD | 100% |
-| `v2_bm25` | 0.501 [0.474, 0.526] | 0.664 [0.610, 0.714] | 0.757 [0.726, 0.787] | 0.0% [0.0%, 0.0%] | 15.5% (no CI) | 0.598 [0.588, 0.610] | 0.00000 USD | 100% |
-| `v3_dense` | 0.522 [0.498, 0.546] | 0.650 [0.601, 0.699] | 0.709 [0.675, 0.742] | 0.0% [0.0%, 0.0%] | 13.9% (no CI) | 0.586 [0.575, 0.596] | 0.00000 USD | 100% |
-| `v4_rrf` | 0.562 [0.537, 0.587] | 0.704 [0.654, 0.752] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 15.0% (no CI) | 0.587 [0.576, 0.596] | 0.00000 USD | 100% |
-| `v5_rank_api` | 0.628 [0.600, 0.654] | 0.758 [0.709, 0.802] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 15.3% (no CI) | 0.571 [0.561, 0.581] | 0.00079 USD | 100% |
-| `v6_ltr` | 0.915 [0.900, 0.929] | 0.995 [0.985, 1.000] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 13.3% (no CI) | 0.546 [0.535, 0.557] | 0.00079 USD | 100% |
-| `v7_mmr` | 0.910 [0.896, 0.924] | 0.995 [0.985, 1.000] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 13.5% (no CI) | 0.555 [0.545, 0.565] | 0.00079 USD | 100% |
-| `recsys_v1` | 0.894 [0.879, 0.909] | 0.995 [0.985, 1.000] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 13.1% (no CI) | 0.555 [0.545, 0.565] | 0.00000 USD | 100% |
-| `v6_ltr_noapi` | 0.899 [0.883, 0.913] | 0.995 [0.985, 1.000] | 0.856 [0.831, 0.878] | 0.0% [0.0%, 0.0%] | 13.1% (no CI) | 0.547 [0.536, 0.557] | 0.00000 USD | 100% |
+| `random` | 0.014 [0.010, 0.019] | 0.033 [0.014, 0.055] | 0.016 [0.010, 0.022] | 92.3% [90.7%, 93.8%] | 19.1% (no CI) | 0.702 [0.696, 0.708] | 0.00000 USD | 100% |
+| `v0_rules` | 0.013 [0.008, 0.018] | 0.041 [0.020, 0.064] | 0.040 [0.030, 0.052] | 94.5% [93.0%, 95.8%] | 2.4% (no CI) | 0.591 [0.580, 0.601] | 0.00000 USD | 100% |
+| `v1_filters` | 0.350 [0.326, 0.376] | 0.440 [0.392, 0.492] | 0.492 [0.443, 0.536] | 0.0% [0.0%, 0.0%] | 11.7% (no CI) | 0.622 [0.610, 0.633] | 0.00000 USD | 100% |
+| `v2_bm25` | 0.500 [0.472, 0.525] | 0.664 [0.610, 0.714] | 0.754 [0.723, 0.785] | 0.0% [0.0%, 0.0%] | 15.5% (no CI) | 0.598 [0.588, 0.610] | 0.00000 USD | 100% |
+| `v3_dense` | 0.521 [0.497, 0.545] | 0.650 [0.601, 0.699] | 0.707 [0.673, 0.741] | 0.0% [0.0%, 0.0%] | 13.9% (no CI) | 0.586 [0.575, 0.596] | 0.00000 USD | 100% |
+| `v4_rrf` | 0.561 [0.535, 0.586] | 0.704 [0.654, 0.752] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 15.0% (no CI) | 0.587 [0.576, 0.596] | 0.00000 USD | 100% |
+| `v5_rank_api` | 0.626 [0.599, 0.652] | 0.758 [0.709, 0.802] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 15.3% (no CI) | 0.571 [0.561, 0.581] | 0.00079 USD | 100% |
+| `v6_ltr` | 0.912 [0.898, 0.927] | 0.995 [0.985, 1.000] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 13.3% (no CI) | 0.546 [0.535, 0.557] | 0.00079 USD | 100% |
+| `v7_mmr` | 0.908 [0.893, 0.922] | 0.995 [0.985, 1.000] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 13.5% (no CI) | 0.555 [0.545, 0.565] | 0.00079 USD | 100% |
+| `recsys_v1` | 0.892 [0.877, 0.907] | 0.995 [0.985, 1.000] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 13.1% (no CI) | 0.555 [0.545, 0.565] | 0.00000 USD | 100% |
+| `recsys_v1_chat` | 0.845 [0.824, 0.866] | 0.980 [0.963, 0.995] | 0.813 [0.783, 0.843] | 1.5% [0.3%, 3.0%] | 13.5% (no CI) | 0.561 [0.551, 0.571] | 0.00075 USD | 100% |
+| `recsys_v1_nocap` | 0.868 [0.852, 0.884] | 0.991 [0.977, 1.000] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 13.2% (no CI) | 0.554 [0.544, 0.564] | 0.00000 USD | 100% |
+| `recsys_v1_nosusp` | 0.841 [0.824, 0.857] | 0.981 [0.963, 0.995] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 12.9% (no CI) | 0.552 [0.542, 0.561] | 0.00000 USD | 100% |
+| `recsys_v1_qonly` | 0.348 [0.325, 0.373] | 0.445 [0.397, 0.495] | 0.492 [0.443, 0.536] | 0.0% [0.0%, 0.0%] | 11.7% (no CI) | 0.633 [0.622, 0.644] | 0.00000 USD | 100% |
+| `v6_ltr_noapi` | 0.896 [0.880, 0.911] | 0.995 [0.985, 1.000] | 0.851 [0.827, 0.873] | 0.0% [0.0%, 0.0%] | 13.1% (no CI) | 0.547 [0.536, 0.557] | 0.00000 USD | 100% |
 
-n = 200 personas; NDCG undefined (no judged relevant route) for `random` 0, `v0_rules` 0, `v1_filters` 0, `v2_bm25` 0, `v3_dense` 0, `v4_rrf` 0, `v5_rank_api` 0, `v6_ltr` 0, `v7_mmr` 0, `recsys_v1` 0, `v6_ltr_noapi` 0. 95% percentile-bootstrap CIs over personas. Coverage@10 is a set statistic (distinct routes in all top-10 lists / catalogue size); it has no bootstrap CI and depends on the number of personas.
+n = 200 personas; NDCG undefined (no judged relevant route) for `random` 0, `v0_rules` 0, `v1_filters` 0, `v2_bm25` 0, `v3_dense` 0, `v4_rrf` 0, `v5_rank_api` 0, `v6_ltr` 0, `v7_mmr` 0, `recsys_v1` 0, `recsys_v1_chat` 0, `recsys_v1_nocap` 0, `recsys_v1_nosusp` 0, `recsys_v1_qonly` 0, `v6_ltr_noapi` 0. 95% percentile-bootstrap CIs over personas. Coverage@10 is a set statistic (distinct routes in all top-10 lists / catalogue size); it has no bootstrap CI and depends on the number of personas.
 
 Paired bootstrap of the per-persona difference (dev):
 
@@ -129,19 +137,194 @@ Paired bootstrap of the per-persona difference (dev):
 
 | Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
 |---|---|---|---|---|---|
-| `v0_rules` − `random` | -0.001 [-0.007, +0.004] | +0.009 [-0.018, +0.036] | +0.025 [+0.014, +0.037] | 0.684 | 200 |
-| `v1_filters` − `v0_rules` | +0.338 [+0.313, +0.363] | +0.399 [+0.353, +0.449] | +0.452 [+0.403, +0.498] | 0.000 | 200 |
-| `v2_bm25` − `v1_filters` | +0.149 [+0.116, +0.181] | +0.224 [+0.151, +0.289] | +0.264 [+0.223, +0.306] | 0.000 | 200 |
-| `v3_dense` − `v2_bm25` | +0.022 [-0.004, +0.049] | -0.014 [-0.074, +0.050] | -0.048 [-0.074, -0.022] | 0.060 | 200 |
-| `v4_rrf` − `v3_dense` | +0.040 [+0.025, +0.056] | +0.054 [+0.011, +0.097] | +0.146 [+0.126, +0.166] | 0.000 | 200 |
+| `v0_rules` − `random` | -0.001 [-0.007, +0.004] | +0.009 [-0.018, +0.036] | +0.024 [+0.013, +0.036] | 0.677 | 200 |
+| `v1_filters` − `v0_rules` | +0.337 [+0.312, +0.363] | +0.399 [+0.353, +0.449] | +0.452 [+0.404, +0.498] | 0.000 | 200 |
+| `v2_bm25` − `v1_filters` | +0.149 [+0.116, +0.181] | +0.224 [+0.151, +0.289] | +0.262 [+0.221, +0.305] | 0.000 | 200 |
+| `v3_dense` − `v2_bm25` | +0.022 [-0.004, +0.049] | -0.014 [-0.074, +0.050] | -0.047 [-0.074, -0.022] | 0.061 | 200 |
+| `v4_rrf` − `v3_dense` | +0.040 [+0.025, +0.056] | +0.054 [+0.011, +0.097] | +0.144 [+0.125, +0.164] | 0.000 | 200 |
 | `v5_rank_api` − `v4_rrf` | +0.065 [+0.046, +0.085] | +0.054 [+0.015, +0.097] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
-| `v6_ltr` − `v5_rank_api` | +0.287 [+0.266, +0.312] | +0.237 [+0.193, +0.284] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
+| `v6_ltr` − `v5_rank_api` | +0.286 [+0.265, +0.309] | +0.237 [+0.193, +0.284] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
 | `v7_mmr` − `v6_ltr` | -0.005 [-0.007, -0.002] | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | 1.000 | 200 |
-| `v6_ltr_noapi` − `v4_rrf` | +0.336 [+0.315, +0.358] | +0.291 [+0.243, +0.338] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
+| `v6_ltr_noapi` − `v4_rrf` | +0.335 [+0.314, +0.357] | +0.291 [+0.243, +0.338] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
 | `v6_ltr` − `v6_ltr_noapi` | +0.016 [+0.010, +0.022] | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
-| `v6_ltr` − `v5_rank_api` | +0.287 [+0.266, +0.312] | +0.237 [+0.193, +0.284] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
-| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.008, -0.001] | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | 0.998 | 200 |
+| `v6_ltr` − `v5_rank_api` | +0.286 [+0.265, +0.309] | +0.237 [+0.193, +0.284] | +0.000 [+0.000, +0.000] | 0.000 | 200 |
+| `recsys_v1` − `v6_ltr_noapi` | -0.004 [-0.007, -0.001] | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | 0.998 | 200 |
 | `recsys_v1` − `v7_mmr` | -0.016 [-0.021, -0.010] | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | 1.000 | 200 |
+
+## Robustness of the learned ranker: without the simulator-shaped features (system level)
+
+*Simulated users (300 personas, LLM-written intents); LLM-judged relevance (judge `g35f-min-b8` = `gemini-3.5-flash`, rubric/v1); the judge is **not yet validated against the owner's labels**.*
+
+**Robustness rows, not new defaults.** `length_cap_ratio` (route length / the user's distance cap) is the learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, DECISIONS.md D15). These rows retrain the default ranker on the same pinned dev labels without that feature, or without the whole suspicious group, and run the same pipeline otherwise (filters, BM25 + dense, RRF, MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers (trained on dev labels).
+
+| System | Ranker | NDCG@10 test | MRR@10 test | NDCG@10 dev (in-sample) | CV NDCG@10 (dev, grouped) | Judged@10 |
+|---|---|---|---|---|---|---|
+| `recsys_v1` | default (ranker `v1_noapi`, all non-API features) | 0.760 [0.734, 0.784] | 0.915 [0.876, 0.949] | 0.892 [0.877, 0.907] | 0.801 [0.780, 0.819] | 100% |
+| `recsys_v1_nocap` | default, ranker without `length_cap_ratio` (`v1_noapi_nocap`) | 0.736 [0.704, 0.766] | 0.882 [0.838, 0.923] | 0.868 [0.852, 0.884] | 0.778 [0.757, 0.798] | 100% |
+| `recsys_v1_nosusp` | default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`) | 0.726 [0.693, 0.757] | 0.885 [0.834, 0.929] | 0.841 [0.824, 0.857] | 0.768 [0.747, 0.788] | 100% |
+
+Paired differences against `recsys_v1` (per-persona, 1,000 resamples):
+
+*test*
+
+| Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
+|---|---|---|---|---|---|
+| `recsys_v1_nocap` − `recsys_v1` | -0.024 [-0.042, -0.009] | -0.033 [-0.068, +0.003] | +0.000 [+0.000, +0.000] | 0.997 | 100 |
+| `recsys_v1_nosusp` − `recsys_v1` | -0.034 [-0.051, -0.018] | -0.031 [-0.065, +0.001] | +0.000 [+0.000, +0.000] | 1.000 | 100 |
+
+*dev*
+
+| Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
+|---|---|---|---|---|---|
+| `recsys_v1_nocap` − `recsys_v1` | -0.024 [-0.030, -0.018] | -0.004 [-0.012, +0.000] | +0.000 [+0.000, +0.000] | 1.000 | 200 |
+| `recsys_v1_nosusp` − `recsys_v1` | -0.051 [-0.060, -0.042] | -0.014 [-0.028, -0.003] | +0.000 [+0.000, +0.000] | 1.000 | 200 |
+
+Largest features without `length_cap_ratio` (gain share): `v1_noapi_nocap`: `tag_cover` 17.4%, `duration_h` 11.6%, `intent_km_gap` 5.7%, `rrf` 5.6%; `v1_noapi_nosusp`: `tag_cover` 23.4%, `duration_h` 11.0%, `fused_rank` 6.6%, `length_km` 6.0%. `eval/results/_ltr_robust.json`, `make ltr-robust`.
+
+## Feedback loop: 10-round simulation (Phase 5, test split)
+
+*Simulated users (100 test personas) **and a simulated behaviour model written for this project** (EVAL.md section 10); LLM-judged relevance, judge not yet validated against the owner's labels. A feedback loop that looks good here looks good on these assumptions.*
+
+Each round (one week apart) every system shows its top 10 for the persona's query plus the feedback of the earlier rounds; every shown route is judged (holes filled on demand, `eval/qrels/sim_qrels.jsonl`); the simulated user then completes at most one route and rejects a few, with a reason. **Per-round NDCG@10:** routes completed or rejected in earlier rounds have gain 0 and are removed from the ideal ranking. `make simulate`; `eval/results/_simulation.json`; figure [convergence.png](convergence.png).
+
+Systems: `v0_rules` = baseline rule scorer, its own feedback (negative reasons only); `v1_filters` = hard filters + rule scorer, v0's feedback mechanism; `recsys_v1` = default system, feedback off (control); `recsys_v1_fb_route` = default + route effects only (completed / rejected not shown again); `recsys_v1_fb` = default + feedback loop as chosen on dev (route effects + slot steps); `recsys_v1_fb_light` = default + full light loop (slots, Rocchio, re-scoring, near-duplicates); `recsys_v1_fb_explore` = default + feedback loop + exploration slot.
+
+NDCG@10 per round (mean over personas, 95% bootstrap CI):
+
+| Round | `v0_rules` | `v1_filters` | `recsys_v1` | `recsys_v1_fb_route` | `recsys_v1_fb` | `recsys_v1_fb_light` | `recsys_v1_fb_explore` |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.017 [0.010, 0.026] | 0.359 [0.325, 0.393] | 0.735 [0.707, 0.762] | 0.735 [0.707, 0.762] | 0.735 [0.707, 0.762] | 0.735 [0.707, 0.762] | 0.720 [0.693, 0.748] |
+| 2 | 0.022 [0.012, 0.033] | 0.344 [0.312, 0.377] | 0.599 [0.569, 0.629] | 0.733 [0.703, 0.761] | 0.731 [0.700, 0.759] | 0.747 [0.716, 0.773] | 0.718 [0.688, 0.746] |
+| 3 | 0.018 [0.010, 0.026] | 0.331 [0.302, 0.363] | 0.487 [0.453, 0.518] | 0.710 [0.675, 0.740] | 0.709 [0.675, 0.738] | 0.733 [0.701, 0.760] | 0.693 [0.661, 0.722] |
+| 4 | 0.018 [0.009, 0.028] | 0.337 [0.309, 0.368] | 0.401 [0.369, 0.430] | 0.705 [0.669, 0.737] | 0.703 [0.668, 0.735] | 0.726 [0.694, 0.756] | 0.687 [0.653, 0.718] |
+| 5 | 0.018 [0.009, 0.029] | 0.315 [0.288, 0.339] | 0.345 [0.317, 0.371] | 0.705 [0.668, 0.739] | 0.702 [0.664, 0.736] | 0.731 [0.699, 0.762] | 0.686 [0.651, 0.720] |
+| 6 | 0.017 [0.009, 0.026] | 0.301 [0.276, 0.327] | 0.287 [0.261, 0.312] | 0.701 [0.665, 0.734] | 0.702 [0.665, 0.735] | 0.727 [0.694, 0.758] | 0.691 [0.657, 0.724] |
+| 7 | 0.017 [0.010, 0.026] | 0.284 [0.257, 0.309] | 0.236 [0.210, 0.262] | 0.698 [0.658, 0.733] | 0.698 [0.660, 0.733] | 0.726 [0.690, 0.760] | 0.685 [0.647, 0.720] |
+| 8 | 0.022 [0.014, 0.031] | 0.275 [0.248, 0.300] | 0.199 [0.177, 0.222] | 0.698 [0.660, 0.734] | 0.700 [0.662, 0.736] | 0.716 [0.682, 0.749] | 0.691 [0.653, 0.726] |
+| 9 | 0.019 [0.012, 0.028] | 0.257 [0.233, 0.283] | 0.162 [0.142, 0.184] | 0.693 [0.655, 0.728] | 0.697 [0.659, 0.731] | 0.724 [0.689, 0.756] | 0.692 [0.653, 0.728] |
+| 10 | 0.023 [0.015, 0.031] | 0.255 [0.227, 0.281] | 0.131 [0.113, 0.149] | 0.691 [0.653, 0.727] | 0.695 [0.656, 0.730] | 0.732 [0.697, 0.765] | 0.691 [0.652, 0.728] |
+| mean of rounds 2-10 | **0.019 [0.013, 0.027]** | **0.300 [0.277, 0.323]** | **0.316 [0.293, 0.338]** | **0.704 [0.670, 0.736]** | **0.704 [0.670, 0.735]** | **0.729 [0.698, 0.758]** | **0.693 [0.659, 0.723]** |
+
+Coverage@10 per round (distinct routes in the 100 top-10 lists / catalogue) and cumulative coverage (distinct routes shown in any round so far); no CI (set statistics):
+
+| Round | `v0_rules` | `v1_filters` | `recsys_v1` | `recsys_v1_fb_route` | `recsys_v1_fb` | `recsys_v1_fb_light` | `recsys_v1_fb_explore` |
+|---|---|---|---|---|---|---|---|
+| 1 | 2.0% / 2.0% | 7.3% / 7.3% | 8.2% / 8.2% | 8.2% / 8.2% | 8.2% / 8.2% | 8.2% / 8.2% | 8.3% / 8.3% |
+| 2 | 2.5% / 3.0% | 8.1% / 10.2% | 8.2% / 8.2% | 8.4% / 9.5% | 8.4% / 9.5% | 8.4% / 10.1% | 8.5% / 10.2% |
+| 3 | 3.0% / 4.0% | 7.8% / 12.0% | 8.2% / 8.2% | 8.3% / 10.4% | 8.4% / 10.4% | 8.4% / 11.2% | 8.5% / 11.4% |
+| 4 | 3.1% / 5.0% | 8.1% / 13.7% | 8.2% / 8.2% | 8.5% / 11.2% | 8.5% / 11.3% | 8.6% / 12.2% | 8.7% / 12.5% |
+| 5 | 3.2% / 5.7% | 8.1% / 14.7% | 8.2% / 8.2% | 8.6% / 12.1% | 8.6% / 12.2% | 8.6% / 13.0% | 8.8% / 13.7% |
+| 6 | 3.2% / 6.4% | 7.9% / 15.5% | 8.2% / 8.2% | 8.7% / 13.0% | 8.7% / 13.1% | 8.7% / 13.7% | 8.8% / 14.8% |
+| 7 | 3.3% / 7.2% | 7.9% / 16.2% | 8.2% / 8.2% | 8.9% / 13.9% | 8.9% / 14.0% | 8.9% / 14.7% | 8.9% / 15.9% |
+| 8 | 3.1% / 7.7% | 8.1% / 16.9% | 8.2% / 8.2% | 9.0% / 14.8% | 9.0% / 14.9% | 9.0% / 15.5% | 9.0% / 16.9% |
+| 9 | 3.2% / 8.0% | 7.9% / 17.5% | 8.2% / 8.2% | 8.9% / 15.6% | 9.0% / 15.8% | 9.1% / 16.4% | 9.1% / 17.8% |
+| 10 | 3.4% / 8.5% | 8.2% / 18.1% | 8.2% / 8.2% | 9.1% / 16.6% | 9.1% / 16.7% | 9.1% / 17.2% | 9.1% / 18.7% |
+
+Simulated reactions over the 10 rounds (per persona): completions, and all events by reason:
+
+| System | Completions / persona | Events by reason (total) | Consumed routes re-shown / list, round 10 |
+|---|---|---|---|
+| `v0_rules` | 0.34 | completed 34, not-interested 47, too-easy 15, too-far 2665, too-hard 28 | 0.11 |
+| `v1_filters` | 4.66 | completed 466, not-interested 686, too-easy 107, too-hard 244 | 3.01 |
+| `recsys_v1` | 5.77 | completed 577, not-interested 191, too-easy 16, too-hard 27 | 7.80 |
+| `recsys_v1_fb_route` | 7.91 | completed 791, not-interested 500, too-easy 46, too-hard 79 | 0.00 |
+| `recsys_v1_fb` | 7.94 | completed 794, not-interested 503, too-easy 47, too-hard 69 | 0.00 |
+| `recsys_v1_fb_light` | 7.93 | completed 793, not-interested 504, too-easy 45, too-hard 67 | 0.00 |
+| `recsys_v1_fb_explore` | 7.84 | completed 784, not-interested 520, too-easy 74, too-hard 75 | 0.00 |
+
+Paired differences (b − a; per persona; mean of rounds 2-10, and round 10 alone):
+
+| Comparison | ΔNDCG@10, rounds 2-10 [95% CI] | P(Δ ≤ 0) | ΔNDCG@10, round 10 | n |
+|---|---|---|---|---|
+| `recsys_v1_fb_route` − `recsys_v1` | +0.388 [+0.367, +0.407] | 0.000 | +0.561 [+0.530, +0.591] | 100 |
+| `recsys_v1_fb` − `recsys_v1` | +0.388 [+0.368, +0.407] | 0.000 | +0.564 [+0.534, +0.593] | 100 |
+| `recsys_v1_fb` − `recsys_v1_fb_route` | +0.000 [-0.003, +0.003] | 0.430 | +0.003 [-0.004, +0.010] | 100 |
+| `recsys_v1_fb_light` − `recsys_v1_fb` | +0.025 [+0.014, +0.036] | 0.000 | +0.037 [+0.018, +0.056] | 100 |
+| `recsys_v1_fb_explore` − `recsys_v1_fb` | -0.011 [-0.015, -0.008] | 1.000 | -0.004 [-0.012, +0.005] | 100 |
+| `recsys_v1_fb` − `v1_filters` | +0.404 [+0.371, +0.434] | 0.000 | +0.440 [+0.405, +0.473] | 100 |
+| `recsys_v1_fb` − `v0_rules` | +0.685 [+0.650, +0.718] | 0.000 | +0.672 [+0.632, +0.709] | 100 |
+
+Exploration: NDCG@10 cost (`recsys_v1_fb_explore` − `recsys_v1_fb`, paired) next to the coverage@10 gain, per round:
+
+| Round | ΔNDCG@10 [95% CI] | Δcoverage@10 (points) |
+|---|---|---|
+| 1 | -0.015 [-0.020, -0.009] | +0.06 |
+| 2 | -0.012 [-0.018, -0.007] | +0.15 |
+| 3 | -0.016 [-0.021, -0.011] | +0.10 |
+| 4 | -0.016 [-0.022, -0.010] | +0.14 |
+| 5 | -0.015 [-0.023, -0.007] | +0.17 |
+| 6 | -0.011 [-0.018, -0.005] | +0.05 |
+| 7 | -0.013 [-0.019, -0.007] | +0.01 |
+| 8 | -0.010 [-0.017, -0.002] | -0.01 |
+| 9 | -0.005 [-0.012, +0.002] | +0.09 |
+| 10 | -0.004 [-0.012, +0.005] | -0.03 |
+
+Cumulative coverage after 10 rounds: 16.7% without, 18.7% with the exploration slot.
+
+### Dev tuning of the feedback parameters
+
+Same simulation on 40 seeded dev personas, 10 rounds, one system per grid point (`make sim-tune`, `eval/results/_sim_tuning.json`). Rule: highest mean NDCG@10 over rounds 2-10 on the dev subset. Chosen: **`slots_only`**. The learned ranker is in-sample on dev (trained on dev labels), so dev lists start near the ideal and leave less for feedback to fix than test lists do.
+
+| Grid point | NDCG@10 rounds 2-10 | Δ vs route effects only [95% CI] | Completions / persona | Parameters |
+|---|---|---|---|---|
+| `control` | 0.376 [0.350, 0.404] | – | 6.53 | feedback off |
+| `light` | 0.776 [0.737, 0.814] | -0.000 [-0.015, +0.015] | 7.85 | beta 0.25, gamma 0.1, eta_emb 0.1, eta_tag 0.1, nu_dup 0.15, difficulty_step 0.25, cap_step 0.25, radius_step 0.25 |
+| `medium` | 0.765 [0.733, 0.798] | -0.011 [-0.025, +0.005] | 7.92 | beta 0.5, gamma 0.25, eta_emb 0.3, eta_tag 0.2, nu_dup 0.3, difficulty_step 0.5, cap_step 0.5, radius_step 0.5 |
+| `rescore_only` | 0.776 [0.737, 0.813] | -0.000 [-0.015, +0.016] | 7.83 | beta 0.25, gamma 0.1, eta_emb 0.1, eta_tag 0.1, nu_dup 0.15, difficulty_step 0.0, cap_step 0.0, radius_step 0.0 |
+| `rocchio_only` | 0.775 [0.738, 0.812] | -0.001 [-0.015, +0.015] | 7.83 | beta 0.25, gamma 0.1, eta_emb 0.0, eta_tag 0.0, nu_dup 0.0, difficulty_step 0.0, cap_step 0.0, radius_step 0.0 |
+| `route_only` | 0.776 [0.735, 0.815] | – | 8.03 | beta 0.0, gamma 0.0, eta_emb 0.0, eta_tag 0.0, nu_dup 0.0, difficulty_step 0.0, cap_step 0.0, radius_step 0.0 |
+| `slots_only` | 0.777 [0.735, 0.816] | +0.001 [-0.002, +0.004] | 7.97 | beta 0.0, gamma 0.0, eta_emb 0.0, eta_tag 0.0, nu_dup 0.0, difficulty_step 0.25, cap_step 0.25, radius_step 0.25 |
+| `strong` | 0.722 [0.686, 0.757] | -0.053 [-0.083, -0.024] | 8.28 | beta 1.0, gamma 0.5, eta_emb 0.6, eta_tag 0.4, nu_dup 0.5, difficulty_step 1.0, cap_step 1.0, radius_step 1.0 |
+
+## Phase 4 end-to-end: questionnaire only vs + free text vs + chat (test split)
+
+*Simulated users (300 personas, LLM-written intents); LLM-judged relevance (judge `g35f-min-b8` = `gemini-3.5-flash`, rubric/v1); the judge is **not yet validated against the owner's labels**.*
+
+Same pipeline (`recsys_v1`) behind three ways of collecting preferences. The chat variant runs the real turn logic with `anthropic/claude-haiku-5.5` (prompt `chat-extract-v1`), starting from the form's slots. Every top 10 is 100% judged. **What this can show:** how much the pipeline gains from free text, and whether routing that text through the slot extractor helps or hurts. **What it cannot show:** the intents were written by an LLM from the same latent profile the judge reads, and every persona sends exactly one well-formed message, so the free-text rows measure recovery of what the generator put in, not real users' messages; the chat row also inherits the extractor's optimism (CHAT.md section 8).
+
+| Input | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | Cost/request | Judged@10 |
+|---|---|---|---|---|---|---|---|
+| questionnaire only (user vector + the form's profile slots) | `recsys_v1_qonly` | 0.364 [0.330, 0.397] | 0.431 [0.368, 0.498] | 0.525 [0.452, 0.594] | 0.0% [0.0%, 0.0%] | 0.00000 USD | 100% |
+| questionnaire + raw intent text (the Phase 3 default) | `recsys_v1` | 0.760 [0.734, 0.784] | 0.915 [0.876, 0.949] | 0.843 [0.809, 0.872] | 0.0% [0.0%, 0.0%] | 0.00001 USD | 100% |
+| questionnaire + chat (intent sent as one chat message; slots merged, restated intent) | `recsys_v1_chat` | 0.748 [0.714, 0.778] | 0.891 [0.843, 0.937] | 0.818 [0.779, 0.851] | 2.6% [0.4%, 5.6%] | 0.00075 USD | 100% |
+
+Violations@10 of the chat row are routes outside the persona's *own* radius or cap: when the message names a town, the chat moves the place to that catalogue locality (CHAT.md merge rule 6), so the radius is centred elsewhere. The judge grades such routes 0 by rule.
+
+Paired differences (test):
+
+| Comparison | ΔNDCG@10 [95% CI] | ΔMRR@10 | ΔRecall@50 | P(Δ ≤ 0) for NDCG | n |
+|---|---|---|---|---|---|
+| `recsys_v1` − `recsys_v1_qonly` | +0.396 [+0.360, +0.433] | +0.484 [+0.413, +0.553] | +0.318 [+0.259, +0.384] | 0.000 | 100 |
+| `recsys_v1_chat` − `recsys_v1_qonly` | +0.384 [+0.338, +0.431] | +0.460 [+0.385, +0.536] | +0.293 [+0.233, +0.356] | 0.000 | 100 |
+| `recsys_v1_chat` − `recsys_v1` | -0.012 [-0.037, +0.009] | -0.025 [-0.059, +0.008] | -0.025 [-0.050, -0.003] | 0.847 | 100 |
+
+## Chat slot extraction: scripted evaluation (Phase 4)
+
+72 scripted cases (`eval/chat/utterances.jsonl`), every candidate through the real turn logic; `make chat-eval` replays them from `eval/chat/cache/` (results `eval/results/chat/`, summary `eval/results/_chat_eval.json`). Matching rules and caveats: CHAT.md section 8. **The cases, expected slots, prompt and keyword baseline were written by the same agent: these numbers measure agreement with that agent's labels, not robustness to real users.** Default model: DECISIONS.md D18.
+
+| Candidate | Model | Overall P / R | enum P / R | number P / R | place P / R | tags P / R | Clarify decision acc. | Schema violations |
+|---|---|---|---|---|---|---|---|---|
+| `g25f` | `gemini-2.5-flash` | 0.984 / 0.977 | 0.981 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 | 0.976 / 0.932 | 1.000 | 0.0% (0 failed calls) |
+| `g35f-min` | `gemini-3.5-flash` | 0.985 / 1.000 | 0.981 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 | 0.978 / 1.000 | 0.972 | 0.0% (0 failed calls) |
+| `g35fl-min` | `gemini-3.5-flash-lite` | 0.961 / 0.961 | 0.944 / 1.000 | 0.889 / 0.941 | 1.000 / 1.000 | 1.000 / 0.909 | 0.986 | 0.0% (0 failed calls) |
+| `haiku55` | `anthropic/claude-haiku-5.5` | 0.970 / 1.000 | 0.962 / 1.000 | 1.000 / 1.000 | 1.000 / 1.000 | 0.957 / 1.000 | 1.000 | 0.0% (0 failed calls) |
+| `rules` | `mock-llm-1` | 0.931 / 0.844 | 0.957 / 0.863 | 0.857 / 0.706 | 1.000 / 0.938 | 0.902 / 0.841 | 0.958 | 0.0% (0 failed calls) |
+
+Per slot, default model (`haiku55`):
+
+| Slot | TP | FP | FN | Precision | Recall |
+|---|---|---|---|---|---|
+| `activity` | 26 | 1 | 0 | 0.963 | 1.000 |
+| `difficulty` | 12 | 0 | 0 | 1.000 | 1.000 |
+| `distance_band` | 13 | 1 | 0 | 0.929 | 1.000 |
+| `duration_hours` | 8 | 0 | 0 | 1.000 | 1.000 |
+| `distance_cap_km` | 6 | 0 | 0 | 1.000 | 1.000 |
+| `travel_radius_km` | 3 | 0 | 0 | 1.000 | 1.000 |
+| `place` | 16 | 0 | 0 | 1.000 | 1.000 |
+| `tags_preferred` | 38 | 1 | 0 | 0.974 | 1.000 |
+| `tags_avoided` | 6 | 1 | 0 | 0.857 | 1.000 |
+
+`rules` is the offline keyword extractor (the mock provider's answer), not an LLM.
 
 ## Candidate generation (Phase 3b)
 
@@ -151,9 +334,9 @@ Each generator over the eligible set, ranked by its own score (the `v2`-`v4` sys
 
 | Generator | System | Recall@50 (test) | NDCG@10 (test) | Recall@50 (dev) | NDCG@10 (dev) |
 |---|---|---|---|---|---|
-| BM25F | `v2_bm25` | 0.762 [0.718, 0.802] | 0.552 [0.515, 0.591] | 0.757 [0.726, 0.787] | 0.501 [0.474, 0.526] |
-| dense (exact cosine) | `v3_dense` | 0.728 [0.682, 0.778] | 0.531 [0.495, 0.566] | 0.709 [0.675, 0.742] | 0.522 [0.498, 0.546] |
-| RRF(BM25, dense) | `v4_rrf` | 0.845 [0.812, 0.875] | 0.605 [0.570, 0.643] | 0.856 [0.831, 0.878] | 0.562 [0.537, 0.587] |
+| BM25F | `v2_bm25` | 0.758 [0.714, 0.800] | 0.551 [0.514, 0.590] | 0.754 [0.723, 0.785] | 0.500 [0.472, 0.525] |
+| dense (exact cosine) | `v3_dense` | 0.726 [0.679, 0.775] | 0.530 [0.494, 0.565] | 0.707 [0.673, 0.741] | 0.521 [0.497, 0.545] |
+| RRF(BM25, dense) | `v4_rrf` | 0.843 [0.809, 0.872] | 0.604 [0.569, 0.642] | 0.851 [0.827, 0.873] | 0.561 [0.535, 0.586] |
 
 Dev-only tuning (200 dev personas, `eval/results/_cg_dev.json`; `python -m evalkit.cg tune`). Measured against the qrels at the time of tuning, without new judgements: Recall@50 and a *condensed* NDCG@10 (unjudged routes dropped before the cut). The pool contains plain BM25 of the intent (`pool_intent_lexical`), which favours the `plain` variant.
 
@@ -560,7 +743,7 @@ Feature importance, model `v1_noapi` (290 trees; gain share and mean |Saabas con
 | `duration_h` | 2.6% | 142 | 0.073 |
 | `pois_per_km` | 2.5% | 165 | 0.132 |
 
-System NDCG@10 of the learned ranker on dev is in-sample (the dev judgements are its training labels): `v6_ltr` dev 0.915 vs test 0.777, `v6_ltr_noapi` dev 0.899 vs test 0.765. Only the test split measures it.
+System NDCG@10 of the learned ranker on dev is in-sample (the dev judgements are its training labels): `v6_ltr` dev 0.912 vs test 0.776, `v6_ltr_noapi` dev 0.896 vs test 0.764. Only the test split measures it.
 
 ## Diversity: MMR sweep (Phase 3d, dev)
 
@@ -591,6 +774,10 @@ System NDCG@10 of the learned ranker on dev is in-sample (the dev judgements are
 | `v6_ltr` | 471.9 | 1244.3 | 473.9 | 1241.3 | 1237.3 |
 | `v7_mmr` | 473.8 | 1244.6 | 473.8 | 1241.9 | 1237.3 |
 | `recsys_v1` | 91.7 | 766.8 | 94.8 | 226.2 | 760.7 |
+| `recsys_v1_chat` | 1559.9 | 4584.3 | 1498.0 | 4821.9 | 4574.5 |
+| `recsys_v1_nocap` | 90.0 | 765.9 | 93.9 | 211.3 | 760.7 |
+| `recsys_v1_nosusp` | 89.4 | 765.1 | 93.3 | 210.5 | 760.7 |
+| `recsys_v1_qonly` | 2.0 | 6.2 | 1.8 | 11.4 | 0.0 |
 | `v6_ltr_noapi` | 90.4 | 766.3 | 94.4 | 211.5 | 760.7 |
 
 Nominal latency = local compute + the recorded latency of any upstream (LLM / embedding / rank) call, also when served from cache. The baselines make no upstream calls.
@@ -599,10 +786,10 @@ Nominal latency = local compute + the recorded latency of any upstream (LLM / em
 
 - Catalogue: 9347 routes, sha256 `064fd0b25c71`.
 - Personas: 300 (test 100, dev 200), sha256 `e56c999efd20`.
-- Qrels: 19250 judged pairs over 300 personas, sha256 `9b506ca205a0`; 5598 graded 0 by rule (29.1%: hard-constraint violations, no LLM call), 13652 by the LLM judge.
-- Grade distribution, all pairs: 0: 7026, 1: 6894, 2: 4129, 3: 1201; LLM-judged pairs only: 0: 1428, 1: 6894, 2: 4129, 3: 1201.
-- Rule-graded by constraint: distance_cap: 63, radius: 4836, radius+distance_cap: 699.
-- Known relevant (grade ≥ 2) routes per persona: median 18, min 1, max 46; personas without any: 0.
+- Qrels: 19767 judged pairs over 300 personas, sha256 `dc52481628b0`; 5653 graded 0 by rule (28.6%: hard-constraint violations, no LLM call), 14114 by the LLM judge.
+- Grade distribution, all pairs: 0: 7147, 1: 7144, 2: 4243, 3: 1233; LLM-judged pairs only: 0: 1494, 1: 7144, 2: 4243, 3: 1233.
+- Rule-graded by constraint: distance_cap: 63, radius: 4891, radius+distance_cap: 699.
+- Known relevant (grade ≥ 2) routes per persona: median 18, min 1, max 48; personas without any: 0.
 - Pool: top-10 of every registered system plus the pool-only contributors `pool_latent`, `pool_intent_lexical` (never reported as systems).
 - Persona eligible-set sizes (routes passing the hard constraints): median 282, p10 61, min 40.
 

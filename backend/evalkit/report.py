@@ -503,6 +503,283 @@ def _explanation_example() -> list[str]:
     ]
 
 
+# --------------------------------------------------------------------------- Phase 5 and Part D sections
+def _pair_cell(r: dict[str, Any]) -> str:
+    return "n/a" if r.get("diff") is None else f"{r['diff']:+.3f} [{r['lo']:+.3f}, {r['hi']:+.3f}]"
+
+
+ROBUST = ["recsys_v1", "recsys_v1_nocap", "recsys_v1_nosusp"]
+ROBUST_TEXT = {
+    "recsys_v1": "default (ranker `v1_noapi`, all non-API features)",
+    "recsys_v1_nocap": "default, ranker without `length_cap_ratio` (`v1_noapi_nocap`)",
+    "recsys_v1_nosusp": "default, ranker without slot ratios, home distance and intent km (`v1_noapi_nosusp`)",
+}
+
+
+def _robustness(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    by = {d["system"]: d for d in docs}
+    if not all(n in by for n in ROBUST):
+        return []
+    rb = _load("_ltr_robust.json") or {}
+    ltr = _load("_ltr.json") or {}
+    L = [
+        "## Robustness of the learned ranker: without the simulator-shaped features (system level)",
+        "",
+        cap,
+        "",
+        "**Robustness rows, not new defaults.** `length_cap_ratio` (route length / the user's distance cap) is the "
+        "learned ranker's largest feature and encodes how the persona generator draws caps (RECSYS.md section 4, "
+        "DECISIONS.md D15). These rows retrain the default ranker on the same pinned dev labels without that feature, "
+        "or without the whole suspicious group, and run the same pipeline otherwise (filters, BM25 + dense, RRF, "
+        "MMR 0.8, no ranker API). Every top 10 is 100% judged. Dev rows are in-sample for all three rankers "
+        "(trained on dev labels).",
+        "",
+        "| System | Ranker | NDCG@10 test | MRR@10 test | NDCG@10 dev (in-sample) | CV NDCG@10 (dev, grouped) | "
+        "Judged@10 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    cv = {"recsys_v1": (ltr.get("variants", {}).get("no_rank_api") or {}).get("cv_ndcg_at_10")}
+    for v in (rb.get("variants") or {}).values():
+        cv["recsys_v1_nocap" if v["model"].endswith("nocap") else "recsys_v1_nosusp"] = v["cv_ndcg_at_10"]
+    for n in ROBUST:
+        m = by[n]["metrics"]
+        L.append(
+            f"| `{n}` | {ROBUST_TEXT[n]} | {_ci(m['test']['ndcg_at_10'])} | {_ci(m['test']['mrr_at_10'])} | "
+            f"{_ci(m['dev']['ndcg_at_10'])} | {_ci(cv[n]) if cv.get(n) else 'n/a'} | "
+            f"{100 * min(m['test']['judged_share_at_10'], m['dev']['judged_share_at_10']):.0f}% |"
+        )
+    L += ["", "Paired differences against `recsys_v1` (per-persona, 1,000 resamples):", ""]
+    for split in ("test", "dev"):
+        pairs = [("recsys_v1", "recsys_v1_nocap"), ("recsys_v1", "recsys_v1_nosusp")]
+        L += [f"*{split}*", ""] + _paired_rows(by, pairs, split) + [""]
+    if rb:
+        L.append(
+            "Largest features without `length_cap_ratio` (gain share): "
+            + "; ".join(
+                f"`{v['model']}`: "
+                + ", ".join(f"`{i['feature']}` {100 * i['gain_share']:.1f}%" for i in v["importance_top"][:4])
+                for v in rb["variants"].values()
+            )
+            + ". `eval/results/_ltr_robust.json`, `make ltr-robust`."
+        )
+        L.append("")
+    return L
+
+
+E2E = [("recsys_v1_qonly", "questionnaire only (user vector + the form's profile slots)"),
+       ("recsys_v1", "questionnaire + raw intent text (the Phase 3 default)"),
+       ("recsys_v1_chat", "questionnaire + chat (intent sent as one chat message; slots merged, restated intent)")]
+
+
+def _e2e(docs: list[dict[str, Any]], cap: str) -> list[str]:
+    by = {d["system"]: d for d in docs}
+    if not all(n in by for n, _ in E2E):
+        return []
+    chat_cfg = by["recsys_v1_chat"]["config"].get("chat", {})
+    L = [
+        "## Phase 4 end-to-end: questionnaire only vs + free text vs + chat (test split)",
+        "",
+        cap,
+        "",
+        f"Same pipeline (`recsys_v1`) behind three ways of collecting preferences. The chat variant runs the real turn "
+        f"logic with `{chat_cfg.get('model')}` (prompt `{chat_cfg.get('prompt_version')}`), starting from the form's "
+        "slots. Every top 10 is 100% judged. **What this can show:** how much the pipeline gains from free text, and "
+        "whether routing that text through the slot extractor helps or hurts. **What it cannot show:** the intents "
+        "were written by an LLM from the same latent profile the judge reads, and every persona sends exactly one "
+        "well-formed message, so the free-text rows measure recovery of what the generator put in, not real users' "
+        "messages; the chat row also inherits the extractor's optimism (CHAT.md section 8).",
+        "",
+        "| Input | System | NDCG@10 | MRR@10 | Recall@50 | Violations@10 | Cost/request | Judged@10 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for n, label in E2E:
+        m = by[n]["metrics"]["test"]
+        L.append(
+            f"| {label} | `{n}` | {_ci(m['ndcg_at_10'])} | {_ci(m['mrr_at_10'])} | {_ci(m['recall_at_50'])} | "
+            f"{_ci(m['violation_at_10'], pct=True)} | {m['cost_usd']['mean']:.5f} USD | "
+            f"{100 * m['judged_share_at_10']:.0f}% |"
+        )
+    L += [
+        "",
+        "Violations@10 of the chat row are routes outside the persona's *own* radius or cap: when the message names a "
+        "town, the chat moves the place to that catalogue locality (CHAT.md merge rule 6), so the radius is centred "
+        "elsewhere. The judge grades such routes 0 by rule.",
+        "",
+        "Paired differences (test):",
+        "",
+    ]
+    L += _paired_rows(by, [("recsys_v1_qonly", "recsys_v1"), ("recsys_v1_qonly", "recsys_v1_chat"),
+                           ("recsys_v1", "recsys_v1_chat")], "test")
+    L.append("")
+    return L
+
+
+def _chat_eval() -> list[str]:
+    d = _load("_chat_eval.json")
+    if not d:
+        return []
+    L = [
+        "## Chat slot extraction: scripted evaluation (Phase 4)",
+        "",
+        f"{d['cases']} scripted cases (`eval/chat/utterances.jsonl`), every candidate through the real turn logic; "
+        "`make chat-eval` replays them from `eval/chat/cache/` (results `eval/results/chat/`, summary "
+        "`eval/results/_chat_eval.json`). Matching rules and caveats: CHAT.md section 8. **The cases, expected slots, "
+        "prompt and keyword baseline were written by the same agent: these numbers measure agreement with that "
+        "agent's labels, not robustness to real users.** Default model: DECISIONS.md D18.",
+        "",
+        "| Candidate | Model | Overall P / R | enum P / R | number P / R | place P / R | tags P / R | "
+        "Clarify decision acc. | Schema violations |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+
+    def pr(x: dict[str, Any]) -> str:
+        return f"{x['precision']:.3f} / {x['recall']:.3f}"
+
+    for r in d["candidates"]:
+        t = r["per_type"]
+        L.append(
+            f"| `{r['candidate']}` | `{r['model']}` | {pr(r['overall'])} | {pr(t['enum'])} | {pr(t['number'])} | "
+            f"{pr(t['place'])} | {pr(t['tags'])} | {r['clarify_decision_accuracy']:.3f} | "
+            f"{100 * (r['schema_violation_rate'] or 0):.1f}% ({r['schema_failed_calls']} failed calls) |"
+        )
+    det = _load("chat/haiku55.json")
+    if det:
+        L += ["", "Per slot, default model (`haiku55`):", "", "| Slot | TP | FP | FN | Precision | Recall |",
+              "|---|---|---|---|---|---|"]
+        for slot, v in det["metrics"]["per_slot"].items():
+            L.append(f"| `{slot}` | {v['tp']} | {v['fp']} | {v['fn']} | {v['precision']:.3f} | {v['recall']:.3f} |")
+    L += ["", "`rules` is the offline keyword extractor (the mock provider's answer), not an LLM.", ""]
+    return L
+
+
+GRID_KEYS = ("beta", "gamma", "eta_emb", "eta_tag", "nu_dup", "difficulty_step", "cap_step", "radius_step")
+SIM_ORDER = ["v0_rules", "v1_filters", "recsys_v1", "recsys_v1_fb_route", "recsys_v1_fb", "recsys_v1_fb_light",
+             "recsys_v1_fb_explore"]
+
+
+def _simulation() -> list[str]:
+    d = _load("_simulation.json")
+    if not d:
+        return []
+    met = d["metrics"]
+    labs = [n for n in SIM_ORDER if n in met]
+    L = [
+        "## Feedback loop: 10-round simulation (Phase 5, test split)",
+        "",
+        f"*Simulated users ({d['n_personas']} test personas) **and a simulated behaviour model written for this "
+        "project** (EVAL.md section 10); LLM-judged relevance, judge not yet validated against the owner's labels. A "
+        "feedback loop that looks good here looks good on these assumptions.*",
+        "",
+        "Each round (one week apart) every system shows its top 10 for the persona's query plus the feedback of the "
+        "earlier rounds; every shown route is judged (holes filled on demand, `eval/qrels/sim_qrels.jsonl`); the "
+        "simulated user then completes at most one route and rejects a few, with a reason. **Per-round NDCG@10:** "
+        "routes completed or rejected in earlier rounds have gain 0 and are removed from the ideal ranking. "
+        "`make simulate`; `eval/results/_simulation.json`; figure [convergence.png](convergence.png).",
+        "",
+        "Systems: " + "; ".join(f"`{n}` = {d['systems'][n]['label']}" for n in labs) + ".",
+        "",
+        "NDCG@10 per round (mean over personas, 95% bootstrap CI):",
+        "",
+        "| Round | " + " | ".join(f"`{n}`" for n in labs) + " |",
+        "|---|" + "---|" * len(labs),
+    ]
+    for t in range(d["rounds"]):
+        L.append(f"| {t + 1} | " + " | ".join(_ci(met[n]["rounds"][t]["ndcg_at_10"]) for n in labs) + " |")
+    L.append("| mean of rounds 2-10 | " + " | ".join(f"**{_ci(met[n]['ndcg_rounds_2_10'])}**" for n in labs) + " |")
+    L += [
+        "",
+        "Coverage@10 per round (distinct routes in the 100 top-10 lists / catalogue) and cumulative coverage (distinct "
+        "routes shown in any round so far); no CI (set statistics):",
+        "",
+        "| Round | " + " | ".join(f"`{n}`" for n in labs) + " |",
+        "|---|" + "---|" * len(labs),
+    ]
+    for t in range(d["rounds"]):
+        L.append(
+            f"| {t + 1} | "
+            + " | ".join(
+                f"{100 * met[n]['rounds'][t]['coverage_at_10']:.1f}% / "
+                f"{100 * met[n]['rounds'][t]['cumulative_coverage']:.1f}%"
+                for n in labs
+            )
+            + " |"
+        )
+    L += [
+        "",
+        "Simulated reactions over the 10 rounds (per persona): completions, and all events by reason:",
+        "",
+        "| System | Completions / persona | Events by reason (total) | Consumed routes re-shown / list, round 10 |",
+        "|---|---|---|---|",
+    ]
+    for n in labs:
+        ev = ", ".join(f"{k} {v}" for k, v in met[n]["events_by_reason"].items())
+        L.append(
+            f"| `{n}` | {met[n]['completions_total']:.2f} | {ev} | "
+            f"{met[n]['rounds'][-1]['reshown_consumed_per_list']:.2f} |"
+        )
+    L += [
+        "",
+        "Paired differences (b − a; per persona; mean of rounds 2-10, and round 10 alone):",
+        "",
+        "| Comparison | ΔNDCG@10, rounds 2-10 [95% CI] | P(Δ ≤ 0) | ΔNDCG@10, round 10 | n |",
+        "|---|---|---|---|---|",
+    ]
+    for pr_ in d["paired"]:
+        r = pr_["rounds_2_10"]
+        L.append(
+            f"| `{pr_['b']}` − `{pr_['a']}` | {_pair_cell(r)} | {r['p_le_0']:.3f} | "
+            f"{_pair_cell(pr_['per_round'][-1])} | {r['n']} |"
+        )
+    ex = d.get("exploration") or {}
+    p_ex = next((p for p in d["paired"] if p["a"] == "recsys_v1_fb" and p["b"] == "recsys_v1_fb_explore"), None)
+    if ex and p_ex:
+        L += [
+            "",
+            "Exploration: NDCG@10 cost (`recsys_v1_fb_explore` − `recsys_v1_fb`, paired) next to the coverage@10 "
+            "gain, per round:",
+            "",
+            "| Round | ΔNDCG@10 [95% CI] | Δcoverage@10 (points) |",
+            "|---|---|---|",
+        ]
+        for t, row in enumerate(ex["per_round_coverage_gain"]):
+            L.append(f"| {t + 1} | {_pair_cell(p_ex['per_round'][t])} | {100 * row['coverage_gain']:+.2f} |")
+        cm = met["recsys_v1_fb_explore"]["rounds"][-1]["cumulative_coverage"]
+        cb = met["recsys_v1_fb"]["rounds"][-1]["cumulative_coverage"]
+        L.append("")
+        L.append(
+            f"Cumulative coverage after 10 rounds: {100 * cb:.1f}% without, {100 * cm:.1f}% with the exploration slot."
+        )
+    L.append("")
+    tu = _load("_sim_tuning.json")
+    if tu:
+        L += [
+            "### Dev tuning of the feedback parameters",
+            "",
+            f"Same simulation on {len(tu['personas'])} seeded dev personas, 10 rounds, one system per grid point "
+            f"(`make sim-tune`, `eval/results/_sim_tuning.json`). Rule: {tu['rule']}. Chosen: **`{tu['best']}`**. The "
+            "learned ranker is in-sample on dev (trained on dev labels), so dev lists start near the ideal and leave "
+            "less for feedback to fix than test lists do.",
+            "",
+            "| Grid point | NDCG@10 rounds 2-10 | Δ vs route effects only [95% CI] | Completions / persona | "
+            "Parameters |",
+            "|---|---|---|---|---|",
+        ]
+        for n, m in tu["metrics"].items():
+            g = tu["grid"].get(n)
+            params = (
+                "feedback off"
+                if g is None
+                else ", ".join(f"{k} {g[k]}" for k in GRID_KEYS)
+            )
+            dv = tu["vs_route_only"].get(n)
+            L.append(
+                f"| `{n}` | {_ci(m['ndcg_rounds_2_10'])} | {_pair_cell(dv) if dv else '–'} | {m['completions']:.2f} | "
+                f"{params} |"
+            )
+        L.append("")
+    return L
+
+
 def render() -> str:
     docs = _systems()
     q = _load("_qrels.json")
@@ -528,6 +805,10 @@ def render() -> str:
         paired = _paired(docs, split)
         if paired:
             L += [f"Paired bootstrap of the per-persona difference ({split}):", "", cap, ""] + paired + [""]
+    L += _robustness(docs, cap)
+    L += _simulation()
+    L += _e2e(docs, cap)
+    L += _chat_eval()
     L += _candidate_generation(docs, cap)
     L += _rank_pilot()
     L += _explanation_example()

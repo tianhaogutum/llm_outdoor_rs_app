@@ -24,6 +24,10 @@
 #   make ltr           train the learned ranker on dev (LightGBM), write the model artefacts and _ltr.json
 #   make mmr-sweep     Phase 3d MMR lambda sweep on dev (+ docs/mmr_tradeoff.png)
 #   make latency       warm end-to-end latency benchmark of the default system (live calls, cents)
+#   make ltr-robust    retrain the default ranker without length_cap_ratio / the suspicious group (dev only)
+#   make simulate      Phase 5 feedback simulation: 10 rounds per test persona (+ docs/convergence.png)
+#   make sim-tune      Phase 5 feedback-parameter grid on a dev subset (judges holes: costs money)
+#   make chat-eval     scripted chat slot evaluation, replayed from eval/chat/cache (no provider call)
 #   make freeze        export every touched LLM cache entry to eval/cache/
 #   make replay-check  clean cache + cache-only + no credentials: reproduce personas, judgements, results
 #
@@ -58,7 +62,8 @@ LGBM_ENV :=
 endif
 
 .PHONY: setup seed frontend test lint dev llm-smoke data data-stats personas eval eval-all report judge-pilot owner-set \
-	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency
+	kappa freeze replay-check cg-tune rank-pilot ltr-sample ltr mmr-sweep latency ltr-robust simulate sim-tune \
+	chat-eval
 
 setup:
 	@if [ ! -x $(VENV)/bin/python ]; then \
@@ -138,6 +143,18 @@ mmr-sweep:
 
 latency:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.latency
+
+ltr-robust:
+	cd $(BACKEND) && $(LGBM_ENV) $(PYTHON) -m evalkit.ltr train-robust
+
+simulate:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.simulate run
+
+sim-tune:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.simulate tune
+
+chat-eval:
+	cd $(BACKEND) && $(PYTHON) -m evalkit.chat.run --all --cache-only
 
 freeze:
 	cd $(BACKEND) && $(PYTHON) -m evalkit.freeze export

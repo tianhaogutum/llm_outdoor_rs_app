@@ -52,20 +52,23 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
     for p in personas:  # use the committed objects for the judge (identical if no problem above)
         p.intent = committed[p.persona_id]["intent"]
 
-    # 2. judge batches recorded in the qrels
-    qrels = Qrels.load(paths.QRELS_FILE)
-    recs = list(qrels.records.values())
-    for name in sorted({r["judge"] for r in recs if r["source"] == "llm"}):
-        cfg = JUDGES[name]
-        c = client_for(cfg)
-        out = replay_batches(cfg, catalog, pmap, recs, client=c)
-        keys += c.touched_keys()
-        got = {(r["persona_id"], r["route_id"]): r["grade"] for r in out.records}
-        for r in recs:
-            if r["source"] == "llm" and r["judge"] == name:
-                k = (r["persona_id"], r["route_id"])
-                if got.get(k) != r["grade"]:
-                    problems.append(f"judge replay differs for {k}: {got.get(k)} vs {r['grade']}")
+    # 2. judge batches recorded in the qrels: the pooled qrels and, separately, the simulation's own judgements
+    #    (a pair can be in both, graded in different batches; each file is checked against its own replay)
+    from evalkit.simulate import sim_qrels_file
+
+    for qfile in (paths.QRELS_FILE, sim_qrels_file()):
+        recs = list(Qrels.load(qfile).records.values())
+        for name in sorted({r["judge"] for r in recs if r["source"] == "llm"}):
+            cfg = JUDGES[name]
+            c = client_for(cfg)
+            out = replay_batches(cfg, catalog, pmap, recs, client=c)
+            keys += c.touched_keys()
+            got = {(r["persona_id"], r["route_id"]): r["grade"] for r in out.records}
+            for r in recs:
+                if r["source"] == "llm" and r["judge"] == name:
+                    k = (r["persona_id"], r["route_id"])
+                    if got.get(k) != r["grade"]:
+                        problems.append(f"judge replay differs for {k} ({qfile.name}): {got.get(k)} vs {r['grade']}")
 
     # 3. judge pilot
     if (paths.RESULTS_DIR / "_judge_pilot.json").exists():
@@ -114,8 +117,13 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
             continue
         client = E.system_client()
         client.reset_touched()
+        chat = E.chat_client() if get_system_spec(name).uses_chat else None
+        if chat is not None:
+            chat.reset_touched()
         run, _, _ = E.run_system(name, catalog, list(pmap.values()))
         keys += client.touched_keys()
+        if chat is not None:
+            keys += chat.touched_keys()
         if check:
             stored, _ = E.load_run(name)
             for pid, r in run.items():
@@ -130,17 +138,30 @@ def _replay_all(check: bool) -> tuple[list[str], list[str]]:
 
 
 def _extra_replays() -> list:
-    """Further recorded experiments to replay: ranker pilot, MMR sweep (each returns (keys, problems))."""
-    from evalkit import rank_pilot
+    """Further recorded experiments to replay: ranker pilot, MMR sweep, the feedback simulation and its dev
+    tuning, the scripted chat evaluation (each returns (keys, problems))."""
+    from evalkit import mmr_sweep, rank_pilot, simulate
 
-    out = [rank_pilot.replay]
-    try:
-        from evalkit import mmr_sweep
+    return [rank_pilot.replay, mmr_sweep.replay, simulate.replay, _chat_eval_replay]
 
-        out.append(mmr_sweep.replay)
-    except ImportError:  # pragma: no cover
-        pass
-    return out
+
+def _chat_eval_replay(check: bool) -> tuple[list[str], list[str]]:
+    """Replay the scripted chat evaluation from its own frozen layer (``eval/chat/cache/``) and compare every
+    results file outside its ``volatile`` block. Its keys live in that layer, so none are exported here."""
+    from evalkit.chat import run as chat_run
+
+    if not check or not (paths.RESULTS_DIR / "_chat_eval.json").exists():
+        return [], []
+    probs: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="chat-replay-") as tmp:
+        chat_run.main(["--all", "--cache-only", "--out", tmp])
+        for f in sorted(Path(tmp).glob("*.json")):
+            committed = paths.RESULTS_DIR / ("_chat_eval.json" if f.name == "summary.json" else f"chat/{f.name}")
+            a = _strip(json.loads(f.read_text(encoding="utf-8")))
+            b = _strip(json.loads(committed.read_text(encoding="utf-8")))
+            if json.dumps(a, sort_keys=True) != json.dumps(b, sort_keys=True):
+                probs.append(f"chat eval differs: {committed.name}")
+    return [], probs
 
 
 def export() -> None:
