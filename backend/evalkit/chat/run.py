@@ -1,16 +1,16 @@
 """Scripted chat evaluation: run every case through the real turn logic for one or more candidate models.
 
-    python -m chat_eval.run --candidate g35f-min        # one candidate (live where the cache misses)
-    python -m chat_eval.run --all                       # every candidate, then the comparison table
-    python -m chat_eval.run --all --cache-only          # replay: no provider is ever called
-    python -m chat_eval.run --all --freeze              # also export the touched cache to chat_eval/cache/
+    python -m evalkit.chat.run --candidate g35f-min     # one candidate (live where the cache misses)
+    python -m evalkit.chat.run --all                    # every candidate, then the comparison table
+    python -m evalkit.chat.run --all --cache-only       # replay: no provider is ever called (make chat-eval)
+    python -m evalkit.chat.run --all --freeze           # also export the touched cache to eval/chat/cache/
 
 Every LLM call goes through ``app.llm`` (cache, budget, ledger). Recorded calls replay from the
-committed frozen cache ``chat_eval/cache/<candidate>/``, so a rerun is deterministic and free.
-Results: ``chat_eval/results/<candidate>.json`` and ``chat_eval/results/summary.json``. Everything except
-each file's ``volatile`` block is byte-identical on a replay.
+committed frozen cache ``eval/chat/cache/<candidate>/``, so a rerun is deterministic and free.
+Results: ``eval/results/chat/<candidate>.json`` and ``eval/results/_chat_eval.json`` (the summary that
+``make report`` renders). Everything except each file's ``volatile`` block is byte-identical on a replay.
 
-The cases (``chat_eval/data/utterances.jsonl``) and their expected slots were written by the same agent
+The cases (``eval/chat/utterances.jsonl``) and their expected slots were written by the same agent
 that wrote the extractor: see docs/CHAT.md section 8 for what that does to the numbers.
 """
 
@@ -26,7 +26,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-BACKEND = Path(__file__).resolve().parent.parent
+BACKEND = Path(__file__).resolve().parents[2]
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
@@ -35,12 +35,13 @@ from app.chat.engine import default_extractor  # noqa: E402
 from app.chat.extract import PROMPT_VERSION, SYSTEM_PROMPT, _shingles, _words  # noqa: E402
 from app.chat.llm import ChatModel, build_chat_client  # noqa: E402
 from app.llm import CacheMiss, LLMConfig, LLMError, SchemaValidationError  # noqa: E402
-from chat_eval.scoring import SCALAR_SLOTS, TAG_SLOTS, aggregate, percentile, score_case  # noqa: E402
+from evalkit import paths  # noqa: E402
+from evalkit.chat.scoring import SCALAR_SLOTS, TAG_SLOTS, aggregate, percentile, score_case  # noqa: E402
 
-HERE = Path(__file__).resolve().parent
-DATA = HERE / "data" / "utterances.jsonl"
-RESULTS = HERE / "results"
-FROZEN = HERE / "cache"
+DATA = paths.EVAL_DIR / "chat" / "utterances.jsonl"
+RESULTS = paths.RESULTS_DIR / "chat"
+SUMMARY = paths.RESULTS_DIR / "_chat_eval.json"
+FROZEN = paths.EVAL_DIR / "chat" / "cache"
 CATALOG = BACKEND / "data" / "catalog"
 PROTOCOL_VERSION = "chat-eval-v1"
 
@@ -238,7 +239,7 @@ async def run_candidate(cand: Candidate, cases: list[dict[str, Any]], resolver: 
         "prompt_version": PROMPT_VERSION,
         "candidate": asdict(cand),
         "models_used": models_used,
-        "cases_file": str(DATA.relative_to(BACKEND)),
+        "cases_file": "eval/chat/utterances.jsonl",
         "metrics": metrics,
         "cases": outcomes,
         "volatile": {
@@ -287,7 +288,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     ap.add_argument("--candidate", action="append", choices=sorted(CANDIDATES))
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--cache-only", action="store_true", help="replay only; a cache miss is a failed call")
-    ap.add_argument("--freeze", action="store_true", help="export the touched cache to chat_eval/cache/<name>/")
+    ap.add_argument("--freeze", action="store_true", help="export the touched cache to eval/chat/cache/<name>/")
     ap.add_argument("--cases", type=Path, default=DATA)
     ap.add_argument("--out", type=Path, default=RESULTS)
     args = ap.parse_args(argv)
@@ -309,8 +310,8 @@ def main(argv: Optional[list[str]] = None) -> int:
               f"hits={res['volatile']['cache_hits']} requests={res['volatile']['provider_requests']}",
               file=sys.stderr)
     if args.all:
-        write_json(args.out / "summary.json", {"protocol": PROTOCOL_VERSION, "cases": len(cases),
-                                               "candidates": rows})
+        summary = SUMMARY if args.out == RESULTS else args.out / "summary.json"
+        write_json(summary, {"protocol": PROTOCOL_VERSION, "cases": len(cases), "candidates": rows})
     return 0
 
 

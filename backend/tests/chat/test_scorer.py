@@ -1,4 +1,4 @@
-"""The scripted-eval scorer (chat_eval/scoring.py) on hand-made outcomes, and the runner on a tiny fixture."""
+"""The scripted-eval scorer (evalkit/chat/scoring.py) on hand-made outcomes, and the runner on a tiny fixture."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from chat_eval.scoring import aggregate, percentile, score_case, value_matches
+from evalkit.chat.scoring import aggregate, percentile, score_case, value_matches
 
 
 def test_number_tolerances():
@@ -68,7 +68,7 @@ def test_runner_on_a_tiny_fixture_is_deterministic(tmp_path, resolver, cache_onl
     """The rules candidate (offline) end to end on three cases; replay mode never blocks the mock."""
     import asyncio
 
-    from chat_eval.run import CANDIDATES, run_candidate
+    from evalkit.chat.run import CANDIDATES, run_candidate
 
     cases = [
         {"id": "t1", "group": "single_slot", "lang": "en", "start": {"place": "München"},
@@ -92,8 +92,8 @@ def test_runner_on_a_tiny_fixture_is_deterministic(tmp_path, resolver, cache_onl
 
 
 def test_scripted_set_is_well_formed():
-    from chat_eval.run import DATA, load_cases
-    from chat_eval.scoring import ALL_SLOTS
+    from evalkit.chat.run import DATA, load_cases
+    from evalkit.chat.scoring import ALL_SLOTS
 
     cases = load_cases(DATA)
     assert len(cases) >= 60 and len({c["id"] for c in cases}) == len(cases)

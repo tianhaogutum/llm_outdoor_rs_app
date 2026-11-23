@@ -2,17 +2,17 @@
  "protocol": "chat-eval-v1",
  "prompt_version": "chat-extract-v1",
  "candidate": {
-  "name": "g35fl-min",
-  "provider": "vertex",
-  "model": "gemini-3.5-flash-lite",
-  "location": "global",
-  "thinking": "minimal",
-  "note": "cheaper Flash-Lite, global endpoint"
+  "name": "haiku55",
+  "provider": "openrouter",
+  "model": "anthropic/claude-haiku-5.5",
+  "location": null,
+  "thinking": 0,
+  "note": "second vendor via OpenRouter"
  },
  "models_used": [
-  "gemini-3.5-flash-lite"
+  "anthropic/claude-haiku-5.5"
  ],
- "cases_file": "chat_eval/data/utterances.jsonl",
+ "cases_file": "eval/chat/utterances.jsonl",
  "metrics": {
   "cases": 72,
   "per_slot": {
@@ -34,27 +34,27 @@
    },
    "distance_band": {
     "tp": 13,
-    "fp": 2,
+    "fp": 1,
     "fn": 0,
-    "precision": 0.8667,
+    "precision": 0.9286,
     "recall": 1.0,
-    "f1": 0.9286
+    "f1": 0.963
    },
    "duration_hours": {
     "tp": 8,
-    "fp": 1,
+    "fp": 0,
     "fn": 0,
-    "precision": 0.8889,
+    "precision": 1.0,
     "recall": 1.0,
-    "f1": 0.9412
+    "f1": 1.0
    },
    "distance_cap_km": {
-    "tp": 5,
-    "fp": 1,
-    "fn": 1,
-    "precision": 0.8333,
-    "recall": 0.8333,
-    "f1": 0.8333
+    "tp": 6,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
    },
    "travel_radius_km": {
     "tp": 3,
@@ -73,38 +73,38 @@
     "f1": 1.0
    },
    "tags_preferred": {
-    "tp": 35,
-    "fp": 0,
-    "fn": 3,
-    "precision": 1.0,
-    "recall": 0.9211,
-    "f1": 0.9589
+    "tp": 38,
+    "fp": 1,
+    "fn": 0,
+    "precision": 0.9744,
+    "recall": 1.0,
+    "f1": 0.987
    },
    "tags_avoided": {
-    "tp": 5,
-    "fp": 0,
-    "fn": 1,
-    "precision": 1.0,
-    "recall": 0.8333,
-    "f1": 0.9091
+    "tp": 6,
+    "fp": 1,
+    "fn": 0,
+    "precision": 0.8571,
+    "recall": 1.0,
+    "f1": 0.9231
    }
   },
   "per_type": {
    "enum": {
     "tp": 51,
-    "fp": 3,
+    "fp": 2,
     "fn": 0,
-    "precision": 0.9444,
+    "precision": 0.9623,
     "recall": 1.0,
-    "f1": 0.9714
+    "f1": 0.9808
    },
    "number": {
-    "tp": 16,
-    "fp": 2,
-    "fn": 1,
-    "precision": 0.8889,
-    "recall": 0.9412,
-    "f1": 0.9143
+    "tp": 17,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
    },
    "place": {
     "tp": 16,
@@ -115,29 +115,29 @@
     "f1": 1.0
    },
    "tags": {
-    "tp": 40,
-    "fp": 0,
-    "fn": 4,
-    "precision": 1.0,
-    "recall": 0.9091,
-    "f1": 0.9524
+    "tp": 44,
+    "fp": 2,
+    "fn": 0,
+    "precision": 0.9565,
+    "recall": 1.0,
+    "f1": 0.9778
    }
   },
   "overall": {
-   "tp": 123,
-   "fp": 5,
-   "fn": 5,
-   "precision": 0.9609,
-   "recall": 0.9609,
-   "f1": 0.9609
+   "tp": 128,
+   "fp": 4,
+   "fn": 0,
+   "precision": 0.9697,
+   "recall": 1.0,
+   "f1": 0.9846
   },
   "clarify": {
-   "decision_accuracy": 0.9861,
-   "slot_accuracy": 0.9861,
+   "decision_accuracy": 1.0,
+   "slot_accuracy": 1.0,
    "confusion": {
-    "tp": 7,
+    "tp": 8,
     "fp": 0,
-    "fn": 1,
+    "fn": 0,
     "tn": 64
    }
   },
@@ -148,48 +148,48 @@
   "by_group": {
    "correction": {
     "cases": 8,
-    "tp": 14,
-    "fp": 2,
-    "fn": 1,
+    "tp": 15,
+    "fp": 1,
+    "fn": 0,
     "clarify_ok": 8,
-    "precision": 0.875,
-    "recall": 0.9333
+    "precision": 0.9375,
+    "recall": 1.0
    },
    "family_dog": {
     "cases": 5,
     "tp": 7,
-    "fp": 2,
+    "fp": 0,
     "fn": 0,
-    "clarify_ok": 4,
-    "precision": 0.7778,
+    "clarify_ok": 5,
+    "precision": 1.0,
     "recall": 1.0
    },
    "injection": {
     "cases": 6,
-    "tp": 4,
+    "tp": 5,
     "fp": 1,
-    "fn": 1,
+    "fn": 0,
     "clarify_ok": 6,
-    "precision": 0.8,
-    "recall": 0.8
+    "precision": 0.8333,
+    "recall": 1.0
    },
    "multi_slot": {
     "cases": 10,
-    "tp": 48,
-    "fp": 0,
-    "fn": 2,
+    "tp": 50,
+    "fp": 1,
+    "fn": 0,
     "clarify_ok": 10,
-    "precision": 1.0,
-    "recall": 0.96
+    "precision": 0.9804,
+    "recall": 1.0
    },
    "negation": {
     "cases": 6,
-    "tp": 7,
-    "fp": 0,
-    "fn": 1,
+    "tp": 8,
+    "fp": 1,
+    "fn": 0,
     "clarify_ok": 6,
-    "precision": 1.0,
-    "recall": 0.875
+    "precision": 0.8889,
+    "recall": 1.0
    },
    "numbers": {
     "cases": 8,
@@ -247,11 +247,9 @@
    "other_errors": 0
   },
   "validator_drops": {
-   "total": 1,
-   "per_call": 0.0119,
-   "by_reason": {
-    "place_name: not a plausible place name": 1
-   }
+   "total": 0,
+   "per_call": 0.0,
+   "by_reason": {}
   },
   "injection": {
    "cases": 6,
@@ -260,13 +258,13 @@
    "out_of_range_values_stored": 0
   },
   "latency_ms": {
-   "p50": 1013.4,
-   "p95": 1764.3,
+   "p50": 1123.2,
+   "p95": 2081.1,
    "basis": "nominal"
   },
   "cost_usd": {
-   "total": 0.142766,
-   "per_call": 0.0016996,
+   "total": 0.060261,
+   "per_call": 0.00071739,
    "basis": "nominal (what the calls cost when recorded)"
   }
  },
@@ -299,12 +297,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "cycling around München"
+      "intent": "a cycling tour"
      },
      "update": {
       "language": "en",
       "activity": "cycling",
-      "intent": "cycling around München"
+      "intent": "a cycling tour"
      },
      "dropped": [],
      "changes": [
@@ -317,21 +315,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "cycling around München",
+       "new": "a cycling tour",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016755,
-     "nominal_latency_ms": 1892.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007083,
+     "nominal_latency_ms": 2351.8
     }
    ],
    "changes": {
     "activity": "cycling"
    },
    "clarify": null,
-   "intent": "cycling around München",
+   "intent": "a cycling tour",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -348,7 +346,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "cycling around München"
+    "intent": "a cycling tour"
    },
    "defaults_applied": [],
    "score": {
@@ -390,12 +388,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung in München"
+      "intent": "Wanderung"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
-      "intent": "Wanderung in München"
+      "intent": "Wanderung"
      },
      "dropped": [],
      "changes": [
@@ -408,21 +406,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung in München",
+       "new": "Wanderung",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016805,
-     "nominal_latency_ms": 1885.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007085,
+     "nominal_latency_ms": 2342.7
     }
    ],
    "changes": {
     "activity": "hiking"
    },
    "clarify": null,
-   "intent": "Wanderung in München",
+   "intent": "Wanderung",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -439,7 +437,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung in München"
+    "intent": "Wanderung"
    },
    "defaults_applied": [],
    "score": {
@@ -481,12 +479,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "easy hike around München"
+      "intent": "an easy hike"
      },
      "update": {
       "language": "en",
       "difficulty": "easy",
-      "intent": "easy hike around München"
+      "intent": "an easy hike"
      },
      "dropped": [],
      "changes": [
@@ -499,21 +497,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "easy hike around München",
+       "new": "an easy hike",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015896,
-     "nominal_latency_ms": 1765.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007076,
+     "nominal_latency_ms": 1972.3
     }
    ],
    "changes": {
     "difficulty": "easy"
    },
    "clarify": null,
-   "intent": "easy hike around München",
+   "intent": "an easy hike",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -530,7 +528,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "easy hike around München"
+    "intent": "an easy hike"
    },
    "defaults_applied": [],
    "score": {
@@ -572,12 +570,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "eine anspruchsvolle Wanderung ab München"
+      "intent": "eine anspruchsvolle Wandertour"
      },
      "update": {
       "language": "de",
       "difficulty": "hard",
-      "intent": "eine anspruchsvolle Wanderung ab München"
+      "intent": "eine anspruchsvolle Wandertour"
      },
      "dropped": [],
      "changes": [
@@ -590,21 +588,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "eine anspruchsvolle Wanderung ab München",
+       "new": "eine anspruchsvolle Wandertour",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016911,
-     "nominal_latency_ms": 1709.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007134,
+     "nominal_latency_ms": 3444.2
     }
    ],
    "changes": {
     "difficulty": "hard"
    },
    "clarify": null,
-   "intent": "eine anspruchsvolle Wanderung ab München",
+   "intent": "eine anspruchsvolle Wandertour",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -621,7 +619,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "eine anspruchsvolle Wanderung ab München"
+    "intent": "eine anspruchsvolle Wandertour"
    },
    "defaults_applied": [],
    "score": {
@@ -665,14 +663,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a hike around München with a beer garden"
+      "intent": "hiking routes from München with a beer garden"
      },
      "update": {
       "language": "en",
       "tags_add": [
        "Beer garden"
       ],
-      "intent": "a hike around München with a beer garden"
+      "intent": "hiking routes from München with a beer garden"
      },
      "dropped": [],
      "changes": [
@@ -687,14 +685,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a hike around München with a beer garden",
+       "new": "hiking routes from München with a beer garden",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001708,
-     "nominal_latency_ms": 1768.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007148,
+     "nominal_latency_ms": 2081.6
     }
    ],
    "changes": {
@@ -703,7 +701,7 @@
     ]
    },
    "clarify": null,
-   "intent": "a hike around München with a beer garden",
+   "intent": "hiking routes from München with a beer garden",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -722,7 +720,7 @@
      "Beer garden"
     ],
     "tags_avoided": [],
-    "intent": "a hike around München with a beer garden"
+    "intent": "hiking routes from München with a beer garden"
    },
    "defaults_applied": [],
    "score": {
@@ -766,14 +764,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Eine Radtour ab München als Rundweg, bei dem Start und Ziel am selben Ort liegen"
+      "intent": "Radtour in München als Rundtour, Start und Ziel am selben Ort"
      },
      "update": {
       "language": "de",
       "tags_add": [
        "Round trip"
       ],
-      "intent": "Eine Radtour ab München als Rundweg, bei dem Start und Ziel am selben Ort liegen"
+      "intent": "Radtour in München als Rundtour, Start und Ziel am selben Ort"
      },
      "dropped": [],
      "changes": [
@@ -788,14 +786,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Eine Radtour ab München als Rundweg, bei dem Start und Ziel am selben Ort liegen",
+       "new": "Radtour in München als Rundtour, Start und Ziel am selben Ort",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017363,
-     "nominal_latency_ms": 1868.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007222,
+     "nominal_latency_ms": 2053.7
     }
    ],
    "changes": {
@@ -804,7 +802,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Eine Radtour ab München als Rundweg, bei dem Start und Ziel am selben Ort liegen",
+   "intent": "Radtour in München als Rundtour, Start und Ziel am selben Ort",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -823,7 +821,7 @@
      "Round trip"
     ],
     "tags_avoided": [],
-    "intent": "Eine Radtour ab München als Rundweg, bei dem Start und Ziel am selben Ort liegen"
+    "intent": "Radtour in München als Rundtour, Start und Ziel am selben Ort"
    },
    "defaults_applied": [],
    "score": {
@@ -865,12 +863,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking starting from Regensburg"
+      "intent": "a hike starting from Regensburg"
      },
      "update": {
       "language": "en",
       "place_name": "Regensburg",
-      "intent": "hiking starting from Regensburg"
+      "intent": "a hike starting from Regensburg"
      },
      "dropped": [],
      "changes": [
@@ -889,21 +887,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking starting from Regensburg",
+       "new": "a hike starting from Regensburg",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016824,
-     "nominal_latency_ms": 1121.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000713,
+     "nominal_latency_ms": 1229.9
     }
    ],
    "changes": {
     "place": "Regensburg|Regensburg"
    },
    "clarify": null,
-   "intent": "hiking starting from Regensburg",
+   "intent": "a hike starting from Regensburg",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -920,7 +918,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "hiking starting from Regensburg"
+    "intent": "a hike starting from Regensburg"
    },
    "defaults_applied": [],
    "score": {
@@ -962,12 +960,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München mit maximal 10 Kilometern Länge"
+      "intent": "Wanderung ab München, höchstens 10 Kilometer"
      },
      "update": {
       "language": "de",
       "distance_cap_km": 10.0,
-      "intent": "Wanderung ab München mit maximal 10 Kilometern Länge"
+      "intent": "Wanderung ab München, höchstens 10 Kilometer"
      },
      "dropped": [],
      "changes": [
@@ -980,21 +978,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München mit maximal 10 Kilometern Länge",
+       "new": "Wanderung ab München, höchstens 10 Kilometer",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017117,
-     "nominal_latency_ms": 1159.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000717,
+     "nominal_latency_ms": 2133.5
     }
    ],
    "changes": {
     "distance_cap_km": 10.0
    },
    "clarify": null,
-   "intent": "Wanderung ab München mit maximal 10 Kilometern Länge",
+   "intent": "Wanderung ab München, höchstens 10 Kilometer",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -1011,7 +1009,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung ab München mit maximal 10 Kilometern Länge"
+    "intent": "Wanderung ab München, höchstens 10 Kilometer"
    },
    "defaults_applied": [],
    "score": {
@@ -1053,12 +1051,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "running around München starting within 15 km"
+      "intent": "running routes starting within 15 km of home near München"
      },
      "update": {
       "language": "en",
       "travel_radius_km": 15.0,
-      "intent": "running around München starting within 15 km"
+      "intent": "running routes starting within 15 km of home near München"
      },
      "dropped": [],
      "changes": [
@@ -1071,21 +1069,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "running around München starting within 15 km",
+       "new": "running routes starting within 15 km of home near München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016995,
-     "nominal_latency_ms": 919.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000713,
+     "nominal_latency_ms": 1283.3
     }
    ],
    "changes": {
     "travel_radius_km": 15.0
    },
    "clarify": null,
-   "intent": "running around München starting within 15 km",
+   "intent": "running routes starting within 15 km of home near München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "running",
@@ -1102,7 +1100,7 @@
     "travel_radius_km": 15.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "running around München starting within 15 km"
+    "intent": "running routes starting within 15 km of home near München"
    },
    "defaults_applied": [],
    "score": {
@@ -1144,12 +1142,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "mountain biking around München"
+      "intent": "mountain bike route around München"
      },
      "update": {
       "language": "en",
       "activity": "mtb",
-      "intent": "mountain biking around München"
+      "intent": "mountain bike route around München"
      },
      "dropped": [],
      "changes": [
@@ -1162,21 +1160,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "mountain biking around München",
+       "new": "mountain bike route around München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001679,
-     "nominal_latency_ms": 1053.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007095,
+     "nominal_latency_ms": 2078.0
     }
    ],
    "changes": {
     "activity": "mtb"
    },
    "clarify": null,
-   "intent": "mountain biking around München",
+   "intent": "mountain bike route around München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "mtb",
@@ -1193,7 +1191,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "mountain biking around München"
+    "intent": "mountain bike route around München"
    },
    "defaults_applied": [],
    "score": {
@@ -1232,12 +1230,13 @@
       "place_name": "Tegernsee",
       "travel_radius_km": null,
       "tags_add": [
-       "Hut"
+       "Hut",
+       "Refreshment stops available"
       ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Easy hike near Tegernsee of about 10 km with a hut to eat at"
+      "intent": "an easy hike of about 10 km near Tegernsee with a hut where we can eat"
      },
      "update": {
       "language": "en",
@@ -1246,9 +1245,10 @@
       "distance_target_km": 10.0,
       "place_name": "Tegernsee",
       "tags_add": [
-       "Hut"
+       "Hut",
+       "Refreshment stops available"
       ],
-      "intent": "Easy hike near Tegernsee of about 10 km with a hut to eat at"
+      "intent": "an easy hike of about 10 km near Tegernsee with a hut where we can eat"
      },
      "dropped": [],
      "changes": [
@@ -1286,21 +1286,22 @@
        "slot": "tags_preferred",
        "old": [],
        "new": [
-        "Hut"
+        "Hut",
+        "Refreshment stops available"
        ],
        "source": "chat"
       },
       {
        "slot": "intent",
        "old": null,
-       "new": "Easy hike near Tegernsee of about 10 km with a hut to eat at",
+       "new": "an easy hike of about 10 km near Tegernsee with a hut where we can eat",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017613,
-     "nominal_latency_ms": 1758.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007339,
+     "nominal_latency_ms": 1554.6
     }
    ],
    "changes": {
@@ -1309,11 +1310,12 @@
     "distance_band": "medium",
     "place": "Tegernsee|Landkreis Miesbach",
     "tags_preferred": [
-     "Hut"
+     "Hut",
+     "Refreshment stops available"
     ]
    },
    "clarify": null,
-   "intent": "Easy hike near Tegernsee of about 10 km with a hut to eat at",
+   "intent": "an easy hike of about 10 km near Tegernsee with a hut where we can eat",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -1329,10 +1331,11 @@
     },
     "travel_radius_km": 50.0,
     "tags_preferred": [
-     "Hut"
+     "Hut",
+     "Refreshment stops available"
     ],
     "tags_avoided": [],
-    "intent": "Easy hike near Tegernsee of about 10 km with a hut to eat at"
+    "intent": "an easy hike of about 10 km near Tegernsee with a hut where we can eat"
    },
    "defaults_applied": [],
    "score": {
@@ -1374,10 +1377,12 @@
        "Beer garden",
        "Flat"
       ],
-      "tags_avoid": [],
+      "tags_avoid": [
+       "Big climb"
+      ],
       "tags_remove": [],
       "clear": [],
-      "intent": "Radtour ab Bamberg mit etwa 50 km, gerne mit Biergarten und wenig Höhenmetern"
+      "intent": "Radtour ab Bamberg mit etwa 50 km, mit Biergarten und wenig Höhenmetern"
      },
      "update": {
       "language": "de",
@@ -1388,7 +1393,10 @@
        "Beer garden",
        "Flat"
       ],
-      "intent": "Radtour ab Bamberg mit etwa 50 km, gerne mit Biergarten und wenig Höhenmetern"
+      "tags_avoid": [
+       "Big climb"
+      ],
+      "intent": "Radtour ab Bamberg mit etwa 50 km, mit Biergarten und wenig Höhenmetern"
      },
      "dropped": [],
      "changes": [
@@ -1426,16 +1434,24 @@
        "source": "chat"
       },
       {
+       "slot": "tags_avoided",
+       "old": [],
+       "new": [
+        "Big climb"
+       ],
+       "source": "chat"
+      },
+      {
        "slot": "intent",
        "old": null,
-       "new": "Radtour ab Bamberg mit etwa 50 km, gerne mit Biergarten und wenig Höhenmetern",
+       "new": "Radtour ab Bamberg mit etwa 50 km, mit Biergarten und wenig Höhenmetern",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016678,
-     "nominal_latency_ms": 1048.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007411,
+     "nominal_latency_ms": 1104.8
     }
    ],
    "changes": {
@@ -1445,10 +1461,13 @@
     "tags_preferred": [
      "Beer garden",
      "Flat"
+    ],
+    "tags_avoided": [
+     "Big climb"
     ]
    },
    "clarify": null,
-   "intent": "Radtour ab Bamberg mit etwa 50 km, gerne mit Biergarten und wenig Höhenmetern",
+   "intent": "Radtour ab Bamberg mit etwa 50 km, mit Biergarten und wenig Höhenmetern",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -1467,21 +1486,14 @@
      "Beer garden",
      "Flat"
     ],
-    "tags_avoided": [],
-    "intent": "Radtour ab Bamberg mit etwa 50 km, gerne mit Biergarten und wenig Höhenmetern"
+    "tags_avoided": [
+     "Big climb"
+    ],
+    "intent": "Radtour ab Bamberg mit etwa 50 km, mit Biergarten und wenig Höhenmetern"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [
-     {
-      "slot": "tags_avoided",
-      "kind": "fn",
-      "predicted": [],
-      "expected": [
-       "Big climb"
-      ]
-     }
-    ],
+    "errors": [],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -1521,7 +1533,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "A challenging full-day summit hike around Garmisch-Partenkirchen"
+      "intent": "a challenging summit hike around Garmisch-Partenkirchen, about a full day"
      },
      "update": {
       "language": "en",
@@ -1532,7 +1544,7 @@
       "tags_add": [
        "Summit route"
       ],
-      "intent": "A challenging full-day summit hike around Garmisch-Partenkirchen"
+      "intent": "a challenging summit hike around Garmisch-Partenkirchen, about a full day"
      },
      "dropped": [],
      "changes": [
@@ -1583,14 +1595,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "A challenging full-day summit hike around Garmisch-Partenkirchen",
+       "new": "a challenging summit hike around Garmisch-Partenkirchen, about a full day",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017576,
-     "nominal_latency_ms": 1098.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007323,
+     "nominal_latency_ms": 1279.0
     }
    ],
    "changes": {
@@ -1604,7 +1616,7 @@
     ]
    },
    "clarify": null,
-   "intent": "A challenging full-day summit hike around Garmisch-Partenkirchen",
+   "intent": "a challenging summit hike around Garmisch-Partenkirchen, about a full day",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -1623,7 +1635,7 @@
      "Summit route"
     ],
     "tags_avoided": [],
-    "intent": "A challenging full-day summit hike around Garmisch-Partenkirchen"
+    "intent": "a challenging summit hike around Garmisch-Partenkirchen, about a full day"
    },
    "defaults_applied": [],
    "score": {
@@ -1652,7 +1664,7 @@
      "raw": {
       "language": "de",
       "activity": "hiking",
-      "difficulty": null,
+      "difficulty": "easy",
       "difficulty_change": null,
       "distance_band": "short",
       "distance_change": null,
@@ -1668,18 +1680,19 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "kurze Wanderung mit Kindern und Bademöglichkeit bei Starnberg"
+      "intent": "Kurze, leichte Wanderung bei Starnberg mit Kindern, mit Badestelle"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
+      "difficulty": "easy",
       "distance_band": "short",
       "place_name": "Starnberg",
       "tags_add": [
        "Family-friendly",
        "Swimming spot"
       ],
-      "intent": "kurze Wanderung mit Kindern und Bademöglichkeit bei Starnberg"
+      "intent": "Kurze, leichte Wanderung bei Starnberg mit Kindern, mit Badestelle"
      },
      "dropped": [],
      "changes": [
@@ -1687,6 +1700,12 @@
        "slot": "activity",
        "old": null,
        "new": "hiking",
+       "source": "chat"
+      },
+      {
+       "slot": "difficulty",
+       "old": null,
+       "new": "easy",
        "source": "chat"
       },
       {
@@ -1719,18 +1738,19 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "kurze Wanderung mit Kindern und Bademöglichkeit bei Starnberg",
+       "new": "Kurze, leichte Wanderung bei Starnberg mit Kindern, mit Badestelle",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017607,
-     "nominal_latency_ms": 1069.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007371,
+     "nominal_latency_ms": 1180.0
     }
    ],
    "changes": {
     "activity": "hiking",
+    "difficulty": "easy",
     "distance_band": "short",
     "place": "Starnberg|Landkreis Starnberg",
     "tags_preferred": [
@@ -1739,11 +1759,11 @@
     ]
    },
    "clarify": null,
-   "intent": "kurze Wanderung mit Kindern und Bademöglichkeit bei Starnberg",
+   "intent": "Kurze, leichte Wanderung bei Starnberg mit Kindern, mit Badestelle",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
-    "difficulty": null,
+    "difficulty": "easy",
     "distance_band": "short",
     "duration_hours": null,
     "distance_cap_km": null,
@@ -1759,7 +1779,7 @@
      "Swimming spot"
     ],
     "tags_avoided": [],
-    "intent": "kurze Wanderung mit Kindern und Bademöglichkeit bei Starnberg"
+    "intent": "Kurze, leichte Wanderung bei Starnberg mit Kindern, mit Badestelle"
    },
    "defaults_applied": [],
    "score": {
@@ -1788,7 +1808,7 @@
      "raw": {
       "language": "en",
       "activity": "running",
-      "difficulty": null,
+      "difficulty": "easy",
       "difficulty_change": null,
       "distance_band": null,
       "distance_change": null,
@@ -1804,17 +1824,18 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "A 2-hour run along the river in München, flat please"
+      "intent": "a flat two-hour run along a river"
      },
      "update": {
       "language": "en",
       "activity": "running",
+      "difficulty": "easy",
       "duration_hours": 2.0,
       "tags_add": [
        "River",
        "Flat"
       ],
-      "intent": "A 2-hour run along the river in München, flat please"
+      "intent": "a flat two-hour run along a river"
      },
      "dropped": [],
      "changes": [
@@ -1822,6 +1843,12 @@
        "slot": "activity",
        "old": null,
        "new": "running",
+       "source": "chat"
+      },
+      {
+       "slot": "difficulty",
+       "old": null,
+       "new": "easy",
        "source": "chat"
       },
       {
@@ -1848,18 +1875,19 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "A 2-hour run along the river in München, flat please",
+       "new": "a flat two-hour run along a river",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017445,
-     "nominal_latency_ms": 1136.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007176,
+     "nominal_latency_ms": 1083.2
     }
    ],
    "changes": {
     "activity": "running",
+    "difficulty": "easy",
     "distance_band": "medium",
     "duration_hours": 2.0,
     "tags_preferred": [
@@ -1868,11 +1896,11 @@
     ]
    },
    "clarify": null,
-   "intent": "A 2-hour run along the river in München, flat please",
+   "intent": "a flat two-hour run along a river",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "running",
-    "difficulty": null,
+    "difficulty": "easy",
     "distance_band": "medium",
     "duration_hours": 2.0,
     "distance_cap_km": null,
@@ -1888,7 +1916,7 @@
      "Flat"
     ],
     "tags_avoided": [],
-    "intent": "A 2-hour run along the river in München, flat please"
+    "intent": "a flat two-hour run along a river"
    },
    "defaults_applied": [],
    "score": {
@@ -1932,7 +1960,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "mountain bike singletrails near Oberammergau for very fit riders"
+      "intent": "a demanding mountain bike ride on singletrails near Oberammergau"
      },
      "update": {
       "language": "en",
@@ -1942,7 +1970,7 @@
       "tags_add": [
        "Singletrail/Free ride"
       ],
-      "intent": "mountain bike singletrails near Oberammergau for very fit riders"
+      "intent": "a demanding mountain bike ride on singletrails near Oberammergau"
      },
      "dropped": [],
      "changes": [
@@ -1981,14 +2009,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "mountain bike singletrails near Oberammergau for very fit riders",
+       "new": "a demanding mountain bike ride on singletrails near Oberammergau",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017448,
-     "nominal_latency_ms": 943.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007281,
+     "nominal_latency_ms": 1297.6
     }
    ],
    "changes": {
@@ -2000,7 +2028,7 @@
     ]
    },
    "clarify": null,
-   "intent": "mountain bike singletrails near Oberammergau for very fit riders",
+   "intent": "a demanding mountain bike ride on singletrails near Oberammergau",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "mtb",
@@ -2019,7 +2047,7 @@
      "Singletrail/Free ride"
     ],
     "tags_avoided": [],
-    "intent": "mountain bike singletrails near Oberammergau for very fit riders"
+    "intent": "a demanding mountain bike ride on singletrails near Oberammergau"
    },
    "defaults_applied": [],
    "score": {
@@ -2127,9 +2155,9 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001767,
-     "nominal_latency_ms": 1289.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007389,
+     "nominal_latency_ms": 1827.8
     }
    ],
    "changes": {
@@ -2199,27 +2227,26 @@
       "duration_hours": 4.0,
       "distance_target_km": null,
       "distance_cap_km": null,
-      "place_name": "München",
+      "place_name": null,
       "travel_radius_km": null,
       "tags_add": [
        "Castle",
-       "Train access"
+       "Public transport access"
       ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "half-day bike ride from München to a castle with train access"
+      "intent": "a half-day bike ride to a castle, reachable by train"
      },
      "update": {
       "language": "en",
       "activity": "cycling",
       "duration_hours": 4.0,
-      "place_name": "München",
       "tags_add": [
        "Castle",
-       "Train access"
+       "Public transport access"
       ],
-      "intent": "half-day bike ride from München to a castle with train access"
+      "intent": "a half-day bike ride to a castle, reachable by train"
      },
      "dropped": [],
      "changes": [
@@ -2246,21 +2273,21 @@
        "old": [],
        "new": [
         "Castle",
-        "Train access"
+        "Public transport access"
        ],
        "source": "chat"
       },
       {
        "slot": "intent",
        "old": null,
-       "new": "half-day bike ride from München to a castle with train access",
+       "new": "a half-day bike ride to a castle, reachable by train",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017526,
-     "nominal_latency_ms": 1082.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007231,
+     "nominal_latency_ms": 1570.4
     }
    ],
    "changes": {
@@ -2269,11 +2296,11 @@
     "duration_hours": 4.0,
     "tags_preferred": [
      "Castle",
-     "Train access"
+     "Public transport access"
     ]
    },
    "clarify": null,
-   "intent": "half-day bike ride from München to a castle with train access",
+   "intent": "a half-day bike ride to a castle, reachable by train",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -2290,26 +2317,14 @@
     "travel_radius_km": null,
     "tags_preferred": [
      "Castle",
-     "Train access"
+     "Public transport access"
     ],
     "tags_avoided": [],
-    "intent": "half-day bike ride from München to a castle with train access"
+    "intent": "a half-day bike ride to a castle, reachable by train"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [
-     {
-      "slot": "tags_preferred",
-      "kind": "fn",
-      "predicted": [
-       "Castle",
-       "Train access"
-      ],
-      "expected": [
-       "Public transport access"
-      ]
-     }
-    ],
+    "errors": [],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -2350,7 +2365,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Eine mittagschwere Rundwanderung zum Wasserfall in der Nähe von Berchtesgaden"
+      "intent": "Rundwanderung zu einem Wasserfall in der Nähe von Berchtesgaden, mittelschwer"
      },
      "update": {
       "language": "de",
@@ -2361,7 +2376,7 @@
        "Round trip",
        "Waterfall"
       ],
-      "intent": "Eine mittagschwere Rundwanderung zum Wasserfall in der Nähe von Berchtesgaden"
+      "intent": "Rundwanderung zu einem Wasserfall in der Nähe von Berchtesgaden, mittelschwer"
      },
      "dropped": [],
      "changes": [
@@ -2401,14 +2416,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Eine mittagschwere Rundwanderung zum Wasserfall in der Nähe von Berchtesgaden",
+       "new": "Rundwanderung zu einem Wasserfall in der Nähe von Berchtesgaden, mittelschwer",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017722,
-     "nominal_latency_ms": 1007.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007396,
+     "nominal_latency_ms": 1008.4
     }
    ],
    "changes": {
@@ -2421,7 +2436,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Eine mittagschwere Rundwanderung zum Wasserfall in der Nähe von Berchtesgaden",
+   "intent": "Rundwanderung zu einem Wasserfall in der Nähe von Berchtesgaden, mittelschwer",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -2441,7 +2456,7 @@
      "Waterfall"
     ],
     "tags_avoided": [],
-    "intent": "Eine mittagschwere Rundwanderung zum Wasserfall in der Nähe von Berchtesgaden"
+    "intent": "Rundwanderung zu einem Wasserfall in der Nähe von Berchtesgaden, mittelschwer"
    },
    "defaults_applied": [],
    "score": {
@@ -2480,12 +2495,13 @@
       "place_name": "Mittenwald",
       "travel_radius_km": null,
       "tags_add": [
-       "Viewpoint"
+       "Viewpoint",
+       "Mostly unpaved"
       ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Trail run from Mittenwald under 15 km with a view"
+      "intent": "a trail run from Mittenwald, at most 15 km, with a view"
      },
      "update": {
       "language": "en",
@@ -2493,9 +2509,10 @@
       "distance_cap_km": 15.0,
       "place_name": "Mittenwald",
       "tags_add": [
-       "Viewpoint"
+       "Viewpoint",
+       "Mostly unpaved"
       ],
-      "intent": "Trail run from Mittenwald under 15 km with a view"
+      "intent": "a trail run from Mittenwald, at most 15 km, with a view"
      },
      "dropped": [],
      "changes": [
@@ -2527,21 +2544,22 @@
        "slot": "tags_preferred",
        "old": [],
        "new": [
-        "Viewpoint"
+        "Viewpoint",
+        "Mostly unpaved"
        ],
        "source": "chat"
       },
       {
        "slot": "intent",
        "old": null,
-       "new": "Trail run from Mittenwald under 15 km with a view",
+       "new": "a trail run from Mittenwald, at most 15 km, with a view",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017454,
-     "nominal_latency_ms": 1054.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007301,
+     "nominal_latency_ms": 1224.4
     }
    ],
    "changes": {
@@ -2549,11 +2567,12 @@
     "distance_cap_km": 15.0,
     "place": "Mittenwald|Landkreis Garmisch-Partenkirchen",
     "tags_preferred": [
-     "Viewpoint"
+     "Viewpoint",
+     "Mostly unpaved"
     ]
    },
    "clarify": null,
-   "intent": "Trail run from Mittenwald under 15 km with a view",
+   "intent": "a trail run from Mittenwald, at most 15 km, with a view",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "running",
@@ -2569,14 +2588,26 @@
     },
     "travel_radius_km": 50.0,
     "tags_preferred": [
-     "Viewpoint"
+     "Viewpoint",
+     "Mostly unpaved"
     ],
     "tags_avoided": [],
-    "intent": "Trail run from Mittenwald under 15 km with a view"
+    "intent": "a trail run from Mittenwald, at most 15 km, with a view"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [],
+    "errors": [
+     {
+      "slot": "tags_preferred",
+      "kind": "fp",
+      "predicted": [
+       "Mostly unpaved"
+      ],
+      "expected": [
+       "Viewpoint"
+      ]
+     }
+    ],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -2614,30 +2645,30 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Something nice for the weekend in München"
+      "intent": "something nice for a weekend outing"
      },
      "update": {
       "language": "en",
-      "intent": "Something nice for the weekend in München"
+      "intent": "something nice for a weekend outing"
      },
      "dropped": [],
      "changes": [
       {
        "slot": "intent",
        "old": null,
-       "new": "Something nice for the weekend in München",
+       "new": "something nice for a weekend outing",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015949,
-     "nominal_latency_ms": 1151.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007094,
+     "nominal_latency_ms": 846.2
     }
    ],
    "changes": {},
    "clarify": "activity",
-   "intent": "Something nice for the weekend in München",
+   "intent": "something nice for a weekend outing",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": null,
@@ -2654,7 +2685,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Something nice for the weekend in München"
+    "intent": "something nice for a weekend outing"
    },
    "defaults_applied": [],
    "score": {
@@ -2693,19 +2724,21 @@
       "place_name": null,
       "travel_radius_km": null,
       "tags_add": [
-       "Lake"
+       "Lake",
+       "Scenic"
       ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Schöne Tour in München mit einem See"
+      "intent": "Etwas Schönes mit See, ab München"
      },
      "update": {
       "language": "de",
       "tags_add": [
-       "Lake"
+       "Lake",
+       "Scenic"
       ],
-      "intent": "Schöne Tour in München mit einem See"
+      "intent": "Etwas Schönes mit See, ab München"
      },
      "dropped": [],
      "changes": [
@@ -2713,30 +2746,32 @@
        "slot": "tags_preferred",
        "old": [],
        "new": [
-        "Lake"
+        "Lake",
+        "Scenic"
        ],
        "source": "chat"
       },
       {
        "slot": "intent",
        "old": null,
-       "new": "Schöne Tour in München mit einem See",
+       "new": "Etwas Schönes mit See, ab München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017055,
-     "nominal_latency_ms": 1065.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007174,
+     "nominal_latency_ms": 1019.6
     }
    ],
    "changes": {
     "tags_preferred": [
-     "Lake"
+     "Lake",
+     "Scenic"
     ]
    },
    "clarify": "activity",
-   "intent": "Schöne Tour in München mit einem See",
+   "intent": "Etwas Schönes mit See, ab München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": null,
@@ -2752,10 +2787,11 @@
     },
     "travel_radius_km": null,
     "tags_preferred": [
-     "Lake"
+     "Lake",
+     "Scenic"
     ],
     "tags_avoided": [],
-    "intent": "Schöne Tour in München mit einem See"
+    "intent": "Etwas Schönes mit See, ab München"
    },
    "defaults_applied": [],
    "score": {
@@ -2827,9 +2863,9 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016765,
-     "nominal_latency_ms": 1025.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007093,
+     "nominal_latency_ms": 1925.9
     }
    ],
    "changes": {
@@ -2878,7 +2914,7 @@
      "raw": {
       "language": "de",
       "activity": "cycling",
-      "difficulty": null,
+      "difficulty": "easy",
       "difficulty_change": null,
       "distance_band": null,
       "distance_change": null,
@@ -2893,15 +2929,16 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Eine Radtour, die gerne flach sein darf"
+      "intent": "flache Radtour"
      },
      "update": {
       "language": "de",
       "activity": "cycling",
+      "difficulty": "easy",
       "tags_add": [
        "Flat"
       ],
-      "intent": "Eine Radtour, die gerne flach sein darf"
+      "intent": "flache Radtour"
      },
      "dropped": [],
      "changes": [
@@ -2909,6 +2946,12 @@
        "slot": "activity",
        "old": null,
        "new": "cycling",
+       "source": "chat"
+      },
+      {
+       "slot": "difficulty",
+       "old": null,
+       "new": "easy",
        "source": "chat"
       },
       {
@@ -2922,28 +2965,29 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Eine Radtour, die gerne flach sein darf",
+       "new": "flache Radtour",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017158,
-     "nominal_latency_ms": 1057.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007118,
+     "nominal_latency_ms": 1385.1
     }
    ],
    "changes": {
     "activity": "cycling",
+    "difficulty": "easy",
     "tags_preferred": [
      "Flat"
     ]
    },
    "clarify": "place",
-   "intent": "Eine Radtour, die gerne flach sein darf",
+   "intent": "flache Radtour",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
-    "difficulty": null,
+    "difficulty": "easy",
     "distance_band": null,
     "duration_hours": null,
     "distance_cap_km": null,
@@ -2953,7 +2997,7 @@
      "Flat"
     ],
     "tags_avoided": [],
-    "intent": "Eine Radtour, die gerne flach sein darf"
+    "intent": "flache Radtour"
    },
    "defaults_applied": [],
    "score": {
@@ -2996,12 +3040,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "I want to go hiking"
+      "intent": "a hike"
      },
      "update": {
       "language": "en",
       "activity": "hiking",
-      "intent": "I want to go hiking"
+      "intent": "a hike"
      },
      "dropped": [],
      "changes": [
@@ -3014,21 +3058,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "I want to go hiking",
+       "new": "a hike",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001679,
-     "nominal_latency_ms": 1130.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007069,
+     "nominal_latency_ms": 975.7
     },
     {
      "message": "Füssen",
      "status": "ready",
      "question": null,
      "raw": {
-      "language": "en",
+      "language": "de",
       "activity": null,
       "difficulty": null,
       "difficulty_change": null,
@@ -3043,12 +3087,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "I want to go hiking around Füssen"
+      "intent": "a hike around Füssen"
      },
      "update": {
-      "language": "en",
+      "language": "de",
       "place_name": "Füssen",
-      "intent": "I want to go hiking around Füssen"
+      "intent": "a hike around Füssen"
      },
      "dropped": [],
      "changes": [
@@ -3066,15 +3110,15 @@
       },
       {
        "slot": "intent",
-       "old": "I want to go hiking",
-       "new": "I want to go hiking around Füssen",
+       "old": "a hike",
+       "new": "a hike around Füssen",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017194,
-     "nominal_latency_ms": 1110.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007109,
+     "nominal_latency_ms": 1085.6
     }
    ],
    "changes": {
@@ -3082,7 +3126,7 @@
     "place": "Füssen|Landkreis Ostallgäu"
    },
    "clarify": null,
-   "intent": "I want to go hiking around Füssen",
+   "intent": "a hike around Füssen",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3099,7 +3143,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "I want to go hiking around Füssen"
+    "intent": "a hike around Füssen"
    },
    "defaults_applied": [],
    "score": {
@@ -3144,14 +3188,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "eine Tour mit H'u00fctte"
+      "intent": "eine Tour mit Hütte"
      },
      "update": {
       "language": "de",
       "tags_add": [
        "Hut"
       ],
-      "intent": "eine Tour mit H'u00fctte"
+      "intent": "eine Tour mit Hütte"
      },
      "dropped": [],
      "changes": [
@@ -3166,14 +3210,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "eine Tour mit H'u00fctte",
+       "new": "eine Tour mit Hütte",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016258,
-     "nominal_latency_ms": 952.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000713,
+     "nominal_latency_ms": 1201.2
     },
     {
      "message": "Wandern",
@@ -3195,12 +3239,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung mit Hütte"
+      "intent": "eine Wandertour mit Hütte"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
-      "intent": "Wanderung mit Hütte"
+      "intent": "eine Wandertour mit Hütte"
      },
      "dropped": [],
      "changes": [
@@ -3212,15 +3256,15 @@
       },
       {
        "slot": "intent",
-       "old": "eine Tour mit H'u00fctte",
-       "new": "Wanderung mit Hütte",
+       "old": "eine Tour mit Hütte",
+       "new": "eine Wandertour mit Hütte",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016872,
-     "nominal_latency_ms": 1008.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000715,
+     "nominal_latency_ms": 945.2
     }
    ],
    "changes": {
@@ -3230,7 +3274,7 @@
     ]
    },
    "clarify": "place",
-   "intent": "Wanderung mit Hütte",
+   "intent": "eine Wandertour mit Hütte",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3244,7 +3288,7 @@
      "Hut"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung mit Hütte"
+    "intent": "eine Wandertour mit Hütte"
    },
    "defaults_applied": [],
    "score": {
@@ -3296,9 +3340,9 @@
      "dropped": [],
      "changes": [],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015772,
-     "nominal_latency_ms": 1069.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007031,
+     "nominal_latency_ms": 1102.5
     },
     {
      "message": "not sure",
@@ -3328,9 +3372,9 @@
      "dropped": [],
      "changes": [],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001582,
-     "nominal_latency_ms": 931.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007052,
+     "nominal_latency_ms": 1368.4
     },
     {
      "message": "just show me something",
@@ -3352,20 +3396,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "show any route"
+      "intent": null
      },
      "update": {
-      "language": "en",
-      "intent": "show any route"
+      "language": "en"
      },
      "dropped": [],
      "changes": [
-      {
-       "slot": "intent",
-       "old": null,
-       "new": "show any route",
-       "source": "chat"
-      },
       {
        "slot": "activity",
        "old": null,
@@ -3374,14 +3411,14 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016745,
-     "nominal_latency_ms": 969.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007049,
+     "nominal_latency_ms": 837.1
     }
    ],
    "changes": {},
    "clarify": null,
-   "intent": "show any route",
+   "intent": null,
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3393,7 +3430,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "show any route"
+    "intent": null
    },
    "defaults_applied": [
     "activity",
@@ -3438,30 +3475,22 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "routes around München"
+      "intent": null
      },
      "update": {
-      "language": "en",
-      "intent": "routes around München"
+      "language": "en"
      },
      "dropped": [],
-     "changes": [
-      {
-       "slot": "intent",
-       "old": null,
-       "new": "routes around München",
-       "source": "chat"
-      }
-     ],
+     "changes": [],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016724,
-     "nominal_latency_ms": 906.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007031,
+     "nominal_latency_ms": 1060.2
     }
    ],
    "changes": {},
    "clarify": "activity",
-   "intent": "routes around München",
+   "intent": null,
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": null,
@@ -3478,7 +3507,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "routes around München"
+    "intent": null
    },
    "defaults_applied": [],
    "score": {
@@ -3523,7 +3552,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "easy hike around München with a lake, about 10 km"
+      "intent": "an easy hike of about 10 km to a lake"
      },
      "update": {
       "language": "en",
@@ -3533,7 +3562,7 @@
       "tags_add": [
        "Lake"
       ],
-      "intent": "easy hike around München with a lake, about 10 km"
+      "intent": "an easy hike of about 10 km to a lake"
      },
      "dropped": [],
      "changes": [
@@ -3566,14 +3595,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "easy hike around München with a lake, about 10 km",
+       "new": "an easy hike of about 10 km to a lake",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017348,
-     "nominal_latency_ms": 1023.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000719,
+     "nominal_latency_ms": 1468.0
     },
     {
      "message": "actually make it shorter",
@@ -3595,12 +3624,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "easy hike around München with a lake, shorter"
+      "intent": "an easy hike to a lake, shorter than about 10 km, starting from München"
      },
      "update": {
       "language": "en",
       "distance_change": "shorter",
-      "intent": "easy hike around München with a lake, shorter"
+      "intent": "an easy hike to a lake, shorter than about 10 km, starting from München"
      },
      "dropped": [],
      "changes": [
@@ -3612,15 +3641,15 @@
       },
       {
        "slot": "intent",
-       "old": "easy hike around München with a lake, about 10 km",
-       "new": "easy hike around München with a lake, shorter",
+       "old": "an easy hike of about 10 km to a lake",
+       "new": "an easy hike to a lake, shorter than about 10 km, starting from München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016987,
-     "nominal_latency_ms": 872.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007198,
+     "nominal_latency_ms": 1347.3
     }
    ],
    "changes": {
@@ -3632,7 +3661,7 @@
     ]
    },
    "clarify": null,
-   "intent": "easy hike around München with a lake, shorter",
+   "intent": "an easy hike to a lake, shorter than about 10 km, starting from München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3651,7 +3680,7 @@
      "Lake"
     ],
     "tags_avoided": [],
-    "intent": "easy hike around München with a lake, shorter"
+    "intent": "an easy hike to a lake, shorter than about 10 km, starting from München"
    },
    "defaults_applied": [],
    "score": {
@@ -3697,7 +3726,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a hike starting from München featuring lakes and a beer garden"
+      "intent": "hiking with lakes and a beer garden to stop at"
      },
      "update": {
       "language": "en",
@@ -3705,7 +3734,7 @@
        "Lake",
        "Beer garden"
       ],
-      "intent": "a hike starting from München featuring lakes and a beer garden"
+      "intent": "hiking with lakes and a beer garden to stop at"
      },
      "dropped": [],
      "changes": [
@@ -3721,14 +3750,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a hike starting from München featuring lakes and a beer garden",
+       "new": "hiking with lakes and a beer garden to stop at",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017295,
-     "nominal_latency_ms": 1085.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007192,
+     "nominal_latency_ms": 1138.2
     },
     {
      "message": "no lakes after all",
@@ -3752,14 +3781,14 @@
        "Lake"
       ],
       "clear": [],
-      "intent": "a hike starting from München featuring a beer garden"
+      "intent": "hiking near München with a beer garden to stop at"
      },
      "update": {
       "language": "en",
       "tags_remove": [
        "Lake"
       ],
-      "intent": "a hike starting from München featuring a beer garden"
+      "intent": "hiking near München with a beer garden to stop at"
      },
      "dropped": [],
      "changes": [
@@ -3776,15 +3805,15 @@
       },
       {
        "slot": "intent",
-       "old": "a hike starting from München featuring lakes and a beer garden",
-       "new": "a hike starting from München featuring a beer garden",
+       "old": "hiking with lakes and a beer garden to stop at",
+       "new": "hiking near München with a beer garden to stop at",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017125,
-     "nominal_latency_ms": 956.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007165,
+     "nominal_latency_ms": 1048.0
     }
    ],
    "changes": {
@@ -3793,7 +3822,7 @@
     ]
    },
    "clarify": null,
-   "intent": "a hike starting from München featuring a beer garden",
+   "intent": "hiking near München with a beer garden to stop at",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3812,7 +3841,7 @@
      "Beer garden"
     ],
     "tags_avoided": [],
-    "intent": "a hike starting from München featuring a beer garden"
+    "intent": "hiking near München with a beer garden to stop at"
    },
    "defaults_applied": [],
    "score": {
@@ -3855,13 +3884,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Radtour in München, etwa 3 Stunden"
+      "intent": "Radtour von etwa drei Stunden ab München"
      },
      "update": {
       "language": "de",
       "activity": "cycling",
       "duration_hours": 3.0,
-      "intent": "Radtour in München, etwa 3 Stunden"
+      "intent": "Radtour von etwa drei Stunden ab München"
      },
      "dropped": [],
      "changes": [
@@ -3886,14 +3915,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Radtour in München, etwa 3 Stunden",
+       "new": "Radtour von etwa drei Stunden ab München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016996,
-     "nominal_latency_ms": 1084.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007167,
+     "nominal_latency_ms": 1269.9
     },
     {
      "message": "doch lieber wandern",
@@ -3904,26 +3933,23 @@
       "activity": "hiking",
       "difficulty": null,
       "difficulty_change": null,
-      "distance_band": "medium",
+      "distance_band": null,
       "distance_change": null,
-      "duration_hours": 3.0,
+      "duration_hours": null,
       "distance_target_km": null,
       "distance_cap_km": null,
-      "place_name": "München",
+      "place_name": null,
       "travel_radius_km": null,
       "tags_add": [],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung in München, etwa 3 Stunden"
+      "intent": "Wanderung von etwa drei Stunden ab München"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
-      "distance_band": "medium",
-      "duration_hours": 3.0,
-      "place_name": "München",
-      "intent": "Wanderung in München, etwa 3 Stunden"
+      "intent": "Wanderung von etwa drei Stunden ab München"
      },
      "dropped": [],
      "changes": [
@@ -3935,15 +3961,15 @@
       },
       {
        "slot": "intent",
-       "old": "Radtour in München, etwa 3 Stunden",
-       "new": "Wanderung in München, etwa 3 Stunden",
+       "old": "Radtour von etwa drei Stunden ab München",
+       "new": "Wanderung von etwa drei Stunden ab München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017147,
-     "nominal_latency_ms": 1145.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007169,
+     "nominal_latency_ms": 1106.3
     }
    ],
    "changes": {
@@ -3952,7 +3978,7 @@
     "duration_hours": 3.0
    },
    "clarify": null,
-   "intent": "Wanderung in München, etwa 3 Stunden",
+   "intent": "Wanderung von etwa drei Stunden ab München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -3969,7 +3995,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung in München, etwa 3 Stunden"
+    "intent": "Wanderung von etwa drei Stunden ab München"
    },
    "defaults_applied": [],
    "score": {
@@ -4012,12 +4038,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around München, max 20 km"
+      "intent": "a hike near München, no longer than 20 km"
      },
      "update": {
       "language": "en",
       "distance_cap_km": 20.0,
-      "intent": "hiking around München, max 20 km"
+      "intent": "a hike near München, no longer than 20 km"
      },
      "dropped": [],
      "changes": [
@@ -4030,14 +4056,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking around München, max 20 km",
+       "new": "a hike near München, no longer than 20 km",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001698,
-     "nominal_latency_ms": 927.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000713,
+     "nominal_latency_ms": 1408.9
     },
     {
      "message": "hmm, make that 12",
@@ -4049,57 +4075,64 @@
       "difficulty": null,
       "difficulty_change": null,
       "distance_band": null,
-      "distance_change": null,
+      "distance_change": "shorter",
       "duration_hours": null,
-      "distance_target_km": 12.0,
-      "distance_cap_km": null,
+      "distance_target_km": null,
+      "distance_cap_km": 12.0,
       "place_name": null,
       "travel_radius_km": null,
       "tags_add": [],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around München, about 12 km"
+      "intent": "a hike near München, no longer than 12 km"
      },
      "update": {
       "language": "en",
-      "distance_target_km": 12.0,
-      "intent": "hiking around München, about 12 km"
+      "distance_change": "shorter",
+      "distance_cap_km": 12.0,
+      "intent": "a hike near München, no longer than 12 km"
      },
      "dropped": [],
      "changes": [
       {
        "slot": "distance_band",
        "old": null,
-       "new": "medium",
+       "new": "short",
+       "source": "chat"
+      },
+      {
+       "slot": "distance_cap_km",
+       "old": 20.0,
+       "new": 12.0,
        "source": "chat"
       },
       {
        "slot": "intent",
-       "old": "hiking around München, max 20 km",
-       "new": "hiking around München, about 12 km",
+       "old": "a hike near München, no longer than 20 km",
+       "new": "a hike near München, no longer than 12 km",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017028,
-     "nominal_latency_ms": 1076.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007161,
+     "nominal_latency_ms": 1352.0
     }
    ],
    "changes": {
-    "distance_band": "medium",
-    "distance_cap_km": 20.0
+    "distance_band": "short",
+    "distance_cap_km": 12.0
    },
    "clarify": null,
-   "intent": "hiking around München, about 12 km",
+   "intent": "a hike near München, no longer than 12 km",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
     "difficulty": null,
-    "distance_band": "medium",
+    "distance_band": "short",
     "duration_hours": null,
-    "distance_cap_km": 20.0,
+    "distance_cap_km": 12.0,
     "place": {
      "name": "München",
      "lat": 48.13659,
@@ -4109,7 +4142,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "hiking around München, about 12 km"
+    "intent": "a hike near München, no longer than 12 km"
    },
    "defaults_applied": [],
    "score": {
@@ -4117,14 +4150,8 @@
      {
       "slot": "distance_band",
       "kind": "fp",
-      "predicted": "medium",
+      "predicted": "short",
       "expected": null
-     },
-     {
-      "slot": "distance_cap_km",
-      "kind": "wrong",
-      "predicted": 20.0,
-      "expected": 12
      }
     ],
     "clarify": {
@@ -4165,13 +4192,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung bei Garmisch"
+      "intent": "Wanderung bei Garmisch-Partenkirchen"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
       "place_name": "Garmisch-Partenkirchen",
-      "intent": "Wanderung bei Garmisch"
+      "intent": "Wanderung bei Garmisch-Partenkirchen"
      },
      "dropped": [],
      "changes": [
@@ -4196,14 +4223,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung bei Garmisch",
+       "new": "Wanderung bei Garmisch-Partenkirchen",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017027,
-     "nominal_latency_ms": 1006.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007224,
+     "nominal_latency_ms": 1339.5
     },
     {
      "message": "Nein, lieber in der Nähe von Lenggries",
@@ -4225,12 +4252,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung bei Lenggries"
+      "intent": "Wanderung in der Nähe von Lenggries"
      },
      "update": {
       "language": "de",
       "place_name": "Lenggries",
-      "intent": "Wanderung bei Lenggries"
+      "intent": "Wanderung in der Nähe von Lenggries"
      },
      "dropped": [],
      "changes": [
@@ -4242,15 +4269,15 @@
       },
       {
        "slot": "intent",
-       "old": "Wanderung bei Garmisch",
-       "new": "Wanderung bei Lenggries",
+       "old": "Wanderung bei Garmisch-Partenkirchen",
+       "new": "Wanderung in der Nähe von Lenggries",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016971,
-     "nominal_latency_ms": 943.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007198,
+     "nominal_latency_ms": 977.9
     }
    ],
    "changes": {
@@ -4258,7 +4285,7 @@
     "place": "Lenggries|Landkreis Bad Tölz-Wolfratshausen"
    },
    "clarify": null,
-   "intent": "Wanderung bei Lenggries",
+   "intent": "Wanderung in der Nähe von Lenggries",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -4275,7 +4302,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung bei Lenggries"
+    "intent": "Wanderung in der Nähe von Lenggries"
    },
    "defaults_applied": [],
    "score": {
@@ -4318,12 +4345,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "something challenging"
+      "intent": "a challenging hike"
      },
      "update": {
       "language": "en",
       "difficulty": "hard",
-      "intent": "something challenging"
+      "intent": "a challenging hike"
      },
      "dropped": [],
      "changes": [
@@ -4336,14 +4363,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "something challenging",
+       "new": "a challenging hike",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016724,
-     "nominal_latency_ms": 1041.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007076,
+     "nominal_latency_ms": 828.9
     },
     {
      "message": "a bit easier actually",
@@ -4365,12 +4392,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "something a bit easier around München"
+      "intent": "a moderately easy hike"
      },
      "update": {
       "language": "en",
       "difficulty_change": "easier",
-      "intent": "something a bit easier around München"
+      "intent": "a moderately easy hike"
      },
      "dropped": [],
      "changes": [
@@ -4382,22 +4409,22 @@
       },
       {
        "slot": "intent",
-       "old": "something challenging",
-       "new": "something a bit easier around München",
+       "old": "a challenging hike",
+       "new": "a moderately easy hike",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016876,
-     "nominal_latency_ms": 877.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007095,
+     "nominal_latency_ms": 1177.1
     }
    ],
    "changes": {
     "difficulty": "moderate"
    },
    "clarify": null,
-   "intent": "something a bit easier around München",
+   "intent": "a moderately easy hike",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -4414,7 +4441,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "something a bit easier around München"
+    "intent": "a moderately easy hike"
    },
    "defaults_applied": [],
    "score": {
@@ -4460,7 +4487,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "cycling in München with a swim stop and a beer garden"
+      "intent": "a cycling tour from München with a swim stop and a beer garden"
      },
      "update": {
       "language": "en",
@@ -4468,7 +4495,7 @@
        "Swimming spot",
        "Beer garden"
       ],
-      "intent": "cycling in München with a swim stop and a beer garden"
+      "intent": "a cycling tour from München with a swim stop and a beer garden"
      },
      "dropped": [],
      "changes": [
@@ -4484,14 +4511,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "cycling in München with a swim stop and a beer garden",
+       "new": "a cycling tour from München with a swim stop and a beer garden",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017323,
-     "nominal_latency_ms": 1047.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007217,
+     "nominal_latency_ms": 1053.0
     },
     {
      "message": "forget the swimming, but add a castle",
@@ -4517,7 +4544,7 @@
        "Swimming spot"
       ],
       "clear": [],
-      "intent": "cycling in München with a beer garden and a castle"
+      "intent": "a cycling tour from München with a castle and a beer garden"
      },
      "update": {
       "language": "en",
@@ -4527,7 +4554,7 @@
       "tags_remove": [
        "Swimming spot"
       ],
-      "intent": "cycling in München with a beer garden and a castle"
+      "intent": "a cycling tour from München with a castle and a beer garden"
      },
      "dropped": [],
      "changes": [
@@ -4545,15 +4572,15 @@
       },
       {
        "slot": "intent",
-       "old": "cycling in München with a swim stop and a beer garden",
-       "new": "cycling in München with a beer garden and a castle",
+       "old": "a cycling tour from München with a swim stop and a beer garden",
+       "new": "a cycling tour from München with a castle and a beer garden",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017396,
-     "nominal_latency_ms": 1087.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000724,
+     "nominal_latency_ms": 934.4
     }
    ],
    "changes": {
@@ -4563,7 +4590,7 @@
     ]
    },
    "clarify": null,
-   "intent": "cycling in München with a beer garden and a castle",
+   "intent": "a cycling tour from München with a castle and a beer garden",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -4583,7 +4610,7 @@
      "Castle"
     ],
     "tags_avoided": [],
-    "intent": "cycling in München with a beer garden and a castle"
+    "intent": "a cycling tour from München with a castle and a beer garden"
    },
    "defaults_applied": [],
    "score": {
@@ -4626,12 +4653,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München innerhalb eines Radius von 30 km"
+      "intent": "Wanderung in der Umgebung von München, Startpunkt höchstens 30 km von zu Hause entfernt"
      },
      "update": {
       "language": "de",
       "travel_radius_km": 30.0,
-      "intent": "Wanderung ab München innerhalb eines Radius von 30 km"
+      "intent": "Wanderung in der Umgebung von München, Startpunkt höchstens 30 km von zu Hause entfernt"
      },
      "dropped": [],
      "changes": [
@@ -4644,14 +4671,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München innerhalb eines Radius von 30 km",
+       "new": "Wanderung in der Umgebung von München, Startpunkt höchstens 30 km von zu Hause entfernt",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017095,
-     "nominal_latency_ms": 933.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007267,
+     "nominal_latency_ms": 1426.8
     },
     {
      "message": "Egal wie weit, Hauptsache mit Gipfel",
@@ -4675,10 +4702,9 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [
-       "travel_radius_km",
-       "distance_cap_km"
+       "travel_radius_km"
       ],
-      "intent": "Wanderung ab München mit Gipfel, ohne Entfernungsbeschränkung"
+      "intent": "Wanderung in der Umgebung von München mit Gipfel, egal wie weit die Anfahrt ist"
      },
      "update": {
       "language": "de",
@@ -4687,10 +4713,9 @@
        "Summit route"
       ],
       "clear": [
-       "travel_radius_km",
-       "distance_cap_km"
+       "travel_radius_km"
       ],
-      "intent": "Wanderung ab München mit Gipfel, ohne Entfernungsbeschränkung"
+      "intent": "Wanderung in der Umgebung von München mit Gipfel, egal wie weit die Anfahrt ist"
      },
      "dropped": [],
      "changes": [
@@ -4710,15 +4735,15 @@
       },
       {
        "slot": "intent",
-       "old": "Wanderung ab München innerhalb eines Radius von 30 km",
-       "new": "Wanderung ab München mit Gipfel, ohne Entfernungsbeschränkung",
+       "old": "Wanderung in der Umgebung von München, Startpunkt höchstens 30 km von zu Hause entfernt",
+       "new": "Wanderung in der Umgebung von München mit Gipfel, egal wie weit die Anfahrt ist",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017934,
-     "nominal_latency_ms": 967.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000736,
+     "nominal_latency_ms": 1428.9
     }
    ],
    "changes": {
@@ -4727,7 +4752,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Wanderung ab München mit Gipfel, ohne Entfernungsbeschränkung",
+   "intent": "Wanderung in der Umgebung von München mit Gipfel, egal wie weit die Anfahrt ist",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -4746,7 +4771,7 @@
      "Summit route"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung ab München mit Gipfel, ohne Entfernungsbeschränkung"
+    "intent": "Wanderung in der Umgebung von München mit Gipfel, egal wie weit die Anfahrt ist"
    },
    "defaults_applied": [],
    "score": {
@@ -4785,15 +4810,20 @@
       "place_name": null,
       "travel_radius_km": null,
       "tags_add": [],
-      "tags_avoid": [],
+      "tags_avoid": [
+       "Big climb"
+      ],
       "tags_remove": [],
       "clear": [],
-      "intent": "easy hike around München, not too steep"
+      "intent": "an easy hike near München without steep climbs"
      },
      "update": {
       "language": "en",
       "difficulty": "easy",
-      "intent": "easy hike around München, not too steep"
+      "tags_avoid": [
+       "Big climb"
+      ],
+      "intent": "an easy hike near München without steep climbs"
      },
      "dropped": [],
      "changes": [
@@ -4804,23 +4834,34 @@
        "source": "chat"
       },
       {
+       "slot": "tags_avoided",
+       "old": [],
+       "new": [
+        "Big climb"
+       ],
+       "source": "chat"
+      },
+      {
        "slot": "intent",
        "old": null,
-       "new": "easy hike around München, not too steep",
+       "new": "an easy hike near München without steep climbs",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016856,
-     "nominal_latency_ms": 908.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007145,
+     "nominal_latency_ms": 1016.6
     }
    ],
    "changes": {
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags_avoided": [
+     "Big climb"
+    ]
    },
    "clarify": null,
-   "intent": "easy hike around München, not too steep",
+   "intent": "an easy hike near München without steep climbs",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -4836,8 +4877,10 @@
     },
     "travel_radius_km": null,
     "tags_preferred": [],
-    "tags_avoided": [],
-    "intent": "easy hike around München, not too steep"
+    "tags_avoided": [
+     "Big climb"
+    ],
+    "intent": "an easy hike near München without steep climbs"
    },
    "defaults_applied": [],
    "score": {
@@ -4881,7 +4924,7 @@
       ],
       "tags_remove": [],
       "clear": [],
-      "intent": "a walk around München without a summit"
+      "intent": "an easy walk around, without a summit"
      },
      "update": {
       "language": "en",
@@ -4889,7 +4932,7 @@
       "tags_avoid": [
        "Summit route"
       ],
-      "intent": "a walk around München without a summit"
+      "intent": "an easy walk around, without a summit"
      },
      "dropped": [],
      "changes": [
@@ -4904,14 +4947,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a walk around München without a summit",
+       "new": "an easy walk around, without a summit",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017095,
-     "nominal_latency_ms": 959.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007143,
+     "nominal_latency_ms": 1085.1
     }
    ],
    "changes": {
@@ -4920,7 +4963,7 @@
     ]
    },
    "clarify": null,
-   "intent": "a walk around München without a summit",
+   "intent": "an easy walk around, without a summit",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -4939,7 +4982,7 @@
     "tags_avoided": [
      "Summit route"
     ],
-    "intent": "a walk around München without a summit"
+    "intent": "an easy walk around, without a summit"
    },
    "defaults_applied": [],
    "score": {
@@ -4983,14 +5026,14 @@
       ],
       "tags_remove": [],
       "clear": [],
-      "intent": "Radtour ab München ohne Strecken an viel befahrenen Straßen"
+      "intent": "Radtour ab München ohne Strecken an stark befahrenen Straßen"
      },
      "update": {
       "language": "de",
       "tags_avoid": [
        "Busy road sections"
       ],
-      "intent": "Radtour ab München ohne Strecken an viel befahrenen Straßen"
+      "intent": "Radtour ab München ohne Strecken an stark befahrenen Straßen"
      },
      "dropped": [],
      "changes": [
@@ -5005,14 +5048,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Radtour ab München ohne Strecken an viel befahrenen Straßen",
+       "new": "Radtour ab München ohne Strecken an stark befahrenen Straßen",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017267,
-     "nominal_latency_ms": 997.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007227,
+     "nominal_latency_ms": 1328.1
     }
    ],
    "changes": {
@@ -5021,7 +5064,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Radtour ab München ohne Strecken an viel befahrenen Straßen",
+   "intent": "Radtour ab München ohne Strecken an stark befahrenen Straßen",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -5040,7 +5083,7 @@
     "tags_avoided": [
      "Busy road sections"
     ],
-    "intent": "Radtour ab München ohne Strecken an viel befahrenen Straßen"
+    "intent": "Radtour ab München ohne Strecken an stark befahrenen Straßen"
    },
    "defaults_applied": [],
    "score": {
@@ -5085,7 +5128,7 @@
       ],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around München without big climbs and no via ferrata"
+      "intent": "a hike near München with no big climbs and no via ferrata"
      },
      "update": {
       "language": "en",
@@ -5093,7 +5136,7 @@
        "Big climb",
        "Via ferrata"
       ],
-      "intent": "hiking around München without big climbs and no via ferrata"
+      "intent": "a hike near München with no big climbs and no via ferrata"
      },
      "dropped": [],
      "changes": [
@@ -5109,14 +5152,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking around München without big climbs and no via ferrata",
+       "new": "a hike near München with no big climbs and no via ferrata",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017336,
-     "nominal_latency_ms": 1164.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000721,
+     "nominal_latency_ms": 1033.1
     }
    ],
    "changes": {
@@ -5126,7 +5169,7 @@
     ]
    },
    "clarify": null,
-   "intent": "hiking around München without big climbs and no via ferrata",
+   "intent": "a hike near München with no big climbs and no via ferrata",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5146,7 +5189,7 @@
      "Big climb",
      "Via ferrata"
     ],
-    "intent": "hiking around München without big climbs and no via ferrata"
+    "intent": "a hike near München with no big climbs and no via ferrata"
    },
    "defaults_applied": [],
    "score": {
@@ -5187,22 +5230,22 @@
       "tags_add": [
        "Refreshment stops available"
       ],
-      "tags_avoid": [],
-      "tags_remove": [
+      "tags_avoid": [
        "Dog-friendly"
       ],
+      "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München ohne Hund, aber mit Einkehr"
+      "intent": "Wanderung ab München ohne Hund, mit Einkehr unterwegs"
      },
      "update": {
       "language": "de",
       "tags_add": [
        "Refreshment stops available"
       ],
-      "tags_remove": [
+      "tags_avoid": [
        "Dog-friendly"
       ],
-      "intent": "Wanderung ab München ohne Hund, aber mit Einkehr"
+      "intent": "Wanderung ab München ohne Hund, mit Einkehr unterwegs"
      },
      "dropped": [],
      "changes": [
@@ -5215,25 +5258,36 @@
        "source": "chat"
       },
       {
+       "slot": "tags_avoided",
+       "old": [],
+       "new": [
+        "Dog-friendly"
+       ],
+       "source": "chat"
+      },
+      {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München ohne Hund, aber mit Einkehr",
+       "new": "Wanderung ab München ohne Hund, mit Einkehr unterwegs",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001752,
-     "nominal_latency_ms": 1086.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007289,
+     "nominal_latency_ms": 1133.7
     }
    ],
    "changes": {
     "tags_preferred": [
      "Refreshment stops available"
+    ],
+    "tags_avoided": [
+     "Dog-friendly"
     ]
    },
    "clarify": null,
-   "intent": "Wanderung ab München ohne Hund, aber mit Einkehr",
+   "intent": "Wanderung ab München ohne Hund, mit Einkehr unterwegs",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5251,12 +5305,23 @@
     "tags_preferred": [
      "Refreshment stops available"
     ],
-    "tags_avoided": [],
-    "intent": "Wanderung ab München ohne Hund, aber mit Einkehr"
+    "tags_avoided": [
+     "Dog-friendly"
+    ],
+    "intent": "Wanderung ab München ohne Hund, mit Einkehr unterwegs"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [],
+    "errors": [
+     {
+      "slot": "tags_avoided",
+      "kind": "fp",
+      "predicted": [
+       "Dog-friendly"
+      ],
+      "expected": []
+     }
+    ],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -5292,6 +5357,7 @@
       "travel_radius_km": null,
       "tags_add": [
        "Linear route",
+       "Public transport access",
        "Train access"
       ],
       "tags_avoid": [
@@ -5299,18 +5365,19 @@
       ],
       "tags_remove": [],
       "clear": [],
-      "intent": "a hike around München from A to B with train access and no loop"
+      "intent": "a hike from A to B, returning by train from the end point"
      },
      "update": {
       "language": "en",
       "tags_add": [
        "Linear route",
+       "Public transport access",
        "Train access"
       ],
       "tags_avoid": [
        "Round trip"
       ],
-      "intent": "a hike around München from A to B with train access and no loop"
+      "intent": "a hike from A to B, returning by train from the end point"
      },
      "dropped": [],
      "changes": [
@@ -5319,6 +5386,7 @@
        "old": [],
        "new": [
         "Linear route",
+        "Public transport access",
         "Train access"
        ],
        "source": "chat"
@@ -5334,19 +5402,20 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a hike around München from A to B with train access and no loop",
+       "new": "a hike from A to B, returning by train from the end point",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017659,
-     "nominal_latency_ms": 1000.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007257,
+     "nominal_latency_ms": 961.0
     }
    ],
    "changes": {
     "tags_preferred": [
      "Linear route",
+     "Public transport access",
      "Train access"
     ],
     "tags_avoided": [
@@ -5354,7 +5423,7 @@
     ]
    },
    "clarify": null,
-   "intent": "a hike around München from A to B with train access and no loop",
+   "intent": "a hike from A to B, returning by train from the end point",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5371,28 +5440,17 @@
     "travel_radius_km": null,
     "tags_preferred": [
      "Linear route",
+     "Public transport access",
      "Train access"
     ],
     "tags_avoided": [
      "Round trip"
     ],
-    "intent": "a hike around München from A to B with train access and no loop"
+    "intent": "a hike from A to B, returning by train from the end point"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [
-     {
-      "slot": "tags_preferred",
-      "kind": "fn",
-      "predicted": [
-       "Linear route",
-       "Train access"
-      ],
-      "expected": [
-       "Public transport access"
-      ]
-     }
-    ],
+    "errors": [],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -5430,12 +5488,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a hike around München taking a couple of hours"
+      "intent": "a hiking outing of about two hours, starting from München"
      },
      "update": {
       "language": "en",
       "duration_hours": 2.0,
-      "intent": "a hike around München taking a couple of hours"
+      "intent": "a hiking outing of about two hours, starting from München"
      },
      "dropped": [],
      "changes": [
@@ -5454,14 +5512,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a hike around München taking a couple of hours",
+       "new": "a hiking outing of about two hours, starting from München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016955,
-     "nominal_latency_ms": 991.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007135,
+     "nominal_latency_ms": 1040.5
     }
    ],
    "changes": {
@@ -5469,7 +5527,7 @@
     "duration_hours": 2.0
    },
    "clarify": null,
-   "intent": "a hike around München taking a couple of hours",
+   "intent": "a hiking outing of about two hours, starting from München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5486,7 +5544,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "a hike around München taking a couple of hours"
+    "intent": "a hiking outing of about two hours, starting from München"
    },
    "defaults_applied": [],
    "score": {
@@ -5528,12 +5586,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around M\"nchen with a maximum distance of 15 km"
+      "intent": "a hike of at most 15 km"
      },
      "update": {
       "language": "en",
       "distance_cap_km": 15.0,
-      "intent": "hiking around M\"nchen with a maximum distance of 15 km"
+      "intent": "a hike of at most 15 km"
      },
      "dropped": [],
      "changes": [
@@ -5546,21 +5604,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking around M\"nchen with a maximum distance of 15 km",
+       "new": "a hike of at most 15 km",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017258,
-     "nominal_latency_ms": 1047.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007106,
+     "nominal_latency_ms": 1097.7
     }
    ],
    "changes": {
     "distance_cap_km": 15.0
    },
    "clarify": null,
-   "intent": "hiking around M\"nchen with a maximum distance of 15 km",
+   "intent": "a hike of at most 15 km",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5577,7 +5635,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "hiking around M\"nchen with a maximum distance of 15 km"
+    "intent": "a hike of at most 15 km"
    },
    "defaults_applied": [],
    "score": {
@@ -5619,12 +5677,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München für einen halben Tag Zeit"
+      "intent": "eine Wanderung von etwa einem halben Tag"
      },
      "update": {
       "language": "de",
       "duration_hours": 4.0,
-      "intent": "Wanderung ab München für einen halben Tag Zeit"
+      "intent": "eine Wanderung von etwa einem halben Tag"
      },
      "dropped": [],
      "changes": [
@@ -5643,14 +5701,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München für einen halben Tag Zeit",
+       "new": "eine Wanderung von etwa einem halben Tag",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017008,
-     "nominal_latency_ms": 980.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007155,
+     "nominal_latency_ms": 1010.0
     }
    ],
    "changes": {
@@ -5658,7 +5716,7 @@
     "duration_hours": 4.0
    },
    "clarify": null,
-   "intent": "Wanderung ab München für einen halben Tag Zeit",
+   "intent": "eine Wanderung von etwa einem halben Tag",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5675,7 +5733,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung ab München für einen halben Tag Zeit"
+    "intent": "eine Wanderung von etwa einem halben Tag"
    },
    "defaults_applied": [],
    "score": {
@@ -5717,12 +5775,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a cycling route around München with a target distance of about 40 kilometres"
+      "intent": "a cycling tour of about 40 km around München"
      },
      "update": {
       "language": "en",
       "distance_target_km": 40.0,
-      "intent": "a cycling route around München with a target distance of about 40 kilometres"
+      "intent": "a cycling tour of about 40 km around München"
      },
      "dropped": [],
      "changes": [
@@ -5735,21 +5793,21 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a cycling route around München with a target distance of about 40 kilometres",
+       "new": "a cycling tour of about 40 km around München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017158,
-     "nominal_latency_ms": 924.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007126,
+     "nominal_latency_ms": 988.1
     }
    ],
    "changes": {
     "distance_band": "medium"
    },
    "clarify": null,
-   "intent": "a cycling route around München with a target distance of about 40 kilometres",
+   "intent": "a cycling tour of about 40 km around München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -5766,7 +5824,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "a cycling route around München with a target distance of about 40 kilometres"
+    "intent": "a cycling tour of about 40 km around München"
    },
    "defaults_applied": [],
    "score": {
@@ -5808,12 +5866,11 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wandern ab München mit einer Anfahrt von höchstens anderthalb Stunden mit dem Auto"
+      "intent": null
      },
      "update": {
       "language": "de",
-      "travel_radius_km": 90.0,
-      "intent": "Wandern ab München mit einer Anfahrt von höchstens anderthalb Stunden mit dem Auto"
+      "travel_radius_km": 90.0
      },
      "dropped": [],
      "changes": [
@@ -5822,25 +5879,19 @@
        "old": null,
        "new": 90.0,
        "source": "chat"
-      },
-      {
-       "slot": "intent",
-       "old": null,
-       "new": "Wandern ab München mit einer Anfahrt von höchstens anderthalb Stunden mit dem Auto",
-       "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017204,
-     "nominal_latency_ms": 1164.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007064,
+     "nominal_latency_ms": 1344.3
     }
    ],
    "changes": {
     "travel_radius_km": 90.0
    },
    "clarify": null,
-   "intent": "Wandern ab München mit einer Anfahrt von höchstens anderthalb Stunden mit dem Auto",
+   "intent": null,
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -5857,7 +5908,7 @@
     "travel_radius_km": 90.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wandern ab München mit einer Anfahrt von höchstens anderthalb Stunden mit dem Auto"
+    "intent": null
    },
    "defaults_applied": [],
    "score": {
@@ -5899,12 +5950,12 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a 45 minute run in München"
+      "intent": "a 45 minute run from München"
      },
      "update": {
       "language": "en",
       "duration_hours": 0.75,
-      "intent": "a 45 minute run in München"
+      "intent": "a 45 minute run from München"
      },
      "dropped": [],
      "changes": [
@@ -5923,14 +5974,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a 45 minute run in München",
+       "new": "a 45 minute run from München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016961,
-     "nominal_latency_ms": 1050.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007099,
+     "nominal_latency_ms": 778.5
     }
    ],
    "changes": {
@@ -5938,7 +5989,7 @@
     "duration_hours": 0.75
    },
    "clarify": null,
-   "intent": "a 45 minute run in München",
+   "intent": "a 45 minute run from München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "running",
@@ -5955,7 +6006,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "a 45 minute run in München"
+    "intent": "a 45 minute run from München"
    },
    "defaults_applied": [],
    "score": {
@@ -5997,13 +6048,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München als Tagestour mit etwa 20 km Länge"
+      "intent": "Wanderung als Tagestour, etwa 20 km"
      },
      "update": {
       "language": "de",
       "duration_hours": 7.0,
       "distance_target_km": 20.0,
-      "intent": "Wanderung ab München als Tagestour mit etwa 20 km Länge"
+      "intent": "Wanderung als Tagestour, etwa 20 km"
      },
      "dropped": [],
      "changes": [
@@ -6022,14 +6073,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München als Tagestour mit etwa 20 km Länge",
+       "new": "Wanderung als Tagestour, etwa 20 km",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017245,
-     "nominal_latency_ms": 962.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007175,
+     "nominal_latency_ms": 1226.6
     }
    ],
    "changes": {
@@ -6037,7 +6088,7 @@
     "duration_hours": 7.0
    },
    "clarify": null,
-   "intent": "Wanderung ab München als Tagestour mit etwa 20 km Länge",
+   "intent": "Wanderung als Tagestour, etwa 20 km",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -6054,7 +6105,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wanderung ab München als Tagestour mit etwa 20 km Länge"
+    "intent": "Wanderung als Tagestour, etwa 20 km"
    },
    "defaults_applied": [],
    "score": {
@@ -6096,14 +6147,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "cycling route around München under 60 km and starting within 40 km of Munich"
+      "intent": "a cycling tour under 60 km, starting within 40 km of München"
      },
      "update": {
       "language": "en",
       "distance_cap_km": 60.0,
       "place_name": "München",
       "travel_radius_km": 40.0,
-      "intent": "cycling route around München under 60 km and starting within 40 km of Munich"
+      "intent": "a cycling tour under 60 km, starting within 40 km of München"
      },
      "dropped": [],
      "changes": [
@@ -6122,14 +6173,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "cycling route around München under 60 km and starting within 40 km of Munich",
+       "new": "a cycling tour under 60 km, starting within 40 km of München",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017398,
-     "nominal_latency_ms": 908.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007195,
+     "nominal_latency_ms": 1010.0
     }
    ],
    "changes": {
@@ -6137,7 +6188,7 @@
     "travel_radius_km": 40.0
    },
    "clarify": null,
-   "intent": "cycling route around München under 60 km and starting within 40 km of Munich",
+   "intent": "a cycling tour under 60 km, starting within 40 km of München",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -6154,7 +6205,7 @@
     "travel_radius_km": 40.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "cycling route around München under 60 km and starting within 40 km of Munich"
+    "intent": "a cycling tour under 60 km, starting within 40 km of München"
    },
    "defaults_applied": [],
    "score": {
@@ -6198,14 +6249,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around München, dog-friendly"
+      "intent": "a hike that is fine to do with a dog"
      },
      "update": {
       "language": "en",
       "tags_add": [
        "Dog-friendly"
       ],
-      "intent": "hiking around München, dog-friendly"
+      "intent": "a hike that is fine to do with a dog"
      },
      "dropped": [],
      "changes": [
@@ -6220,14 +6271,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking around München, dog-friendly",
+       "new": "a hike that is fine to do with a dog",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017086,
-     "nominal_latency_ms": 1049.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000715,
+     "nominal_latency_ms": 995.6
     }
    ],
    "changes": {
@@ -6236,7 +6287,7 @@
     ]
    },
    "clarify": null,
-   "intent": "hiking around München, dog-friendly",
+   "intent": "a hike that is fine to do with a dog",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -6255,7 +6306,7 @@
      "Dog-friendly"
     ],
     "tags_avoided": [],
-    "intent": "hiking around München, dog-friendly"
+    "intent": "a hike that is fine to do with a dog"
    },
    "defaults_applied": [],
    "score": {
@@ -6299,7 +6350,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München mit Kinderwagen"
+      "intent": "Wanderung mit Kinderwagen ab München, leicht und gut befahrbar"
      },
      "update": {
       "language": "de",
@@ -6307,7 +6358,7 @@
       "tags_add": [
        "Suitable for strollers"
       ],
-      "intent": "Wanderung ab München mit Kinderwagen"
+      "intent": "Wanderung mit Kinderwagen ab München, leicht und gut befahrbar"
      },
      "dropped": [],
      "changes": [
@@ -6328,14 +6379,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München mit Kinderwagen",
+       "new": "Wanderung mit Kinderwagen ab München, leicht und gut befahrbar",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017152,
-     "nominal_latency_ms": 929.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007257,
+     "nominal_latency_ms": 1160.4
     }
    ],
    "changes": {
@@ -6345,7 +6396,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Wanderung ab München mit Kinderwagen",
+   "intent": "Wanderung mit Kinderwagen ab München, leicht und gut befahrbar",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -6364,7 +6415,7 @@
      "Suitable for strollers"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung ab München mit Kinderwagen"
+    "intent": "Wanderung mit Kinderwagen ab München, leicht und gut befahrbar"
    },
    "defaults_applied": [],
    "score": {
@@ -6388,19 +6439,19 @@
    "calls": [
     {
      "message": "Family day out with two small kids, something with a playground",
-     "status": "ready",
-     "question": null,
+     "status": "clarify",
+     "question": "activity",
      "raw": {
       "language": "en",
-      "activity": "hiking",
+      "activity": null,
       "difficulty": "easy",
       "difficulty_change": null,
-      "distance_band": null,
+      "distance_band": "short",
       "distance_change": null,
-      "duration_hours": 4.0,
+      "duration_hours": null,
       "distance_target_km": null,
       "distance_cap_km": null,
-      "place_name": "M2nchen",
+      "place_name": null,
       "travel_radius_km": null,
       "tags_add": [
        "Family-friendly",
@@ -6409,33 +6460,20 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Family day out from M2nchen with two small kids and a playground"
+      "intent": "an easy, short family day out with two small kids, with a playground"
      },
      "update": {
       "language": "en",
-      "activity": "hiking",
       "difficulty": "easy",
-      "duration_hours": 4.0,
+      "distance_band": "short",
       "tags_add": [
        "Family-friendly",
        "Playground"
       ],
-      "intent": "Family day out from M2nchen with two small kids and a playground"
+      "intent": "an easy, short family day out with two small kids, with a playground"
      },
-     "dropped": [
-      {
-       "field": "place_name",
-       "reason": "not a plausible place name",
-       "value": "'M2nchen'"
-      }
-     ],
+     "dropped": [],
      "changes": [
-      {
-       "slot": "activity",
-       "old": null,
-       "new": "hiking",
-       "source": "chat"
-      },
       {
        "slot": "difficulty",
        "old": null,
@@ -6445,13 +6483,7 @@
       {
        "slot": "distance_band",
        "old": null,
-       "new": "medium",
-       "source": "chat"
-      },
-      {
-       "slot": "duration_hours",
-       "old": null,
-       "new": 4.0,
+       "new": "short",
        "source": "chat"
       },
       {
@@ -6466,34 +6498,32 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Family day out from M2nchen with two small kids and a playground",
+       "new": "an easy, short family day out with two small kids, with a playground",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017926,
-     "nominal_latency_ms": 1157.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.000722,
+     "nominal_latency_ms": 978.7
     }
    ],
    "changes": {
-    "activity": "hiking",
     "difficulty": "easy",
-    "distance_band": "medium",
-    "duration_hours": 4.0,
+    "distance_band": "short",
     "tags_preferred": [
      "Family-friendly",
      "Playground"
     ]
    },
-   "clarify": null,
-   "intent": "Family day out from M2nchen with two small kids and a playground",
+   "clarify": "activity",
+   "intent": "an easy, short family day out with two small kids, with a playground",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
-    "activity": "hiking",
+    "activity": null,
     "difficulty": "easy",
-    "distance_band": "medium",
-    "duration_hours": 4.0,
+    "distance_band": "short",
+    "duration_hours": null,
     "distance_cap_km": null,
     "place": {
      "name": "München",
@@ -6507,29 +6537,16 @@
      "Playground"
     ],
     "tags_avoided": [],
-    "intent": "Family day out from M2nchen with two small kids and a playground"
+    "intent": "an easy, short family day out with two small kids, with a playground"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [
-     {
-      "slot": "distance_band",
-      "kind": "fp",
-      "predicted": "medium",
-      "expected": null
-     },
-     {
-      "slot": "duration_hours",
-      "kind": "fp",
-      "predicted": 4.0,
-      "expected": null
-     }
-    ],
+    "errors": [],
     "clarify": {
      "expected": "activity",
-     "predicted": null,
-     "decision_ok": false,
-     "slot_ok": false
+     "predicted": "activity",
+     "decision_ok": true,
+     "slot_ok": true
     },
     "intent_hit": null
    }
@@ -6549,7 +6566,7 @@
      "raw": {
       "language": "de",
       "activity": null,
-      "difficulty": null,
+      "difficulty": "easy",
       "difficulty_change": null,
       "distance_band": null,
       "distance_change": null,
@@ -6564,17 +6581,24 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung in München, barrierefrei für Rollstuhlfahrer"
+      "intent": "Barrierefreie Wanderung in München für einen Rollstuhlfahrer"
      },
      "update": {
       "language": "de",
+      "difficulty": "easy",
       "tags_add": [
        "Accessibility"
       ],
-      "intent": "Wanderung in München, barrierefrei für Rollstuhlfahrer"
+      "intent": "Barrierefreie Wanderung in München für einen Rollstuhlfahrer"
      },
      "dropped": [],
      "changes": [
+      {
+       "slot": "difficulty",
+       "old": null,
+       "new": "easy",
+       "source": "chat"
+      },
       {
        "slot": "tags_preferred",
        "old": [],
@@ -6586,27 +6610,28 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung in München, barrierefrei für Rollstuhlfahrer",
+       "new": "Barrierefreie Wanderung in München für einen Rollstuhlfahrer",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017189,
-     "nominal_latency_ms": 1018.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007245,
+     "nominal_latency_ms": 1112.8
     }
    ],
    "changes": {
+    "difficulty": "easy",
     "tags_preferred": [
      "Accessibility"
     ]
    },
    "clarify": null,
-   "intent": "Wanderung in München, barrierefrei für Rollstuhlfahrer",
+   "intent": "Barrierefreie Wanderung in München für einen Rollstuhlfahrer",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
-    "difficulty": null,
+    "difficulty": "easy",
     "distance_band": null,
     "duration_hours": null,
     "distance_cap_km": null,
@@ -6621,7 +6646,7 @@
      "Accessibility"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung in München, barrierefrei für Rollstuhlfahrer"
+    "intent": "Barrierefreie Wanderung in München für einen Rollstuhlfahrer"
    },
    "defaults_applied": [],
    "score": {
@@ -6650,7 +6675,7 @@
      "raw": {
       "language": "en",
       "activity": "cycling",
-      "difficulty": null,
+      "difficulty": "easy",
       "difficulty_change": null,
       "distance_band": null,
       "distance_change": null,
@@ -6667,21 +6692,28 @@
       ],
       "tags_remove": [],
       "clear": [],
-      "intent": "Bike tour starting from München with the kids, avoiding busy roads"
+      "intent": "a bike tour with the kids, avoiding busy roads"
      },
      "update": {
       "language": "en",
       "activity": "cycling",
+      "difficulty": "easy",
       "tags_add": [
        "Family-friendly"
       ],
       "tags_avoid": [
        "Busy road sections"
       ],
-      "intent": "Bike tour starting from München with the kids, avoiding busy roads"
+      "intent": "a bike tour with the kids, avoiding busy roads"
      },
      "dropped": [],
      "changes": [
+      {
+       "slot": "difficulty",
+       "old": null,
+       "new": "easy",
+       "source": "chat"
+      },
       {
        "slot": "tags_preferred",
        "old": [],
@@ -6701,17 +6733,18 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Bike tour starting from München with the kids, avoiding busy roads",
+       "new": "a bike tour with the kids, avoiding busy roads",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017492,
-     "nominal_latency_ms": 1191.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007248,
+     "nominal_latency_ms": 1006.3
     }
    ],
    "changes": {
+    "difficulty": "easy",
     "tags_preferred": [
      "Family-friendly"
     ],
@@ -6720,11 +6753,11 @@
     ]
    },
    "clarify": null,
-   "intent": "Bike tour starting from München with the kids, avoiding busy roads",
+   "intent": "a bike tour with the kids, avoiding busy roads",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
-    "difficulty": null,
+    "difficulty": "easy",
     "distance_band": null,
     "duration_hours": null,
     "distance_cap_km": null,
@@ -6741,7 +6774,7 @@
     "tags_avoided": [
      "Busy road sections"
     ],
-    "intent": "Bike tour starting from München with the kids, avoiding busy roads"
+    "intent": "a bike tour with the kids, avoiding busy roads"
    },
    "defaults_applied": [],
    "score": {
@@ -6783,13 +6816,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking near Garmisch-Partenkirchen"
+      "intent": "a hike near Garmisch-Partenkirchen"
      },
      "update": {
       "language": "en",
       "activity": "hiking",
       "place_name": "Garmisch-Partenkirchen",
-      "intent": "hiking near Garmisch-Partenkirchen"
+      "intent": "a hike near Garmisch-Partenkirchen"
      },
      "dropped": [],
      "changes": [
@@ -6814,14 +6847,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking near Garmisch-Partenkirchen",
+       "new": "a hike near Garmisch-Partenkirchen",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017077,
-     "nominal_latency_ms": 904.6
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007199,
+     "nominal_latency_ms": 1148.8
     }
    ],
    "changes": {
@@ -6829,7 +6862,7 @@
     "place": "Garmisch-Partenkirchen|Landkreis Garmisch-Partenkirchen"
    },
    "clarify": null,
-   "intent": "hiking near Garmisch-Partenkirchen",
+   "intent": "a hike near Garmisch-Partenkirchen",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -6846,7 +6879,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "hiking near Garmisch-Partenkirchen"
+    "intent": "a hike near Garmisch-Partenkirchen"
    },
    "defaults_applied": [],
    "score": {
@@ -6924,9 +6957,9 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016927,
-     "nominal_latency_ms": 859.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007135,
+     "nominal_latency_ms": 1030.0
     }
    ],
    "changes": {
@@ -7029,9 +7062,9 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016899,
-     "nominal_latency_ms": 948.4
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007145,
+     "nominal_latency_ms": 1178.9
     }
    ],
    "changes": {
@@ -7098,13 +7131,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "cycling from Nürnberg"
+      "intent": "a cycling tour starting from Nürnberg"
      },
      "update": {
       "language": "en",
       "activity": "cycling",
       "place_name": "Nürnberg",
-      "intent": "cycling from Nürnberg"
+      "intent": "a cycling tour starting from Nürnberg"
      },
      "dropped": [],
      "changes": [
@@ -7129,14 +7162,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "cycling from Nürnberg",
+       "new": "a cycling tour starting from Nürnberg",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016796,
-     "nominal_latency_ms": 1046.2
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007162,
+     "nominal_latency_ms": 1030.3
     }
    ],
    "changes": {
@@ -7144,7 +7177,7 @@
     "place": "Nürnberg|Nürnberg"
    },
    "clarify": null,
-   "intent": "cycling from Nürnberg",
+   "intent": "a cycling tour starting from Nürnberg",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -7161,7 +7194,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "cycling from Nürnberg"
+    "intent": "a cycling tour starting from Nürnberg"
    },
    "defaults_applied": [],
    "score": {
@@ -7203,13 +7236,13 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wandern ab Berchtesgaden"
+      "intent": "Wanderung ab Berchtesgaden"
      },
      "update": {
       "language": "de",
       "activity": "hiking",
       "place_name": "Berchtesgaden",
-      "intent": "Wandern ab Berchtesgaden"
+      "intent": "Wanderung ab Berchtesgaden"
      },
      "dropped": [],
      "changes": [
@@ -7234,14 +7267,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wandern ab Berchtesgaden",
+       "new": "Wanderung ab Berchtesgaden",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017036,
-     "nominal_latency_ms": 939.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007176,
+     "nominal_latency_ms": 1177.3
     }
    ],
    "changes": {
@@ -7249,7 +7282,7 @@
     "place": "Berchtesgaden|Landkreis Berchtesgadener Land"
    },
    "clarify": null,
-   "intent": "Wandern ab Berchtesgaden",
+   "intent": "Wanderung ab Berchtesgaden",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -7266,7 +7299,7 @@
     "travel_radius_km": 50.0,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wandern ab Berchtesgaden"
+    "intent": "Wanderung ab Berchtesgaden"
    },
    "defaults_applied": [],
    "score": {
@@ -7331,9 +7364,9 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015983,
-     "nominal_latency_ms": 834.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007105,
+     "nominal_latency_ms": 868.7
     }
    ],
    "changes": {
@@ -7394,30 +7427,30 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a quiet hike around München with autumn colours"
+      "intent": "a quiet hike with autumn colours"
      },
      "update": {
       "language": "en",
-      "intent": "a quiet hike around München with autumn colours"
+      "intent": "a quiet hike with autumn colours"
      },
      "dropped": [],
      "changes": [
       {
        "slot": "intent",
        "old": null,
-       "new": "a quiet hike around München with autumn colours",
+       "new": "a quiet hike with autumn colours",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016855,
-     "nominal_latency_ms": 886.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007107,
+     "nominal_latency_ms": 902.6
     }
    ],
    "changes": {},
    "clarify": null,
-   "intent": "a quiet hike around München with autumn colours",
+   "intent": "a quiet hike with autumn colours",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -7434,7 +7467,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "a quiet hike around München with autumn colours"
+    "intent": "a quiet hike with autumn colours"
    },
    "defaults_applied": [],
    "score": {
@@ -7476,30 +7509,30 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wandern ab München mit einer guten Bäckerei am Ziel"
+      "intent": "Wanderung ab München mit einer guten Bäckerei am Ziel"
      },
      "update": {
       "language": "de",
-      "intent": "Wandern ab München mit einer guten Bäckerei am Ziel"
+      "intent": "Wanderung ab München mit einer guten Bäckerei am Ziel"
      },
      "dropped": [],
      "changes": [
       {
        "slot": "intent",
        "old": null,
-       "new": "Wandern ab München mit einer guten Bäckerei am Ziel",
+       "new": "Wanderung ab München mit einer guten Bäckerei am Ziel",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001698,
-     "nominal_latency_ms": 896.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007179,
+     "nominal_latency_ms": 1187.1
     }
    ],
    "changes": {},
    "clarify": null,
-   "intent": "Wandern ab München mit einer guten Bäckerei am Ziel",
+   "intent": "Wanderung ab München mit einer guten Bäckerei am Ziel",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -7516,7 +7549,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "Wandern ab München mit einer guten Bäckerei am Ziel"
+    "intent": "Wanderung ab München mit einer guten Bäckerei am Ziel"
    },
    "defaults_applied": [],
    "score": {
@@ -7554,34 +7587,51 @@
       "distance_cap_km": null,
       "place_name": null,
       "travel_radius_km": null,
-      "tags_add": [],
+      "tags_add": [
+       "Viewpoint"
+      ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a cycling ride around München where I can watch the sunset"
+      "intent": "a cycling ride from München where I can watch the sunset"
      },
      "update": {
       "language": "en",
-      "intent": "a cycling ride around München where I can watch the sunset"
+      "tags_add": [
+       "Viewpoint"
+      ],
+      "intent": "a cycling ride from München where I can watch the sunset"
      },
      "dropped": [],
      "changes": [
       {
+       "slot": "tags_preferred",
+       "old": [],
+       "new": [
+        "Viewpoint"
+       ],
+       "source": "chat"
+      },
+      {
        "slot": "intent",
        "old": null,
-       "new": "a cycling ride around München where I can watch the sunset",
+       "new": "a cycling ride from München where I can watch the sunset",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016936,
-     "nominal_latency_ms": 938.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007171,
+     "nominal_latency_ms": 1305.5
     }
    ],
-   "changes": {},
+   "changes": {
+    "tags_preferred": [
+     "Viewpoint"
+    ]
+   },
    "clarify": null,
-   "intent": "a cycling ride around München where I can watch the sunset",
+   "intent": "a cycling ride from München where I can watch the sunset",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "cycling",
@@ -7596,9 +7646,11 @@
      "admin_district": "München"
     },
     "travel_radius_km": null,
-    "tags_preferred": [],
+    "tags_preferred": [
+     "Viewpoint"
+    ],
     "tags_avoided": [],
-    "intent": "a cycling ride around München where I can watch the sunset"
+    "intent": "a cycling ride from München where I can watch the sunset"
    },
    "defaults_applied": [],
    "score": {
@@ -7640,30 +7692,30 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "hiking around München with lots of shade since it is going to be hot"
+      "intent": "a hike with lots of shade because it will be hot"
      },
      "update": {
       "language": "en",
-      "intent": "hiking around München with lots of shade since it is going to be hot"
+      "intent": "a hike with lots of shade because it will be hot"
      },
      "dropped": [],
      "changes": [
       {
        "slot": "intent",
        "old": null,
-       "new": "hiking around München with lots of shade since it is going to be hot",
+       "new": "a hike with lots of shade because it will be hot",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016154,
-     "nominal_latency_ms": 912.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007129,
+     "nominal_latency_ms": 888.2
     }
    ],
    "changes": {},
    "clarify": null,
-   "intent": "hiking around München with lots of shade since it is going to be hot",
+   "intent": "a hike with lots of shade because it will be hot",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -7680,7 +7732,7 @@
     "travel_radius_km": null,
     "tags_preferred": [],
     "tags_avoided": [],
-    "intent": "hiking around München with lots of shade since it is going to be hot"
+    "intent": "a hike with lots of shade because it will be hot"
    },
    "defaults_applied": [],
    "score": {
@@ -7719,21 +7771,19 @@
       "place_name": null,
       "travel_radius_km": null,
       "tags_add": [
-       "Flora",
        "Hut"
       ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab München mit Kühen und Almwiesen"
+      "intent": "Wanderung mit Kühen und Almwiesen"
      },
      "update": {
       "language": "de",
       "tags_add": [
-       "Flora",
        "Hut"
       ],
-      "intent": "Wanderung ab München mit Kühen und Almwiesen"
+      "intent": "Wanderung mit Kühen und Almwiesen"
      },
      "dropped": [],
      "changes": [
@@ -7741,7 +7791,6 @@
        "slot": "tags_preferred",
        "old": [],
        "new": [
-        "Flora",
         "Hut"
        ],
        "source": "chat"
@@ -7749,24 +7798,23 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab München mit Kühen und Almwiesen",
+       "new": "Wanderung mit Kühen und Almwiesen",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.001712,
-     "nominal_latency_ms": 920.9
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007173,
+     "nominal_latency_ms": 1162.6
     }
    ],
    "changes": {
     "tags_preferred": [
-     "Flora",
      "Hut"
     ]
    },
    "clarify": null,
-   "intent": "Wanderung ab München mit Kühen und Almwiesen",
+   "intent": "Wanderung mit Kühen und Almwiesen",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -7782,11 +7830,10 @@
     },
     "travel_radius_km": null,
     "tags_preferred": [
-     "Flora",
      "Hut"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung ab München mit Kühen und Almwiesen"
+    "intent": "Wanderung mit Kühen und Almwiesen"
    },
    "defaults_applied": [],
    "score": {
@@ -7836,9 +7883,9 @@
      "dropped": [],
      "changes": [],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015832,
-     "nominal_latency_ms": 815.8
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007045,
+     "nominal_latency_ms": 985.8
     }
    ],
    "changes": {},
@@ -7910,9 +7957,9 @@
      "dropped": [],
      "changes": [],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0015835,
-     "nominal_latency_ms": 778.3
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007053,
+     "nominal_latency_ms": 1106.6
     }
    ],
    "changes": {},
@@ -7978,7 +8025,7 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "easy loop run"
+      "intent": "an easy running loop"
      },
      "update": {
       "language": "en",
@@ -7987,7 +8034,7 @@
       "tags_add": [
        "Round trip"
       ],
-      "intent": "easy loop run"
+      "intent": "an easy running loop"
      },
      "dropped": [],
      "changes": [
@@ -8014,14 +8061,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "easy loop run",
+       "new": "an easy running loop",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016103,
-     "nominal_latency_ms": 974.1
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007168,
+     "nominal_latency_ms": 803.9
     }
    ],
    "changes": {
@@ -8032,7 +8079,7 @@
     ]
    },
    "clarify": null,
-   "intent": "easy loop run",
+   "intent": "an easy running loop",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "running",
@@ -8051,7 +8098,7 @@
      "Round trip"
     ],
     "tags_avoided": [],
-    "intent": "easy loop run"
+    "intent": "an easy running loop"
    },
    "defaults_applied": [],
    "score": {
@@ -8094,7 +8141,7 @@
       "duration_hours": null,
       "distance_target_km": null,
       "distance_cap_km": null,
-      "place_name": "MRcnchen",
+      "place_name": null,
       "travel_radius_km": null,
       "tags_add": [
        "Beer garden"
@@ -8102,15 +8149,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "Wanderung ab MRcnchen zum Biergarten"
+      "intent": "eine Wanderung zu einem Biergarten"
      },
      "update": {
       "language": "de",
-      "place_name": "MRcnchen",
       "tags_add": [
        "Beer garden"
       ],
-      "intent": "Wanderung ab MRcnchen zum Biergarten"
+      "intent": "eine Wanderung zu einem Biergarten"
      },
      "dropped": [],
      "changes": [
@@ -8125,14 +8171,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "Wanderung ab MRcnchen zum Biergarten",
+       "new": "eine Wanderung zu einem Biergarten",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0016546,
-     "nominal_latency_ms": 927.5
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007212,
+     "nominal_latency_ms": 889.2
     }
    ],
    "changes": {
@@ -8141,7 +8187,7 @@
     ]
    },
    "clarify": null,
-   "intent": "Wanderung ab MRcnchen zum Biergarten",
+   "intent": "eine Wanderung zu einem Biergarten",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -8160,7 +8206,7 @@
      "Beer garden"
     ],
     "tags_avoided": [],
-    "intent": "Wanderung ab MRcnchen zum Biergarten"
+    "intent": "eine Wanderung zu einem Biergarten"
    },
    "defaults_applied": [],
    "score": {
@@ -8204,14 +8250,14 @@
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
-      "intent": "a hike near München featuring a waterfall"
+      "intent": "a hike to a waterfall"
      },
      "update": {
       "language": "en",
       "tags_add": [
        "Waterfall"
       ],
-      "intent": "a hike near München featuring a waterfall"
+      "intent": "a hike to a waterfall"
      },
      "dropped": [],
      "changes": [
@@ -8226,14 +8272,14 @@
       {
        "slot": "intent",
        "old": null,
-       "new": "a hike near München featuring a waterfall",
+       "new": "a hike to a waterfall",
        "source": "chat"
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017111,
-     "nominal_latency_ms": 893.0
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007163,
+     "nominal_latency_ms": 1043.6
     }
    ],
    "changes": {
@@ -8242,7 +8288,7 @@
     ]
    },
    "clarify": null,
-   "intent": "a hike near München featuring a waterfall",
+   "intent": "a hike to a waterfall",
    "intent_prompt_overlap_6w": false,
    "final_slots": {
     "activity": "hiking",
@@ -8261,7 +8307,7 @@
      "Waterfall"
     ],
     "tags_avoided": [],
-    "intent": "a hike near München featuring a waterfall"
+    "intent": "a hike to a waterfall"
    },
    "defaults_applied": [],
    "score": {
@@ -8299,7 +8345,9 @@
       "distance_cap_km": null,
       "place_name": "München",
       "travel_radius_km": null,
-      "tags_add": [],
+      "tags_add": [
+       "Monastery"
+      ],
       "tags_avoid": [],
       "tags_remove": [],
       "clear": [],
@@ -8309,10 +8357,21 @@
       "language": "en",
       "activity": "cycling",
       "place_name": "München",
+      "tags_add": [
+       "Monastery"
+      ],
       "intent": "a bike ride from München to Kloster Andechs"
      },
      "dropped": [],
      "changes": [
+      {
+       "slot": "tags_preferred",
+       "old": [],
+       "new": [
+        "Monastery"
+       ],
+       "source": "chat"
+      },
       {
        "slot": "intent",
        "old": null,
@@ -8321,12 +8380,16 @@
       }
      ],
      "schema_attempts": 1,
-     "model": "gemini-3.5-flash-lite",
-     "nominal_cost_usd": 0.0017077,
-     "nominal_latency_ms": 927.7
+     "model": "anthropic/claude-haiku-5.5",
+     "nominal_cost_usd": 0.0007201,
+     "nominal_latency_ms": 969.7
     }
    ],
-   "changes": {},
+   "changes": {
+    "tags_preferred": [
+     "Monastery"
+    ]
+   },
    "clarify": null,
    "intent": "a bike ride from München to Kloster Andechs",
    "intent_prompt_overlap_6w": false,
@@ -8343,22 +8406,15 @@
      "admin_district": "München"
     },
     "travel_radius_km": null,
-    "tags_preferred": [],
+    "tags_preferred": [
+     "Monastery"
+    ],
     "tags_avoided": [],
     "intent": "a bike ride from München to Kloster Andechs"
    },
    "defaults_applied": [],
    "score": {
-    "errors": [
-     {
-      "slot": "tags_preferred",
-      "kind": "fn",
-      "predicted": [],
-      "expected": [
-       "Monastery"
-      ]
-     }
-    ],
+    "errors": [],
     "clarify": {
      "expected": null,
      "predicted": null,
@@ -8371,9 +8427,9 @@
  ],
  "volatile": {
   "real_usd": 0.0,
-  "wall_s": 0.2,
+  "wall_s": 0.1,
   "cache_hits": 84,
   "provider_requests": 0,
-  "time": "2026-11-23T08:58:17"
+  "time": "2026-11-23T09:49:53"
  }
 }
