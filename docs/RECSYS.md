@@ -43,7 +43,7 @@ from app.recsys.pipeline import Pipeline, PipelineConfig
 from app.recsys.dense import DocEmbeddings
 from app.recsys.ltr import load_model
 
-pipe = build_system("recsys_v1", get_catalog(), llm=client)          # registered default
+pipe = build_system("recsys_serve", get_catalog(), llm=client)       # what the API serves (section 12)
 # or explicitly, with injected resources:
 pipe = Pipeline(catalog, PipelineConfig(...), name="custom",
                 doc_embeddings=DocEmbeddings.load(), ltr_model=load_model("v1_noapi"), llm=client)
@@ -55,7 +55,8 @@ explanation = explain(rec)                 # app.recsys.explain -> pydantic mode
 
 - `app/recsys` never imports `evalkit`. Resources: the catalogue (`get_catalog()`), the committed
   document matrix `app/recsys/artifacts/doc_embeddings.npz`, the committed models
-  `app/recsys/artifacts/ltr_v1.json` / `ltr_v1_noapi.json`, and an `app.llm` client (default
+  `app/recsys/artifacts/ltr_v1.json`, `ltr_v1_noapi.json`, `ltr_v1_noapi_nocap.json` (served) and
+  `ltr_v1_noapi_nosusp.json`, and an `app.llm` client (default
   `get_client()`). Everything loads once per process (catalogue memo, model cache); a `Pipeline` holds no
   per-request state, so one instance serves concurrent requests.
 - The learned ranker is evaluated in numpy (`TreeEnsemble`); LightGBM and OpenMP are needed only for
@@ -90,8 +91,9 @@ Registered systems (`app/recsys/systems/pipelines.py`): `v1_filters`, `v2_bm25`,
 `recsys_v1_nocap` / `recsys_v1_nosusp` (robustness rows, section 4), `recsys_v1_fb`, `recsys_v1_fb_light`,
 `recsys_v1_fb_route`, `recsys_v1_fb_explore` (section 10; without feedback events and without exploration
 each returns exactly `recsys_v1`'s list) and, in `systems/chat_e2e.py`, `recsys_v1_qonly` / `recsys_v1_chat`
-(section 11). Any field can be
-overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
+(section 11). D25 adds the served system **`recsys_serve`** and its twin `recsys_serve_noexplore` (section 12),
+and `systems/empty_slots.py` the checks `recsys_serve_nocap`, `recsys_serve_nohome`, `recsys_serve_noslots`,
+`recsys_v1_nocapslot`. Any field can be overridden: `build_system("recsys_v1", catalog, mmr_lambda=None)`.
 
 ## 2. Hard filters (3a)
 
@@ -265,9 +267,11 @@ eligible set → MMR. The trace's filter stage says `"fallback": "no_intent"`. T
 behaviour now; Phase 4's end-to-end comparison measures
 it (`recsys_v1_qonly`, RESULTS.md "Phase 4 end-to-end"), and a model trained with intent-free rows could replace it.
 
-## 7. Default system `recsys_v1`
+## 7. Phase 3 default `recsys_v1`
 
-filters → BM25F + dense (top 100 each) → RRF (k 30, top 50) → learned ranker `v1_noapi` → MMR 0.8.
+filters → BM25F + dense (top 100 each) → RRF (k 30, top 50) → learned ranker `v1_noapi` → MMR 0.8. This was
+the default at the end of Phase 3 and is the reference row of most comparisons; the API serves `recsys_serve`
+(section 12), which differs in the ranker model and adds the feedback and exploration stages.
 Its test row, the comparison with `v7_mmr` (same with the API feature) and the latency/cost table
 against the budget are in RESULTS.md ("Phase 3 ablation", "Other comparisons", "Latency and cost against the
 budget").
@@ -338,8 +342,9 @@ rank change when it is non-zero. Wiring this into the API and the score modal is
 | `app/recsys/explain.py` | explanation schema |
 | `app/recsys/feedback.py`, `explore.py` | Phase 5: decay, slot adjustments, Rocchio, re-scoring, route effects; tag clusters and Thompson sampling |
 | `app/recsys/systems/chat_e2e.py` | Phase 4 end-to-end variants (questionnaire only, + chat) |
-| `app/recsys/systems/pipelines.py` | registered systems, `DEFAULT_SYSTEM = "recsys_v1"` |
-| `app/recsys/artifacts/` | `doc_embeddings.npz`, `ltr_v1.json`, `ltr_v1_noapi.json` |
+| `app/recsys/systems/pipelines.py` | registered systems, `DEFAULT_SYSTEM = "recsys_v1"` (Phase 3), `SERVED_SYSTEM = "recsys_serve"` (D25) |
+| `app/recsys/systems/empty_slots.py` | the empty-slot checks (`recsys_serve_nocap`, `_nohome`, `_noslots`, `recsys_v1_nocapslot`) |
+| `app/recsys/artifacts/` | `doc_embeddings.npz`, `ltr_v1.json`, `ltr_v1_noapi.json`, `ltr_v1_noapi_nocap.json`, `ltr_v1_noapi_nosusp.json` |
 | `evalkit/cg.py`, `rank_pilot.py`, `ltr.py`, `mmr_sweep.py`, `latency.py`, `explain_example.py` | the Phase 3 experiments (`make cg-tune`, `rank-pilot`, `ltr-sample`, `ltr`, `mmr-sweep`, `latency`) |
 
 ## 10. Feedback and exploration (Phase 5)
@@ -350,8 +355,9 @@ loop" and [convergence.png](convergence.png). Decisions D20-D22.
 
 **Signals.** `UserQuery.feedback` carries `FeedbackEvent(route_id, reason, age_days)`: the four negative
 reasons of the product (`too-hard`, `too-easy`, `too-far`, `not-interested`) and `completed` (a souvenir
-record). Every event gets one weight, `calculate_time_decay_weight(age, 60)` = `0.5 ** (age / 60)`: the fixed
-true half-life of `recommendation_service`, **60 days for both signs** (D20). `too-far` means *too far to
+record). Every event gets one weight, `calculate_time_decay_weight(age, 60)` = `0.5 ** (age / 60)`: the
+baseline's decay function with the Phase 0 fix (a true half-life), called with **60 days for both signs** (D20;
+the baseline's own default stays 30 days). `too-far` means *too far to
 travel* (the UI shows a car), not "too long": v0 reads it as route length, the new pipeline as distance from
 home.
 
@@ -418,9 +424,11 @@ UTC), put them on the **original** profile's query (`dataclasses.replace(query, 
 ## 12. The served system: `recsys_serve`
 
 `build_system("recsys_serve", ...)` (`SERVED_SYSTEM` in `systems/pipelines.py`) is what the API serves
-(D25): filters → BM25F + dense (Rocchio-moved with feedback) → RRF → learned ranker `v1_noapi_nocap` (no
+(D25): filters → BM25F + dense → RRF → learned ranker `v1_noapi_nocap` (no
 `length_cap_ratio`, D19) → feedback stage (route effects + slot steps, dev-chosen, D21) → MMR 0.8 → exploration
-slot at rank 10 while the user has fewer than 10 feedback events (D22). Its twin without exploration is
+slot at rank 10 while the user has fewer than 10 feedback events (D22). Rocchio and re-scoring are off in the
+dev-chosen feedback settings, so feedback changes the request's slots and tags and hides routes but does not move the
+query embedding. Its twin without exploration is
 `recsys_serve_noexplore`. `recsys_v1` remains the Phase 3 default of the ablation and is not what is served.
 Numbers: RESULTS.md "Served default" (single request and simulation).
 

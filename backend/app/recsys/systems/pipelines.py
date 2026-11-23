@@ -5,7 +5,8 @@ The ablation chain (docs/RESULTS.md) adds one component per row::
     v0_rules -> v1_filters -> v2_bm25 -> v3_dense -> v4_rrf -> v5_rank_api -> v6_ltr -> v7_mmr
 
 ``v2_bm25`` and ``v3_dense`` rank the eligible set by that generator's own score (standalone), ``v4_rrf``
-by the fused score. ``recsys_v1`` is the default system the API serves. Every factory accepts config
+by the fused score. ``recsys_v1`` is the Phase 3 default (the end of the ablation); the API serves
+``SERVED_SYSTEM`` = ``recsys_serve`` (docs/DECISIONS.md D25). Every factory accepts config
 overrides (``build_system("v4_rrf", catalog, rrf_k=30)``) plus ``llm=``, ``doc_embeddings=`` and
 ``ltr_model=`` (a loaded :class:`~app.recsys.ltr.TreeEnsemble`) to inject resources.
 """
@@ -36,8 +37,8 @@ CONFIGS: dict[str, PipelineConfig] = {
 # MMR lambda chosen on dev (eval/results/_mmr_sweep.json; docs/RECSYS.md section "Diversity")
 MMR_LAMBDA = 0.8
 CONFIGS["v7_mmr"] = CONFIGS["v6_ltr"].with_(mmr_lambda=MMR_LAMBDA)
-# The default system the API serves (docs/RECSYS.md section "Default system"): the learned ranker without
-# the ranker-API feature (the API's gain on dev CV does not pay for its latency and cost), then MMR.
+# The Phase 3 default (docs/RECSYS.md section 7): the learned ranker without the ranker-API feature (the API's
+# gain on dev CV does not pay for its latency and cost), then MMR. Not what the API serves: see SERVED_SYSTEM.
 DEFAULT_SYSTEM = "recsys_v1"
 CONFIGS[DEFAULT_SYSTEM] = CONFIGS["v6_ltr_noapi"].with_(mmr_lambda=MMR_LAMBDA)
 # Robustness rows (docs/DECISIONS.md D19): the default with ranker models trained without the features that

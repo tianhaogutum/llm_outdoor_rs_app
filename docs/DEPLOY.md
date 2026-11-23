@@ -68,7 +68,7 @@ google-genai. It leaves out:
 - the evaluation harness's training-time libraries (`lightgbm`, `scikit-learn`, `matplotlib`). The ranker
   trees are evaluated in numpy (`app/recsys/ltr.py`);
 - `google-cloud-discoveryengine` (grpc/protobuf). Only `RANK_PROVIDER=vertex` uses it (the Vertex Ranking API,
-  not enabled in the project, D2), and the served `recsys_v1` calls no ranking API;
+  not enabled in the project, D2), and the served `recsys_serve` calls no ranking API;
 - uvicorn's `watchfiles`, `websockets` and PyYAML (reload, websocket routes and YAML log config are unused);
 - pytest, ruff, pre-commit.
 
@@ -201,6 +201,12 @@ Established from the code and by calling the endpoints (mock provider: the texts
 That is 648 queries, which put 1,173 distinct routes in a top 10. The 400 most frequent cover 78.7% of all
 top-10 appearances. The other 8,947 routes get the template.
 
+The set was selected on 2026-11-23 with `recsys_v1`, before D25 made `recsys_serve` the default
+(`demo_routes.json` records `"system": "recsys_v1"`). `recsys_serve`'s rule path adds an exploration pick at rank
+10, so a re-selection (`python scripts/narratives.py select`, no provider call) changes part of the set; routes
+outside the stored set get the template text. Re-run `select` and `make narratives-live` before a deployment
+(owner checklist, section 6).
+
 **Provenance.** Each file has `schema`, `llm_generated: true`, a notice and `provenance` (provider, model,
 prompt version, system-prompt hash, parameters, generator). Each item has `text`, `llm_generated`, `model`
 (as reported by the provider), `prompt_version`, `generated_at`, `cache_key`, `temperature`, `attempt` and the
@@ -314,6 +320,9 @@ Limits of this design:
   `CATALOG=legacy` is ever deployed.
 - [ ] **Data retention.** Profiles, chat text (may contain a town) and feedback stay on the volume
   indefinitely. Decide on a retention or reset policy.
+- [ ] **Narrative store.** The pre-generated route texts were selected with `recsys_v1` (section 4). Re-run
+  `python scripts/narratives.py select` and `make narratives-live` (live call for the new routes only) so the
+  store matches the served `recsys_serve`.
 
 ## 7. One neutral example (NOT executed)
 

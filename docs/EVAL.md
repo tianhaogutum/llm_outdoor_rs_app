@@ -13,7 +13,7 @@ and the judge has not yet been checked against a human (the owner's 150 labels a
 personas (latent profile -> questionnaire -> user vector; profile slots; LLM-written intent)
    │  persona.to_query(): only the visible part
    ▼
-system (registry: random, v0_rules, v1_filters ... v7_mmr, recsys_v1)  ->  eval/runs/<system>.jsonl (top 50 + trace)
+system (registry: random, v0_rules, v1_filters ... v7_mmr, recsys_v1, recsys_serve, ...)  ->  eval/runs/<system>.jsonl (top 50 + trace)
    │
 pool = top-10 of every system ∪ top-10 of two pool-only contributors
    │
@@ -141,13 +141,13 @@ not depend on what two weak baselines happened to retrieve:
 Why it matters: NDCG's ideal DCG and Recall@50's denominator come from the judged pairs. If only
 the baselines were pooled, a persona's "ideal" would be the best of the baselines' top-10s (almost
 all violating the radius), so a later system finding genuinely good routes would be judged against
-an artificially low ideal and its recall would be undefined. With the contributors, the 300
-personas have 2,707 known relevant (grade ≥ 2) pairs, median 10 per persona (min 1, max 21), and
-every persona has at least one.
+an artificially low ideal and its recall would be undefined. With the contributors, every persona has at
+least one known relevant (grade ≥ 2) pair (current counts: RESULTS.md "Data and judgements").
 
-**Bias that remains.** (1) The relevant set is dominated by one contributor: `pool_latent` found
-2,147 of the 2,707 relevant pairs, 1,701 of them found by no other run (`pool_intent_lexical` 951 /
-509 unique; `random` 26, `v0_rules` 34). The ideal DCG therefore leans towards what a latent-profile
+**Bias that remains.** (1) The relevant set is dominated by one contributor. At the end of Phase 2 (only
+`random` and `v0_rules` pooled besides the contributors) `pool_latent` had found 2,147 of the 2,707 relevant
+pairs, 1,701 of them found by no other run (`pool_intent_lexical` 951 / 509 unique; `random` 26, `v0_rules` 34).
+Later systems added relevant pairs of their own, but the latent matcher's share is still large. The ideal DCG therefore leans towards what a latent-profile
 matcher finds. A system that finds relevant routes of a different kind is still judged correctly
 (holes are judged on demand, see below), but routes nobody has retrieved stay unjudged, so recall
 is relative to the pool and NDCG's ideal is a lower bound on the true ideal. (2) Pool depth is 10.
@@ -163,8 +163,9 @@ fully judged top-10 lists.
 **Rule-graded pairs.** A pair that violates one of the three deterministic hard constraints
 (wrong category tab, start beyond the travel radius by great-circle distance, longer than the
 distance cap; `app/recsys/constraints.py`) gets **grade 0 by rule, without an LLM call**. That
-holds for 5,598 of the 11,347 pooled pairs (49.3%; radius 4,836, radius + cap 699, cap 63). The same
-predicates drive the violation-rate metric and the Phase 3a filter.
+held for 5,598 of the 11,347 pairs pooled in Phase 2 (49.3%; radius 4,836, radius + cap 699, cap 63);
+current figures are in RESULTS.md "Data and judgements". The same predicates drive the violation-rate metric and
+the Phase 3a filter.
 
 **Rubric.** `eval/qrels/rubric_v1.md` (version tag `rubric/v1` on every qrels line):
 3 = fits the intent and every constraint of this person; 2 = fits the main intent with at most a
@@ -306,10 +307,11 @@ look at.
   A second `make eval` makes no LLM call and produces a results file **byte-identical except for
   its `volatile` block** (sorted last: local timings, run ledger, timestamp). Checked on the real
   results and by `tests/evalkit/test_pipeline.py` with the mock provider.
-- `make freeze` re-issues, from the local cache, every call behind the committed artefacts (300
-  intents, the 885 judge batches recorded in the qrels, the pilot, the second judge) and exports
-  exactly those 1,484 entries to `eval/cache/` (300 KB). The harness adds `eval/cache/` as a
-  frozen layer unless `LLM_CACHE_FROZEN_DIRS` is set.
+- `make freeze` re-issues, from the local cache, every call behind the committed artefacts (the 300
+  intents, every judge batch recorded in the qrels and the simulation qrels, the pilot, the second judge, the
+  systems' query embeddings and ranker calls, the ranker pilot, the MMR sweep) and exports exactly those
+  entries to `eval/cache/` (its `manifest-*.json` has the count; at the end of Phase 2 it was 1,484 entries,
+  300 KB). The harness adds `eval/cache/` as a frozen layer unless `LLM_CACHE_FROZEN_DIRS` is set.
 - `make replay-check` runs everything in a subprocess with an **empty cache directory,
   `LLM_CACHE_ONLY=true` and blanked credentials**: it regenerates the personas (identical intents),
   replays every recorded judge batch (identical grades), re-runs the pilot (identical summary) and

@@ -54,8 +54,8 @@ Every response carries `served_by`: `configured_system`, `system` (what actually
 
 | Situation | Path / system | `reason` |
 |---|---|---|
-| Profile with intent, provider fine | `pipeline` / `recsys_v1` | – |
-| Profile without intent | `pipeline` / `recsys_v1`: filters → rule scorer → MMR (no provider call) | `no_intent` |
+| Profile with intent, provider fine | `pipeline` / the configured system (default `recsys_serve`) | – |
+| Profile without intent | `pipeline` / the configured system's rule path: filters → rule scorer → (feedback) → MMR (→ exploration slot) (no provider call) | `no_intent` |
 | Profile without home | `pipeline`. The radius filter is not applied, and the verdict says `"applied": false` with `null` distances | – |
 | Guest (no `profile_id`) | `random` over the tab, seeded per request (uniform over the whole tab, unlike the baseline's lowest-id bias, D7.3) | `guest` |
 | Embedding/rank provider error | `no_llm` / `v2_bm25`: same filters, BM25F candidates ranked by BM25, no provider call | `provider_unavailable` |
@@ -120,8 +120,8 @@ budget state and the rate-limit configuration.
   The first live request after start-up took 720 ms, because the Vertex SDK client is created lazily on
   the first call. A second embedding call in the loop took 695 ms (the tail RECSYS.md warns about). The
   2 s deadline covers both.
-- These figures sit inside RECSYS.md's no-API budget (p95 ≤ 500 ms) and agree with its offline benchmark
-  (p50 104 / p95 239 ms).
+- These figures sit inside RECSYS.md's no-API budget (p95 ≤ 500 ms) and agree with the offline warm benchmark
+  (`make latency`, RESULTS.md "Latency and cost against the budget", which also covers `recsys_serve`).
 - `v0_rules` is slower than the pipeline. It loads every route of the tab from SQLite and scores them in
   Python on each request.
 - Cost per uncached request: one short intent embedding, about 1e-6 USD.
@@ -154,9 +154,10 @@ deployment needs a shared store, or the deployment's own limits.
 
 ## 7. Feedback
 
-The pipeline gets every event in `UserQuery.feedback`, from the original vector, applied once. Until the
-pipeline's own feedback stage serves (Phase 5, `app/recsys/feedback.py`, systems `recsys_v1_fb*`), the
-serving layer adds one **interim rule**: a route the user rejected or completed in the last 60 days is
+The pipeline gets every event in `UserQuery.feedback`, from the original vector, applied once. The served
+default `recsys_serve` has its own feedback stage (`app/recsys/feedback.py`, D25). For a configured system
+*without* one (`recsys_v1`, `v7_mmr`, ...), the serving layer adds an **interim rule** instead: a route the
+user rejected or completed in the last 60 days is
 left out of the list. Sixty days is two 30-day half-lives of the baseline's decay. Older events no longer
 hide it, so an old thumbs-down does not filter a route forever (D7.5). The pipeline is asked for
 `limit + hidden` routes, so the list stays full. On the no-intent path the rule scorer also applies its
